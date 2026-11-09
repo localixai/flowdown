@@ -205,7 +205,16 @@ const unsplittable = (markdown: string) =>
   markdown.includes('\r') || FOOTNOTE.test(markdown) || LINK_DEFINITION.test(markdown)
 
 /** The top-level blocks of a document, cut where one parse of the whole would not join them. */
-export function splitBlocks(markdown: string): MarkdownBlock[] {
+/**
+ * Line endings as the lexer reads them. Marked turns `\r\n` and `\r` into `\n` in the tokens it
+ * returns, so a source with them no longer lines up with its tokens and could not be cut. Offsets
+ * of the blocks are into the normalized text, which is what the renderer draws from.
+ */
+export const normalizeLineEndings = (markdown: string): string =>
+  markdown.includes('\r') ? markdown.replace(/\r\n?/g, '\n') : markdown
+
+export function splitBlocks(input: string): MarkdownBlock[] {
+  const markdown = normalizeLineEndings(input)
   if (!markdown || unsplittable(markdown)) return whole(markdown)
   const blocks = cut(markdown, { offset: 0, line: 1 })
   return blocks && blocks.length > 0 ? blocks : whole(markdown)
@@ -246,7 +255,8 @@ export function createBlockSplitter(): BlockSplitter {
     get lexed() {
       return lexed
     },
-    split(markdown) {
+    split(input) {
+      const markdown = normalizeLineEndings(input)
       let next: MarkdownBlock[] | null = null
       const kept = blocks.slice(0, Math.max(0, blocks.length - REOPENED))
       const last = kept.at(-1)
@@ -254,8 +264,9 @@ export function createBlockSplitter(): BlockSplitter {
       if (
         last &&
         markdown.length >= end &&
-        !unsplittable(markdown) &&
-        markdown.startsWith(text.slice(0, end))
+        markdown.startsWith(text.slice(0, end)) &&
+        // What is kept was checked when it arrived; only the rest can bring a footnote now.
+        !unsplittable(markdown.slice(end))
       ) {
         const tail = markdown.slice(end)
         lexed += tail.length

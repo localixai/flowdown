@@ -10,7 +10,7 @@ import {
 } from 'react'
 import ReactMarkdown, { type Components, type UrlTransform } from 'react-markdown'
 import { blockHasHtml, blockHasMath, escapedBlock, headingIdsOfBlocks } from '../core/block-facts'
-import { createBlockSplitter } from '../core/blocks'
+import { createBlockSplitter, normalizeLineEndings } from '../core/blocks'
 import { closePartialMarkdown, openFenceBody } from '../core/heal'
 import { rehypeHeadingIds } from '../core/headings'
 import {
@@ -65,8 +65,9 @@ export interface MarkdownProps {
   /** The words the renderer adds (callout names, button labels), for a page in another language. */
   labels?: LabelOverrides
   /**
-   * Rewrite or refuse a link or image URL; react-markdown's default keeps relative URLs and http,
-   * https, mailto, tel, irc and xmpp, and drops everything else (`javascript:` among them).
+   * Rewrite or refuse a link or image URL. Omitted (or null), react-markdown's default applies: it
+   * keeps relative URLs and http, https, mailto, irc, ircs and xmpp, and empties everything else
+   * (`javascript:`, `tel:` and `data:` among them).
    */
   urlTransform?: UrlTransform | null
   className?: string
@@ -196,7 +197,9 @@ export function Markdown({
   urlTransform,
   className,
 }: MarkdownProps): ReactNode {
-  const healed = streaming ? closePartialMarkdown(children) : children
+  // `\r\n` from a Windows file or a server that sends it reads as `\n` everywhere below.
+  const text = normalizeLineEndings(children)
+  const healed = streaming ? closePartialMarkdown(text) : text
   // One splitter per rendered document: it remembers the blocks it cut, and on the next token
   // lexes only the end of the reply. Blocks that did not change come back as the same objects,
   // and everything worked out from a block below is kept beside it.
@@ -223,7 +226,7 @@ export function Markdown({
     [highlight, mermaid],
   )
   const labelValue = useMemo(() => mergeLabels(labels), [labels])
-  const endsInFence = streaming && openFenceBody(children) !== null
+  const endsInFence = streaming && openFenceBody(text) !== null
 
   return (
     <LabelsContext.Provider value={labelValue}>

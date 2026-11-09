@@ -79,4 +79,23 @@ describe('the work of a stream grows with its length', () => {
     const whole = (large.text.length * updates) / 2
     expect(lexed(large.text)).toBeLessThan(whole / 10)
   })
+
+  test('a reply with Windows line endings is remembered as well as one with \\n', () => {
+    const [, large] = scaling()
+    const crlf = large.text.replace(/\n/g, '\r\n')
+    expect(lexed(crlf)).toBeLessThan(lexed(large.text) * 1.5)
+  })
+})
+
+describe('Windows line endings', () => {
+  test('split into the blocks of the same text with \\n', () => {
+    for (const { name, text: given } of replies) {
+      const text = given.replace(/\r\n/g, '\n')
+      const crlf = text.replace(/\n/g, '\r\n')
+      expect(
+        splitBlocks(crlf).map((b) => b.source),
+        name,
+      ).toEqual(splitBlocks(text).map((b) => b.source))
+    }
+  })
 })

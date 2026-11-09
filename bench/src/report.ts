@@ -31,7 +31,10 @@ export interface Row {
   finishMs: number
   cpuMs: number
   liveBytes: number
+  /** Kept after the first stream is unmounted: caches warmed by its text, and any leak. */
   leftBytes: number
+  /** Kept after a second, identical stream: only a leak grows here (NaN with one run). */
+  grownBytes: number
   nodes: number
 }
 
@@ -85,12 +88,15 @@ export function summarize(
     finishMs: median(results.map((r) => r.finishMs)),
     cpuMs: median(results.map((r) => r.cpuMs)),
     liveBytes: median(results.map((r) => r.liveBytes)),
-    leftBytes: median(results.map((r) => r.leftBytes)),
+    leftBytes: results[0]?.leftBytes ?? Number.NaN,
+    // A repeat of the same reply finds every cache warm: what it keeps is what it leaks.
+    grownBytes:
+      results.length > 1 ? Math.max(...results.slice(1).map((r) => r.leftBytes)) : Number.NaN,
     nodes: first.nodes,
   }
 }
 
-const mb = (bytes: number) => `${(bytes / 2 ** 20).toFixed(1)}`
+const mb = (bytes: number) => (Number.isNaN(bytes) ? '–' : `${(bytes / 2 ** 20).toFixed(1)}`)
 const ms = (value: number) => (value >= 100 ? value.toFixed(0) : value.toFixed(value >= 10 ? 1 : 2))
 
 function grid(
@@ -159,9 +165,10 @@ ${grid(rows, renderers, keys, keyed, (r) => `${r.overFrame} / ${r.overLongTask} 
 
 ## Memory
 
-Heap held while the streamed page is mounted / left after it is unmounted, in MB.
+Heap held while the streamed page is mounted / kept after it is unmounted (caches the reply
+warmed, which are bounded) / grown by streaming the same reply again (a leak), in MB.
 
-${grid(rows, renderers, keys, keyed, (r) => `${mb(r.liveBytes)} / ${mb(r.leftBytes)}`)}
+${grid(rows, renderers, keys, keyed, (r) => `${mb(r.liveBytes)} / ${mb(r.leftBytes)} / ${mb(r.grownBytes)}`)}
 
 ## Scaling
 

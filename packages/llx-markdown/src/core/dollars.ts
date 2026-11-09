@@ -12,8 +12,9 @@ import { isEscaped, markdownProseWithoutCode } from './prose'
  * because the stabilizer must make the same call about the dollar a streaming tail ends on.
  */
 
-/** A currency amount: digits, an optional magnitude, then a non-math character or the end. */
-const CURRENCY = /^\d[\d.,]*(?:[kKmMbB])?(?=[\s.,;:!?)\]'"`–—-]|$)/
+/** A currency amount: digits, an optional magnitude, then a non-math character (`/` for a price per
+ * unit, `$5/GB`) or the end. */
+const CURRENCY = /^\d[\d.,]*(?:[kKmMbB])?(?=[\s.,;:!?)\]'"`–—/-]|$)/
 /** A shell or environment variable: an upper-case name, ended by a path or list separator. */
 const VARIABLE = /^[A-Z_][A-Z0-9_]+(?=[/:.,;)\]'"`]|$)/
 /** A longer upper-case name also ends at a space (`$PATH before`); `$AB = CD$` stays math. */

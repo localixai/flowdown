@@ -63,6 +63,9 @@ export const sanitizeSchema: SanitizeSchema = {
       'dataLabel',
     ],
     a: [...(defaults.a ?? []), 'target', 'rel'],
+    // The math parser marks its spans `math-inline` / `math-display`, and the typesetter that runs
+    // after the sanitizer finds them by those classes: GitHub's `language-*` alone loses them.
+    code: [['className', /^language-./, 'math-inline', 'math-display']],
     img: [...(defaults.img ?? []), 'width', 'height', 'align'],
     source: ['srcSet', 'srcset', 'media', 'type'],
     // GitHub's schema names `className` for these three itself (the task-list classes), which
@@ -79,6 +82,32 @@ export const sanitizeSchema: SanitizeSchema = {
       ]),
     ),
   },
+}
+
+/**
+ * Undo the sanitizer's second `user-content-` prefix. remark-rehype already prefixes the ids it
+ * makes (footnotes: `user-content-fn-1`, linked from `#user-content-fn-1`), and the sanitizer
+ * prefixes every id again to keep content from clobbering the page's globals. A doubled prefix
+ * comes only from that pair; the link it breaks is the footnote's own.
+ */
+const CLOBBERED = ['id', 'name', 'ariaDescribedBy', 'ariaLabelledBy'] as const
+const DOUBLED = 'user-content-user-content-'
+const undouble = (value: unknown): unknown =>
+  typeof value === 'string' && value.startsWith(DOUBLED)
+    ? value.slice('user-content-'.length)
+    : Array.isArray(value)
+      ? value.map(undouble)
+      : value
+
+export function rehypeUndoubleClobber() {
+  return (tree: HastRoot) => {
+    visit(tree, 'element', (element: HastElement) => {
+      for (const key of CLOBBERED) {
+        if (key in element.properties)
+          element.properties[key] = undouble(element.properties[key]) as never
+      }
+    })
+  }
 }
 
 /**
@@ -135,7 +164,8 @@ export function rehypePluginsFor(
   beforeMath: PluggableList = [],
 ): PluggableList {
   const plugins: PluggableList = []
-  if (html) plugins.push(...html.rehypePlugins, [rehypeSanitize, sanitizeSchema])
+  if (html)
+    plugins.push(...html.rehypePlugins, [rehypeSanitize, sanitizeSchema], rehypeUndoubleClobber)
   // After the sanitizer, which does not know this attribute; task boxes are rare, the walk cheap.
   plugins.push(rehypeTaskKeys, ...beforeMath)
   if (math) plugins.push(...math.rehypePlugins)

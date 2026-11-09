@@ -22,7 +22,10 @@
       "id": "linear",
       "about": "A reply four times longer costs about four times more to stream, not sixteen: the exponent stays under 1.25.",
       "renderer": "llx",
-      "scaling": ["answer-10k", "answer-40k"],
+      "scaling": [
+        "answer-10k",
+        "answer-40k"
+      ],
       "maxExponent": 1.25
     },
     {
@@ -35,10 +38,10 @@
     },
     {
       "id": "no-leak",
-      "about": "An unmounted page leaves less than 2 MB behind.",
+      "about": "Streaming the same reply a second time keeps less than 1 MB more: nothing grows with use. The first stream may warm bounded caches.",
       "renderer": "llx",
-      "metric": "leftBytes",
-      "max": 2097152
+      "metric": "grownBytes",
+      "max": 1048576
     }
   ]
 }

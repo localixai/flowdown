@@ -21,6 +21,11 @@ describe('isLiteralDollar', () => {
 })
 
 describe('escapeLiteralDollars', () => {
+  test('a price per unit is a price, not a formula', () => {
+    expect(escapeLiteralDollars('$50/month or $500/year')).toBe('\\$50/month or \\$500/year')
+    expect(escapeLiteralDollars('$5/GB')).toBe('\\$5/GB')
+  })
+
   test('escapes literal dollars in prose, including at the very start', () => {
     expect(escapeLiteralDollars('$5 and $10')).toBe('\\$5 and \\$10')
     expect(escapeLiteralDollars('Formula $x$ costs $5')).toBe('Formula $x$ costs \\$5')

@@ -2,19 +2,19 @@
  * `bun src/run.ts [--quick] [--only=a,b] [--renderers=llx,streamdown] [--runs=3] [--label=name]
  * [--no-write]`
  *
- * Every scenario, under each of its chunk patterns, through every renderer: one warm-up run, then
- * `--runs` measured ones, of which the median is kept. Writes `results/<date>-<label>.json` with
+ * Every scenario, under each of its chunk patterns, through every renderer, each in a process of
+ * its own (cell.ts): one warm-up run, then `--runs` measured ones, of which the median is kept. Writes `results/<date>-<label>.json` with
  * every number and the machine it ran on, and `results/latest.md` with the tables the README
  * quotes.
  */
-import { GlobalRegistrator } from '@happy-dom/global-registrator'
 import { execSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { cpus, platform, release } from 'node:os'
 import { join } from 'node:path'
-import { type Pattern, prefixes } from '../../packages/llx-markdown/test/chunks'
+import type { Pattern } from '../../packages/llx-markdown/test/chunks'
 import { type Scenario, scaling, scenarios } from '../../packages/llx-markdown/test/replies'
 import { hash } from '../../packages/llx-markdown/test/random'
+import type { RunResult } from './measure'
 import { report, type Row, summarize } from './report'
 
 if (process.env.NODE_ENV !== 'production') {
@@ -22,11 +22,7 @@ if (process.env.NODE_ENV !== 'production') {
   console.error('Run with NODE_ENV=production (the `bench` script sets it).')
   process.exit(1)
 }
-GlobalRegistrator.register({ url: 'https://bench.test/' })
-;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = false
-// Loaded after the DOM exists: React DOM and the renderers read `window` when imported.
 const { RENDERERS } = await import('./renderers')
-const { measure } = await import('./measure')
 
 const flag = (name: string) =>
   process.argv.find((arg) => arg.startsWith(`--${name}=`))?.split('=')[1]
@@ -46,18 +42,33 @@ const PATTERNS: Record<string, Pattern[]> = {
   'code-50k': ['token', 'frame'],
 }
 
+/** One cell in a fresh process (see cell.ts): its runs, measured on a heap of its own. */
+const cell = (scenario: string, pattern: Pattern, renderer: string): RunResult[] => {
+  const child = Bun.spawnSync(
+    [
+      process.execPath,
+      join(import.meta.dir, 'cell.ts'),
+      scenario,
+      pattern,
+      renderer,
+      String(runs),
+      String(budgetMs),
+    ],
+    { env: process.env, stderr: 'inherit' },
+  )
+  if (child.exitCode !== 0)
+    throw new Error(`${scenario} ${pattern} ${renderer}: exit ${child.exitCode}`)
+  return JSON.parse(child.stdout.toString().trim().split('\n').at(-1) ?? '[]') as RunResult[]
+}
+
 const [small, large] = scaling()
 const all: Scenario[] = [...scenarios(), small, large].filter((s) => !only || only.includes(s.name))
 const rows: Row[] = []
 for (const scenario of all) {
   const patterns = quick ? (['frame'] as Pattern[]) : (PATTERNS[scenario.name] ?? ['frame'])
   for (const pattern of patterns) {
-    const steps = prefixes(scenario.text, pattern)
     for (const renderer of renderers) {
-      measure(renderer, scenario.history ?? [], steps.slice(0, 200), budgetMs)
-      const results = Array.from({ length: runs }, () =>
-        measure(renderer, scenario.history ?? [], steps, budgetMs),
-      )
+      const results = cell(scenario.name, pattern, renderer.name)
       const row = summarize(scenario, pattern, renderer, results)
       rows.push(row)
       console.log(
@@ -107,5 +118,3 @@ if (!process.argv.includes('--no-write')) {
     `\nwrote results/${stamp}-${label}.json${quick || only ? '' : ', latest.json and latest.md'}`,
   )
 }
-// Not unregistered: React may still have passive work queued that reads `window`.
-process.exit(0)
