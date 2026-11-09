@@ -115,6 +115,20 @@ describe('file tree', () => {
     })
   })
 
+  test('a clicked row takes the focus, so the keys carry on from it', async () => {
+    const { Markdown } = await import('../index')
+    const { act } = await import('react')
+    await mounted(<Markdown>{TREE}</Markdown>, async (host) => {
+      const rows = () => [...host.querySelectorAll<HTMLElement>('[role="treeitem"]')]
+      // Safari does not focus a clicked row by itself; the tree must.
+      await act(async () => rows()[1]!.click())
+      expect(document.activeElement).toBe(rows()[1])
+      expect(rows()[1]!.tabIndex).toBe(0)
+      await key(rows()[1]!, 'ArrowDown')
+      expect(document.activeElement?.textContent).toBe('lib')
+    })
+  })
+
   test('a key the tree handles stays in the tree; any other reaches the page', async () => {
     const { Markdown } = await import('../index')
     const { act } = await import('react')

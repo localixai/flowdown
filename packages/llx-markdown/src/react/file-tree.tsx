@@ -103,7 +103,11 @@ export function FileTree({ source, getIcon = defaultIcon }: FileTreeProps) {
             data-folder={row.folder || undefined}
             style={{ '--llx-tree-depth': row.depth } as Record<string, number>}
             onFocus={() => setFocused(row.path)}
-            onClick={() => row.folder && toggle(row.path)}
+            onClick={(event) => {
+              // Safari leaves a clicked row unfocused; the keys must carry on from it.
+              event.currentTarget.focus()
+              if (row.folder) toggle(row.path)
+            }}
             onKeyDown={(event) => onKeyDown(event, row)}
           >
             {row.folder && (
