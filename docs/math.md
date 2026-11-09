@@ -33,8 +33,10 @@ it a formula renders as stacked, unstyled text.
 | `() => import('llx-markdown/math')` | KaTeX is fetched the first time a document holds a formula. Until it arrives, the formula reads as its source.                |
 | `math` from `llx-markdown/math`     | Typeset in the first render. Use this on a server, or on a prerendered page that hydrates, so both renders draw the same markup. |
 
-The loader is called once per `<Markdown>`, when its document first needs math. If the load fails,
-the document stays readable and its formulas show as source.
+The loader is called once per `<Markdown>`, when its document first needs math. If the load fails
+(a chunk lost on a bad connection), it is tried again three times, a second and a half apart; the
+document stays readable meanwhile, its formulas shown as source, and they are typeset the moment
+the chunk arrives.
 
 > [!TIP] Keep the loader stable
 > Define the loader once, at module level, as above. Every `<Markdown>` that is handed the same

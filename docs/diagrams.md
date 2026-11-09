@@ -96,6 +96,38 @@ const system = answerFormatPrompt({ diagrams: true })
 - Drawn diagrams are cached by source and colours. A thread that re-renders, or a reply that is
   remounted, does not lay them out again.
 
+## Your own diagram
+
+To put your own frame around a diagram (buttons to enlarge or copy it, say), draw the fence with
+`components.diagram` and keep the page's renderer, so your diagrams and the built-in ones share one
+queue and one cache:
+
+```tsx
+import { useEffect, useRef, useState } from 'react'
+import type { MarkdownComponents } from 'llx-markdown'
+import { mermaidRendererFor, resolveMermaidLook } from 'llx-markdown/mermaid'
+
+const renderer = mermaidRendererFor(() => import('mermaid'))
+
+function MyDiagram({ source }: { source: string }) {
+  const frame = useRef<HTMLDivElement>(null)
+  const [svg, setSvg] = useState<string | null>(null)
+  useEffect(() => {
+    const controller = new AbortController()
+    const look = resolveMermaidLook(frame.current!)
+    renderer.render(source, look, controller.signal).then(setSvg, () => setSvg(null))
+    return () => controller.abort()
+  }, [source])
+  // The SVG comes from Mermaid in strict mode, which removes scripts and event handlers.
+  return <div ref={frame} dangerouslySetInnerHTML={svg ? { __html: svg } : undefined} />
+}
+
+const components: MarkdownComponents = {
+  // The fence still being written has `growing` set: wait for it to close.
+  diagram: ({ source, growing }) => (growing ? <p>Drawing…</p> : <MyDiagram source={source} />),
+}
+```
+
 ## Trees are not diagrams
 
 A ` ```tree ` fence draws a directory layout without Mermaid; see [Syntax](syntax.md). It needs no

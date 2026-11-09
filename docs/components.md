@@ -184,6 +184,7 @@ diagram notes. Translate them with `labels`; every key is optional:
 | `callouts.caution`   | `Caution`                                |                                                         |
 | `variants`           | `Variants`                               | The tab list's name.                                    |
 | `fileTree`           | `File tree`                              | The tree's name.                                        |
+| `scrollableTable`    | `Scrollable table`                       | A table wider than the reply: the box then scrolls and is a Tab stop. |
 | `diagram`            | `Diagram`                                | A drawn diagram's name.                                 |
 | `drawingDiagram`     | `Drawing diagram…`                       | Shown while Mermaid loads and lays out.                 |
 | `diagramFailed`      | ``(reason) => `Diagram could not be drawn: ${reason}` `` | Shown when the source does not parse.  |

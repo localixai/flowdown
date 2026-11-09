@@ -19,7 +19,15 @@ import {
   TREE_FENCE_LANGUAGE,
 } from '../dialect'
 
-export { ANSWER_FORM_EXAMPLES } from '../dialect'
+// The names a prompt of your own builds its lines from, the same ones the renderer reads.
+export {
+  ANSWER_FORM_EXAMPLES,
+  CALLOUT_KINDS,
+  DIAGRAM_FENCE_LANGUAGE,
+  DIAGRAM_KINDS,
+  TREE_FENCE_LANGUAGE,
+  type CalloutKind,
+} from '../dialect'
 
 export interface AnswerFormatOptions {
   /** The section's heading line. */

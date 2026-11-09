@@ -157,6 +157,8 @@ See [Prompting](prompting.md).
 | `answerFormsPrinciple(header?)`          | Its first line alone, for a system prompt's leading rules.              |
 | `ANSWER_FORMAT_HEADER`                   | `'# Answer formatting'`.                                                |
 | `ANSWER_FORM_EXAMPLES`                   | The examples, as arrays of lines.                                       |
+| `CALLOUT_KINDS`, `DIAGRAM_KINDS`         | The callout kinds and the Mermaid diagram kinds, for a prompt of your own. |
+| `DIAGRAM_FENCE_LANGUAGE`, `TREE_FENCE_LANGUAGE` | `'mermaid'` and `'tree'`.                                         |
 | `AnswerFormatOptions`                    | The options' type.                                                      |
 
 ## `llx-markdown/html`
@@ -187,3 +189,14 @@ Import `katex/dist/katex.min.css` on the page.
 
 Languages: Bash, CSS, JavaScript, JSON, Markdown, SQL, TypeScript, HTML/XML and YAML; see
 [Highlighting](highlighting.md#languages).
+
+## `llx-markdown/mermaid`
+
+For a page that draws ` ```mermaid ` fences itself, with `components.diagram`. See
+[Diagrams](diagrams.md#your-own-diagram).
+
+| Export                         | What it is                                                                  |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| `mermaidRendererFor(load)`     | The page's one renderer: `peek(source, look)` for an SVG already drawn, `render(source, look, signal?)` to draw one. The same queue and cache `<Markdown mermaid>` uses. |
+| `resolveMermaidLook(element)`  | The Mermaid configuration from the `--llx-*` tokens around `element`.        |
+| `MermaidEngine`, `MermaidLoader`, `MermaidRenderer`, `MermaidLook` | Their types.            |

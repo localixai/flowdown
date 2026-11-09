@@ -14,6 +14,8 @@ export interface MarkdownLabels {
   variants: string
   /** The tree of a ```tree fence. */
   fileTree: string
+  /** A table wider than the reply, which then scrolls sideways and takes the keyboard's focus. */
+  scrollableTable: string
   /** A diagram, while drawn, while drawing, and when it could not be drawn. */
   diagram: string
   drawingDiagram: string
@@ -33,6 +35,7 @@ export const DEFAULT_LABELS: MarkdownLabels = {
   },
   variants: 'Variants',
   fileTree: 'File tree',
+  scrollableTable: 'Scrollable table',
   diagram: 'Diagram',
   drawingDiagram: 'Drawing diagram…',
   diagramFailed: (reason) => `Diagram could not be drawn: ${reason}`,

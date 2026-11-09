@@ -66,6 +66,7 @@ holds in both themes; to give each theme its own value, use `light-dark()` as we
 | `--llx-fg-soft` | Secondary text: a step's body, a quote. |
 | `--llx-fg-faint` | Annotations: a step's "when", a tree comment, a code language. |
 | `--llx-bg` | The ground the Markdown sits on; diagrams mix their fills over it. |
+| `--llx-bg-solid` | What shows through a translucent `--llx-bg` (a glass panel); white when unset. Set it when your ground has alpha, or a dark glass panel draws light diagrams. |
 | `--llx-border`, `--llx-border-subtle`, `--llx-border-strong` | Table rules, tab underlines, tree guides. |
 | `--llx-veil`, `--llx-veil-strong` | Panels: callouts, stats, code blocks. Mixed from `--llx-fg`. |
 | `--llx-link` | Links. |

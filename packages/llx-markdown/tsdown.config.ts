@@ -14,6 +14,7 @@ export default defineConfig({
     'html/index': 'src/html/index.ts',
     'math/index': 'src/math/index.ts',
     'highlight/index': 'src/highlight/index.ts',
+    'mermaid/index': 'src/mermaid/index.ts',
   },
   format: 'esm',
   platform: 'neutral',

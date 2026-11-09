@@ -9,6 +9,10 @@ import { useEffect, useRef, useState } from 'react'
 export type StageLoader<T> = () => Promise<T | { default: T }>
 export type StageOption<T> = T | StageLoader<T> | null
 
+/** A failed load is tried again this many times, this far apart. */
+const STAGE_RETRIES = 3
+const STAGE_RETRY_MS = 1_500
+
 /** Stages already loaded on this page, by the loader that brought them. */
 const loaded = new WeakMap<StageLoader<object>, object>()
 
@@ -20,10 +24,18 @@ const unwrap = <T extends object>(module: T | { default: T }): T =>
  * once, the first time its document needs the stage, and keeps what it brought: a loader written
  * inline, a new function on every render, is not called again, and the stage does not drop out
  * while the page re-renders (on every token of a reply). The bundler fetches the module once for
- * the whole page. Until it resolves the document renders without it, and a failed load leaves it
- * that way (the next document to mount asks again).
+ * the whole page. Until it resolves the document renders without it; a failed load is tried again
+ * a few times, a second and a half apart, and after that the document stays without it (the next
+ * document to mount asks again).
  */
-export function useStage<T extends object>(option: StageOption<T>, needed: boolean): T | null {
+export function useStage<T extends object>(
+  option: StageOption<T>,
+  needed: boolean,
+  {
+    retries = STAGE_RETRIES,
+    retryMs = STAGE_RETRY_MS,
+  }: { retries?: number; retryMs?: number } = {},
+): T | null {
   const lazy = typeof option === 'function' ? (option as StageLoader<T>) : null
   const latest = useRef(lazy)
   useEffect(() => {
@@ -33,11 +45,15 @@ export function useStage<T extends object>(option: StageOption<T>, needed: boole
   const [stage, setStage] = useState<T | null>(() =>
     lazy ? ((loaded.get(lazy) as T | undefined) ?? null) : null,
   )
+  // Each failed load counts here, and a new count asks again: a chunk that failed to come over a
+  // bad connection is there a moment later, and the reader should not have to reload the page.
+  const [failures, setFailures] = useState(0)
   const isLazy = lazy !== null
   useEffect(() => {
     const load = latest.current
-    if (!isLazy || !needed || stage || !load) return
+    if (!isLazy || !needed || stage || !load || failures > retries) return
     let current = true
+    let retry: ReturnType<typeof setTimeout> | undefined
     load().then(
       (module) => {
         const value = unwrap(module)
@@ -45,13 +61,15 @@ export function useStage<T extends object>(option: StageOption<T>, needed: boole
         if (current) setStage(value)
       },
       () => {
-        /* The document stays readable without the stage. */
+        // The document stays readable without the stage meanwhile, and after the last try.
+        if (current) retry = setTimeout(() => setFailures((count) => count + 1), retryMs)
       },
     )
     return () => {
       current = false
+      clearTimeout(retry)
     }
-  }, [isLazy, needed, stage])
+  }, [isLazy, needed, stage, failures, retries, retryMs])
   if (!option || !needed) return null
   return lazy ? stage : (option as T)
 }

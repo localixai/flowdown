@@ -43,9 +43,10 @@ export function resolveMermaidLook(root: HTMLElement): MermaidLook {
     `#${rgbOf(base, color, alpha)
       .map((channel) => channel.toString(16).padStart(2, '0'))
       .join('')}`
-  // The ground may carry alpha (a glass panel); it is laid over white once, and every veil below
-  // is mixed over that result.
-  const ground = over('#ffffff', computed('--llx-bg'))
+  // The ground may carry alpha (a glass panel); it is laid once over what shows through it,
+  // `--llx-bg-solid` (white unless the page says), and every veil below is mixed over that result.
+  // Over white, a dark translucent ground came out light grey, and the nodes with it.
+  const ground = over(computed('--llx-bg-solid, #ffffff'), computed('--llx-bg'))
   const [r, g, b] = rgbOf('#ffffff', ground, 1)
   const dark = 0.2126 * r + 0.7152 * g + 0.0722 * b < 128
   const paint = (color: string, alpha = 1) => over(ground, color, alpha)

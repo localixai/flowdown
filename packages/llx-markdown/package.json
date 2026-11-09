@@ -34,6 +34,7 @@
     "./html": "./dist/html/index.js",
     "./math": "./dist/math/index.js",
     "./highlight": "./dist/highlight/index.js",
+    "./mermaid": "./dist/mermaid/index.js",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
