@@ -37,6 +37,11 @@ The bundled highlighter knows the languages replies and READMEs mostly contain:
 | HTML, XML  | `xml`, `html`                  |
 | YAML       | `yaml`, `yml`                  |
 
+In a shell fence the highlighter colours what a reader looks for in an install line: the command
+(the first word of each command, after a `$ ` prompt, a `|`, `&&` or `;`), its flags, numbers,
+strings, variables and comments. `bun add llx-markdown --dev` shows `bun` and `--dev`; the `test` of
+`bun test` is an argument and stays plain.
+
 Only the language the fence names is highlighted. A fence without a language, or with one the
 highlighter does not know, is printed as plain text: guessing the language mislabels as often as
 it helps, and costs time on every update while a reply streams.
