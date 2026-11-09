@@ -146,25 +146,30 @@ function group(tokens: Token[]): Array<[number, number]> {
   return groups
 }
 
-export function splitBlocks(markdown: string): MarkdownBlock[] {
-  if (!markdown || markdown.includes('\r')) return whole(markdown)
-  if (FOOTNOTE.test(markdown) || LINK_DEFINITION.test(markdown)) return whole(markdown)
+/** Where a run of blocks starts: the characters and the 1-based line before it. */
+interface Origin {
+  offset: number
+  line: number
+}
 
+/**
+ * The blocks of `text`, which starts at `origin` in its document, or null when the lexer's pieces
+ * cannot be trusted with positions (they do not add up to the text, or a link definition, which
+ * resolves across blocks, is among them).
+ */
+function cut(text: string, origin: Origin): MarkdownBlock[] | null {
   const lexer = new Lexer({ gfm: true })
   let tokens: Token[]
   try {
-    tokens = lexer.blockTokens(markdown)
+    tokens = lexer.blockTokens(text)
   } catch {
-    return whole(markdown)
+    return null
   }
-  // A definition the pattern above missed (inside a quote or a list item) still resolves across
-  // blocks; and pieces that do not add up to the input cannot be trusted with positions.
-  if (Object.keys(lexer.tokens.links).length > 0) return whole(markdown)
-  if (tokens.map((token) => token.raw).join('') !== markdown) return whole(markdown)
+  if (Object.keys(lexer.tokens.links).length > 0) return null
+  if (!addsUp(tokens, text)) return null
 
   const blocks: MarkdownBlock[] = []
-  let offset = 0
-  let line = 1
+  let { offset, line } = origin
   for (const [start, end] of group(tokens)) {
     const source = tokens
       .slice(start, end)
@@ -172,7 +177,100 @@ export function splitBlocks(markdown: string): MarkdownBlock[] {
       .join('')
     blocks.push({ source, offset, line })
     offset += source.length
-    for (const character of source) if (character === '\n') line += 1
+    for (let at = source.indexOf('\n'); at !== -1; at = source.indexOf('\n', at + 1)) line += 1
   }
-  return blocks.length > 0 ? blocks : whole(markdown)
+  return blocks
+}
+
+/**
+ * Whether the tokens' pieces add up to `text`. A text that ends in spaces is the one known
+ * exception: `marked` gives the last token a newline for them (`- item ` becomes `- item\n`), so
+ * a reply mid-stream would lose its blocks after almost every word. The last token then takes the
+ * text's own end; every block is parsed from its own source, so nothing else changes.
+ */
+function addsUp(tokens: Token[], text: string): boolean {
+  const joined = tokens.map((token) => token.raw).join('')
+  if (joined === text) return true
+  const last = tokens.at(-1)
+  if (!last) return false
+  const start = joined.length - last.raw.length
+  const end = text.slice(start)
+  if (end.trimEnd() !== last.raw.trimEnd() || !text.startsWith(joined.slice(0, start))) return false
+  last.raw = end
+  return true
+}
+
+/** Whether a document must stay one block: something in it resolves across blocks. */
+const unsplittable = (markdown: string) =>
+  markdown.includes('\r') || FOOTNOTE.test(markdown) || LINK_DEFINITION.test(markdown)
+
+/** The top-level blocks of a document, cut where one parse of the whole would not join them. */
+export function splitBlocks(markdown: string): MarkdownBlock[] {
+  if (!markdown || unsplittable(markdown)) return whole(markdown)
+  const blocks = cut(markdown, { offset: 0, line: 1 })
+  return blocks && blocks.length > 0 ? blocks : whole(markdown)
+}
+
+/**
+ * How many blocks at the end are lexed again. Text appended to a document can change only the
+ * group it is appended to, and that group can join the one before it (a `[!CONS]` arriving
+ * under a `[!PROS]`); every group above those two is final.
+ */
+const REOPENED = 2
+
+export interface BlockSplitter {
+  /** The same blocks as `splitBlocks(markdown)`; the ones that did not change are the same objects. */
+  split(markdown: string): MarkdownBlock[]
+  /** Characters handed to the lexer so far: the work the splitter has done. */
+  readonly lexed: number
+}
+
+/**
+ * `splitBlocks` for a document that grows at its end, as a streaming reply does. It remembers the
+ * blocks it cut last time: when the new text still starts with all of them but the last two, it
+ * keeps those, as the very same objects, and lexes only the rest. Any other text (a reply that was
+ * regenerated, or edited above its end) is split afresh. Each update then costs the length of
+ * the reply's end, not of the reply: a stream is linear in its length, not quadratic.
+ */
+export function createBlockSplitter(): BlockSplitter {
+  let text = ''
+  let blocks: MarkdownBlock[] = []
+  let lexed = 0
+
+  const fresh = (markdown: string): MarkdownBlock[] => {
+    lexed += markdown.length
+    return splitBlocks(markdown)
+  }
+
+  return {
+    get lexed() {
+      return lexed
+    },
+    split(markdown) {
+      let next: MarkdownBlock[] | null = null
+      const kept = blocks.slice(0, Math.max(0, blocks.length - REOPENED))
+      const last = kept.at(-1)
+      const end = last ? last.offset + last.source.length : 0
+      if (
+        last &&
+        markdown.length >= end &&
+        !unsplittable(markdown) &&
+        markdown.startsWith(text.slice(0, end))
+      ) {
+        const tail = markdown.slice(end)
+        lexed += tail.length
+        let line = last.line
+        for (let at = last.source.indexOf('\n'); at !== -1; at = last.source.indexOf('\n', at + 1))
+          line += 1
+        const rest = tail ? cut(tail, { offset: end, line }) : []
+        if (rest) next = [...kept, ...rest]
+      }
+      next ??= fresh(markdown)
+      // A document kept whole is not remembered: it has no final blocks to keep.
+      const remembered = next.length > 1 || (next[0]?.source ?? '') !== markdown
+      text = markdown
+      blocks = remembered ? next : []
+      return next
+    },
+  }
 }

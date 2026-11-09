@@ -49,6 +49,20 @@ export function remarkHeadingIds() {
   }
 }
 
+/**
+ * Every heading in `content` with where it starts and the text its id is made from, before
+ * repeated ids are numbered: the numbering is the document's, done over all of its blocks.
+ */
+export function headingBases(content: string): Array<{ offset: number; base: string }> {
+  const bases: Array<{ offset: number; base: string }> = []
+  visit(parser.parse(content), 'heading', (node) => {
+    const offset = node.position?.start.offset
+    if (offset !== undefined)
+      bases.push({ offset, base: slugifyHeading(toString(node)) || 'section' })
+  })
+  return bases
+}
+
 /** Every heading's id, keyed by where the heading starts in `content`. */
 export function headingIdsByOffset(content: string): Map<number, string> {
   const tree = parser.parse(content)

@@ -1,10 +1,18 @@
 'use client'
-import { createElement, Fragment, memo, useMemo, type ElementType, type ReactNode } from 'react'
+import {
+  createElement,
+  Fragment,
+  memo,
+  useMemo,
+  useState,
+  type ElementType,
+  type ReactNode,
+} from 'react'
 import ReactMarkdown, { type Components, type UrlTransform } from 'react-markdown'
-import { splitBlocks } from '../core/blocks'
-import { escapeLiteralDollars } from '../core/dollars'
+import { blockHasHtml, blockHasMath, escapedBlock, headingIdsOfBlocks } from '../core/block-facts'
+import { createBlockSplitter } from '../core/blocks'
 import { closePartialMarkdown, openFenceBody } from '../core/heal'
-import { headingIdsByOffset, rehypeHeadingIds } from '../core/headings'
+import { rehypeHeadingIds } from '../core/headings'
 import {
   rehypePluginsFor,
   remarkPluginsFor,
@@ -12,7 +20,6 @@ import {
   type MathPlugin,
 } from '../core/pipeline'
 import { remarkBlockOffset } from '../core/positions'
-import { hasHtmlSyntax, hasMathSyntax } from '../core/syntax'
 import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE } from '../dialect'
 import { Diagram } from '../mermaid/diagram'
 import { mermaidRendererFor, type MermaidLoader } from '../mermaid/renderer'
@@ -40,7 +47,7 @@ export interface MarkdownProps {
   components?: Components
   /**
    * Give headings ids (`setup`, `setup-1`) to link to, the same ids `extractHeadings` returns.
-   * It reads the whole document on each change, so leave it off for a reply that streams.
+   * Each block's headings are read once, so it costs a streaming reply only its last block.
    */
   headingIds?: boolean
   /**
@@ -190,18 +197,23 @@ export function Markdown({
   className,
 }: MarkdownProps): ReactNode {
   const healed = streaming ? closePartialMarkdown(children) : children
+  // One splitter per rendered document: it remembers the blocks it cut, and on the next token
+  // lexes only the end of the reply. Blocks that did not change come back as the same objects,
+  // and everything worked out from a block below is kept beside it.
+  const [splitter] = useState(createBlockSplitter)
+  const cut = useMemo(() => splitter.split(healed), [splitter, healed])
   // Literal dollars are escaped only where `$` can mean math: elsewhere positions stay exact.
-  const source = mathOption ? escapeLiteralDollars(healed) : healed
-  const math = useStage(mathOption, hasMathSyntax(source))
+  const blocks = useMemo(() => (mathOption ? cut.map(escapedBlock) : cut), [cut, mathOption])
 
-  const ids = useMemo(() => (headingIds ? headingIdsByOffset(source) : null), [headingIds, source])
-  const merged = useMemo(() => buildComponents(components), [components])
+  const math = useStage(mathOption, mathOption !== null && blocks.some(blockHasMath))
   // Whether the document has HTML is decided for the whole of it, not per block: a tag still
   // being typed (`<div`) is its own block, and only the whole document says it is HTML.
   const htmlStage = useStage(
     html === true ? loadHtml : html === false ? null : html,
-    hasHtmlSyntax(source),
+    html !== false && blocks.some(blockHasHtml),
   )
+  const ids = useMemo(() => (headingIds ? headingIdsOfBlocks(blocks) : null), [headingIds, blocks])
+  const merged = useMemo(() => buildComponents(components), [components])
   const options = useMemo<BlockOptions>(
     () => ({ components: merged, html: htmlStage, math, urlTransform }),
     [merged, htmlStage, math, urlTransform],
@@ -211,8 +223,6 @@ export function Markdown({
     [highlight, mermaid],
   )
   const labelValue = useMemo(() => mergeLabels(labels), [labels])
-
-  const blocks = useMemo(() => splitBlocks(source), [source])
   const endsInFence = streaming && openFenceBody(children) !== null
 
   return (
@@ -224,10 +234,9 @@ export function Markdown({
           data-caret={(streaming && caret) || undefined}
         >
           {blocks.map((block, index) => {
-            // A block gets only its own anchors, keyed by their text: the ids of the whole
-            // document change on every token, and passing them all would redraw every block.
-            const end = block.offset + block.source.length
-            const own = ids ? [...ids].filter(([at]) => at >= block.offset && at < end) : null
+            // A block gets only its own anchors, keyed by their text: a map is new on every
+            // render, and comparing it would redraw every block.
+            const own = ids?.[index] ?? null
             return (
               <Fragment key={index}>
                 {/* One parse puts a line break between top-level blocks; so does this, so the
@@ -238,8 +247,8 @@ export function Markdown({
                   offset={block.offset}
                   line={block.line}
                   growing={endsInFence && index === blocks.length - 1}
-                  headingIds={own ? new Map(own) : null}
-                  headingKey={own ? own.map(([at, id]) => `${at}:${id}`).join(';') : ''}
+                  headingIds={own && own.size > 0 ? own : null}
+                  headingKey={own ? [...own].map(([at, id]) => `${at}:${id}`).join(';') : ''}
                   options={options}
                 />
               </Fragment>

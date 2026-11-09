@@ -26,7 +26,12 @@ export {
   remarkHeadingIds,
   type MarkdownHeading,
 } from './core/headings'
-export { splitBlocks, type MarkdownBlock } from './core/blocks'
+export {
+  createBlockSplitter,
+  splitBlocks,
+  type BlockSplitter,
+  type MarkdownBlock,
+} from './core/blocks'
 export { remarkBlockOffset } from './core/positions'
 export { escapeLiteralDollars, isLiteralDollar } from './core/dollars'
 export { hasHtmlSyntax, hasMathSyntax } from './core/syntax'

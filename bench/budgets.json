@@ -1,0 +1,44 @@
+{
+  "$comment": "What llx-markdown holds itself to. `bun run bench:check` reads results/latest.json and fails on any line it breaks. Change a number only together with the reason in README.md.",
+  "frameMs": 16.7,
+  "longTaskMs": 50,
+  "rules": [
+    {
+      "id": "frame",
+      "about": "A token never costs a frame: the 95th percentile update fits in 16.7 ms (60 Hz).",
+      "renderer": "llx",
+      "metric": "p95",
+      "max": 16.7
+    },
+    {
+      "id": "long-task",
+      "about": "No update is a long task (50 ms) in a reply up to 20k characters.",
+      "renderer": "llx",
+      "metric": "overLongTask",
+      "max": 0,
+      "maxChars": 30000
+    },
+    {
+      "id": "linear",
+      "about": "A reply four times longer costs about four times more to stream, not sixteen: the exponent stays under 1.25.",
+      "renderer": "llx",
+      "scaling": ["answer-10k", "answer-40k"],
+      "maxExponent": 1.25
+    },
+    {
+      "id": "reference",
+      "about": "Not slower than Streamdown, the closest reference, by more than 25% over a whole stream.",
+      "renderer": "llx",
+      "against": "streamdown",
+      "metric": "totalMs",
+      "maxRatio": 1.25
+    },
+    {
+      "id": "no-leak",
+      "about": "An unmounted page leaves less than 2 MB behind.",
+      "renderer": "llx",
+      "metric": "leftBytes",
+      "max": 2097152
+    }
+  ]
+}

@@ -4,7 +4,8 @@
   "workspaces": [
     "packages/*",
     "apps/*",
-    "examples/*"
+    "examples/*",
+    "bench"
   ],
   "type": "module",
   "scripts": {
@@ -19,7 +20,8 @@
     "version": "changeset version && bun install",
     "release": "bun run build && bun run check && changeset publish",
     "site": "bun run --cwd apps/site dev",
-    "site:build": "bun run --cwd apps/site build"
+    "site:build": "bun run --cwd apps/site build",
+    "bench": "bun run --cwd bench bench"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",
