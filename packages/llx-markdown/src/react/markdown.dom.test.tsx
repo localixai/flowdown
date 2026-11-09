@@ -122,7 +122,7 @@ describe('file tree', () => {
       const rows = () => [...host.querySelectorAll<HTMLElement>('[role="treeitem"]')]
       // Safari does not focus a clicked row by itself; the tree must.
       await act(async () => rows()[1]!.click())
-      expect(document.activeElement).toBe(rows()[1])
+      expect(document.activeElement).toBe(rows()[1]!)
       expect(rows()[1]!.tabIndex).toBe(0)
       await key(rows()[1]!, 'ArrowDown')
       expect(document.activeElement?.textContent).toBe('lib')
