@@ -4,7 +4,10 @@
  *
  *   .llx-markdown { --llx-fg: var(--foreground); --llx-bg: var(--background); }
  *
- * The defaults sit at zero specificity (`:where`), so any class on the root, set anywhere, wins.
+ * The tokens sit at zero specificity (`:where`), so any rule that sets them wins. The rest of the
+ * package is scoped under `.llx-markdown`: a page restyles an element with a selector that starts
+ * there too. It is not in a cascade layer on purpose: a page's own `button` or `ul` reset, in no
+ * layer, would then win over the tabs and the lists.
  * Light and dark are one list, written with `light-dark()`: the renderer follows the colour scheme
  * of the page around it (`color-scheme: dark`, a `.dark` class or `data-theme="dark"` on an
  * ancestor or on the root itself), and a page that has no dark mode stays light.
