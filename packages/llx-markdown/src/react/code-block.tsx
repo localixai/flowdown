@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
   type ComponentPropsWithoutRef,
   type ReactElement,
+  type ReactNode,
 } from 'react'
 import { useRenderContext } from './context'
 import { childrenToText, getLanguage } from './helpers'
@@ -95,12 +96,31 @@ export function CodeBlock({ node: _node, children, ...props }: PreProps) {
   const language = getLanguage(code?.props.className)
   const text = childrenToText(code?.props.children as never).replace(/\n$/, '')
   return (
+    <CodeFrame language={language} text={text} preProps={props}>
+      {children}
+    </CodeFrame>
+  )
+}
+
+/** The frame of a code block: the bar with its language and copy button, then the `<pre>`. */
+export function CodeFrame({
+  language,
+  text,
+  preProps,
+  children,
+}: {
+  language: string | undefined
+  text: string
+  preProps?: ComponentPropsWithoutRef<'pre'>
+  children: ReactNode
+}) {
+  return (
     <figure className="llx-code" data-language={language}>
       <figcaption className="llx-code-bar">
         <span className="llx-code-language">{language ?? ''}</span>
         <CopyButton text={text} />
       </figcaption>
-      <pre {...props}>{children}</pre>
+      <pre {...preProps}>{children}</pre>
     </figure>
   )
 }

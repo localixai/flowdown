@@ -25,6 +25,7 @@ import { Diagram } from '../mermaid/diagram'
 import { mermaidRendererFor, type MermaidLoader } from '../mermaid/renderer'
 import { Callout } from './callout'
 import { Code, CodeBlock } from './code-block'
+import { GrowingCode, growingFence } from './growing-code'
 import { GrowingFence, RenderContextValue, type Highlighter, type RenderContext } from './context'
 import { FileTree } from './file-tree'
 import { childrenToText, getLanguage } from './helpers'
@@ -83,6 +84,8 @@ interface BlockOptions {
   html: HtmlPlugin | null
   math: MathPlugin | null
   urlTransform: UrlTransform | null | undefined
+  /** The page draws code itself (`components.pre` or `.code`): a growing fence goes to it too. */
+  ownCode: boolean
 }
 
 interface BlockProps {
@@ -146,7 +149,9 @@ export function buildComponents(overrides: Components | undefined): Components {
 
 const Block = memo(
   function Block({ source, offset, line, growing, headingIds, options }: BlockProps) {
-    const { components, html, math, urlTransform } = options
+    const { components, html, math, urlTransform, ownCode } = options
+    const fence = growing && !ownCode ? growingFence(source) : null
+    if (fence && !special(fence.language)) return <GrowingCode {...fence} />
     const remarkPlugins = [remarkBlockOffset({ offset, line }), ...remarkPluginsFor({ math })]
     const rehypePlugins = rehypePluginsFor(
       { html, math },
@@ -218,8 +223,14 @@ export function Markdown({
   const ids = useMemo(() => (headingIds ? headingIdsOfBlocks(blocks) : null), [headingIds, blocks])
   const merged = useMemo(() => buildComponents(components), [components])
   const options = useMemo<BlockOptions>(
-    () => ({ components: merged, html: htmlStage, math, urlTransform }),
-    [merged, htmlStage, math, urlTransform],
+    () => ({
+      components: merged,
+      html: htmlStage,
+      math,
+      urlTransform,
+      ownCode: Boolean(components?.pre || components?.code),
+    }),
+    [merged, htmlStage, math, urlTransform, components],
   )
   const context = useMemo<RenderContext>(
     () => ({ highlight, mermaid: mermaid ? mermaidRendererFor(mermaid) : null }),

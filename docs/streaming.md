@@ -71,8 +71,9 @@ alone. When `streaming` turns off, the final text is rendered exactly as written
 - A Mermaid diagram above the end of the reply is complete, so it is drawn at once.
 - The diagram still being written keeps showing its source, which grows, and is drawn when its fence
   closes. A diagram never re-renders on every token.
-- Code is highlighted as it is written, block by block: only the block still growing is highlighted
-  again on a token.
+- Code is highlighted as it is written. A fence still being written is drawn in pieces of 40 lines:
+  a token redraws and highlights only the last piece, so a file of a thousand lines streams as fast
+  as a short one. When the fence closes, the block is highlighted whole.
 
 ## The caret
 

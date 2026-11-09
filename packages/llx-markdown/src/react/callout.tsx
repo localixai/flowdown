@@ -38,15 +38,23 @@ export function Callout({
   node: _node,
   'data-callout': callout,
   'data-callout-title': title,
+  className,
+  cite: _cite,
   ...quoteProps
 }: CalloutProps) {
   const labels = useLabels()
   const kind = calloutKind(callout)
-  if (!kind) return <blockquote {...quoteProps}>{children}</blockquote>
+  if (!kind)
+    return (
+      <blockquote className={className} cite={_cite} {...quoteProps}>
+        {children}
+      </blockquote>
+    )
   const Glyph = GLYPHS[kind]
   return (
     <aside
-      className="llx-callout"
+      {...(quoteProps as ComponentPropsWithoutRef<'aside'>)}
+      className={className ? `llx-callout ${className}` : 'llx-callout'}
       data-callout={kind}
       role="note"
       aria-label={title || labels.callouts[kind]}

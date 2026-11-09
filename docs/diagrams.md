@@ -1,8 +1,102 @@
 ---
-title: diagrams
-description: TODO
+title: Diagrams
+description:
+  Draw ```mermaid fences with Mermaid in the colours of the page, loaded only when a reply holds a
+  diagram, never drawn half-written.
 ---
 
-# diagrams
+# Diagrams
 
-TODO
+A ` ```mermaid ` fence is a diagram. Without a Mermaid loader it is shown as its source; pass one to
+draw it:
+
+```tsx
+import { Markdown } from 'llx-markdown'
+
+const loadMermaid = () => import('mermaid')
+
+export function Reply({ text }: { text: string }) {
+  return <Markdown mermaid={loadMermaid}>{text}</Markdown>
+}
+```
+
+Install `mermaid`. It is not a dependency of llx-markdown: the page imports it through the loader,
+so a page without diagrams never bundles it, and you choose its version. The loader is called the
+first time a document holds a diagram.
+
+````markdown
+```mermaid
+flowchart LR
+  Model -- tokens --> Page
+  Page --> Split[Split into blocks]
+  Split --> Last[Parse the last block]
+```
+````
+
+```mermaid
+flowchart LR
+  Model -- tokens --> Page
+  Page --> Split[Split into blocks]
+  Split --> Last[Parse the last block]
+```
+
+## What is drawn when
+
+| Situation                         | Shown                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| No `mermaid` loader               | The source, as code.                                                    |
+| The fence is still being written  | The source, as code. A diagram is drawn only once its fence is closed.  |
+| Mermaid is loading or laying out  | The source, with "Drawing diagram…" under it.                           |
+| Drawn                             | The diagram, `figure.llx-diagram` labelled "Diagram" for screen readers. |
+| The source does not parse         | The source, with "Diagram could not be drawn:" and Mermaid's first error line. |
+
+Waiting for the closed fence keeps a streaming reply calm: a half-written diagram would otherwise
+fail to parse on every token and flash an error, or redraw its layout dozens of times.
+
+Diagrams are drawn in the browser only. On a server, and in the first render of a hydrating page,
+the source is shown; the diagram replaces it after hydration.
+
+## Colours and themes
+
+A diagram is drawn in the colours of the Markdown around it, not in Mermaid's default palette.
+llx-markdown reads the resolved tokens and passes them to Mermaid's `base` theme:
+
+| Token                                   | Used for                          |
+| --------------------------------------- | --------------------------------- |
+| `--llx-bg`, `--llx-fg`                  | The background and text.          |
+| `--llx-fg-soft`, `--llx-fg-faint`       | Secondary text and lines.         |
+| `--llx-border`, `--llx-border-strong`   | Node borders and edges.           |
+| `--llx-chart-1` … `--llx-chart-8`       | Series and categories: pie slices, chart lines, sections. |
+
+When the colours change, the diagram is drawn again: the system's light or dark scheme, or the
+`class`, `data-theme` or `style` attribute of `<html>` (where theme switchers put it). A look that
+was drawn before comes from the cache, so switching back is instant.
+
+## Kinds
+
+Any kind your Mermaid version knows is drawn. The prompt teaches the model the ones that are stable
+and useful in a reply: `flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `erDiagram`, `gantt`,
+`pie`, `xychart-beta`, `classDiagram`, `mindmap`, `timeline`, `quadrantChart`, `sankey-beta`,
+`radar-beta`, `treemap-beta` and `gitGraph`. Turn diagrams on in the prompt and the renderer
+together:
+
+```ts
+import { answerFormatPrompt } from 'llx-markdown/prompt'
+
+const system = answerFormatPrompt({ diagrams: true })
+```
+
+## Safety and cost
+
+- Mermaid runs with `securityLevel: 'strict'`: labels are sanitized and click handlers are off, so a
+  diagram in a reply cannot run script or open links on its own.
+- Each source is parsed before it is rendered, so an invalid one costs a parse, not a layout.
+- All diagrams on the page are drawn through one queue, one at a time, because Mermaid's renderer is
+  global. A diagram that unmounts before its turn is dropped from the queue.
+- Drawn diagrams are cached by source and colours. A thread that re-renders, or a reply that is
+  remounted, does not lay them out again.
+
+## Trees are not diagrams
+
+A ` ```tree ` fence draws a directory layout without Mermaid; see [Syntax](syntax.md). It needs no
+loader and is drawn on the server too.
