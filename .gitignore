@@ -4,5 +4,3 @@ dist/
 *.tgz
 coverage/
 .turbo/
-apps/site/.vite/
-dist-server/

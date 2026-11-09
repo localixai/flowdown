@@ -7,8 +7,8 @@ description:
 
 # A documentation site
 
-The site you are reading is built this way. Its source is the repository's `apps/site`: Vite and
-React, every page prerendered to HTML, and the docs as Markdown files in `docs/`. This recipe shows the parts that are about llx-markdown.
+A site of Markdown pages, rendered with React and prerendered to HTML, the pages kept as Markdown
+files beside the code. This recipe shows the parts that are about llx-markdown.
 
 ## One wrapper for every page
 
@@ -106,12 +106,11 @@ and pass only the body:
 const [, frontMatter, body] = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(raw) ?? [, '', raw]
 ```
 
-The site turns the front matter into the page's `<title>` and `<meta name="description">`.
+Turn the front matter into the page's `<title>` and `<meta name="description">`.
 
 ## For people and for models
 
-The source of each page is already the best version for a model. The site publishes it beside the
-HTML:
+The source of each page is already the best version for a model. Publish it beside the HTML:
 
 - each page's Markdown at its own URL, and a "Copy page as Markdown" button;
 - `llms.txt`, the [llms.txt](https://llmstxt.org) index of every page with its description;
