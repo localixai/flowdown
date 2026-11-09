@@ -74,7 +74,11 @@ export function FileTree({ source, getIcon = defaultIcon }: FileTreeProps) {
     }
     const action = actions[event.key]
     if (!action) return
+    // Handled here, so not also by the page: a board or a shortcut layer around the reply would
+    // otherwise move a card or scroll on the same arrow press. Keys the tree leaves (Escape, Tab)
+    // still reach it.
     event.preventDefault()
+    event.stopPropagation()
     action()
   }
 

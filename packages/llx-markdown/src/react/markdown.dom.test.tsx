@@ -114,6 +114,25 @@ describe('file tree', () => {
       expect(document.activeElement?.textContent).toBe('lib')
     })
   })
+
+  test('a key the tree handles stays in the tree; any other reaches the page', async () => {
+    const { Markdown } = await import('../index')
+    const { act } = await import('react')
+    const page: string[] = []
+    const listen = (event: KeyboardEvent) => page.push(event.key)
+    document.addEventListener('keydown', listen)
+    try {
+      await mounted(<Markdown>{TREE}</Markdown>, async (host) => {
+        const rows = () => [...host.querySelectorAll<HTMLElement>('[role="treeitem"]')]
+        await act(async () => rows()[0]!.focus())
+        for (const name of ['ArrowDown', 'ArrowUp', 'End', 'Home', 'Enter', ' ', 'Escape'])
+          await key(rows()[0]!, name)
+        expect(page).toEqual(['Escape'])
+      })
+    } finally {
+      document.removeEventListener('keydown', listen)
+    }
+  })
 })
 
 describe('code blocks', () => {
