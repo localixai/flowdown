@@ -225,3 +225,100 @@ describe('math, loaded on demand', () => {
     )
   })
 })
+
+describe('server markup', () => {
+  test('hydrates without a mismatch, then shows the copy button where the page can copy', async () => {
+    const { Markdown } = await import('../index')
+    const { html } = await import('../html')
+    const { act } = await import('react')
+    const { renderToString } = await import('react-dom/server')
+    const { hydrateRoot } = await import('react-dom/client')
+    const doc = '> [!TABS]\n#### One\n```sh\nls\n```\n\n#### Two\nText <kbd>K</kbd>.\n'
+    const page = <Markdown html={html}>{doc}</Markdown>
+    // A server has no clipboard; the page it is hydrated in does.
+    const clipboard = (value: unknown) =>
+      Object.defineProperty(navigator, 'clipboard', { value, configurable: true })
+    clipboard(undefined)
+    const host = document.createElement('div')
+    host.innerHTML = renderToString(page)
+    document.body.append(host)
+    clipboard({ writeText: async () => {} })
+    const errors: unknown[] = []
+    let root: ReturnType<typeof hydrateRoot> | undefined
+    try {
+      await act(async () => {
+        root = hydrateRoot(host, page, { onRecoverableError: (error) => errors.push(error) })
+      })
+      expect(errors).toEqual([])
+      expect(host.querySelector('.llx-code-copy')).not.toBeNull()
+    } finally {
+      await act(async () => root?.unmount())
+      host.remove()
+      Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+})
+
+describe('loaders written inline, a new function on every render', () => {
+  const settle = async () => {
+    const { act } = await import('react')
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+  }
+
+  test('math is loaded once and stays typeset while the page re-renders on every token', async () => {
+    const { Markdown } = await import('../index')
+    let loads = 0
+    const page = (text: string) => (
+      <Markdown
+        streaming
+        math={() => {
+          loads++
+          return import('../math')
+        }}
+      >
+        {text}
+      </Markdown>
+    )
+    await mounted(page('The area is $\\pi r^2$.'), async (host, rerender) => {
+      await settle()
+      expect(host.querySelector('.katex')).not.toBeNull()
+      for (const tail of [' More', ' text', ' arrives']) {
+        await rerender(page(`The area is $\\pi r^2$.${tail}`))
+        expect(host.querySelector('.katex')).not.toBeNull()
+      }
+      await settle()
+      expect(loads).toBe(1)
+    })
+  })
+
+  test('a finished diagram is drawn once while the reply below it keeps growing', async () => {
+    const { Markdown } = await import('../index')
+    let draws = 0
+    const engine = {
+      initialize() {},
+      parse: async () => true,
+      render: async () => {
+        draws++
+        return { svg: '<svg viewBox="0 0 10 10"><g></g></svg>' }
+      },
+    }
+    const page = (text: string) => (
+      <Markdown streaming mermaid={async () => engine}>
+        {text}
+      </Markdown>
+    )
+    const diagram = '```mermaid\nflowchart LR\n  A --> B\n```\n\n'
+    await mounted(page(`${diagram}Then`), async (host, rerender) => {
+      await settle()
+      expect(host.querySelector('svg')).not.toBeNull()
+      for (const tail of [' more', ' text', ' arrives']) {
+        await rerender(page(`${diagram}Then${tail}`))
+        await settle()
+      }
+      expect(draws).toBe(1)
+      expect(host.querySelector('svg')).not.toBeNull()
+    })
+  })
+})

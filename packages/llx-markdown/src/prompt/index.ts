@@ -24,9 +24,9 @@ export { ANSWER_FORM_EXAMPLES } from '../dialect'
 export interface AnswerFormatOptions {
   /** The section's heading line. */
   header?: string
-  /** Mention `$…$` math: true when the page renders it (`<Markdown math>`). */
+  /** Mention `$…$` math. Off by default, like `<Markdown math>`: turn both on together. */
   math?: boolean
-  /** Teach ```mermaid diagrams: true when the page draws them (`<Markdown mermaid>`). */
+  /** Teach ```mermaid diagrams. Off by default, like `<Markdown mermaid>`: turn both on together. */
   diagrams?: boolean
 }
 
@@ -48,8 +48,8 @@ export function answerFormsPrinciple(header = ANSWER_FORMAT_HEADER): string {
 /** The section that teaches the dialect, ready to place in a system prompt. */
 export function answerFormatPrompt({
   header = ANSWER_FORMAT_HEADER,
-  math = true,
-  diagrams = true,
+  math = false,
+  diagrams = false,
 }: AnswerFormatOptions = {}): string {
   const markers = CALLOUT_KINDS.map((kind) => `[!${kind.toUpperCase()}]`).join(' ')
   const { comparison, verdict, steps, stats } = ANSWER_FORM_EXAMPLES
@@ -67,7 +67,7 @@ export function answerFormatPrompt({
     `- Headline figures (speedups, sizes, key numbers): stats:\n${shown(stats)}`,
     '- Exact values across options (specs, prices, limits): a table.',
     `- A risk or key aside: one or two callouts, quotes starting \`> [!KIND]\` (${markers}); text after the marker titles it.`,
-    `- A directory layout: a \`\`\`${TREE_FENCE_LANGUAGE} fence of \`├──\`/\`└──\` lines. Things to do: \`- [ ] item\` (the reader ticks them).`,
+    `- A directory layout: a \`\`\`${TREE_FENCE_LANGUAGE} fence of \`├──\`/\`└──\` lines. Things to do: \`- [ ] item\`.`,
   ]
   if (diagrams) {
     lines.push(

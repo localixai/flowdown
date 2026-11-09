@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ComponentPropsWithoutRef,
   type ReactElement,
 } from 'react'
@@ -43,13 +44,19 @@ export function Code({ node: _node, className, children, ...props }: CodeProps) 
   )
 }
 
+const noSubscribe = () => () => {}
+const hasClipboard = () => typeof navigator !== 'undefined' && Boolean(navigator.clipboard)
+const noClipboard = () => false
+
 function CopyButton({ text }: { text: string }) {
   const labels = useLabels()
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
-  // No clipboard (an insecure origin, a test DOM): no button that would do nothing.
-  if (typeof navigator === 'undefined' || !navigator.clipboard) return null
+  // No clipboard (an insecure origin, a test DOM): no button that would do nothing. Read after
+  // hydration, so a server render and the first client render agree.
+  const canCopy = useSyncExternalStore(noSubscribe, hasClipboard, noClipboard)
+  if (!canCopy) return null
   const copy = () => {
     navigator.clipboard.writeText(text).then(
       () => {

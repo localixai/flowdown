@@ -152,20 +152,19 @@ export function createMermaidRenderer(load: () => Promise<MermaidEngine>): Merma
 /** What `<Markdown mermaid={…}>` takes: a loader for the engine, `() => import('mermaid')`. */
 export type MermaidLoader = () => Promise<MermaidEngine | { default: MermaidEngine }>
 
-const renderers = new WeakMap<MermaidLoader, MermaidRenderer>()
+let pageRenderer: MermaidRenderer | null = null
+let latestLoad: MermaidLoader | null = null
 
 /**
- * One renderer, and so one queue and one cache, per loader. A page passes the same loader to every
- * message, so every diagram on it shares them; Mermaid (about a megabyte) is fetched the first time
- * a document holds a diagram.
+ * The page's one renderer: one queue and one cache for every diagram on it. Mermaid is a single
+ * global engine, so two renderers would interleave its `initialize` and `render` calls. The engine
+ * comes from the loader the page passed most recently; it is fetched the first time a document
+ * holds a diagram, and a loader written inline (a new function on each render) changes nothing.
  */
 export function mermaidRendererFor(load: MermaidLoader): MermaidRenderer {
-  let renderer = renderers.get(load)
-  if (!renderer) {
-    renderer = createMermaidRenderer(() =>
-      load().then((module) => ('default' in module ? module.default : module)),
-    )
-    renderers.set(load, renderer)
-  }
-  return renderer
+  latestLoad = load
+  pageRenderer ??= createMermaidRenderer(() =>
+    latestLoad!().then((module) => ('default' in module ? module.default : module)),
+  )
+  return pageRenderer
 }

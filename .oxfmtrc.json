@@ -13,5 +13,5 @@
   "tabWidth": 2,
   "trailingComma": "all",
   "useTabs": false,
-  "ignorePatterns": ["node_modules", "dist", "bun.lock", "**/CHANGELOG.md"]
+  "ignorePatterns": ["node_modules", "dist", "bun.lock", "**/*.md"]
 }

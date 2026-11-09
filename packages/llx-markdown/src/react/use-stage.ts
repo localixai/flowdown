@@ -1,6 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { loadOnce } from '../core/load-once'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * A stage of the pipeline that a page may load on demand: math (`llx-markdown/math`), raw HTML
@@ -10,37 +9,40 @@ import { loadOnce } from '../core/load-once'
 export type StageLoader<T> = () => Promise<T | { default: T }>
 export type StageOption<T> = T | StageLoader<T> | null
 
-const loaders = new WeakMap<StageLoader<object>, () => Promise<object>>()
+/** Stages already loaded on this page, by the loader that brought them. */
 const loaded = new WeakMap<StageLoader<object>, object>()
 
-function loaderFor<T extends object>(load: StageLoader<T>): () => Promise<object> {
-  let once = loaders.get(load)
-  if (!once) {
-    once = loadOnce(async () => {
-      const module = await load()
-      const stage = 'default' in module ? module.default : module
-      loaded.set(load, stage)
-      return stage
-    })
-    loaders.set(load, once)
-  }
-  return once
-}
+const unwrap = <T extends object>(module: T | { default: T }): T =>
+  'default' in module ? module.default : module
 
 /**
- * The stage for a document, or null while it is not there. A loader is called the first time a
- * document needs it, once per page, however many documents ask; until it resolves the document
- * renders without it, and a failed load leaves it that way (the next document asks again).
+ * The stage for a document, or null while it is not there. Each `<Markdown>` calls its loader
+ * once, the first time its document needs the stage, and keeps what it brought: a loader written
+ * inline, a new function on every render, is not called again, and the stage does not drop out
+ * while the page re-renders (on every token of a reply). The bundler fetches the module once for
+ * the whole page. Until it resolves the document renders without it, and a failed load leaves it
+ * that way (the next document to mount asks again).
  */
 export function useStage<T extends object>(option: StageOption<T>, needed: boolean): T | null {
   const lazy = typeof option === 'function' ? (option as StageLoader<T>) : null
-  const [, setReady] = useState(0)
+  const latest = useRef(lazy)
   useEffect(() => {
-    if (!lazy || !needed || loaded.has(lazy)) return
+    latest.current = lazy
+  })
+  // A stage another document on the page already loaded is there from the first render.
+  const [stage, setStage] = useState<T | null>(() =>
+    lazy ? ((loaded.get(lazy) as T | undefined) ?? null) : null,
+  )
+  const isLazy = lazy !== null
+  useEffect(() => {
+    const load = latest.current
+    if (!isLazy || !needed || stage || !load) return
     let current = true
-    loaderFor(lazy)().then(
-      () => {
-        if (current) setReady((count) => count + 1)
+    load().then(
+      (module) => {
+        const value = unwrap(module)
+        loaded.set(load, value)
+        if (current) setStage(value)
       },
       () => {
         /* The document stays readable without the stage. */
@@ -49,7 +51,7 @@ export function useStage<T extends object>(option: StageOption<T>, needed: boole
     return () => {
       current = false
     }
-  }, [lazy, needed])
+  }, [isLazy, needed, stage])
   if (!option || !needed) return null
-  return lazy ? ((loaded.get(lazy) as T | undefined) ?? null) : (option as T)
+  return lazy ? stage : (option as T)
 }

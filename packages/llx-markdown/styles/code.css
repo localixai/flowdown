@@ -131,7 +131,7 @@
   height: 1em;
   margin-left: 0.15em;
   border-radius: 1px;
-  background: currentColor;
+  background: var(--llx-caret-color, currentColor);
   vertical-align: -0.15em;
   opacity: 0.55;
   animation: llx-caret 1s ease-in-out infinite;
