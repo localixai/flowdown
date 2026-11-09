@@ -15,7 +15,7 @@ import { hasHtmlSyntax } from './syntax'
 const components = buildComponents(undefined)
 
 /** `useId` values depend on where a component sits in the React tree, which blocks change. */
-const sameIds = (html: string) => html.replace(/_R_[0-9a-z]+_/g, '_R_')
+const sameIds = (markup: string) => markup.replace(/_R_[0-9a-z]+_/g, '_R_')
 
 /** The document as ONE parse draws it: the reference a block-by-block render must match. */
 function whole(markdown: string, { streaming = false, withMath = false, headingIds = false } = {}) {
