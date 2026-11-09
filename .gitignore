@@ -3,3 +3,5 @@ dist/
 .DS_Store
 *.tgz
 coverage/
+.turbo/
+apps/site/.vite/

@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "react-hooks", "unicorn", "import", "jsx-a11y"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    // A renderer is used by people with screen readers and keyboards first; every rule that holds
+    // today is an error so it cannot start failing quietly.
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/aria-proptypes": "error",
+    "jsx-a11y/aria-role": "error",
+    "jsx-a11y/role-has-required-aria-props": "error",
+    "jsx-a11y/role-supports-aria-props": "error",
+    "jsx-a11y/no-redundant-roles": "error",
+    "jsx-a11y/tabindex-no-positive": "error",
+    "jsx-a11y/click-events-have-key-events": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "import/no-cycle": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-explicit-any": "error",
+    // The automatic JSX runtime needs no `React` in scope.
+    "react/react-in-jsx-scope": "off",
+    // `<output>` is the result of a form; a diagram's "drawing…" live region is a `role="status"`.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // A helper written beside the one function that uses it reads better than one hoisted away.
+    "unicorn/consistent-function-scoping": "off",
+    // KaTeX's ES module has only a default export.
+    "import/no-named-as-default-member": "off"
+  },
+  "ignorePatterns": ["**/dist/**", "**/node_modules/**"]
+}

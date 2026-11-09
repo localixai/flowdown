@@ -1,0 +1,143 @@
+/* ─── Code blocks (fenced code, `CodeBlock`) ───
+   A quiet panel: the language and a copy button in a bar above the code, the code on the veil.
+   No border, so a reply with several blocks does not read as a stack of boxes. */
+.llx-markdown .llx-code {
+  margin: 0.8rem 0;
+  border-radius: var(--llx-radius);
+  background: var(--llx-code-bg);
+}
+.llx-markdown .llx-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.35rem 0 0.9rem;
+  font-size: 0.78em;
+  color: var(--llx-fg-faint);
+}
+.llx-markdown .llx-code-language {
+  font-family: var(--llx-font-mono);
+  text-transform: lowercase;
+}
+.llx-markdown .llx-code-copy {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--llx-radius-small);
+  background: none;
+  color: var(--llx-fg-faint);
+  cursor: pointer;
+  transition:
+    color var(--llx-duration) ease,
+    background-color var(--llx-duration) ease;
+}
+.llx-markdown .llx-code-copy:hover {
+  background: var(--llx-veil-strong);
+  color: var(--llx-fg);
+}
+.llx-markdown .llx-code-copy[data-copied] {
+  color: var(--llx-success);
+}
+.llx-markdown .llx-code-copy svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+.llx-markdown pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 0.25rem 0.9rem 0.8rem;
+  font-family: var(--llx-font-mono);
+  font-size: 0.86em;
+  line-height: 1.55;
+  color: var(--llx-code-fg);
+  tab-size: 2;
+}
+/* A <pre> outside a code block (a page's own, a diagram's source) takes the whole panel look. */
+.llx-markdown :not(.llx-code) > pre {
+  margin: 0.8rem 0;
+  border-radius: var(--llx-radius);
+  background: var(--llx-code-bg);
+  padding: 0.8rem 0.9rem;
+}
+.llx-markdown .llx-diagram > pre {
+  margin: 0;
+}
+.llx-markdown pre code {
+  font: inherit;
+  white-space: pre;
+}
+
+/* Highlighted code (`llx-markdown/highlight`, or any highlighter that emits highlight.js classes). */
+.llx-markdown .hljs-comment,
+.llx-markdown .hljs-quote {
+  color: var(--llx-code-comment);
+  font-style: italic;
+}
+.llx-markdown :is(.hljs-keyword, .hljs-selector-tag, .hljs-doctag, .hljs-meta .hljs-keyword) {
+  color: var(--llx-code-keyword);
+}
+.llx-markdown :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string, .hljs-addition) {
+  color: var(--llx-code-string);
+}
+.llx-markdown
+  :is(
+    .hljs-number,
+    .hljs-literal,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-symbol,
+    .hljs-bullet
+  ) {
+  color: var(--llx-code-number);
+}
+.llx-markdown :is(.hljs-title, .hljs-title.function_, .hljs-section) {
+  color: var(--llx-code-function);
+}
+.llx-markdown :is(.hljs-type, .hljs-built_in, .hljs-title.class_, .hljs-params, .hljs-meta) {
+  color: var(--llx-code-type);
+}
+.llx-markdown :is(.hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class) {
+  color: var(--llx-code-tag);
+}
+.llx-markdown .hljs-deletion {
+  color: var(--llx-danger);
+}
+.llx-markdown .hljs-emphasis {
+  font-style: italic;
+}
+.llx-markdown .hljs-strong {
+  font-weight: 600;
+}
+
+/* ─── The caret after a streaming reply (`<Markdown streaming>`) ───
+   On the last line, when the reply ends in text. It breathes rather than blinks: a hard
+   blink at the end of moving text drew the eye away from the words. */
+@keyframes llx-caret {
+  50% {
+    opacity: 0.2;
+  }
+}
+.llx-markdown[data-caret] > :last-child:is(p, h1, h2, h3, h4, h5, h6)::after,
+.llx-markdown[data-caret] > :last-child:is(ul, ol) > li:last-child::after,
+.llx-markdown[data-caret] > :last-child:is(blockquote, aside) p:last-child::after {
+  content: '';
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 0.15em;
+  border-radius: 1px;
+  background: currentColor;
+  vertical-align: -0.15em;
+  opacity: 0.55;
+  animation: llx-caret 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .llx-markdown[data-caret] *::after {
+    animation: none;
+  }
+}
