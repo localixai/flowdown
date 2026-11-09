@@ -4,11 +4,11 @@ import { Markdown } from './markdown'
 import { extractMarkdownHeadings } from '../core/headings'
 import { math } from '../math'
 import { highlight } from '../highlight'
-import { html } from '../html'
+import { html as htmlStage } from '../html'
 
 const render = (source: string) =>
   renderToStaticMarkup(
-    <Markdown headingIds html={html}>
+    <Markdown headingIds html={htmlStage}>
       {source}
     </Markdown>,
   )
