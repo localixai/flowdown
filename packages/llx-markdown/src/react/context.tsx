@@ -1,5 +1,6 @@
 'use client'
-import { createContext, useContext } from 'react'
+import { createContext, useContext, type ComponentType } from 'react'
+import type { Components } from 'react-markdown'
 import type { MermaidRenderer } from '../mermaid/renderer'
 
 /**
@@ -8,6 +9,16 @@ import type { MermaidRenderer } from '../mermaid/renderer'
  * `llx-markdown/highlight` is one.
  */
 export type Highlighter = (code: string, language: string) => string | null
+
+/**
+ * What `<Markdown components>` takes: an element for any tag, and a page's own drawing of the two
+ * fences that are not code. `diagram` is told whether its fence is the one still being written
+ * (`growing`), so it can wait for the whole source; every diagram above it is complete.
+ */
+export type MarkdownComponents = Components & {
+  diagram?: ComponentType<{ source: string; growing: boolean }>
+  tree?: ComponentType<{ source: string }>
+}
 
 /** What every block of one document shares, beside the labels. */
 export interface RenderContext {

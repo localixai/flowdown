@@ -48,9 +48,21 @@ element it was made from. Leave `node` out of what you spread onto the DOM.
 
 Every other element (`p`, `a`, `img`, `ol`, `h2`, …) is the plain HTML element.
 
-Your `components` replace these, with one exception: ` ```mermaid ` and ` ```tree ` fences are drawn
-by `Diagram` and `FileTree` before your `code` or `pre` sees them. A `pre` you pass draws every
-other fenced block, and a `code` you pass draws every other piece of code.
+Your `components` replace these, with one exception: ` ```mermaid ` and ` ```tree ` fences never
+reach your `code` or `pre`. A `pre` you pass draws every other fenced block, and a `code` you pass
+draws every other piece of code. To draw the two fences yourself, pass `diagram` and `tree`:
+
+```tsx
+import { Markdown, type MarkdownComponents } from 'llx-markdown'
+
+const components: MarkdownComponents = {
+  // `growing`: this is the fence still being written. Every diagram above it is complete.
+  diagram: ({ source, growing }) => (growing ? <Placeholder /> : <MyDiagram source={source} />),
+  tree: ({ source }) => <MyTree source={source} />,
+}
+
+<Markdown streaming={!done} components={components}>{reply}</Markdown>
+```
 
 ## Wrap a built-in component
 

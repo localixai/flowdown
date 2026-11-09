@@ -17,6 +17,46 @@ Use it for:
 - react-markdown, or another renderer, with components of your own;
 - a search index, an outline or a table of contents built from the same parse.
 
+## Your own plugins in `<Markdown>`
+
+`<Markdown>` takes your plugins too, so you keep its streaming and its block memory. They run on
+each block, not on the whole document: a block is parsed once and kept while the text below it
+grows.
+
+```tsx
+import { Markdown } from 'llx-markdown'
+
+// Module constants: a new list on every render redraws every block.
+const remarkPlugins = [remarkMentions]
+const rehypePlugins = [rehypeBlockActions]
+
+<Markdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{reply}</Markdown>
+```
+
+Your rehype plugins run after raw HTML is sanitized, so what they add is kept, and before
+formulas are typeset, so they see `code.language-math`. Positions are where a node sits in the
+whole document. `file.data.llx.offset` is where the block starts, which gives a node's own
+Markdown:
+
+```ts
+import type { Root } from 'hast'
+import type { VFile } from 'vfile'
+
+function rehypeBlockActions() {
+  return (tree: Root, file: VFile) => {
+    const offset = file.data.llx?.offset ?? 0
+    for (const node of tree.children) {
+      if (node.type !== 'element' || !node.position) continue
+      const { start, end } = node.position
+      node.properties.dataMarkdown = String(file.value).slice(
+        start.offset! - offset,
+        end.offset! - offset,
+      )
+    }
+  }
+}
+```
+
 ## HTML on a server
 
 ```sh

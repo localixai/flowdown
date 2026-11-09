@@ -36,7 +36,9 @@ import 'llx-markdown/styles.css'
 | `children`     | `string`                                |                    | The Markdown. While streaming, the whole text so far, not the new part. |
 | `streaming`    | `boolean`                               | `false`            | The text is still arriving: its unfinished end is completed and a caret follows it. See [Streaming](streaming.md). |
 | `caret`        | `boolean`                               | `streaming`        | Show the caret after streaming text. |
-| `components`   | `Components`                            |                    | Your own elements for any tag, or the dialect's. Keep the object stable. See [Components](components.md). |
+| `components`   | `MarkdownComponents`                    |                    | Your own elements for any tag or the dialect's, and `diagram` / `tree` for the two fences that are not code. Keep the object stable. See [Components](components.md). |
+| `remarkPlugins` | `PluggableList`                        |                    | Your remark plugins, after the dialect's, on each block. Keep the list stable. See [Plugins](remark.md#your-own-plugins-in-markdown). |
+| `rehypePlugins` | `PluggableList`                        |                    | Your rehype plugins: after the sanitizer, before formulas are typeset, on each block. Keep the list stable. |
 | `headingIds`   | `boolean`                               | `false`            | Give headings ids (`setup`, `setup-1`), the ids `extractHeadings` returns. |
 | `html`         | `boolean \| StageOption<HtmlPlugin>`    | `true`             | Raw HTML. `true` loads the parser the first time a document holds HTML and leaves the tags out until then; `html` from `llx-markdown/html` parses in the first render; `false` drops raw HTML. See [Security](security.md). |
 | `math`         | `StageOption<MathPlugin>`               | `null`             | Typeset `$…$`: `llx-markdown/math`, or a loader for it. See [Math](math.md). |

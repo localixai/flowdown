@@ -1,6 +1,7 @@
 'use client'
 import {
   createElement,
+  useContext,
   Fragment,
   memo,
   useMemo,
@@ -9,6 +10,7 @@ import {
   type ReactNode,
 } from 'react'
 import ReactMarkdown, { type Components, type UrlTransform } from 'react-markdown'
+import type { PluggableList } from 'unified'
 import { blockHasHtml, blockHasMath, escapedBlock, headingIdsOfBlocks } from '../core/block-facts'
 import { createBlockSplitter, normalizeLineEndings } from '../core/blocks'
 import { closePartialMarkdown, openFenceBody } from '../core/heal'
@@ -26,7 +28,13 @@ import { mermaidRendererFor, type MermaidLoader } from '../mermaid/renderer'
 import { Callout } from './callout'
 import { Code, CodeBlock } from './code-block'
 import { GrowingCode, growingFence } from './growing-code'
-import { GrowingFence, RenderContextValue, type Highlighter, type RenderContext } from './context'
+import {
+  GrowingFence,
+  RenderContextValue,
+  type Highlighter,
+  type MarkdownComponents,
+  type RenderContext,
+} from './context'
 import { FileTree } from './file-tree'
 import { childrenToText, getLanguage } from './helpers'
 import { LabelsContext, mergeLabels, type LabelOverrides } from './labels'
@@ -44,8 +52,23 @@ export interface MarkdownProps {
   streaming?: boolean
   /** The caret after streaming text; on by default while `streaming`. */
   caret?: boolean
-  /** Your own elements for any tag (`a`, `img`, `pre`, `table`, …) or the dialect's. */
-  components?: Components
+  /**
+   * Your own elements for any tag (`a`, `img`, `pre`, `table`, …) or the dialect's, and your own
+   * drawing of a ```mermaid fence (`diagram`) or a ```tree fence (`tree`).
+   */
+  components?: MarkdownComponents
+  /**
+   * Your own remark plugins, after the dialect's: they run on each block. Keep the list's
+   * reference stable (a module constant): a new list redraws every block.
+   */
+  remarkPlugins?: PluggableList
+  /**
+   * Your own rehype plugins: after raw HTML is sanitized, before formulas are typeset, on each
+   * block. A node's position is where it sits in the whole document; `file.data.llx.offset` is
+   * where this block starts, so `String(file.value).slice(start - offset, end - offset)` is the
+   * node's Markdown. Keep the list's reference stable, as for `remarkPlugins`.
+   */
+  rehypePlugins?: PluggableList
   /**
    * Give headings ids (`setup`, `setup-1`) to link to, the same ids `extractHeadings` returns.
    * Each block's headings are read once, so it costs a streaming reply only its last block.
@@ -86,6 +109,8 @@ interface BlockOptions {
   urlTransform: UrlTransform | null | undefined
   /** The page draws code itself (`components.pre` or `.code`): a growing fence goes to it too. */
   ownCode: boolean
+  remarkPlugins: PluggableList
+  rehypePlugins: PluggableList
 }
 
 interface BlockProps {
@@ -99,6 +124,8 @@ interface BlockProps {
   headingKey: string
   options: BlockOptions
 }
+
+const NO_PLUGINS: PluggableList = []
 
 /** The package's own HTML stage, fetched as a chunk of its own the first time it is needed. */
 const loadHtml = () => import('../html/index')
@@ -114,19 +141,33 @@ function classOf(node: unknown): string | undefined {
   return Array.isArray(classes) ? classes.join(' ') : undefined
 }
 
+/** A page's own diagram, told whether its fence is the one still being written. */
+function OwnDiagram({
+  as: Page,
+  source,
+}: {
+  as: NonNullable<MarkdownComponents['diagram']>
+  source: string
+}) {
+  return <Page source={source} growing={useContext(GrowingFence)} />
+}
+
 /**
  * The elements a document is drawn with: the dialect's (callouts, tabs, code blocks), then the
  * page's, with the two fences that are not code (```mermaid, ```tree) taken out of both `pre` and
  * `code`, so a page's own code block never receives a diagram.
  */
-export function buildComponents(overrides: Components | undefined): Components {
-  const PageCode = (overrides?.code ?? Code) as ElementType
-  const PagePre = (overrides?.pre ?? CodeBlock) as ElementType
+export function buildComponents(overrides: MarkdownComponents | undefined): Components {
+  const { diagram: PageDiagram, tree: PageTree, ...elements } = overrides ?? {}
+  const PageCode = (elements.code ?? Code) as ElementType
+  const PagePre = (elements.pre ?? CodeBlock) as ElementType
   const code: Components['code'] = (props) => {
     const language = getLanguage(props.className)
     const text = childrenToText(props.children).replace(/\n$/, '')
-    if (language === DIAGRAM_FENCE_LANGUAGE) return <Diagram source={text} />
-    if (language === TREE_FENCE_LANGUAGE) return <FileTree source={text} />
+    if (language === DIAGRAM_FENCE_LANGUAGE)
+      return PageDiagram ? <OwnDiagram as={PageDiagram} source={text} /> : <Diagram source={text} />
+    if (language === TREE_FENCE_LANGUAGE)
+      return PageTree ? <PageTree source={text} /> : <FileTree source={text} />
     return createElement(PageCode, props)
   }
   // A diagram or a tree is a block of its own, not code: never inside a <pre>.
@@ -141,7 +182,7 @@ export function buildComponents(overrides: Components | undefined): Components {
     table: Table,
     'answer-tabs': Tabs,
     'answer-tab': Tab,
-    ...overrides,
+    ...elements,
     code,
     pre,
   } as Components
@@ -152,11 +193,15 @@ const Block = memo(
     const { components, html, math, urlTransform, ownCode } = options
     const fence = growing && !ownCode ? growingFence(source) : null
     if (fence && !special(fence.language)) return <GrowingCode {...fence} />
-    const remarkPlugins = [remarkBlockOffset({ offset, line }), ...remarkPluginsFor({ math })]
-    const rehypePlugins = rehypePluginsFor(
-      { html, math },
-      headingIds ? [rehypeHeadingIds(headingIds)] : [],
-    )
+    const remarkPlugins = [
+      remarkBlockOffset({ offset, line }),
+      ...remarkPluginsFor({ math }),
+      ...options.remarkPlugins,
+    ]
+    const rehypePlugins = rehypePluginsFor({ html, math }, [
+      ...(headingIds ? [rehypeHeadingIds(headingIds)] : []),
+      ...options.rehypePlugins,
+    ])
     return (
       <GrowingFence.Provider value={growing}>
         <ReactMarkdown
@@ -193,6 +238,8 @@ export function Markdown({
   streaming = false,
   caret = streaming,
   components,
+  remarkPlugins,
+  rehypePlugins,
   headingIds = false,
   html = true,
   math: mathOption = null,
@@ -229,8 +276,10 @@ export function Markdown({
       math,
       urlTransform,
       ownCode: Boolean(components?.pre || components?.code),
+      remarkPlugins: remarkPlugins ?? NO_PLUGINS,
+      rehypePlugins: rehypePlugins ?? NO_PLUGINS,
     }),
-    [merged, htmlStage, math, urlTransform, components],
+    [merged, htmlStage, math, urlTransform, components, remarkPlugins, rehypePlugins],
   )
   const context = useMemo<RenderContext>(
     () => ({ highlight, mermaid: mermaid ? mermaidRendererFor(mermaid) : null }),
