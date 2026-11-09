@@ -235,7 +235,9 @@ describe('math, loaded on demand', () => {
       async (host, rerender) => {
         expect(calls).toBe(0)
         await rerender(<Markdown math={loader}>{'Area: $\\pi r^2$.'}</Markdown>)
+        // Wait on the module the loader imports, not on a tick: a cold load takes longer than one.
         await act(async () => {
+          await import('../math')
           await new Promise((resolve) => setTimeout(resolve, 0))
         })
         expect(calls).toBe(1)
@@ -279,9 +281,11 @@ describe('server markup', () => {
 })
 
 describe('loaders written inline, a new function on every render', () => {
+  // Wait on the module a math loader imports, then a tick: a cold load takes longer than one.
   const settle = async () => {
     const { act } = await import('react')
     await act(async () => {
+      await import('../math')
       await new Promise((resolve) => setTimeout(resolve, 0))
     })
   }
