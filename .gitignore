@@ -5,3 +5,4 @@ dist/
 coverage/
 .turbo/
 apps/site/.vite/
+dist-server/

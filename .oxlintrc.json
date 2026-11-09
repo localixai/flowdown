@@ -6,6 +6,7 @@
     "suspicious": "warn"
   },
   "rules": {
+    "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }],
     // A renderer is used by people with screen readers and keyboards first; every rule that holds
     // today is an error so it cannot start failing quietly.
     "jsx-a11y/alt-text": "error",

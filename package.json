@@ -1,20 +1,19 @@
 {
   "name": "llx-markdown-monorepo",
   "private": true,
-  "type": "module",
-  "packageManager": "bun@1.4.4",
   "workspaces": [
     "packages/*",
     "apps/*",
     "examples/*"
   ],
+  "type": "module",
   "scripts": {
     "build": "bun run --cwd packages/llx-markdown build",
     "test": "bun run --cwd packages/llx-markdown test",
     "typecheck": "bun run --cwd packages/llx-markdown typecheck",
-    "lint": "oxlint packages examples",
-    "format": "oxfmt packages examples docs README.md",
-    "format:check": "oxfmt --check packages examples docs README.md",
+    "lint": "oxlint packages apps examples",
+    "format": "oxfmt packages apps examples",
+    "format:check": "oxfmt --check packages apps examples",
     "check": "bun run --cwd packages/llx-markdown check",
     "changeset": "changeset",
     "version": "changeset version && bun install",
@@ -26,5 +25,6 @@
     "@changesets/cli": "3.0.3",
     "oxfmt": "0.78.0",
     "oxlint": "1.93.0"
-  }
+  },
+  "packageManager": "bun@1.4.4"
 }
