@@ -9,8 +9,10 @@
 import { GlobalRegistrator } from '@happy-dom/global-registrator'
 import { type Pattern, prefixes } from '../../packages/llx-markdown/test/chunks'
 import { scaling, scenarios } from '../../packages/llx-markdown/test/replies'
+import { installIdleTracking } from './idle'
 
 GlobalRegistrator.register({ url: 'https://bench.test/' })
+installIdleTracking()
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = false
 // Loaded after the DOM exists: React DOM and the renderers read `window` when imported.
 const { RENDERERS } = await import('./renderers')
@@ -25,10 +27,11 @@ if (!scenario || !renderer) {
 }
 const steps = prefixes(scenario.text, pattern as Pattern)
 const history = scenario.history ?? []
-measure(renderer, history, steps.slice(0, 200), Number(budgetMs))
-const results = Array.from({ length: Number(runs) }, () =>
-  measure(renderer, history, steps, Number(budgetMs)),
-)
+await measure(renderer, history, steps.slice(0, 200), Number(budgetMs))
+const results = []
+for (let run = 0; run < Number(runs); run++) {
+  results.push(await measure(renderer, history, steps, Number(budgetMs)))
+}
 console.log(JSON.stringify(results))
 // Not unregistered: React may still have passive work queued that reads `window`.
 process.exit(0)

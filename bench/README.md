@@ -11,9 +11,14 @@ The latest numbers: [`results/latest.md`](results/latest.md).
 
 A reply is handed to the renderer the way a chat page hands it: every growing prefix, one update
 at a time, then the finished text with `streaming` off. Each update is timed from
-`root.render()` to the DOM being committed (`flushSync`): healing the unfinished Markdown,
-splitting, parsing, React and the DOM writes. That is the work a token costs the main thread
-before the browser can paint or answer a key press. Layout and paint belong to the browser and
+`root.render()` until React's scheduler is idle again: the commit (`flushSync`), then the effects
+it queued and the renders they cause, as the page's event loop would run them before the next
+token. That is healing the unfinished Markdown, splitting, parsing, React and the DOM writes: the
+work a token costs the main thread before the browser can paint or answer a key press. Waiting
+for the scheduler matters. A loop that never yields lets effects pile up as queued tasks (heap
+that looks leaked), makes a renderer that sets state from an effect hit React's nested-update
+limit, and never delivers code loaded on demand, such as Streamdown's code block, so its fallback
+would be measured instead ([`src/idle.ts`](src/idle.ts)). Layout and paint belong to the browser and
 are the same for every renderer, so they are left out.
 
 For each scenario, renderer and chunk pattern the run records:
@@ -26,7 +31,7 @@ For each scenario, renderer and chunk pattern the run records:
 | over long task | Updates longer than 50 ms: the page stops answering input. |
 | mount, finish | The first render, and the render of the finished reply. |
 | cpu | Process CPU time over the run. If it is far above `total`, the renderer defers work to timers that `total` does not see. |
-| live, left | Heap growth while the page is mounted, and what stays after it unmounts. |
+| live, kept, grown | Heap growth while the page is mounted; what stays after it unmounts the first time (caches the reply warmed, which are bounded); and what a second stream of the same reply adds, the median over the repeats (a leak shows in every one). |
 | nodes | DOM elements of the finished page. |
 
 Each measurement is warmed up on its first 200 updates, then run three times; the median is kept. A renderer
@@ -86,7 +91,8 @@ highlighter, math or diagrams, so each parses the same Markdown:
 - **Linear in the reply.** Streaming a reply four times longer should cost about four times
   more (exponent 1). A renderer that reparses the whole text on every token costs about sixteen
   times more (exponent 2). The `linear` rule keeps llx-markdown under 1.25.
-- **No leak.** An unmounted page leaves less than 2 MB behind.
+- **No leak.** Streaming the same reply again keeps less than 1 MB more: what is cached is
+  bounded, and nothing grows with use. The `no-leak` rule.
 
 ## Running it
 

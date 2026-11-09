@@ -89,9 +89,10 @@ export function summarize(
     cpuMs: median(results.map((r) => r.cpuMs)),
     liveBytes: median(results.map((r) => r.liveBytes)),
     leftBytes: results[0]?.leftBytes ?? Number.NaN,
-    // A repeat of the same reply finds every cache warm: what it keeps is what it leaks.
-    grownBytes:
-      results.length > 1 ? Math.max(...results.slice(1).map((r) => r.leftBytes)) : Number.NaN,
+    // A repeat of the same reply finds every cache warm: what it keeps is what it leaks. A leak
+    // shows in every repeat, while the collector now and then keeps one tree alive a run longer
+    // (spikes of several MB, react-markdown's too, which caches nothing): the median, not the max.
+    grownBytes: results.length > 1 ? median(results.slice(1).map((r) => r.leftBytes)) : Number.NaN,
     nodes: first.nodes,
   }
 }
