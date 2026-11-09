@@ -5,7 +5,12 @@ import { splitBlocks } from '../core/blocks'
 import { escapeLiteralDollars } from '../core/dollars'
 import { closePartialMarkdown, openFenceBody } from '../core/heal'
 import { headingIdsByOffset, rehypeHeadingIds } from '../core/headings'
-import { rehypePluginsFor, remarkPluginsFor, type MathPlugin } from '../core/pipeline'
+import {
+  rehypePluginsFor,
+  remarkPluginsFor,
+  type HtmlPlugin,
+  type MathPlugin,
+} from '../core/pipeline'
 import { remarkBlockOffset } from '../core/positions'
 import { hasHtmlSyntax, hasMathSyntax } from '../core/syntax'
 import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE } from '../dialect'
@@ -17,7 +22,7 @@ import { GrowingFence, RenderContextValue, type Highlighter, type RenderContext 
 import { FileTree } from './file-tree'
 import { childrenToText, getLanguage } from './helpers'
 import { LabelsContext, mergeLabels, type LabelOverrides } from './labels'
-import { useMath, type MathOption } from './use-math'
+import { useStage, type StageOption } from './use-stage'
 import { Table } from './table'
 import { Tab, Tabs } from './tabs'
 
@@ -38,10 +43,14 @@ export interface MarkdownProps {
    * It reads the whole document on each change, so leave it off for a reply that streams.
    */
   headingIds?: boolean
-  /** Render raw HTML, sanitized. On by default; off, HTML in the text is dropped. */
-  html?: boolean
+  /**
+   * Raw HTML in the text, parsed and sanitized. `true` (the default) fetches the parser the first
+   * time a document holds HTML, and leaves the tags out until it is there; pass `llx-markdown/html`
+   * itself to have it in the first render (a server); `false` drops raw HTML.
+   */
+  html?: boolean | StageOption<HtmlPlugin>
   /** Typeset `$…$`: `llx-markdown/math`, or a loader for it. Off by default. */
-  math?: MathOption
+  math?: StageOption<MathPlugin>
   /** Draw ```mermaid fences: `() => import('mermaid')`. Off by default: they show as code. */
   mermaid?: MermaidLoader | null
   /** Highlight fenced code: `llx-markdown/highlight`, or your own. Off by default. */
@@ -59,10 +68,11 @@ export interface MarkdownProps {
 /** What a block needs besides its text; one object per document, so blocks can compare it. */
 interface BlockOptions {
   components: Components
-  /** Raw HTML is parsed: the page allows it and the document has some. */
-  html: boolean
-  /** The page allows raw HTML at all; when it does not, it is dropped. */
-  htmlAllowed: boolean
+  /**
+   * The raw HTML stage, when the document has HTML and the stage is there. Without it, raw HTML
+   * is left out: dropped when the page turned HTML off, not yet parsed while it loads.
+   */
+  html: HtmlPlugin | null
   math: MathPlugin | null
   urlTransform: UrlTransform | null | undefined
 }
@@ -78,6 +88,9 @@ interface BlockProps {
   headingKey: string
   options: BlockOptions
 }
+
+/** The package's own HTML stage, fetched as a chunk of its own the first time it is needed. */
+const loadHtml = () => import('../html/index')
 
 const special = (language: string | undefined) =>
   language === DIAGRAM_FENCE_LANGUAGE || language === TREE_FENCE_LANGUAGE
@@ -137,7 +150,7 @@ const Block = memo(
           remarkPlugins={remarkPlugins}
           rehypePlugins={rehypePlugins}
           components={components}
-          skipHtml={!options.htmlAllowed}
+          skipHtml={!html}
           {...(urlTransform === undefined ? {} : { urlTransform })}
         >
           {source}
@@ -179,16 +192,19 @@ export function Markdown({
   const healed = streaming ? closePartialMarkdown(children) : children
   // Literal dollars are escaped only where `$` can mean math: elsewhere positions stay exact.
   const source = mathOption ? escapeLiteralDollars(healed) : healed
-  const math = useMath(mathOption, hasMathSyntax(source))
+  const math = useStage(mathOption, hasMathSyntax(source))
 
   const ids = useMemo(() => (headingIds ? headingIdsByOffset(source) : null), [headingIds, source])
   const merged = useMemo(() => buildComponents(components), [components])
   // Whether the document has HTML is decided for the whole of it, not per block: a tag still
   // being typed (`<div`) is its own block, and only the whole document says it is HTML.
-  const parseHtml = html && hasHtmlSyntax(source)
+  const htmlStage = useStage(
+    html === true ? loadHtml : html === false ? null : html,
+    hasHtmlSyntax(source),
+  )
   const options = useMemo<BlockOptions>(
-    () => ({ components: merged, html: parseHtml, htmlAllowed: html, math, urlTransform }),
-    [merged, parseHtml, html, math, urlTransform],
+    () => ({ components: merged, html: htmlStage, math, urlTransform }),
+    [merged, htmlStage, math, urlTransform],
   )
   const context = useMemo<RenderContext>(
     () => ({ highlight, mermaid: mermaid ? mermaidRendererFor(mermaid) : null }),

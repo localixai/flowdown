@@ -186,6 +186,22 @@ describe('streaming', () => {
   })
 })
 
+describe('raw HTML, loaded on demand', () => {
+  test('by default the parser arrives with the first HTML, and the tags are never shown as text', async () => {
+    const { Markdown } = await import('../index')
+    const { act } = await import('react')
+    await mounted(<Markdown>{'Press <kbd>Ctrl</kbd> to copy.'}</Markdown>, async (host) => {
+      // Before the stage is there, the tags are left out rather than printed.
+      expect(host.textContent).not.toContain('<kbd>')
+      await act(async () => {
+        await import('../html')
+        await new Promise((resolve) => setTimeout(resolve, 0))
+      })
+      expect(host.querySelector('kbd')?.textContent).toBe('Ctrl')
+    })
+  })
+})
+
 describe('math, loaded on demand', () => {
   test('the loader runs once a document holds a formula, and the formula is then typeset', async () => {
     const { Markdown } = await import('../index')

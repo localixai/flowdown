@@ -31,6 +31,7 @@
     "./remark": "./dist/remark.js",
     "./stream": "./dist/stream.js",
     "./prompt": "./dist/prompt/index.js",
+    "./html": "./dist/html/index.js",
     "./math": "./dist/math/index.js",
     "./highlight": "./dist/highlight/index.js",
     "./styles.css": "./dist/styles.css",

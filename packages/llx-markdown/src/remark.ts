@@ -15,6 +15,7 @@ export {
   remarkLlx,
   remarkPluginsFor,
   sanitizeSchema,
+  type HtmlPlugin,
   type MathPlugin,
   type PipelineOptions,
 } from './core/pipeline'

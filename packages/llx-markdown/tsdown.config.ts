@@ -11,6 +11,7 @@ export default defineConfig({
     remark: 'src/remark.ts',
     stream: 'src/stream.ts',
     'prompt/index': 'src/prompt/index.ts',
+    'html/index': 'src/html/index.ts',
     'math/index': 'src/math/index.ts',
     'highlight/index': 'src/highlight/index.ts',
   },

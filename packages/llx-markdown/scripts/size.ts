@@ -20,6 +20,7 @@ const BUDGET: Record<string, number> = {
   './remark': 7.5,
   './stream': 3.5,
   './prompt': 2,
+  './html': 0.5,
   './math': 1.2,
   './highlight': 0.8,
   './styles.css': 5,

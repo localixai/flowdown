@@ -4,8 +4,14 @@ import { Markdown } from './markdown'
 import { extractMarkdownHeadings } from '../core/headings'
 import { math } from '../math'
 import { highlight } from '../highlight'
+import { html } from '../html'
 
-const render = (source: string) => renderToStaticMarkup(<Markdown headingIds>{source}</Markdown>)
+const render = (source: string) =>
+  renderToStaticMarkup(
+    <Markdown headingIds html={html}>
+      {source}
+    </Markdown>,
+  )
 
 describe('portable Markdown', () => {
   test('renders the answer dialect beside sanitized HTML without application state', () => {

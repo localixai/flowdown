@@ -1,6 +1,5 @@
 import type { PluggableList } from 'unified'
 import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
 import rehypeSanitize, { defaultSchema, type Options as SanitizeSchema } from 'rehype-sanitize'
 import { visit } from 'unist-util-visit'
 import type { Element as HastElement, Root as HastRoot } from 'hast'
@@ -106,9 +105,17 @@ export function rehypeTaskKeys() {
   }
 }
 
+/**
+ * The raw HTML stage: the parser that turns HTML in the Markdown into elements (rehype-raw, from
+ * `llx-markdown/html`). The sanitizer after it is always this package's.
+ */
+export interface HtmlPlugin {
+  rehypePlugins: PluggableList
+}
+
 export interface PipelineOptions {
-  /** Parse and sanitize raw HTML. Off, HTML in the source is dropped. */
-  html?: boolean
+  /** Parse raw HTML with this stage, then sanitize it. Omitted, raw HTML is left to the renderer. */
+  html?: HtmlPlugin | null
   /** The math stage; omitted, `$…$` stays text. */
   math?: MathPlugin | null
 }
@@ -124,11 +131,11 @@ export function remarkPluginsFor({ math }: PipelineOptions = {}): PluggableList 
  * adds a pass that must see the sanitized tree.
  */
 export function rehypePluginsFor(
-  { html = false, math }: PipelineOptions = {},
+  { html, math }: PipelineOptions = {},
   beforeMath: PluggableList = [],
 ): PluggableList {
   const plugins: PluggableList = []
-  if (html) plugins.push(rehypeRaw, [rehypeSanitize, sanitizeSchema])
+  if (html) plugins.push(...html.rehypePlugins, [rehypeSanitize, sanitizeSchema])
   // After the sanitizer, which does not know this attribute; task boxes are rare, the walk cheap.
   plugins.push(rehypeTaskKeys, ...beforeMath)
   if (math) plugins.push(...math.rehypePlugins)

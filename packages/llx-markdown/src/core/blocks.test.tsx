@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
 import ReactMarkdown from 'react-markdown'
 import { CORPUS } from '../../test/corpus'
+import { html } from '../html'
 import { math } from '../math'
 import { buildComponents, Markdown } from '../react/markdown'
 import { splitBlocks } from './blocks'
@@ -32,9 +33,10 @@ function whole(markdown: string, { streaming = false, withMath = false, headingI
         <ReactMarkdown
           remarkPlugins={remarkPluginsFor({ math: plugin })}
           rehypePlugins={rehypePluginsFor(
-            { html: hasHtmlSyntax(source), math: plugin },
+            { html: hasHtmlSyntax(source) ? html : null, math: plugin },
             ids ? [rehypeHeadingIds(ids)] : [],
           )}
+          skipHtml={!hasHtmlSyntax(source)}
           components={components}
         >
           {source}
@@ -47,7 +49,12 @@ function whole(markdown: string, { streaming = false, withMath = false, headingI
 function split(markdown: string, { streaming = false, withMath = false, headingIds = false } = {}) {
   return sameIds(
     renderToStaticMarkup(
-      <Markdown streaming={streaming} math={withMath ? math : null} headingIds={headingIds}>
+      <Markdown
+        streaming={streaming}
+        math={withMath ? math : null}
+        html={html}
+        headingIds={headingIds}
+      >
         {markdown}
       </Markdown>,
     ),

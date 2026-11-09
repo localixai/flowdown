@@ -9,8 +9,8 @@
 export { Markdown, type MarkdownProps } from './react/markdown'
 export type { Components } from 'react-markdown'
 export type { Highlighter } from './react/context'
-export type { MathLoader, MathOption } from './react/use-math'
-export type { MathPlugin } from './core/pipeline'
+export type { StageLoader, StageOption } from './react/use-stage'
+export type { HtmlPlugin, MathPlugin } from './core/pipeline'
 export type { MermaidLoader } from './mermaid/renderer'
 export { DEFAULT_LABELS, type LabelOverrides, type MarkdownLabels } from './react/labels'
 

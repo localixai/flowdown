@@ -21,8 +21,8 @@ for (const [path, target] of Object.entries(manifest.exports)) {
   if (!existsSync(join(root, target))) failures.push(`exports["${path}"] → ${target} is missing`)
 }
 
-const reach = (target: string) => {
-  const graph = reachFile(join(root, target))
+const reach = (target: string, options?: { dynamic?: boolean }) => {
+  const graph = reachFile(join(root, target), options)
   return { files: graph.files, packages: new Set([...graph.packages].map(packageOf)) }
 }
 
@@ -42,10 +42,16 @@ const owners: Record<string, string> = {
 }
 for (const [path, target] of Object.entries(manifest.exports)) {
   if (!target.endsWith('.js')) continue
-  const { packages } = reach(target)
+  const { packages } = reach(target, { dynamic: false })
   for (const [name, owner] of Object.entries(owners))
     if (packages.has(name) && owner !== path) failures.push(`${path} imports ${name}`)
 }
+
+// What loads with the renderer itself: the HTML parser and the heavy engines are chunks of their
+// own, fetched when a document needs them.
+const eager = reach(manifest.exports['.']!, { dynamic: false })
+for (const name of ['rehype-raw', 'katex', 'highlight.js', 'mermaid'])
+  if (eager.packages.has(name)) failures.push(`. loads ${name} with the renderer`)
 
 const main = reach(manifest.exports['.']!)
 for (const file of main.files) {
