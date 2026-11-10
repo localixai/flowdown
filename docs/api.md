@@ -64,7 +64,7 @@ every block render again.
 | ---------------------- | --------------------------------------------------------------------------------------- |
 | `Callout`              | `blockquote`: a typed callout, or a plain quote.                                         |
 | `Code`                 | `code`: inline or fenced code, highlighted when a highlighter is set.                    |
-| `CodeBlock`            | `pre`: the fenced block with its language and copy button.                              |
+| `CodeBlock`            | `pre`: the fenced block with its language, download and copy buttons.                   |
 | `Diagram`              | A Mermaid diagram from `source`.                                                         |
 | `FileTree`             | A directory tree from `source`, the body of a ` ```tree ` fence. `getIcon` picks icons.  |
 | `Tabs`, `Tab`          | `answer-tabs` and `answer-tab`: the `[!TABS]` form.                                      |
@@ -116,8 +116,8 @@ See [Extensions and remark](remark.md). The entry has no dependencies: unified i
 | `headingIdsByOffset(markdown)`                      | `Map<offset, id>` for every heading.                                            |
 | `splitBlocks(markdown)`                             | `MarkdownBlock[]`: the top-level blocks, `{ source, offset, line }`.            |
 | `createBlockSplitter()`                             | A `BlockSplitter`: `split(markdown)` for a growing text, reusing unchanged blocks; `lexed`, the characters scanned so far. |
-| `escapeLiteralDollars(markdown)`                    | The text with dollar signs that are not math escaped.                           |
-| `isLiteralDollar(text, index)`                      | Whether one `$` is a dollar sign.                                               |
+| `escapeLiteralDollars(markdown)`                    | The text with every `$` that is not a math delimiter escaped.                   |
+| `isLiteralDollar(text, index)`                      | Whether one `$` is a price or a shell variable.                                 |
 | `hasMathSyntax(markdown)`, `hasHtmlSyntax(markdown)` | Whether the text holds math, or raw HTML, outside code.                        |
 | `markdownProseWithoutCode(markdown)`                | The text with code blanked out, same length.                                    |
 | `parseFileTree(source)`                             | `TreeRow[]` from a ` ```tree ` fence body.                                      |

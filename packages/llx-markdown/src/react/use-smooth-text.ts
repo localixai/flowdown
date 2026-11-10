@@ -136,12 +136,14 @@ function createPacer(initial: string) {
     /** The length of `next` to show now. */
     take(next: string, live: boolean): number {
       if (next !== text) {
-        // A different text, not a longer one (a regenerated reply, an edit): keep what they share.
-        let shown = next.startsWith(text.slice(0, pace.shown))
-          ? pace.shown
-          : commonPrefix(text, next)
-        // A reply that is not streaming is shown whole, whatever it was before.
-        if (!live && !streaming) shown = next.length
+        // A reply that is not streaming is shown whole, whatever it was before. Otherwise, a
+        // different text, not a longer one (a regenerated reply, an edit): keep what they share.
+        const shown =
+          !live && !streaming
+            ? next.length
+            : next.startsWith(text.slice(0, pace.shown))
+              ? pace.shown
+              : commonPrefix(text, next)
         text = next
         pace = { shown, speed: pace.speed }
         grew = now()

@@ -14,7 +14,7 @@ export type { Highlighter, MarkdownComponents } from './react/context'
 export type { StageLoader, StageOption } from './react/use-stage'
 export { defaultUrlTransform, type UrlTransform } from './engine/url'
 export type { Extension, FenceRule, InlineRule, InlineState, Node } from './engine/types'
-export type { MermaidLoader } from './mermaid/renderer'
+export type { MermaidLoader } from './mermaid/loader'
 export { DEFAULT_LABELS, type LabelOverrides, type MarkdownLabels } from './react/labels'
 
 // The dialect's own elements, for a page that replaces one and wraps the original.

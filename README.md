@@ -5,7 +5,12 @@
 <h1 align="center">llx-markdown</h1>
 
 <p align="center">
-  <strong>Markdown for AI replies and documentation in React, rendered while it streams</strong>
+  <strong>Ultrafast, lightweight streaming Markdown for React and AI replies</strong>
+</p>
+
+<p align="center">
+  <b>9× faster</b> than the next renderer on a 100k-character stream ·
+  <b>linear</b> as a reply grows · <b>0 dependencies</b>, <b>30 KB</b> gzipped
 </p>
 
 <p align="center">
@@ -47,15 +52,16 @@ Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/READM
 
 ## Compared with similar libraries
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="bench/results/charts/compare-dark.svg">
-  <img alt="Download size and streaming time of llx-markdown, Streamdown, react-markdown, markdown-to-jsx, markstream and marked-react" src="bench/results/charts/compare-light.svg">
-</picture>
+<p align="center">
+  <img alt="llx-markdown compared with Streamdown, react-markdown, markdown-to-jsx, markstream and marked-react: streaming time in milliseconds, download size, packages installed and how the cost grows with a longer reply" src="bench/results/charts/compare.png">
+</p>
 
 **Where llx-markdown is strong**
 
-- **It stays fast as a reply grows.** A 100k-character reply streams in 0.25 s. The next fastest
-  takes 2.6 s, and Streamdown takes 6.0 s.
+- **It is the fastest to stream.** It wins all 16 streaming runs, and stays fast as a reply
+  grows: a reply four times longer costs about three times more, not sixteen. A 100k-character
+  reply streams in 0.25 s; the next fastest takes 2.4 s, Streamdown 6.3 s, and react-markdown does
+  not finish. No update takes more than 3 ms, so a stream never drops a frame.
 - **It repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences
   never show their raw syntax.
 - **It draws more Markdown.** GitHub alerts, footnotes and raw HTML need no setup. Of six
@@ -67,8 +73,8 @@ Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/READM
 
 **Where it is not**
 
-- **markdown-to-jsx is faster on a long code block**, 58 ms against 94 ms for 50k characters, and
-  marked-react is a little smaller, 27 KB.
+- **marked-react is a little smaller**, 27 KB against 30 KB. It does not repair a streaming reply
+  and draws less Markdown.
 - **It does not take remark or rehype plugins.** Your own syntax is an
   [extension](docs/remark.md); react-markdown is the one with the plugin ecosystem.
 
@@ -108,6 +114,14 @@ forms a model writes once its system prompt has the dialect (`answerFormatPrompt
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/diagram-dark.png" />
   <img alt="A Mermaid flowchart in the page colours and a KaTeX formula" src="docs/assets/readme/diagram-light.png" width="760" />
+</picture>
+
+**A diagram's toolbar and viewer**: Enlarge opens a viewer that zooms and pans with the pointer, the
+wheel, a pinch or the keys; the other buttons show, copy and download the source
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/viewer-dark.png" />
+  <img alt="A sequence diagram enlarged in its viewer, zoomed with the wheel, dragged, fitted back and closed" src="docs/assets/readme/viewer-light.png" width="760" />
 </picture>
 
 ## Repository

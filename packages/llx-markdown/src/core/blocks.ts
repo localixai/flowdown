@@ -509,6 +509,8 @@ function build(
       if (opening && !(opening[1]![0] === '`' && opening[2]!.includes('`'))) fenced.add(block)
     }
     blocks.push(block)
+    // The last block's lines place nothing: a fence that grows is not counted on every token.
+    if (index + 1 === starts.length) break
     for (let at = source.indexOf('\n'); at !== -1; at = source.indexOf('\n', at + 1)) current += 1
   }
   return blocks

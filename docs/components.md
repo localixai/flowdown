@@ -42,7 +42,7 @@ the parsed tree it was made from. Leave `node` out of what you spread onto the D
 | `table`         | `Table`     | A `div.llx-table` around it that scrolls sideways.                                |
 | `answer-tabs`   | `Tabs`      | The `[!TABS]` form: a tab list with the WAI-ARIA tabs keys.                       |
 | `answer-tab`    | `Tab`       | One tab's panel; its label is in `data-label`.                                    |
-| `pre`           | `CodeBlock` | `figure.llx-code` with the language and a copy button.                            |
+| `pre`           | `CodeBlock` | `figure.llx-code` with the language, a download and a copy button.                |
 | `code`          | `Code`      | Highlighting, when a [highlighter](highlighting.md) is set.                       |
 | ` ```mermaid `  | `Diagram`   | The [diagram](diagrams.md).                                                       |
 | ` ```tree `     | `FileTree`  | A directory tree with folders that open and close.                                |
@@ -193,7 +193,18 @@ diagram notes. Translate them with `labels`; every key is optional:
 | `drawingDiagram`     | `Drawing diagram…`                       | Shown while Mermaid loads and lays out.                 |
 | `diagramFailed`      | ``(reason) => `Diagram could not be drawn: ${reason}` `` | Shown when the source does not parse.  |
 | `copy`               | `Copy code`                              | The copy button.                                        |
-| `copied`             | `Copied`                                 | The copy button after a copy.                           |
+| `copied`             | `Copied`                                 | A copy button after a copy (code, a diagram's source).  |
+| `download`           | `Download code`                          | A code block's download button: saves the code as a file. |
+| `enlarge`            | `Enlarge diagram`                        | A drawn diagram's toolbar: opens the viewer.            |
+| `showSource`         | `Show source`                            | The toolbar: swaps the picture for its source.          |
+| `showDiagram`        | `Show diagram`                           | The same button while the source shows.                 |
+| `copySource`         | `Copy source`                            | The toolbar: copies the source. `copied` after a copy.  |
+| `downloadSvg`        | `Download SVG`                           | The toolbar: saves `diagram.svg`.                       |
+| `zoomIn`             | `Zoom in`                                | The diagram viewer.                                     |
+| `zoomOut`            | `Zoom out`                               |                                                         |
+| `fit`                | `Fit to window`                          |                                                         |
+| `actualSize`         | `Actual size`                            | The zoom percentage, which shows the diagram at 100%.   |
+| `close`              | `Close`                                  | Closes the viewer.                                      |
 
 A callout with a title (`> [!TIP] Faster builds`) is named by its title instead. `DEFAULT_LABELS`
 holds the English set.

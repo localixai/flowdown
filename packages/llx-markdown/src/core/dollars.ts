@@ -1,3 +1,4 @@
+import { closesInlineMath, opensInlineMath } from './math-delimiters'
 import { isEscaped, markdownProseWithoutCode } from './prose'
 
 /**
@@ -20,6 +21,11 @@ const VARIABLE = /^[A-Z_][A-Z0-9_]+(?=[/:.,;)\]'"`]|$)/
 /** A longer upper-case name also ends at a space (`$PATH before`); `$AB = CD$` stays math. */
 const LONG_VARIABLE = /^[A-Z_][A-Z0-9_]{2,}(?=\s)/
 
+/**
+ * Whether the `$` at `index` is a dollar sign by its own look: a price or a shell variable. A `$`
+ * that pairs with no other (`$ x`, the shell line `$(seq 1 12) … $i`) is text as well, but that
+ * takes the whole paragraph to tell: `literalDollars` asks both.
+ */
 export function isLiteralDollar(text: string, index: number): boolean {
   if (text[index] !== '$' || isEscaped(text, index)) return false
   // `$$` is display math, never a dollar sign.
@@ -28,18 +34,75 @@ export function isLiteralDollar(text: string, index: number): boolean {
   return CURRENCY.test(after) || VARIABLE.test(after) || LONG_VARIABLE.test(after)
 }
 
-/** The source with every literal dollar in prose escaped; code is left byte for byte. */
+/** A single `$`, neither escaped nor part of a `$$` run. */
+const isSingleDollar = (text: string, index: number) =>
+  text[index] === '$' &&
+  text[index - 1] !== '$' &&
+  text[index + 1] !== '$' &&
+  !isEscaped(text, index)
+
+/** Where the paragraph holding `index` ends: inline math never crosses a blank line. */
+function paragraphEnd(text: string, index: number): number {
+  const blank = /\n[ \t]*\n/g
+  blank.lastIndex = index
+  return blank.exec(text)?.index ?? text.length
+}
+
+/**
+ * The single `$` that closes the formula opened at `open`, or -1 when none in its paragraph does.
+ * A dollar sign (`$5`) is skipped: it is text, so it closes nothing.
+ */
+export function inlineMathClose(text: string, open: number): number {
+  const end = paragraphEnd(text, open)
+  for (
+    let at = text.indexOf('$', open + 1);
+    at !== -1 && at < end;
+    at = text.indexOf('$', at + 1)
+  ) {
+    if (isSingleDollar(text, at) && !isLiteralDollar(text, at) && closesInlineMath(text, at))
+      return at
+  }
+  return -1
+}
+
+/**
+ * Every single `$` in prose that is text rather than a delimiter, read left to right the way the
+ * parser reads them: a price or a variable, a `$` that cannot open (`$ x`), and one that opens but
+ * finds no closing `$` in its paragraph. A `$` that closes a formula is not in the list.
+ */
+export function literalDollars(prose: string): number[] {
+  const literal: number[] = []
+  for (let index = prose.indexOf('$'); index !== -1; index = prose.indexOf('$', index + 1)) {
+    if (prose[index + 1] === '$') {
+      // A `$$` run is display math, or the parser's to pair by length: skip the whole run.
+      while (prose[index + 1] === '$') index += 1
+      continue
+    }
+    if (!isSingleDollar(prose, index)) continue
+    const close =
+      isLiteralDollar(prose, index) || !opensInlineMath(prose, index)
+        ? -1
+        : inlineMathClose(prose, index)
+    if (close === -1) literal.push(index)
+    else index = close
+  }
+  return literal
+}
+
+/**
+ * The source with every dollar in prose that is not a delimiter escaped (`\$`), so a parser
+ * that pairs any two dollars (remark-math) reads the same formulas `<Markdown>` does. Code is left
+ * byte for byte.
+ */
 export function escapeLiteralDollars(markdown: string): string {
   if (!markdown.includes('$')) return markdown
-  const prose = markdownProseWithoutCode(markdown)
+  const literal = literalDollars(markdownProseWithoutCode(markdown))
+  if (literal.length === 0) return markdown
   let escaped = ''
   let copied = 0
-  let changed = false
-  for (let index = prose.indexOf('$'); index !== -1; index = prose.indexOf('$', index + 1)) {
-    if (!isLiteralDollar(prose, index)) continue
+  for (const index of literal) {
     escaped += `${markdown.slice(copied, index)}\\`
     copied = index
-    changed = true
   }
-  return changed ? escaped + markdown.slice(copied) : markdown
+  return escaped + markdown.slice(copied)
 }

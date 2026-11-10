@@ -262,8 +262,8 @@ document: a stable key for storing a tick or rewriting the text it came from.
 | ------------------------------------------ | -------------------------------------------------------------------------------- |
 | `hasMathSyntax(markdown)`                  | Whether the text holds a formula, without counting prices, shell variables or code. |
 | `hasHtmlSyntax(markdown)`                  | Whether the text holds raw HTML outside code.                                    |
-| `escapeLiteralDollars(markdown)`           | The text with each dollar sign that is not math escaped.                         |
-| `isLiteralDollar(text, index)`             | Whether the `$` at `index` is a dollar sign.                                     |
+| `escapeLiteralDollars(markdown)`           | The text with every `$` that is not a math delimiter escaped, so `remark-math` pairs what `<Markdown>` pairs. |
+| `isLiteralDollar(text, index)`             | Whether the `$` at `index` is a price or a shell variable, by its look alone.    |
 | `markdownProseWithoutCode(markdown)`       | The text with code spans and fences blanked out, same length.                    |
 | `parseFileTree(source)`                    | The rows of a ` ```tree ` fence body, as `TreeRow` objects.                      |
 | `parseCalloutMarker`, `parseContainerMarker` | Read a `[!WARNING]` or `[!STEPS]` marker at the start of a quote.              |

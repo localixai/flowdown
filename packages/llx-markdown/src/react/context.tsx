@@ -23,7 +23,12 @@ export type MarkdownComponents = Components & {
 /** What every block of one document shares, beside the labels. */
 export interface RenderContext {
   highlight: Highlighter | null
-  mermaid: MermaidRenderer | null
+  /**
+   * What draws a diagram, or null to show it as its source. `'page'` is the page's one renderer,
+   * for a page that gave a Mermaid loader: it lives in the chunk a diagram loads, so it is named
+   * here, not held.
+   */
+  mermaid: MermaidRenderer | 'page' | null
 }
 
 export const RenderContextValue = createContext<RenderContext>({ highlight: null, mermaid: null })

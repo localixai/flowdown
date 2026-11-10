@@ -1,5 +1,42 @@
 # llx-markdown
 
+## 0.4.0
+
+### Minor Changes
+
+- A drawn diagram has a toolbar: Enlarge, Show source, Copy source and Download SVG. Enlarge opens a
+  viewer, a modal dialog where the diagram pans and zooms with the pointer, the wheel, a pinch or the
+  keys; its code loads only when a diagram is first enlarged. The new words are labels (`enlarge`,
+  `showSource`, `showDiagram`, `copySource`, `downloadSvg`, `zoomIn`, `zoomOut`, `fit`, `actualSize`,
+  `close`), and `components.diagram` still replaces all of it.
+- Single-dollar math follows pandoc's rule, the one GitHub uses: the opening `$` has no space after
+  it, and the closing `$` has no space before it and no digit after it. A shell line in a reply,
+  `for i in $(seq 1 12); do printf "line %s" $i; done`, is no longer typeset as a formula, and `$ x $` and
+  `$a$5` stay text. `$x$`, `$$…$$`, ` ```math `, `\$` and the price and variable rules are as before.
+  While a reply streams, a `$` that cannot open a formula (`5$ and`, `$ x`) no longer hides the rest
+  of the line. `escapeLiteralDollars` now escapes every `$` that pairs with nothing, so `remark-math`
+  reads the same formulas, and `hasMathSyntax` follows the same rule.
+  
+  Code blocks have a download button beside the copy button: it saves the code under the fence's
+  title, or as `code.<ext>` from its language (`code.txt` when there is none). New label: `download`.
+  The copy button falls back to the browser's copy command where the Clipboard API is missing or
+  refused (an insecure origin), so it shows everywhere, a server render included. On a touch screen
+  both buttons are 44 px targets. A fence with no language has no empty language label.
+  
+  A URL that `urlTransform` refuses is dropped instead of left empty: a link without `href`, an image
+  without `src`, rather than `href=""` and `src=""`.
+- `llx-markdown/highlight` knows the popular languages too: Python, Go, Rust, Java, Kotlin, Swift, C,
+  C++, C#, PHP, Ruby, TOML and INI, and Dockerfile, with their usual fence names (`py`, `rs`, `kt`,
+  `cs`, `c++`, `rb`, `golang`, `docker`). The entry grows from 21 KB to 38 KB gzipped; it is still its own entry, so a page that does not
+  import it bundles none of it.
+
+### Patch Changes
+
+- A long code block streams about three times faster: each token now reads only the lines it added,
+  and the block's header and buttons are drawn once, not on every token. A long reply also keeps less
+  memory while it streams. What draws a diagram (its toolbar and the renderer) moved into the chunk
+  that loads with the first diagram, so `<Markdown>` itself is 30 KB gzipped, down from 32 KB.
+
 ## 0.3.0
 
 ### Minor Changes

@@ -113,6 +113,13 @@ describe('portable Markdown', () => {
     expect(lit).toContain('<span class="llx-code-language">ts</span>')
   })
 
+  test('a server draws the copy and download buttons; a fence with no language, no label', () => {
+    const html = renderToStaticMarkup(<Markdown>{'```\nplain\n```'}</Markdown>)
+    expect(html).toContain('class="llx-code-copy"')
+    expect(html).toContain('class="llx-code-download"')
+    expect(html).not.toContain('llx-code-language')
+  })
+
   test('raw HTML is dropped when the page turns it off', () => {
     const html = renderToStaticMarkup(<Markdown html={false}>{'<b>bold</b> text'}</Markdown>)
     expect(html).not.toContain('<b>')

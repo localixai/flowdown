@@ -39,7 +39,7 @@ export const blockHasMath = remembered((block) =>
 
 /** Whether the block names a character reference outside the common ones (`&nrarr;`). */
 export const blockHasRareEntity = remembered(
-  (block) => block.source.includes('&') && !isFenceBlock(block) && hasRareEntity(block.source),
+  (block) => !isFenceBlock(block) && block.source.includes('&') && hasRareEntity(block.source),
 )
 
 /** Whether the block has raw HTML in its prose. */

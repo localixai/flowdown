@@ -1,5 +1,6 @@
 import { createBoundedCache } from '../core/bounded-cache'
 import { loadOnce } from '../core/load-once'
+import { loadMermaid, setMermaidLoader, type MermaidLoader } from './loader'
 import type { MermaidLook } from './look'
 import { normalizeMermaidSvg } from './normalize-svg'
 
@@ -149,22 +150,21 @@ export function createMermaidRenderer(load: () => Promise<MermaidEngine>): Merma
   }
 }
 
-/** What `<Markdown mermaid={…}>` takes: a loader for the engine, `() => import('mermaid')`. */
-export type MermaidLoader = () => Promise<MermaidEngine | { default: MermaidEngine }>
+export type { MermaidLoader } from './loader'
 
 let pageRenderer: MermaidRenderer | null = null
-let latestLoad: MermaidLoader | null = null
 
 /**
  * The page's one renderer: one queue and one cache for every diagram on it. Mermaid is a single
  * global engine, so two renderers would interleave its `initialize` and `render` calls. The engine
- * comes from the loader the page passed most recently; it is fetched the first time a document
- * holds a diagram, and a loader written inline (a new function on each render) changes nothing.
+ * comes from the loader the page passed most recently (`loader.ts`); it is fetched the first time
+ * a document holds a diagram.
  */
+export const pageMermaidRenderer = (): MermaidRenderer =>
+  (pageRenderer ??= createMermaidRenderer(loadMermaid))
+
+/** The page's renderer, with `load` as the loader its engine comes from. */
 export function mermaidRendererFor(load: MermaidLoader): MermaidRenderer {
-  latestLoad = load
-  pageRenderer ??= createMermaidRenderer(() =>
-    latestLoad!().then((module) => ('default' in module ? module.default : module)),
-  )
-  return pageRenderer
+  setMermaidLoader(load)
+  return pageMermaidRenderer()
 }

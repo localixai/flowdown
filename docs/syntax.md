@@ -376,8 +376,9 @@ See [Components](components.md#task-lists).
 
 ## Code
 
-A fenced block shows its language and a copy button. Code is highlighted when the page passes a
-highlighter; see [Highlighting](highlighting.md).
+A fenced block shows its language, a download button and a copy button. Download saves the code
+under the fence's file name, or as `code.<ext>` from its language (`code.txt` without one). Code is
+highlighted when the page passes a highlighter; see [Highlighting](highlighting.md).
 
 A fence that names its file shows the name in its bar, the way an agent labels the file it writes.
 Write `title="…"` (or `filename=`, `file=`) after the language, or the path alone:

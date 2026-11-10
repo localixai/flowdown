@@ -1,60 +1,25 @@
+import { inlineMathClose, isLiteralDollar } from './dollars'
+import { opensInlineMath } from './math-delimiters'
 import { isEscaped, markdownProseWithoutCode } from './prose'
 
-/** Detect remark-math delimiters without loading KaTeX for shell vars or code blocks. */
+/**
+ * Whether the prose holds a formula, so KaTeX is worth loading: a `$$…$$` pair, or a single-dollar
+ * pair by the parser's rule (`math-delimiters.ts`). Prices, shell variables and code do not count.
+ */
 export function hasMathSyntax(markdown: string): boolean {
+  if (!markdown.includes('$')) return false
   const text = markdownProseWithoutCode(markdown)
 
-  for (let index = 0; index < text.length; index += 1) {
-    if (text[index] !== '$' || isEscaped(text, index)) continue
-    const delimiterLength = text[index + 1] === '$' ? 2 : 1
-
-    if (
-      delimiterLength === 1 &&
-      (text[index - 1] === '$' || text[index + 1] === '$' || !text[index + 1])
-    ) {
+  for (let index = text.indexOf('$'); index !== -1; index = text.indexOf('$', index + 1)) {
+    if (isEscaped(text, index)) continue
+    if (text[index + 1] === '$') {
+      const closing = text.indexOf('$$', index + 2)
+      if (closing !== -1 && text.slice(index + 2, closing).trim()) return true
+      index = closing === -1 ? index + 1 : closing + 1
       continue
     }
-
-    for (let closing = index + delimiterLength; closing < text.length; closing += 1) {
-      if (
-        text[closing] !== '$' ||
-        isEscaped(text, closing) ||
-        (delimiterLength === 2 && text[closing + 1] !== '$') ||
-        (delimiterLength === 1 && (text[closing - 1] === '$' || text[closing + 1] === '$'))
-      ) {
-        continue
-      }
-
-      const body = text.slice(index + delimiterLength, closing)
-      const trimmedBody = body.trim()
-      if (!trimmedBody) break
-      // remark-math does not treat a single-dollar span across a blank
-      // paragraph as one inline expression.
-      if (delimiterLength === 1 && /\n[ \t]*\n/u.test(body)) {
-        index = closing
-        break
-      }
-      // `$5–$10` and similar currency ranges are prose, not an equation.
-      if (
-        delimiterLength === 1 &&
-        /^\d/.test(trimmedBody) &&
-        /\d/.test(text[closing + delimiterLength] ?? '')
-      ) {
-        index = closing
-        break
-      }
-      // Adjacent shell variables such as `$HOME/$PATH` contain two dollar
-      // signs, but the text between them is not a math expression.
-      if (
-        delimiterLength === 1 &&
-        /^[A-Z_][A-Z0-9_]*[/:.-]$/u.test(trimmedBody) &&
-        /^[A-Za-z_][A-Za-z0-9_]*/u.test(text.slice(closing + 1))
-      ) {
-        index = closing
-        break
-      }
-      return true
-    }
+    if (text[index - 1] === '$' || isLiteralDollar(text, index)) continue
+    if (opensInlineMath(text, index) && inlineMathClose(text, index) !== -1) return true
   }
 
   return false

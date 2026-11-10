@@ -349,3 +349,23 @@ describe('nothing a reply writes can act on the page', () => {
     expect(attack(PAYLOADS.join(' '), { math })).toEqual([])
   })
 })
+
+describe('a refused URL', () => {
+  test('is dropped, not left as an empty attribute', () => {
+    expect(render('[x](javascript:alert(1))')).toContain('<a>x</a>')
+    expect(render('[x][r]\n\n[r]: data:text/html,x')).toContain('<a>x</a>')
+    expect(render('![x](javascript:alert(1))')).toContain('<img alt="x"/>')
+    expect(render('<img src="javascript:alert(1)" alt="y">')).not.toContain('src=')
+    expect(render('<a href="vbscript:x">z</a>')).toContain('<a>z</a>')
+    const refuseAll = () => null
+    expect(render('[x](https://ok.example)', { urlTransform: refuseAll })).toContain('<a>x</a>')
+  })
+
+  test('an allowed one, and a link written with no URL, are kept as written', () => {
+    expect(render('[x](https://ok.example)')).toContain('<a href="https://ok.example">x</a>')
+    expect(render('![x](/a.png)')).toContain('<img src="/a.png" alt="x"/>')
+    // CommonMark's `[x]()` is a link to an empty URL.
+    expect(render('[x]()')).toContain('<a href="">x</a>')
+    expect(render('![x]()')).toContain('<img alt="x"/>')
+  })
+})

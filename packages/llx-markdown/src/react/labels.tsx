@@ -20,9 +20,23 @@ export interface MarkdownLabels {
   diagram: string
   drawingDiagram: string
   diagramFailed: (reason: string) => string
-  /** A code block's copy button, before and after a copy. */
+  /** A drawn diagram's toolbar: enlarge it, swap it for its source and back, copy, download. */
+  enlarge: string
+  showSource: string
+  showDiagram: string
+  copySource: string
+  downloadSvg: string
+  /** The enlarged diagram's controls. */
+  zoomIn: string
+  zoomOut: string
+  fit: string
+  actualSize: string
+  close: string
+  /** The copy button of a code block or a diagram, before and after a copy. */
   copy: string
   copied: string
+  /** A code block's download button, which saves the code as a file. */
+  download: string
 }
 
 export const DEFAULT_LABELS: MarkdownLabels = {
@@ -39,8 +53,19 @@ export const DEFAULT_LABELS: MarkdownLabels = {
   diagram: 'Diagram',
   drawingDiagram: 'Drawing diagram…',
   diagramFailed: (reason) => `Diagram could not be drawn: ${reason}`,
+  enlarge: 'Enlarge diagram',
+  showSource: 'Show source',
+  showDiagram: 'Show diagram',
+  copySource: 'Copy source',
+  downloadSvg: 'Download SVG',
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  fit: 'Fit to window',
+  actualSize: 'Actual size',
+  close: 'Close',
   copy: 'Copy code',
   copied: 'Copied',
+  download: 'Download code',
 }
 
 export type LabelOverrides = Partial<Omit<MarkdownLabels, 'callouts'>> & {

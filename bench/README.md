@@ -172,6 +172,9 @@ and the sanitizer with 159 attack inputs, whole and at every prefix of a stream
   which keeps the markup behind every mark ([src/features.tsx](src/features.tsx)).
 - `bun run deps`: how many packages each renderer installs, its licence and its styles, from the
   lockfile, into [results/install.json](results/install.json) ([src/install.ts](src/install.ts)).
-- `bun run charts`: the README's comparison chart, drawn from results/size.json and
-  results/latest.json into [results/charts](results/charts) ([src/charts.ts](src/charts.ts)).
+- `bun run charts`: the README's comparison chart, drawn from results/latest.json,
+  results/size.json and results/install.json into
+  [results/charts/compare.png](results/charts/compare.png) ([src/charts.ts](src/charts.ts)). One
+  light image for every theme, rasterized by Playwright's Chromium
+  (`bunx playwright-core install chromium-headless-shell`).
 

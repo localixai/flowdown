@@ -65,23 +65,31 @@ the rest of the reply renders as usual.
 
 ## Dollar signs that are not math
 
-remark-math pairs any two single dollars in a paragraph. On its own, "costs $5 and $10" would be
-typeset as the formula `5 and`. With math on, llx-markdown first decides which dollars are dollar
-signs and escapes them, so the parser sees `\$`:
+A single dollar is a math delimiter only by pandoc's rule, the one GitHub follows: the opening `$`
+has something other than a space right after it, and the closing `$` has something other than a
+space right before it and no digit right after. So a shell line in a reply,
+`for i in $(seq 1 12); do printf "line %s" $i; done`, stays text: the `$` before `i` has a space
+before it and closes nothing.
 
-| Written                     | Read as                                                                                |
-| --------------------------- | -------------------------------------------------------------------------------------- |
-| `$5`, `$1,200`, `$3.5k`, `$2M` | A price: digits, an optional `k`, `m` or `b`, then a space, punctuation or the end. |
-| `$5–$10`                    | Two prices.                                                                            |
-| `$HOME/bin`, `$PATH:`       | A shell variable: an upper-case name followed by `/ : . , ; ) ]`, a quote or the end.  |
-| `$PATH before`              | A shell variable: an upper-case name of three or more characters before a space.       |
-| `$AB = CD$`                 | Math: a name of two characters before a space does not count as a variable.            |
-| `$x$`, `$\pi r^2$`          | Math.                                                                                  |
-| `$$…$$`                     | Display math, always.                                                                  |
-| `\$`                        | A dollar sign, always.                                                                 |
+That rule alone still reads "costs $5 and x$" as a formula. So llx-markdown also decides which
+dollars are dollar signs by their look, and escapes them before the parser sees them:
 
-Code is left exactly as written: `` `$HOME` `` and fenced blocks are never escaped or typeset. When the
-rules guess wrong for your text, escape the dollar yourself: `\$`.
+| Written                        | Read as                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| `$5`, `$1,200`, `$3.5k`, `$2M` | A price: digits, an optional `k`, `m` or `b`, then a space, punctuation or the end.   |
+| `$5–$10`, `costs $5 and $10`   | Prices.                                                                               |
+| `$HOME/bin`, `$PATH:`          | A shell variable: an upper-case name followed by `/ : . , ; ) ]`, a quote or the end. |
+| `$PATH before`                 | A shell variable: an upper-case name of three or more characters before a space.      |
+| `$AB = CD$`                    | Math: a name of two characters before a space does not count as a variable.           |
+| `$ x $`, `$x $`                | Text: a space after the opening or before the closing dollar.                         |
+| `$a$5`                         | Text: a digit right after the closing dollar.                                         |
+| `$x$`, `$\pi r^2$`, `a $b$, c` | Math.                                                                                 |
+| `$$…$$`                        | Display math, always.                                                                 |
+| `\$`                           | A dollar sign, always. Inside a formula, `$a + \$b$`, it closes nothing.              |
+
+A formula does not reach across a blank line. Code is left exactly as written: `` `$HOME` `` and
+fenced blocks are never escaped or typeset. When the rules guess wrong for your text, escape the
+dollar yourself: `\$`.
 
 These rules apply only while `math` is set. Without it, no `$` is touched.
 
@@ -90,7 +98,9 @@ These rules apply only while `math` is set. Without it, no `$` is touched.
 Formulas are typeset as the reply arrives, not only when it is finished:
 
 - A formula still being typed (`$\frac{a}{`) is held back from its opening `$` until the closing
-  one arrives, so half a formula never flashes as raw TeX or as a KaTeX error.
+  one arrives, so half a formula never flashes as raw TeX or as a KaTeX error. The same rule
+  decides: a `$` that cannot open (`5$ and`, `$ x`) hides nothing, and once a `$` arrives that
+  does not close the open one (`$(seq 1 12) … $i`), the line shows as the text it is.
 - Each expression is typeset once. The result is cached by its source (up to 1,000 expressions), and
   the next update reuses the same nodes. A reply with thirty formulas pays KaTeX only for the one
   being written.

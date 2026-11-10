@@ -12,6 +12,7 @@
  */
 import type { Extension, InlineState } from '../engine/types'
 import { visit } from '../engine/visit'
+import { closesInlineMath, opensInlineMath } from '../core/math-delimiters'
 import { typesetMath } from './typeset'
 
 export { typesetMath, type Typeset } from './typeset'
@@ -20,19 +21,21 @@ const DOLLAR = 36
 
 /**
  * `$x$`, read the way a code span is: a run of dollars opens it, the next run of the same length
- * closes it, and nothing between them is Markdown.
+ * closes it, and nothing between them is Markdown. A single dollar also follows pandoc's rule
+ * (`math-delimiters.ts`): `$ x $`, `$a$5` and a shell line's `$(seq 1 12) … $i` are text.
  */
 function inlineMath(state: InlineState): boolean {
   const { text, pos } = state
   let open = pos
   while (text.charCodeAt(open) === DOLLAR) open++
   const size = open - pos
+  if (size === 1 && !opensInlineMath(text, pos)) return false
   for (let at = text.indexOf('$', open); at !== -1; at = text.indexOf('$', at)) {
     let end = at
     while (text.charCodeAt(end) === DOLLAR) end++
-    if (end - at === size) {
+    if (end - at === size && (size > 1 || closesInlineMath(text, at))) {
       let value = text.slice(open, at).replace(/\n/g, ' ')
-      // One space of padding inside the dollars is not part of the formula.
+      // One space of padding inside `$$ … $$` is not part of the formula.
       if (value.length > 2 && value.startsWith(' ') && value.endsWith(' ') && value.trim() !== '')
         value = value.slice(1, -1)
       state.push({ type: 'inlineMath', value })

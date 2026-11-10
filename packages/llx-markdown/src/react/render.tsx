@@ -63,6 +63,14 @@ const own = (node: Node, tag: string, props: Props | null): [string, Props | nul
 /** Draws a tree. Every call gives new elements; the caller remembers them by the tree's text. */
 export const render = (root: Node, options: RenderOptions): ReactNode => {
   const { components, urlTransform } = options
+  /**
+   * The URL the page's check lets through, or undefined when it refuses one: emptied, or no
+   * answer. An empty URL as written (`[a]()`) stays empty, the link CommonMark writes.
+   */
+  const allowed = (url: string, key: string, node: Node): string | undefined => {
+    const checked = urlTransform(url, key, node)
+    return checked || (url === '' && checked === '' ? '' : undefined)
+  }
   /** The page's component for an element the renderer writes itself, or the element. */
   const pageTag = (name: string): string | ComponentType<Props> =>
     (components[name] as ComponentType<Props> | undefined) ?? name
@@ -75,10 +83,14 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
   ): ReactNode => {
     const [name, merged] = own(node, tag, props)
     if (merged !== null && node.data?.hProperties !== undefined) {
-      // An element an extension made: its URLs pass the page's check like a link's or an image's.
-      for (const key of URL_PROPS)
-        if (typeof merged[key] === 'string')
-          merged[key] = urlTransform(merged[key] as string, key, node) ?? ''
+      // An element an extension made: its URLs pass the page's check like a link's or an image's,
+      // and one refused is dropped, not left as an empty attribute.
+      for (const key of URL_PROPS) {
+        if (typeof merged[key] !== 'string') continue
+        const url = allowed(merged[key] as string, key, node)
+        if (url === undefined) delete merged[key]
+        else merged[key] = url
+      }
       // An element given its HTML has no children of its own.
       if (merged.dangerouslySetInnerHTML !== undefined) children = []
     }
@@ -241,27 +253,22 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
         return
       case 'link': {
         const url = node.url ?? ''
-        const href = urlTransform(url, 'href', node) ?? ''
+        const href = allowed(url, 'href', node)
         // A bare address the page refuses to link (`ftp://…`) stays the text it was written as.
-        if (
-          href === '' &&
-          url !== '' &&
-          node.children?.length === 1 &&
-          node.children[0]?.value === url
-        ) {
+        if (href === undefined && node.children?.length === 1 && node.children[0]?.value === url) {
           out.push(url)
           return
         }
-        const props: Props = { href }
+        // A refused URL leaves the link without an `href`: an empty one would link to the page.
+        const props: Props = href === undefined ? {} : { href }
         if (node.title) props.title = node.title
         out.push(element(node, 'a', props, inline(node.children)))
         return
       }
       case 'image': {
-        const props: Props = {
-          src: urlTransform(node.url ?? '', 'src', node) ?? '',
-          alt: node.alt ?? '',
-        }
+        // A refused or empty source is left off: `src=""` makes a browser fetch the page again.
+        const src = allowed(node.url ?? '', 'src', node)
+        const props: Props = src ? { src, alt: node.alt ?? '' } : { alt: node.alt ?? '' }
         if (node.title) props.title = node.title
         out.push(element(node, 'img', props, []))
         return

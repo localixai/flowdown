@@ -1,17 +1,18 @@
 'use client'
 import {
   isValidElement,
+  memo,
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
   type ComponentPropsWithoutRef,
   type ReactElement,
   type ReactNode,
 } from 'react'
 import { useRenderContext } from './context'
 import { childrenToText, getLanguage } from './helpers'
-import { CheckIcon, CopyIcon } from './icons'
+import { codeFileName, copyText, downloadFile } from './file-actions'
+import { CheckIcon, CopyIcon, DownloadIcon } from './icons'
 import { useLabels } from './labels'
 
 type CodeProps = ComponentPropsWithoutRef<'code'> & { node?: unknown }
@@ -45,30 +46,23 @@ export function Code({ node: _node, className, children, ...props }: CodeProps) 
   )
 }
 
-const noSubscribe = () => () => {}
-const hasClipboard = () => typeof navigator !== 'undefined' && Boolean(navigator.clipboard)
-const noClipboard = () => false
+/** The code of a block as last drawn: read when a button is pressed, not when it is drawn. */
+type CodeText = { readonly current: string }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ code }: { code: CodeText }) {
   const labels = useLabels()
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
-  // No clipboard (an insecure origin, a test DOM): no button that would do nothing. Read after
-  // hydration, so a server render and the first client render agree.
-  const canCopy = useSyncExternalStore(noSubscribe, hasClipboard, noClipboard)
-  if (!canCopy) return null
   const copy = () => {
-    navigator.clipboard.writeText(text).then(
-      () => {
-        setCopied(true)
-        clearTimeout(timer.current)
-        timer.current = setTimeout(() => setCopied(false), COPIED_MS)
-      },
-      () => {
-        /* Denied by the page or the person; the code is still selectable. */
-      },
-    )
+    // The Clipboard API, or the old copy command where the page has none (an insecure origin).
+    // When both refuse there is nothing to say: the code is still selectable.
+    void copyText(code.current).then((done) => {
+      if (!done) return
+      setCopied(true)
+      clearTimeout(timer.current)
+      timer.current = setTimeout(() => setCopied(false), COPIED_MS)
+    })
   }
   const Glyph = copied ? CheckIcon : CopyIcon
   return (
@@ -85,9 +79,25 @@ function CopyButton({ text }: { text: string }) {
   )
 }
 
+/** Saves the code as a file: named as its fence's title, or `code.<ext>` from its language. */
+function DownloadButton({ code, name }: { code: CodeText; name: string }) {
+  const labels = useLabels()
+  return (
+    <button
+      type="button"
+      className="llx-code-download"
+      onClick={() => downloadFile(code.current, name)}
+      aria-label={labels.download}
+      title={labels.download}
+    >
+      <DownloadIcon />
+    </button>
+  )
+}
+
 /**
- * A fenced code block: its language and a copy button above the code. Replace it with your own
- * through `components.pre`; the `Code` inside still highlights.
+ * A fenced code block: its language, a download and a copy button above the code. Replace it with
+ * your own through `components.pre`; the `Code` inside still highlights.
  */
 export function CodeBlock({ node: _node, children, ...props }: PreProps) {
   const code = isValidElement(children)
@@ -107,8 +117,32 @@ export function CodeBlock({ node: _node, children, ...props }: PreProps) {
 }
 
 /**
- * The frame of a code block: the bar with its language and copy button, then the `<pre>`. A fence
- * that names its file (` ```ts title="src/app.ts" `) shows the file first, the language after it.
+ * The bar of a code block. It reads the code only when a button is pressed, so while a fence is
+ * being written the bar is drawn once, not on every token.
+ */
+const CodeBar = memo(function CodeBar({
+  language,
+  title,
+  code,
+}: {
+  language: string | undefined
+  title: string | undefined
+  code: CodeText
+}) {
+  return (
+    <figcaption className="llx-code-bar">
+      {title ? <span className="llx-code-title">{title}</span> : null}
+      {language ? <span className="llx-code-language">{language}</span> : null}
+      <DownloadButton code={code} name={codeFileName(title, language)} />
+      <CopyButton code={code} />
+    </figcaption>
+  )
+})
+
+/**
+ * The frame of a code block: the bar with its language and its download and copy buttons, then the
+ * `<pre>`. A fence that names its file (` ```ts title="src/app.ts" `) shows the file first, the
+ * language after it; a fence with no language shows none.
  */
 export function CodeFrame({
   language,
@@ -123,13 +157,13 @@ export function CodeFrame({
   preProps?: ComponentPropsWithoutRef<'pre'>
   children: ReactNode
 }) {
+  const code = useRef(text)
+  useEffect(() => {
+    code.current = text
+  }, [text])
   return (
     <figure className="llx-code" data-language={language}>
-      <figcaption className="llx-code-bar">
-        {title ? <span className="llx-code-title">{title}</span> : null}
-        <span className="llx-code-language">{language ?? ''}</span>
-        <CopyButton text={text} />
-      </figcaption>
+      <CodeBar language={language} title={title} code={code} />
       <pre {...preProps}>{children}</pre>
     </figure>
   )

@@ -2,7 +2,7 @@
   "renderers": [
     {
       "name": "llx",
-      "version": "0.1.0"
+      "version": "0.3.0"
     },
     {
       "name": "streamdown",
@@ -299,7 +299,7 @@
       "results": {
         "llx": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>Run this:</p>\n<figure class=\"llx-code\" data-language=\"ts\"><figcaption class=\"llx-code-bar\"><span class=\"llx-code-language\">ts</span><button type=\"button\" class=\"llx-code-copy\" aria-label=\"Copy code\" title=\"Copy code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"></rect><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></svg></button></figcaption><pre><code class=\"language-ts\">const answer = 42\n</code></pre></figure></div>"
+          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>Run this:</p>\n<figure class=\"llx-code\" data-language=\"ts\"><figcaption class=\"llx-code-bar\"><span class=\"llx-code-language\">ts</span><button type=\"button\" class=\"llx-code-download\" aria-label=\"Download code\" title=\"Download code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 15V3\"></path><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><path d=\"m7 10 5 5 5-5\"></path></svg></button><button type=\"button\" class=\"llx-code-copy\" aria-label=\"Copy code\" title=\"Copy code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"></rect><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></svg></button></figcaption><pre><code class=\"language-ts\">const answer = 42\n</code></pre></figure></div>"
         },
         "streamdown": {
           "pass": true,
@@ -431,7 +431,7 @@
       "results": {
         "llx": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><p><a href=\"\">click me</a></p></div>"
+          "html": "<div class=\"llx-markdown\"><p><a>click me</a></p></div>"
         },
         "streamdown": {
           "pass": true,

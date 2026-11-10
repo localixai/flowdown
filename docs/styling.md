@@ -136,8 +136,8 @@ Every element the dialect adds has a class. Restyle one with a selector that sta
 | Folded section | `.llx-details` and its `summary` (a `<details>` written as HTML takes the same rules) |
 | Sources | `.llx-sources`, `.llx-source`, `.llx-source-title`, `.llx-source-host`, `.llx-source-note` |
 | File tree | `.llx-tree`, `.llx-tree-row`, `.llx-tree-name`, `.llx-tree-comment` |
-| Diagram | `.llx-diagram`, `.llx-diagram-canvas` |
-| Code block | `.llx-code`, `.llx-code-bar`, `.llx-code-title`, `.llx-code-language`, `.llx-code-copy` |
+| Diagram | `.llx-diagram`, `.llx-diagram-canvas`; its toolbar `.llx-diagram-actions` of `.llx-diagram-action` buttons; the viewer `dialog.llx-diagram-viewer`, `.llx-diagram-viewer-bar`, `.llx-diagram-stage`, `.llx-diagram-viewer-canvas` |
+| Code block | `.llx-code`, `.llx-code-bar`, `.llx-code-title`, `.llx-code-language` (absent when the fence names none), `.llx-code-download`, `.llx-code-copy` |
 
 The root carries `data-streaming` while a reply streams, and `data-caret` while its caret shows.
 

@@ -9,13 +9,14 @@ import {
   headingIdsOfBlocks,
 } from '../core/block-facts'
 import { createBlockSplitter, normalizeLineEndings } from '../core/blocks'
-import { closePartialMarkdown, openFenceBody } from '../core/heal'
+import { openFence } from '../core/fence-scan'
+import { closePartialMarkdown } from '../core/heal'
 import { llxDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
 import type { Extension } from '../engine/types'
 import { Diagram } from '../mermaid/diagram'
-import { mermaidRendererFor, type MermaidLoader } from '../mermaid/renderer'
+import { setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
 import { Callout } from './callout'
 import { Code, CodeBlock } from './code-block'
 import { GrowingCode, growingFence } from './growing-code'
@@ -98,6 +99,11 @@ export interface MarkdownProps {
 
 interface BlockProps {
   source: string
+  /**
+   * The line that closes the fence the reply ends inside, on the last block only: kept beside
+   * the text, not joined to it, so a long fence is not copied on every token.
+   */
+  closer: string
   offset: number
   growing: boolean
   /** The anchors of the headings inside this block, by their offset in the document. */
@@ -166,8 +172,8 @@ export function buildComponents(overrides: MarkdownComponents | undefined): {
 }
 
 const Block = memo(
-  function Block({ source, offset, growing, headingIds, options }: BlockProps) {
-    const fence = growing && !options.ownCode ? growingFence(source) : null
+  function Block({ source: open, closer, offset, growing, headingIds, options }: BlockProps) {
+    const fence = growing && !options.ownCode ? growingFence(open, closer) : null
     if (
       fence &&
       fence.language !== DIAGRAM_FENCE_LANGUAGE &&
@@ -176,6 +182,7 @@ const Block = memo(
       !(fence.language === 'math' && options.extensions?.some((stage) => stage.name === 'math'))
     )
       return <GrowingCode {...fence} />
+    const source = closer ? open + closer : open
     // A table that is the whole block is drawn row by row, unless the page reads tables itself
     // (its own elements or extensions see the table whole).
     const table = options.ownTable ? null : tableRows(source)
@@ -188,6 +195,7 @@ const Block = memo(
   },
   (before, after) =>
     before.source === after.source &&
+    before.closer === after.closer &&
     before.offset === after.offset &&
     before.growing === after.growing &&
     before.headingKey === after.headingKey &&
@@ -231,7 +239,11 @@ export function Markdown({
   )
   const streaming = arriving || behind
   const caret = caretOption ?? streaming
-  const healed = streaming ? closePartialMarkdown(text) : text
+  // Inside a fence left open, the reply is read as it is and the line that closes the fence goes
+  // to the last block beside its text: joined here, every token would copy the whole reply.
+  const fence = streaming ? openFence(text) : null
+  const closer = fence ? `${text.endsWith('\n') ? '' : '\n'}${fence.marker}` : ''
+  const healed = streaming && !fence ? closePartialMarkdown(text) : text
   // One splitter per rendered document: it remembers the blocks it cut, and on the next token
   // scans only the end of the reply. Blocks that did not change come back as the same objects,
   // and everything worked out from a block below is kept beside it.
@@ -270,12 +282,12 @@ export function Markdown({
     // oxlint-disable-next-line react-hooks/exhaustive-deps
     [htmlStage, math, urlTransform, components, extensions, entities],
   )
-  const context = useMemo<RenderContext>(
-    () => ({ highlight, mermaid: mermaid ? mermaidRendererFor(mermaid) : null }),
-    [highlight, mermaid],
-  )
+  const context = useMemo<RenderContext>(() => {
+    if (mermaid) setMermaidLoader(mermaid)
+    return { highlight, mermaid: mermaid ? 'page' : null }
+  }, [highlight, mermaid])
   const labelValue = useMemo(() => mergeLabels(labels), [labels])
-  const endsInFence = streaming && openFenceBody(text) !== null
+  const endsInFence = fence !== null
 
   return (
     <LabelsContext.Provider value={labelValue}>
@@ -298,6 +310,7 @@ export function Markdown({
                 {index > 0 ? '\n' : null}
                 <Block
                   source={block.source}
+                  closer={index === blocks.length - 1 ? closer : ''}
                   offset={block.offset}
                   growing={endsInFence && index === blocks.length - 1}
                   headingIds={own && own.size > 0 ? own : null}

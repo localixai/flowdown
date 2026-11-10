@@ -2,7 +2,21 @@
 import { useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { GrowingFence, useRenderContext } from '../react/context'
 import { useLabels } from '../react/labels'
-import { resolveMermaidLook } from './look'
+import type * as DrawingModule from './drawing'
+import { loadMermaid } from './loader'
+
+/**
+ * What draws a diagram (its toolbar, its colours, the renderer) is a chunk of its own: a reply
+ * with no diagram, or a page that gave no Mermaid loader, never loads it. Once here it is used at
+ * once, so a diagram drawn before (a row scrolled back into a virtualized chat) does not flash.
+ */
+type Drawing = typeof DrawingModule
+let drawing: Drawing | null = null
+const loadDrawing = () =>
+  import('./drawing').then((module) => {
+    drawing = module
+    return module
+  })
 
 /**
  * A counter that moves whenever the page may have changed its colours: the system scheme, or a
@@ -54,34 +68,37 @@ export function Diagram({ source }: { source: string }) {
     const root = figure.current
     if (!mermaid || growing || !root) return
     const controller = new AbortController()
-    const look = resolveMermaidLook(root)
-    const ready = mermaid.peek(source, look)
-    if (ready) {
-      setState({ source, svg: ready })
-      return
+    const failed = (error: unknown) => {
+      if (controller.signal.aborted) return
+      const reason = error instanceof Error ? error.message : String(error)
+      setState({ source, error: reason.split('\n')[0] || reason })
     }
-    mermaid.render(source, look, controller.signal).then(
-      (svg) => {
+    const draw = ({ resolveMermaidLook, pageMermaidRenderer }: Drawing) => {
+      if (controller.signal.aborted) return
+      const renderer = mermaid === 'page' ? pageMermaidRenderer() : mermaid
+      const look = resolveMermaidLook(root)
+      const ready = renderer.peek(source, look)
+      if (ready) {
+        setState({ source, svg: ready })
+        return
+      }
+      renderer.render(source, look, controller.signal).then((svg) => {
         if (!controller.signal.aborted) setState({ source, svg })
-      },
-      (error: unknown) => {
-        if (controller.signal.aborted) return
-        const reason = error instanceof Error ? error.message : String(error)
-        setState({ source, error: reason.split('\n')[0] || reason })
-      },
-    )
+      }, failed)
+    }
+    if (drawing) draw(drawing)
+    else {
+      // The engine is the long fetch: it starts now, beside the chunk that will ask for it.
+      if (mermaid === 'page') loadMermaid().catch(() => {})
+      loadDrawing().then(draw, failed)
+    }
     return () => controller.abort()
-    // `scheme` is read by `resolveMermaidLook` through the page's styles: a theme change redraws.
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [mermaid, growing, source, scheme])
 
   const drawn = state?.source === source ? state : null
-  if (drawn?.svg) {
-    return (
-      <figure ref={figure} aria-label={labels.diagram} className="llx-diagram">
-        <div className="llx-diagram-canvas" dangerouslySetInnerHTML={{ __html: drawn.svg }} />
-      </figure>
-    )
+  if (drawn?.svg && drawing) {
+    const { DrawnDiagram } = drawing
+    return <DrawnDiagram figure={figure} svg={drawn.svg} source={source} toolbar={!growing} />
   }
   const note = drawn?.error
     ? labels.diagramFailed(drawn.error)

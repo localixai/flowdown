@@ -47,7 +47,7 @@ flowchart LR
 | No `mermaid` loader               | The source, as code.                                                    |
 | The fence is still being written  | The source, as code. A diagram is drawn only once its fence is closed.  |
 | Mermaid is loading or laying out  | The source, with "Drawing diagram…" under it.                           |
-| Drawn                             | The diagram, `figure.llx-diagram` labelled "Diagram" for screen readers. |
+| Drawn                             | The diagram, `figure.llx-diagram` labelled "Diagram" for screen readers, with its [toolbar](#toolbar-and-viewer). |
 | The source does not parse         | The source, with "Diagram could not be drawn:" and Mermaid's first error line. |
 
 Waiting for the closed fence keeps a streaming reply calm: a half-written diagram would otherwise
@@ -55,6 +55,40 @@ fail to parse on every token and flash an error, or redraw its layout dozens of 
 
 Diagrams are drawn in the browser only. On a server, and in the first render of a hydrating page,
 the source is shown; the diagram replaces it after hydration.
+
+## Toolbar and viewer
+
+A drawn diagram has a small toolbar in its top right corner. It shows when the pointer is over the
+diagram or the focus is in it, and always on a touch screen, where its buttons are 44 px targets.
+
+| Button                       | Does                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| Enlarge diagram              | Opens the viewer.                                                        |
+| Show source / Show diagram   | Swaps the picture for its Mermaid source, and back.                      |
+| Copy source                  | Copies the source; the button reads "Copied" for a moment. Uses the Clipboard API, and the copy command where the page has no access to it. |
+| Download SVG                 | Saves the picture as `diagram.svg`, sized by its own `viewBox`.          |
+
+A fence still being written, one Mermaid is still drawing, and one that failed show their source
+and no toolbar: there is no picture to enlarge or save.
+
+The viewer is a modal `<dialog>` over most of the window (all of it on a phone), with the diagram
+fitted to it:
+
+| To                     | Pointer                         | Keys            |
+| ---------------------- | ------------------------------- | --------------- |
+| Pan                    | Drag                            | Arrow keys      |
+| Zoom                   | Wheel, trackpad pinch, two fingers, or **−** and **+** | `-` and `+` |
+| Fit to the window      | The fit button                  | `0`             |
+| See it at its own size | The percentage (100%)           |                 |
+| Close                  | The close button, or a click outside | Escape     |
+
+On close the focus returns to the Enlarge button. The zoom buttons and keys glide unless the reader
+has asked for reduced motion; a drag or a pinch follows the hand. The viewer's code is its own
+chunk, loaded the first time the pointer or the focus reaches an Enlarge button, so a page whose
+diagrams are never enlarged does not download it.
+
+The words are [labels](components.md#labels) (`enlarge`, `showSource`, `zoomIn`, `close`, …), and
+the classes are in [Styling](styling.md#restyling-an-element).
 
 ## Colours and themes
 
@@ -98,8 +132,9 @@ const system = answerFormatPrompt({ diagrams: true })
 
 ## Your own diagram
 
-To put your own frame around a diagram (buttons to enlarge or copy it, say), draw the fence with
-`components.diagram` and keep the page's renderer, so your diagrams and the built-in ones share one
+To put your own frame around a diagram, draw the fence with `components.diagram`. It replaces the
+whole of the built-in one: the toolbar and the viewer too, so a page that wants other buttons, or
+none, draws its own. Keep the page's renderer, so your diagrams and the built-in ones share one
 queue and one cache:
 
 ```tsx

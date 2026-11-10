@@ -22,6 +22,9 @@ interface ScanState {
 
 let cached: ScanState = { prefix: '', open: null }
 
+/** The last answer: a renderer asks about the same text more than once in one update. */
+let answered: { text: string; open: OpenFence | null } | null = null
+
 /** Complete lines scanned so far; tests read it to prove the scan resumes instead of restarting. */
 export const fenceScanStats = { lines: 0 }
 
@@ -50,6 +53,13 @@ function step(
  * be at least as long as the opener, and carry no info string.
  */
 export function openFence(text: string): OpenFence | null {
+  if (answered !== null && answered.text === text) return answered.open
+  const open = scanFence(text)
+  answered = { text, open }
+  return open
+}
+
+function scanFence(text: string): OpenFence | null {
   let { prefix, open } = cached
   if (!text.startsWith(prefix)) {
     prefix = ''

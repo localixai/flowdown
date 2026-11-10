@@ -1,19 +1,23 @@
 {
   "name": "llx-markdown",
-  "version": "0.3.0",
-  "description": "Markdown for AI replies and docs in React, with its own parser and no dependencies: GitHub Markdown plus steps, tabs, stats, pros and cons, callouts, file trees, diagrams and math, rendered while it streams.",
+  "version": "0.4.0",
+  "description": "Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, zero dependencies, 30 KB gzipped, 9× faster than the next renderer on a long stream. GitHub Markdown plus steps, tabs, stats, pros and cons, callouts, file trees, diagrams and math.",
   "keywords": [
     "ai",
+    "ai-chat",
     "ai-sdk",
     "callouts",
     "chat",
     "chatbot",
     "commonmark",
+    "fast",
     "gfm",
     "katex",
+    "lightweight",
     "llm",
     "markdown",
     "markdown-parser",
+    "markdown-renderer",
     "math",
     "mermaid",
     "react",
@@ -24,7 +28,8 @@
     "streaming",
     "streaming-markdown",
     "syntax-highlighting",
-    "tabs"
+    "tabs",
+    "zero-dependency"
   ],
   "homepage": "https://github.com/rsaryev/llx-markdown#readme",
   "bugs": {

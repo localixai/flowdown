@@ -85,5 +85,5 @@ test('a URL an extension writes passes the same check as a link', () => {
       })
     },
   }
-  expect(render('Text.', { extensions: [unsafe] })).toContain('<a href="">x</a>')
+  expect(render('Text.', { extensions: [unsafe] })).toContain('<a>x</a>')
 })

@@ -166,6 +166,119 @@ describe('code blocks', () => {
       expect(button.getAttribute('aria-label')).toBe('Copied')
     })
   })
+
+  /** Runs `body` with `navigator.clipboard` and `document.execCommand` replaced, then puts them back. */
+  async function withClipboard(
+    clipboard: unknown,
+    execCommand: ((command: string) => boolean) | undefined,
+    body: () => Promise<void>,
+  ) {
+    const kept = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    const keptExec = Object.getOwnPropertyDescriptor(document, 'execCommand')
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: clipboard })
+    Object.defineProperty(document, 'execCommand', { configurable: true, value: execCommand })
+    try {
+      await body()
+    } finally {
+      if (kept) Object.defineProperty(navigator, 'clipboard', kept)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+      if (keptExec) Object.defineProperty(document, 'execCommand', keptExec)
+      else Reflect.deleteProperty(document, 'execCommand')
+    }
+  }
+
+  test('without the Clipboard API, or when it refuses, the copy command copies', async () => {
+    const { Markdown } = await import('../index')
+    const { act } = await import('react')
+    const copied: string[] = []
+    const execCommand = (command: string) => {
+      const area = document.activeElement as HTMLTextAreaElement
+      copied.push(`${command}:${area.value}`)
+      return true
+    }
+    const refusing = { writeText: () => Promise.reject(new Error('insecure origin')) }
+    for (const clipboard of [undefined, refusing]) {
+      copied.length = 0
+      await withClipboard(clipboard, execCommand, () =>
+        mounted(<Markdown>{'```sh\nls -la\n```'}</Markdown>, async (host) => {
+          const button = host.querySelector<HTMLButtonElement>('.llx-code-copy')!
+          await act(async () => button.click())
+          expect(copied).toEqual(['copy:ls -la'])
+          expect(button.getAttribute('aria-label')).toBe('Copied')
+          // The textarea it copied from is gone.
+          expect(document.querySelector('textarea')).toBeNull()
+        }),
+      )
+    }
+  })
+
+  test('when nothing can copy, the button stays and claims no copy', async () => {
+    const { Markdown } = await import('../index')
+    const { act } = await import('react')
+    await withClipboard(
+      undefined,
+      () => false,
+      () =>
+        mounted(<Markdown>{'```sh\nls\n```'}</Markdown>, async (host) => {
+          const button = host.querySelector<HTMLButtonElement>('.llx-code-copy')!
+          await act(async () => button.click())
+          expect(button.getAttribute('aria-label')).toBe('Copy code')
+          expect(button.hasAttribute('data-copied')).toBe(false)
+        }),
+    )
+  })
+
+  test('the download button saves the code, named by its title or its language', async () => {
+    const { Markdown } = await import('../index')
+    const { act } = await import('react')
+    const saved: Array<{ name: string; href: string }> = []
+    const blobs = new Map<string, Blob>()
+    const revoked: string[] = []
+    const { createObjectURL, revokeObjectURL } = URL
+    const click = HTMLAnchorElement.prototype.click
+    URL.createObjectURL = (blob: Blob) => {
+      const url = `blob:https://example.test/${blobs.size}`
+      blobs.set(url, blob)
+      return url
+    }
+    URL.revokeObjectURL = (url: string) => void revoked.push(url)
+    HTMLAnchorElement.prototype.click = function (this: HTMLAnchorElement) {
+      saved.push({ name: this.download, href: this.getAttribute('href') ?? '' })
+    }
+    try {
+      const doc = [
+        '```ts title="src/app.ts"\nexport const a = 1\n```',
+        '```bash\necho hi\n```',
+        '```\nplain\n```',
+        '```elixir\nIO.puts 1\n```',
+      ].join('\n\n')
+      await mounted(<Markdown>{doc}</Markdown>, async (host) => {
+        const buttons = [...host.querySelectorAll<HTMLButtonElement>('.llx-code-download')]
+        expect(buttons.map((button) => button.getAttribute('aria-label'))).toEqual(
+          Array(4).fill('Download code'),
+        )
+        for (const button of buttons) await act(async () => button.click())
+      })
+      expect(saved.map((file) => file.name)).toEqual(['app.ts', 'code.sh', 'code.txt', 'code.txt'])
+      expect(await blobs.get(saved[0]!.href)!.text()).toBe('export const a = 1')
+      expect(document.querySelector('a[download]')).toBeNull()
+      await new Promise((resolve) => setTimeout(resolve, 1_100))
+      expect(revoked.toSorted()).toEqual([...blobs.keys()].toSorted())
+    } finally {
+      URL.createObjectURL = createObjectURL
+      URL.revokeObjectURL = revokeObjectURL
+      HTMLAnchorElement.prototype.click = click
+    }
+  })
+
+  test('a fence with no language has no language label', async () => {
+    const { Markdown } = await import('../index')
+    await mounted(<Markdown>{'```\nplain\n```\n\n```ts\nx\n```'}</Markdown>, async (host) => {
+      const bars = [...host.querySelectorAll('.llx-code-bar')]
+      expect(bars[0]!.querySelector('.llx-code-language')).toBeNull()
+      expect(bars[1]!.querySelector('.llx-code-language')!.textContent).toBe('ts')
+    })
+  })
 })
 
 describe('streaming', () => {
@@ -262,7 +375,7 @@ describe('math, loaded on demand', () => {
 })
 
 describe('server markup', () => {
-  test('hydrates without a mismatch, then shows the copy button where the page can copy', async () => {
+  test('hydrates without a mismatch, the copy button in both renders', async () => {
     const { Markdown } = await import('../index')
     const { html } = await import('../html')
     const { act } = await import('react')

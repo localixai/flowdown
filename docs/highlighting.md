@@ -25,18 +25,31 @@ none of it.
 
 The bundled highlighter knows the languages replies and READMEs mostly contain:
 
-| Language   | Fence names                    |
-| ---------- | ------------------------------ |
-| Bash       | `bash`, `sh`, `shell`, `zsh`   |
-| CSS        | `css`                          |
-| Diff       | `diff`, `patch`                |
-| JavaScript | `javascript`, `js`, `jsx`      |
-| JSON       | `json`                         |
-| Markdown   | `markdown`, `md`               |
-| SQL        | `sql`                          |
-| TypeScript | `typescript`, `ts`, `tsx`      |
-| HTML, XML  | `xml`, `html`                  |
-| YAML       | `yaml`, `yml`                  |
+| Language | Fence names |
+| --- | --- |
+| Bash | `bash`, `sh`, `shell`, `zsh` |
+| C | `c`, `h` |
+| C++ | `cpp`, `c++`, `hpp` |
+| C# | `csharp`, `cs`, `c#` |
+| CSS | `css` |
+| Diff | `diff`, `patch` |
+| Dockerfile | `dockerfile`, `docker` |
+| Go | `go`, `golang` |
+| HTML, XML | `xml`, `html`, `svg` |
+| Java | `java` |
+| JavaScript | `javascript`, `js`, `jsx`, `mjs`, `cjs` |
+| JSON | `json` |
+| Kotlin | `kotlin`, `kt` |
+| Markdown | `markdown`, `md` |
+| PHP | `php` |
+| Python | `python`, `py` |
+| Ruby | `ruby`, `rb` |
+| Rust | `rust`, `rs` |
+| SQL | `sql` |
+| Swift | `swift` |
+| TOML, INI | `toml`, `ini` |
+| TypeScript | `typescript`, `ts`, `tsx` |
+| YAML | `yaml`, `yml` |
 
 In a shell fence the highlighter colours what a reader looks for in an install line: the command
 (the first word of each command, after a `$ ` prompt, a `|`, `&&` or `;`), its flags, numbers,

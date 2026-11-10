@@ -28,7 +28,8 @@ const BUDGET: Record<string, number> = {
   './math': 1.5,
   // Past 0.8 KB since a shell line shows its command, flags and numbers (highlight.ts).
   './highlight': 1.1,
-  './styles.css': 5,
+  // Past 5 KB since a drawn diagram has a toolbar and an enlarged viewer (`diagram.css`).
+  './styles.css': 5.5,
 }
 
 /** The entry's bundle, and the chunks it imports on demand (split out, as a page's bundler does). */

@@ -10,8 +10,9 @@
  * stable. It is applied ONLY while streaming; the final text renders verbatim.
  */
 import { parseContainerMarker } from '../dialect'
-import { isLiteralDollar } from './dollars'
+import { inlineMathClose, isLiteralDollar } from './dollars'
 import { openFence } from './fence-scan'
+import { opensInlineMath } from './math-delimiters'
 import { isEscaped } from './prose'
 
 /** Whether a stabilized fence is the one incomplete body still being written. */
@@ -56,9 +57,12 @@ function maskInert(tail: string): string {
 /**
  * A formula still being typed is withheld from its opening `$` until the closing one arrives.
  * Math is typeset while a reply streams, so a half-typed `$\frac{a}{` would otherwise print as
- * raw LaTeX and then jump into a formula. A dollar that is not a delimiter — a currency amount,
- * a shell variable — is not counted: that call is `isLiteralDollar`, the same rule the renderer
- * escapes by, so the two can never disagree about one `$`.
+ * raw LaTeX and then jump into a formula. Dollars are paired by the renderer's own rule
+ * (`literalDollars`, `math-delimiters.ts`), so the two never disagree about one `$`: a price, a
+ * shell variable or a `$` with a space after it (`5$ and`) opens nothing and hides nothing.
+ *
+ * Only the first `$` left open is withheld, and only while no `$` follows it: a `$` that came and
+ * did not close it (the shell line `$(seq 1 12); do printf "%s" $i`) shows these dollars are text.
  */
 function withholdPartialMath(tail: string): string {
   const code = tail.replace(/`[^`]*`/g, (span) => ' '.repeat(span.length))
@@ -69,14 +73,19 @@ function withholdPartialMath(tail: string): string {
   if (displays.length % 2 === 1) return tail.slice(0, displays.at(-1)).trimEnd()
 
   const inline = code.replace(/\$\$[\s\S]*?\$\$/g, (span) => ' '.repeat(span.length))
-  const delimiters: number[] = []
-  for (let index = 0; index < inline.length; index += 1) {
-    if (inline[index] === '$' && !isEscaped(inline, index) && !isLiteralDollar(inline, index)) {
-      delimiters.push(index)
+  for (let index = inline.indexOf('$'); index !== -1; index = inline.indexOf('$', index + 1)) {
+    if (isEscaped(inline, index) || isLiteralDollar(inline, index)) continue
+    // The last character: the one after it, which says whether it opens, is not written yet.
+    const last = index === inline.length - 1
+    if (!last && !opensInlineMath(inline, index)) continue
+    const close = last ? -1 : inlineMathClose(inline, index)
+    if (close !== -1) {
+      index = close
+      continue
     }
+    return inline.includes('$', index + 1) ? tail : tail.slice(0, index).trimEnd()
   }
-  if (delimiters.length % 2 === 0) return tail
-  return tail.slice(0, delimiters.at(-1)).trimEnd()
+  return tail
 }
 
 /** Balance inline code: an odd number of backticks means an open span. A bare
@@ -223,5 +232,7 @@ export function closePartialMarkdown(text: string): string {
   tail = balanceDoubleDelimiter(tail, '~~')
   tail = balanceSingleEmphasis(tail, '*')
   tail = balanceSingleEmphasis(tail, '_')
+  // Nothing to complete: the very text, so a long reply is not copied on every token.
+  if (head.length + tail.length === text.length && text.endsWith(tail)) return text
   return head + tail
 }

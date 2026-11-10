@@ -55,3 +55,30 @@ test('a shell line shows its command and flags, not only the shell built-ins', (
   // A word inside an argument is not a flag.
   expect(spans('rm -rf node_modules/a-b')).toEqual(['built_in:rm', 'attr:-rf'])
 })
+
+test('the popular languages and their aliases have a grammar', () => {
+  for (const language of [
+    'python',
+    'py',
+    'go',
+    'rust',
+    'rs',
+    'java',
+    'kotlin',
+    'swift',
+    'c',
+    'cpp',
+    'c++',
+    'csharp',
+    'cs',
+    'php',
+    'ruby',
+    'rb',
+    'toml',
+    'dockerfile',
+  ]) {
+    expect(highlightCode('return 1 // "x"', language, { unknown: 'null' })).not.toBeNull()
+  }
+  expect(highlightCode('def run(x):\n    return x', 'py')).toContain('hljs-keyword')
+  expect(highlightCode('FROM node:22', 'docker')).toContain('hljs-keyword')
+})

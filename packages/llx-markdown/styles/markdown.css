@@ -236,7 +236,8 @@
 
 /* ─── Diagrams (```mermaid) ───
    A figure, not a panel: no frame, fill or header, so a diagram sits in the reply the way an
-   image does. Its colours come from the tokens (`mermaid/look.ts`); only shape is here. */
+   image does. Its colours come from the tokens (`mermaid/look.ts`); only shape is here. Its
+   toolbar and the enlarged viewer are in `diagram.css`. */
 .llx-markdown .llx-diagram {
   margin: 0.8rem 0;
 }

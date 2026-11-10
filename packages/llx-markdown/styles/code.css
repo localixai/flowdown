@@ -1,5 +1,6 @@
 /* ─── Code blocks (fenced code, `CodeBlock`) ───
-   A quiet panel: the language and a copy button in a bar above the code, the code on the veil.
+   A quiet panel: the language, a download and a copy button in a bar above the code, the code on
+   the veil.
    No border, so a reply with several blocks does not read as a stack of boxes. */
 .llx-markdown .llx-code {
   margin: 0.8rem 0;
@@ -36,8 +37,13 @@
 .llx-markdown .llx-code-bar > .llx-code-language:first-child {
   margin-right: auto;
 }
-.llx-markdown .llx-code-copy {
+/* With no language or title before them, the buttons still sit at the end of the bar. */
+.llx-markdown .llx-code-bar > .llx-code-download:first-child {
+  margin-left: auto;
+}
+.llx-markdown :is(.llx-code-copy, .llx-code-download) {
   display: inline-grid;
+  flex: none;
   place-items: center;
   width: 1.75rem;
   height: 1.75rem;
@@ -50,16 +56,29 @@
     color var(--llx-duration) ease,
     background-color var(--llx-duration) ease;
 }
-.llx-markdown .llx-code-copy:hover {
+.llx-markdown .llx-code-download + .llx-code-copy {
+  margin-left: -0.3rem;
+}
+.llx-markdown :is(.llx-code-copy, .llx-code-download):hover {
   background: var(--llx-veil-strong);
   color: var(--llx-fg);
 }
 .llx-markdown .llx-code-copy[data-copied] {
   color: var(--llx-success);
 }
-.llx-markdown .llx-code-copy svg {
+.llx-markdown :is(.llx-code-copy, .llx-code-download) svg {
   width: 0.95rem;
   height: 0.95rem;
+}
+/* A finger needs a 44 px target; a mouse keeps the small buttons. */
+@media (pointer: coarse) {
+  .llx-markdown :is(.llx-code-copy, .llx-code-download) {
+    width: 44px;
+    height: 44px;
+  }
+  .llx-markdown .llx-code-download + .llx-code-copy {
+    margin-left: 0;
+  }
 }
 .llx-markdown pre {
   margin: 0;

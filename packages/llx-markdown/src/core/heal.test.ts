@@ -18,6 +18,20 @@ describe('closePartialMarkdown math', () => {
     expect(closePartialMarkdown('In code `echo $x` only')).toBe('In code `echo $x` only')
   })
 
+  test('a dollar that can never open or close a formula hides nothing', () => {
+    const shell = 'for i in $(seq 1 12); do printf "line %s" $i; done'
+    expect(closePartialMarkdown(shell)).toBe(shell)
+    expect(closePartialMarkdown('for i in $(seq 1 12); do printf "line %s" $i')).toBe(
+      'for i in $(seq 1 12); do printf "line %s" $i',
+    )
+    expect(closePartialMarkdown('It costs 5$ and')).toBe('It costs 5$ and')
+    expect(closePartialMarkdown('Spaced $ x')).toBe('Spaced $ x')
+    expect(closePartialMarkdown('Then $a$5 more')).toBe('Then $a$5 more')
+    // A dollar at the very end may open a formula with the next token.
+    expect(closePartialMarkdown('Energy is $')).toBe('Energy is')
+    expect(closePartialMarkdown('Energy is $E$')).toBe('Energy is $E$')
+  })
+
   test('a * or _ inside a closed formula is not an open emphasis', () => {
     expect(closePartialMarkdown('Product $a*b$ and $x_i$ done')).toBe(
       'Product $a*b$ and $x_i$ done',
@@ -36,6 +50,14 @@ describe('closePartialMarkdown callout markers', () => {
   test('leaves an ordinary quote or a bracket in prose alone', () => {
     expect(closePartialMarkdown('> quoted [text')).toBe('> quoted [text')
     expect(closePartialMarkdown('See [')).toBe('See [')
+  })
+})
+
+describe('a text with nothing to complete', () => {
+  test('comes back as the very string, not a copy of it', () => {
+    const text = `${'A paragraph of plain prose.\n\n'.repeat(50)}And the last one, finished.`
+    expect(closePartialMarkdown(text)).toBe(text)
+    expect(closePartialMarkdown(`${text} **bold`)).toBe(`${text} **bold**`)
   })
 })
 

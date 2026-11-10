@@ -63,7 +63,7 @@ in [bench/results/features.json](../bench/results/features.json).
   references (14 KB together) only for a reply that needs them. Streamdown loads its HTML parser up
   front. Packages a renderer loads only when a reply needs them (KaTeX, Mermaid, D2) are not counted
   for any library.
-- **Highlighting.** llx-markdown with code highlighting is 50 KB.
+- **Highlighting.** llx-markdown with code highlighting for 23 languages is 68 KB.
 - **Packages installed** counts dependencies all the way down, read from the lockfile, without
   React ([bench/src/install.ts](../bench/src/install.ts)).
 
@@ -87,17 +87,19 @@ better.
 
 | | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **llx-markdown** | **13** | **37** | 94 | **35** | **254** | **61** |
-| Streamdown | 56 | 311 | 5,342 | 3,932 | 6,038 | 145 |
-| react-markdown | 206 | 2,773 | 2,866 | 3,195 | stopped at 67% | 16,607 |
-| markdown-to-jsx | 18 | 128 | **58** | 165 | 2,580 | 724 |
-| markstream | 41 | 336 | 946 | 856 | 5,631 | 133 |
-| marked-react | 42 | 283 | 80 | 267 | 7,124 | 1,754 |
+| **llx-markdown** | **15** | **36** | **40** | **38** | **245** | **63** |
+| Streamdown | 54 | 286 | 4,795 | 3,924 | 6,310 | 143 |
+| react-markdown | 207 | 2,736 | 2,740 | 3,067 | stopped at 68% | 15,620 |
+| markdown-to-jsx | 17 | 122 | 69 | 170 | 2,420 | 572 |
+| markstream | 43 | 317 | 947 | 903 | 5,917 | 127 |
+| marked-react | 35 | 289 | 84 | 281 | 7,187 | 1,724 |
 
-- **Where llx-markdown wins: length.** It parses again only the block still being written, so a
-  100k reply and a 30-reply thread cost about as much per update as the first lines.
-- **Where markdown-to-jsx and marked-react win: one long code block.** They are the fastest there;
-  llx-markdown is third. markdown-to-jsx holds unfinished syntax back instead of repairing it.
+- **Where llx-markdown wins: everywhere here, and most on length.** It parses again only the block
+  still being written, and reads only the new lines of a growing code block, so a 100k reply and a
+  30-reply thread cost about as much per update as the first lines.
+- **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
+  a few milliseconds on a 5k chat answer, and it and marked-react are within 2× on 50k of code.
+  markdown-to-jsx holds unfinished syntax back instead of repairing it.
 - **Why react-markdown is slowest.** It parses the whole text again on every update.
 
 How speed is measured: median of three runs on an Apple M5 in Bun 1.4.4. Pages are drawn with

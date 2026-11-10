@@ -6,6 +6,7 @@ import diagram from '../scenes/diagram.md' with { type: 'text' }
 import hero from '../scenes/hero.md' with { type: 'text' }
 import sources from '../scenes/sources.md' with { type: 'text' }
 import steps from '../scenes/steps.md' with { type: 'text' }
+import viewer from '../scenes/viewer.md' with { type: 'text' }
 
 /** A scene file is the question, a line `---`, then the reply. */
 function scene(source: string) {
@@ -19,6 +20,7 @@ export const scenes: Record<string, { question: string; reply: string }> = {
   code: scene(code),
   diagram: scene(diagram),
   sources: scene(sources),
+  viewer: scene(viewer),
 }
 
 /** Every form at once, for looking at (`bun run review`); not in the README. */

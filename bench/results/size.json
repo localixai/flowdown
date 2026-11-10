@@ -1,14 +1,14 @@
 {
   "llx-markdown": {
-    "atOnce": 30.2,
-    "onDemand": 14.2
+    "atOnce": 29.9,
+    "onDemand": 19.9
   },
   "llx-markdown + highlight": {
-    "atOnce": 51.3,
-    "onDemand": 14.2
+    "atOnce": 67.7,
+    "onDemand": 19.9
   },
   "llx-markdown/stream": {
-    "atOnce": 4.3,
+    "atOnce": 4.6,
     "onDemand": 0
   },
   "react-markdown + remark-gfm": {

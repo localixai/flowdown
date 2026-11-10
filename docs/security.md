@@ -52,7 +52,10 @@ Turn HTML off where replies have no reason to contain it:
 
 Every link and image URL goes through `urlTransform`. The default, `defaultUrlTransform`, is the check
 react-markdown made familiar: relative URLs, fragments and the protocols `http`, `https`, `mailto`, `irc`, `ircs` and `xmpp` are kept; any
-other URL (`javascript:`, `data:`, `vbscript:`, but also `tel:`) is replaced with an empty one.
+other URL (`javascript:`, `data:`, `vbscript:`, but also `tel:`) is refused. A refused URL is
+dropped, not left empty: the link keeps its text and has no `href`, the image has no `src`, and an
+element an extension or raw HTML wrote loses that attribute. An empty `href` would link to the page
+itself, and an empty `src` makes the browser fetch the page again.
 
 Pass your own to allow more, or less:
 
@@ -66,7 +69,8 @@ const urlTransform = (url: string) => (!hasProtocol.test(url) || allowed.test(ur
 ;<Markdown urlTransform={urlTransform}>{text}</Markdown>
 ```
 
-`urlTransform={null}` does not turn the check off: the default is used. To accept
+Your function refuses a URL by returning `''`, `null` or `undefined`. `urlTransform={null}` does not
+turn the check off: the default is used. To accept
 every URL, pass `(url) => url`, and do not do that for untrusted text.
 
 Two things the defaults do not do:
