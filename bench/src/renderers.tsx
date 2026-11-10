@@ -8,6 +8,9 @@ import { createRequire } from 'node:module'
 import { Markdown } from 'llx-markdown'
 import { highlight } from 'llx-markdown/highlight'
 import type { ReactNode } from 'react'
+import MarkdownToJsx from 'markdown-to-jsx/react'
+import MarkedReact from 'marked-react'
+import MarkstreamRender from 'markstream-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Streamdown } from 'streamdown'
@@ -56,5 +59,28 @@ export const RENDERERS: Renderer[] = [
     version: versionOf('react-markdown'),
     about: '`<ReactMarkdown remarkPlugins={[remarkGfm]}>`: the whole reply parsed on every update.',
     Render: ({ text }) => <ReactMarkdown remarkPlugins={gfm}>{text}</ReactMarkdown>,
+  },
+  {
+    name: 'markdown-to-jsx',
+    version: versionOf('markdown-to-jsx'),
+    about:
+      '`<Markdown options={{ optimizeForStreaming }}>`: holds back unfinished syntax while streaming.',
+    Render: ({ text, streaming }) => (
+      <MarkdownToJsx options={{ optimizeForStreaming: streaming }}>{text}</MarkdownToJsx>
+    ),
+  },
+  {
+    name: 'markstream',
+    version: versionOf('markstream-react'),
+    about: '`<MarkdownRender content final fade={false}>` (markstream-react): a streaming parser.',
+    Render: ({ text, streaming }) => (
+      <MarkstreamRender content={text} final={!streaming} fade={false} />
+    ),
+  },
+  {
+    name: 'marked-react',
+    version: versionOf('marked-react'),
+    about: '`<Markdown value gfm>`: marked, rendered to React elements.',
+    Render: ({ text }) => <MarkedReact value={text} gfm />,
   },
 ]

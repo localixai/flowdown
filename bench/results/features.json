@@ -1,0 +1,525 @@
+{
+  "renderers": [
+    {
+      "name": "llx",
+      "version": "0.1.0"
+    },
+    {
+      "name": "streamdown",
+      "version": "2.7.1"
+    },
+    {
+      "name": "react-markdown",
+      "version": "10.1.0"
+    },
+    {
+      "name": "markdown-to-jsx",
+      "version": "9.10.6"
+    },
+    {
+      "name": "markstream",
+      "version": "2.0.24"
+    },
+    {
+      "name": "marked-react",
+      "version": "4.0.0"
+    }
+  ],
+  "checks": [
+    {
+      "group": "GitHub Markdown",
+      "label": "Tables",
+      "text": "| Plan | Price |\n| --- | --- |\n| Free | $0 |\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><div class=\"llx-table\"><table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table></div></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><div class=\"my-4 flex flex-col gap-2 rounded-lg border border-border bg-sidebar p-2\" data-streamdown=\"table-wrapper\"><div class=\"flex items-center justify-end gap-1\"><div class=\"relative\"><button class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" title=\"Copy table\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"14\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"14\"><path clip-rule=\"evenodd\" d=\"M2.75 0.5C1.7835 0.5 1 1.2835 1 2.25V9.75C1 10.7165 1.7835 11.5 2.75 11.5H3.75H4.5V10H3.75H2.75C2.61193 10 2.5 9.88807 2.5 9.75V2.25C2.5 2.11193 2.61193 2 2.75 2H8.25C8.38807 2 8.5 2.11193 8.5 2.25V3H10V2.25C10 1.2835 9.2165 0.5 8.25 0.5H2.75ZM7.75 4.5C6.7835 4.5 6 5.2835 6 6.25V13.75C6 14.7165 6.7835 15.5 7.75 15.5H13.25C14.2165 15.5 15 14.7165 15 13.75V6.25C15 5.2835 14.2165 4.5 13.25 4.5H7.75ZM7.5 6.25C7.5 6.11193 7.61193 6 7.75 6H13.25C13.3881 6 13.5 6.11193 13.5 6.25V13.75C13.5 13.8881 13.3881 14 13.25 14H7.75C7.61193 14 7.5 13.8881 7.5 13.75V6.25Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div><div class=\"relative\"><button class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" title=\"Download table\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"16\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"16\" size=\"14\"><path clip-rule=\"evenodd\" d=\"M8.75 1V1.75V8.68934L10.7197 6.71967L11.25 6.18934L12.3107 7.25L11.7803 7.78033L8.70711 10.8536C8.31658 11.2441 7.68342 11.2441 7.29289 10.8536L4.21967 7.78033L3.68934 7.25L4.75 6.18934L5.28033 6.71967L7.25 8.68934V1.75V1H8.75ZM13.5 9.25V13.5H2.5V9.25V8.5H1V9.25V14C1 14.5523 1.44771 15 2 15H14C14.5523 15 15 14.5523 15 14V9.25V8.5H13.5V9.25Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div><button class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" title=\"View fullscreen\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"16\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"16\" size=\"14\"><path clip-rule=\"evenodd\" d=\"M1 5.25V6H2.5V5.25V2.5H5.25H6V1H5.25H2C1.44772 1 1 1.44772 1 2V5.25ZM5.25 14.9994H6V13.4994H5.25H2.5V10.7494V9.99939H1V10.7494V13.9994C1 14.5517 1.44772 14.9994 2 14.9994H5.25ZM15 10V10.75V14C15 14.5523 14.5523 15 14 15H10.75H10V13.5H10.75H13.5V10.75V10H15ZM10.75 1H10V2.5H10.75H13.5V5.25V6H15V5.25V2C15 1.44772 14.5523 1 14 1H10.75Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div><div class=\"border-collapse overflow-x-auto overflow-y-auto rounded-md border border-border bg-background\" style=\"max-height: 300px;\"><table class=\"w-full divide-y divide-border\" data-streamdown=\"table\"><thead class=\"bg-muted/80\" data-streamdown=\"table-header\"><tr class=\"border-border\" data-streamdown=\"table-row\"><th class=\"whitespace-nowrap px-4 py-2 text-left font-semibold text-sm\" data-streamdown=\"table-header-cell\">Plan</th><th class=\"whitespace-nowrap px-4 py-2 text-left font-semibold text-sm\" data-streamdown=\"table-header-cell\">Price</th></tr></thead><tbody class=\"divide-y divide-border\" data-streamdown=\"table-body\"><tr class=\"border-border\" data-streamdown=\"table-row\"><td class=\"px-4 py-2 text-sm\" data-streamdown=\"table-cell\">Free</td><td class=\"px-4 py-2 text-sm\" data-streamdown=\"table-cell\">$0</td></tr></tbody></table></div></div></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"table\"><div class=\"node-content\"><div class=\"table-node-wrapper\" data-index-key=\"markdown-renderer-0\"><table class=\"my-8 text-sm table-node\" aria-busy=\"false\"><thead class=\"border-[var(--table-border,#cbd5e1)]\"><tr class=\"border-b\"><th class=\"font-semibold p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Plan</span></span><button type=\"button\" class=\"table-node__resize-handle\" aria-label=\"Resize columns 1 and 2\"></button></th><th class=\"font-semibold p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Price</span></span></th></tr></thead><tbody><tr class=\"border-[var(--table-border,#cbd5e1)]\"><td class=\"p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Free</span></span></td><td class=\"p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>$0</span></span></td></tr></tbody></table></div></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table>"
+        }
+      }
+    },
+    {
+      "group": "GitHub Markdown",
+      "label": "Task lists",
+      "text": "- [x] write the plan\n- [ ] tell the team\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><ul class=\"contains-task-list\">\n<li class=\"task-list-item\"><input disabled=\"\" data-task-key=\"0\" type=\"checkbox\" checked=\"\"> write the plan</li>\n<li class=\"task-list-item\"><input disabled=\"\" data-task-key=\"21\" type=\"checkbox\"> tell the team</li>\n</ul></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><ul class=\"list-inside list-disc whitespace-normal [li_&amp;]:pl-6 contains-task-list\" data-streamdown=\"unordered-list\">\n<li class=\"py-1 [&amp;>p]:inline task-list-item\" data-streamdown=\"list-item\"><input disabled=\"\" type=\"checkbox\" checked=\"\"> write the plan</li>\n<li class=\"py-1 [&amp;>p]:inline task-list-item\" data-streamdown=\"list-item\"><input disabled=\"\" type=\"checkbox\"> tell the team</li>\n</ul></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<ul class=\"contains-task-list\">\n<li class=\"task-list-item\"><input disabled=\"\" type=\"checkbox\" checked=\"\"> write the plan</li>\n<li class=\"task-list-item\"><input disabled=\"\" type=\"checkbox\"> tell the team</li>\n</ul>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<ul><li><input readonly=\"\" type=\"checkbox\" checked=\"\"> write the plan</li><li><input readonly=\"\" type=\"checkbox\"> tell the team</li></ul>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"list\"><div class=\"node-content\"><ul class=\"list-node my-5 pl-[calc(13/8*1em)] list-disc max-lg:my-[calc(4/3*1em)] max-lg:pl-[calc(14/9*1em)]\"><li class=\"list-item pl-1.5 my-2\" dir=\"auto\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"checkbox-node\"><input disabled=\"\" class=\"checkbox-input\" readonly=\"\" type=\"checkbox\" checked=\"\"></span><label for=\"cbx_0\"><span class=\"text-node whitespace-pre-wrap break-words\"><span> write the plan</span></span></label></p></li><li class=\"list-item pl-1.5 my-2\" dir=\"auto\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"checkbox-node\"><input disabled=\"\" class=\"checkbox-input\" readonly=\"\" type=\"checkbox\"></span><label for=\"cbx_1\"><span class=\"text-node whitespace-pre-wrap break-words\"><span> tell the team</span></span></label></p></li></ul></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<ul><li><input disabled=\"\" type=\"checkbox\" checked=\"\">write the plan</li><li><input disabled=\"\" type=\"checkbox\">tell the team</li></ul>"
+        }
+      }
+    },
+    {
+      "group": "GitHub Markdown",
+      "label": "Strikethrough",
+      "text": "The ~~old~~ new way.\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><p>The <del>old</del> new way.</p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>The <del>old</del> new way.</p></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<p>The <del>old</del> new way.</p>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<p>The <del>old</del> new way.</p>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>The </span></span><s class=\"strikethrough-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>old</span></span></s><span class=\"text-node whitespace-pre-wrap break-words\"><span> new way.</span></span></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<p>The <del>old</del> new way.</p>"
+        }
+      }
+    },
+    {
+      "group": "GitHub Markdown",
+      "label": "Footnotes",
+      "text": "A claim.[^1]\n\n[^1]: The source.\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><p>A claim.<sup><a href=\"#user-content-fn-1\" id=\"user-content-fnref-1\" data-footnote-ref=\"true\" aria-describedby=\"footnote-label\">1</a></sup></p>\n<section data-footnotes=\"true\" class=\"footnotes\"><h2 class=\"sr-only\" id=\"footnote-label\">Footnotes</h2>\n<ol>\n<li id=\"user-content-fn-1\">\n<p>The source. <a href=\"#user-content-fnref-1\" data-footnote-backref=\"\" aria-label=\"Back to reference 1\" class=\"data-footnote-backref\">↩</a></p>\n</li>\n</ol>\n</section></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>A claim.<sup class=\"text-sm\" data-streamdown=\"superscript\"><button class=\"wrap-anywhere appearance-none text-left font-medium text-primary underline\" data-incomplete=\"false\" data-streamdown=\"link\" type=\"button\">1</button></sup></p>\n<section class=\"footnotes\" data-footnotes=\"\"><h2 class=\"mt-6 mb-2 font-semibold text-2xl sr-only\" data-streamdown=\"heading-2\" id=\"footnote-label\">Footnotes</h2>\n<ol class=\"list-inside list-decimal whitespace-normal [li_&amp;]:pl-6\" data-streamdown=\"ordered-list\">\n<li class=\"py-1 [&amp;>p]:inline\" data-streamdown=\"list-item\" id=\"user-content-fn-1\">The source. <button class=\"wrap-anywhere appearance-none text-left font-medium text-primary underline data-footnote-backref\" data-incomplete=\"false\" data-streamdown=\"link\" type=\"button\">↩</button></li>\n</ol>\n</section></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<p>A claim.<sup><a href=\"#user-content-fn-1\" id=\"user-content-fnref-1\" data-footnote-ref=\"true\" aria-describedby=\"footnote-label\">1</a></sup></p>\n<section data-footnotes=\"true\" class=\"footnotes\"><h2 class=\"sr-only\" id=\"footnote-label\">Footnotes</h2>\n<ol>\n<li id=\"user-content-fn-1\">\n<p>The source. <a href=\"#user-content-fnref-1\" data-footnote-backref=\"\" aria-label=\"Back to reference 1\" class=\"data-footnote-backref\">↩</a></p>\n</li>\n</ol>\n</section>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<div><p>A claim.<a href=\"#1\"><sup>1</sup></a></p><footer><div id=\"1\">1: The source.</div></footer></div>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>A claim.</span></span></p><sup id=\"fnref-1\" class=\"footnote-reference\"><span href=\"#fnref--1\" title=\"查看脚注 1\" class=\"footnote-link cursor-pointer\">[1]</span></sup></div></div><div class=\"node-slot\" data-node-index=\"1\" data-node-type=\"footnote\"><div class=\"node-content\"><div id=\"fnref--1\" class=\"footnote-node flex text-sm leading-relaxed border-t border-[var(--footnote-border,#eaecef)] pt-2\"><div class=\"flex-1\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>The source.</span></span></p><a class=\"footnote-anchor text-sm hover:underline cursor-pointer\" href=\"#fnref-1\" title=\"返回引用 1\">↩︎</a></div></div></div></div></div>"
+        },
+        "marked-react": {
+          "pass": false,
+          "html": "<p>A claim.[^1]</p><p>[^1]: The source.</p>"
+        }
+      }
+    },
+    {
+      "group": "GitHub Markdown",
+      "label": "Bare links (autolinks)",
+      "text": "See https://example.com for more.\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><p>See <a href=\"https://example.com\">https://example.com</a> for more.</p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>See <button class=\"wrap-anywhere appearance-none text-left font-medium text-primary underline\" data-incomplete=\"false\" data-streamdown=\"link\" type=\"button\">https://example.com</button> for more.</p></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<p>See <a href=\"https://example.com\">https://example.com</a> for more.</p>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<p>See <a href=\"https://example.com\">https://example.com</a> for more.</p>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>See </span></span><a class=\"link-node\" href=\"https://example.com\" title=\"\" aria-label=\"Link: https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"--link-color: #0366d6; --underline-height: 2px; --underline-bottom: -3px; --underline-opacity: 0.35; --underline-rest-opacity: 0.175; --underline-duration: 1.6s; --underline-timing: ease-in-out; --underline-iteration: infinite;\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>https://example.com</span></span></a><span class=\"text-node whitespace-pre-wrap break-words\"><span> for more.</span></span></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<p>See <a href=\"https://example.com\" target=\"_blank\">https://example.com</a> for more.</p>"
+        }
+      }
+    },
+    {
+      "group": "GitHub Markdown",
+      "label": "Alerts (`> [!WARNING]`)",
+      "text": "> [!WARNING]\n> Back up first.\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><aside class=\"llx-callout\" data-callout=\"warning\" role=\"note\" aria-label=\"Warning\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\" class=\"llx-callout-icon\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"></path><path d=\"M12 9v4\"></path><path d=\"M12 17h.01\"></path></svg><div class=\"llx-callout-body\">\n<p>Back up first.</p>\n</div></aside></div>"
+        },
+        "streamdown": {
+          "pass": false,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><blockquote class=\"my-4 border-muted-foreground/30 border-l-4 pl-4 text-muted-foreground italic\" data-streamdown=\"blockquote\">\n<p>[!WARNING]\nBack up first.</p>\n</blockquote></div>"
+        },
+        "react-markdown": {
+          "pass": false,
+          "html": "<blockquote>\n<p>[!WARNING]\nBack up first.</p>\n</blockquote>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<blockquote class=\"markdown-alert-warning\"><header>WARNING</header><p>Back up first.</p></blockquote>"
+        },
+        "markstream": {
+          "pass": false,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"blockquote\"><div class=\"node-content\"><blockquote class=\"blockquote-node\" dir=\"auto\"><div class=\"markstream-react markdown-renderer\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>[!WARNING]\nBack up first.</span></span></p></div></div></div></blockquote></div></div></div>"
+        },
+        "marked-react": {
+          "pass": false,
+          "html": "<blockquote><p>[!WARNING]\nBack up first.</p></blockquote>"
+        }
+      }
+    },
+    {
+      "group": "GitHub Markdown",
+      "label": "Raw HTML (`<kbd>`)",
+      "text": "Press <kbd>Ctrl</kbd> + <kbd>C</kbd>.\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></div>"
+        },
+        "react-markdown": {
+          "pass": false,
+          "html": "<p>Press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt;.</p>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Press </span></span><span class=\"html-inline-node\" style=\"display: inline;\"><kbd>Ctrl</kbd></span><span class=\"text-node whitespace-pre-wrap break-words\"><span> + </span></span><span class=\"html-inline-node\" style=\"display: inline;\"><kbd>C</kbd></span><span class=\"text-node whitespace-pre-wrap break-words\"><span>.</span></span></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": false,
+          "html": "<p>Press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt;.</p>"
+        }
+      }
+    },
+    {
+      "group": "While streaming",
+      "label": "Unfinished bold shows as bold",
+      "text": "This is **important",
+      "streaming": true,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>This is <strong>important</strong></p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>This is <span class=\"font-semibold\" data-streamdown=\"strong\">important</span></p></div>"
+        },
+        "react-markdown": {
+          "pass": false,
+          "html": "<p>This is **important</p>"
+        },
+        "markdown-to-jsx": {
+          "pass": false,
+          "html": "This is important"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>This is </span></span><strong class=\"strong-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>important</span></span></strong></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": false,
+          "html": "<p>This is **important</p>"
+        }
+      }
+    },
+    {
+      "group": "While streaming",
+      "label": "Unclosed code fence shows as code",
+      "text": "Run this:\n\n```ts\nconst answer = 42\n",
+      "streaming": true,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>Run this:</p>\n<figure class=\"llx-code\" data-language=\"ts\"><figcaption class=\"llx-code-bar\"><span class=\"llx-code-language\">ts</span><button type=\"button\" class=\"llx-code-copy\" aria-label=\"Copy code\" title=\"Copy code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"></rect><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></svg></button></figcaption><pre><code class=\"language-ts\">const answer = 42\n</code></pre></figure></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>Run this:</p><div class=\"relative my-4 flex w-full flex-col gap-2 rounded-xl border border-border bg-sidebar p-2\" data-incomplete=\"true\" data-language=\"ts\" data-streamdown=\"code-block\" style=\"content-visibility: auto; contain-intrinsic-size: auto 200px;\" dir=\"ltr\" data-sd-caret-hidden=\"\"><div class=\"flex h-8 items-center text-muted-foreground text-xs\" data-language=\"ts\" data-streamdown=\"code-block-header\"><span class=\"ml-1 font-mono lowercase\">ts</span></div><div class=\"pointer-events-none absolute top-2 right-2 z-10 flex items-center\"><div class=\"pointer-events-auto flex shrink-0 items-center gap-2 rounded-md border border-sidebar bg-sidebar/80 px-1.5 py-1 supports-[backdrop-filter]:bg-sidebar/70 supports-[backdrop-filter]:backdrop-blur\" data-streamdown=\"code-block-actions\"><button aria-label=\"Download file\" class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" data-streamdown=\"code-block-download-button\" disabled=\"\" title=\"Download file\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"16\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"16\" size=\"14\"><path clip-rule=\"evenodd\" d=\"M8.75 1V1.75V8.68934L10.7197 6.71967L11.25 6.18934L12.3107 7.25L11.7803 7.78033L8.70711 10.8536C8.31658 11.2441 7.68342 11.2441 7.29289 10.8536L4.21967 7.78033L3.68934 7.25L4.75 6.18934L5.28033 6.71967L7.25 8.68934V1.75V1H8.75ZM13.5 9.25V13.5H2.5V9.25V8.5H1V9.25V14C1 14.5523 1.44771 15 2 15H14C14.5523 15 15 14.5523 15 14V9.25V8.5H13.5V9.25Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button><button aria-label=\"Copy Code\" class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" data-streamdown=\"code-block-copy-button\" disabled=\"\" title=\"Copy Code\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"16\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"16\" size=\"14\"><path clip-rule=\"evenodd\" d=\"M2.75 0.5C1.7835 0.5 1 1.2835 1 2.25V9.75C1 10.7165 1.7835 11.5 2.75 11.5H3.75H4.5V10H3.75H2.75C2.61193 10 2.5 9.88807 2.5 9.75V2.25C2.5 2.11193 2.61193 2 2.75 2H8.25C8.38807 2 8.5 2.11193 8.5 2.25V3H10V2.25C10 1.2835 9.2165 0.5 8.25 0.5H2.75ZM7.75 4.5C6.7835 4.5 6 5.2835 6 6.25V13.75C6 14.7165 6.7835 15.5 7.75 15.5H13.25C14.2165 15.5 15 14.7165 15 13.75V6.25C15 5.2835 14.2165 4.5 13.25 4.5H7.75ZM7.5 6.25C7.5 6.11193 7.61193 6 7.75 6H13.25C13.3881 6 13.5 6.11193 13.5 6.25V13.75C13.5 13.8881 13.3881 14 13.25 14H7.75C7.61193 14 7.5 13.8881 7.5 13.75V6.25Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div></div><div class=\"language-ts overflow-y-auto overflow-x-auto rounded-md border border-border bg-background p-4 text-sm\" data-language=\"ts\" data-streamdown=\"code-block-body\" style=\"max-height: 400px;\"><pre class=\"language-ts bg-[var(--sdm-bg,inherit)] dark:bg-[var(--shiki-dark-bg,var(--sdm-bg,inherit))]\" style=\"--sdm-bg: transparent; --sdm-fg: inherit;\"><code class=\"[counter-increment:line_0] [counter-reset:line]\"><span class=\"block before:content-[counter(line)] before:inline-block before:[counter-increment:line] before:w-6 before:mr-4 before:text-[13px] before:text-right before:text-muted-foreground/50 before:font-mono before:select-none\"><span class=\"text-[var(--sdm-c,inherit)] dark:text-[var(--shiki-dark,var(--sdm-c,inherit))] bg-[var(--sdm-tbg)] dark:bg-[var(--shiki-dark-bg,var(--sdm-tbg))]\" style=\"--sdm-c: inherit; --sdm-tbg: transparent;\">const answer = 42</span></span></code></pre></div></div></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<p>Run this:</p>\n<pre><code class=\"language-ts\">const answer = 42\n</code></pre>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<div><p>Run this:</p><pre><code class=\"language-ts lang-ts\">const answer = 42\n</code></pre></div>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Run this:</span></span></p></div></div><div class=\"node-slot\" data-node-index=\"1\" data-node-type=\"code_block\"><div class=\"node-content\"><div class=\"code-block-container my-4 rounded-lg border overflow-hidden shadow-sm border-gray-200 is-rendering   \" style=\"color: var(--vscode-editor-foreground, var(--markstream-code-fallback-fg, var(--code-fg))); background-color: var(--vscode-editor-background, var(--markstream-code-fallback-bg, var(--code-bg))); border-color: var(--markstream-code-border-color, var(--code-border));\"><div class=\"code-block-header\"><div class=\"code-header-main\"><span class=\"icon-slot h-4 w-4 flex-shrink-0\"><svg xmlns=\"http://www.w3.org/2000/svg\" xml:space=\"preserve\" viewBox=\"0 0 16 16\"><path fill=\"#0288d1\" d=\"M2 2v12h12V2zm4 6h3v1H8v4H7V9H6zm5 0h2v1h-2v1h1a1.003 1.003 0 0 1 1 1v1a1.003 1.003 0 0 1-1 1h-2v-1h2v-1h-1a1.003 1.003 0 0 1-1-1V9a1.003 1.003 0 0 1 1-1\"></path></svg></span><div class=\"code-header-copy min-w-0\"><div class=\"code-header-title truncate\">TypeScript</div></div></div><div class=\"code-header-actions\"><button type=\"button\" class=\"code-action-btn transition-colors\" aria-pressed=\"false\"><svg style=\"rotate: 90deg;\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" class=\"action-icon\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"m9 18l6-6l-6-6\"></path></svg></button><button type=\"button\" class=\"code-action-btn transition-colors\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" class=\"action-icon\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 12h14\"></path></svg></button><button type=\"button\" class=\"code-action-btn transition-colors\" disabled=\"\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" class=\"action-icon\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8\"></path><path d=\"M3 3v5h5\"></path></g></svg></button><button type=\"button\" class=\"code-action-btn transition-colors\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" class=\"action-icon\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 12h14m-7-7v14\"></path></svg></button><button type=\"button\" class=\"code-action-btn transition-colors\" aria-label=\"Copy\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" class=\"action-icon\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"></rect><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></g></svg></button><button type=\"button\" class=\"code-action-btn transition-colors\" aria-pressed=\"false\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" class=\"action-icon\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 3h6v6m0-6l-7 7M3 21l7-7m-1 7H3v-6\"></path></svg></button></div></div><div class=\"code-block-body\"><pre class=\"language-ts code-fallback-plain m-0 markstream-pre--line-numbers\" style=\"--markstream-pre-line-number-top: 8px; font-family: &quot;SF Mono&quot;, Monaco, Consolas, &quot;Ubuntu Mono&quot;, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace; font-size: 12px; line-height: 18px; padding-bottom: 8px; padding-top: 8px; tab-size: 4; --markstream-code-padding-left: calc(var(--markstream-pre-line-number-padding-left, 2ch) + var(--markstream-pre-line-number-width, 2ch) + var(--markstream-pre-line-number-padding-right, 1ch) + var(--markstream-pre-line-number-separator-width, 2px) + var(--markstream-pre-line-number-gap-to-code, 1ch)); --markstream-pre-diff-line-height: 18px; --markstream-pre-line-number-width: 2ch; --markstream-pre-line-number-gap: 0px; max-height: 500px; overflow: auto; white-space: pre-wrap;\" aria-busy=\"true\" aria-label=\"Code block: ts\" data-language=\"ts\" data-markstream-line-numbers=\"1\" data-markstream-pre=\"1\" tabindex=\"0\"><span class=\"markstream-pre__line-numbers\" aria-hidden=\"true\"><span class=\"markstream-pre__line-numbers-text\">1\n2</span></span><code translate=\"no\" class=\"markstream-pre__code\">const answer = 42\n</code></pre></div><span class=\"sr-only\" aria-live=\"polite\" role=\"status\"></span></div></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<p>Run this:</p><pre><code class=\"language-ts\">const answer = 42</code></pre>"
+        }
+      }
+    },
+    {
+      "group": "While streaming",
+      "label": "Half-typed link shows its text, no brackets",
+      "text": "Read [the guide](https://exa",
+      "streaming": true,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>Read <a href=\"https://exa\">the guide</a></p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p>Read <button class=\"wrap-anywhere appearance-none text-left font-medium text-primary underline\" data-incomplete=\"true\" data-streamdown=\"link\" type=\"button\">the guide</button></p></div>"
+        },
+        "react-markdown": {
+          "pass": false,
+          "html": "<p>Read [the guide](<a href=\"https://exa\">https://exa</a></p>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "Read the guide"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Read </span></span><span class=\"link-loading inline-flex items-baseline gap-1.5\" aria-hidden=\"false\" style=\"--link-color: #0366d6; --underline-height: 2px; --underline-bottom: -3px; --underline-opacity: 0.35; --underline-rest-opacity: 0.175; --underline-duration: 1.6s; --underline-timing: ease-in-out; --underline-iteration: infinite;\"><span class=\"link-text-wrapper relative inline-flex\"><span class=\"leading-[normal] link-text\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>the guide</span></span></span><span class=\"link-loading-indicator\" aria-hidden=\"true\"></span></span></span></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": false,
+          "html": "<p>Read [the guide](<a href=\"https://exa\" target=\"_blank\">https://exa</a></p>"
+        }
+      }
+    },
+    {
+      "group": "While streaming",
+      "label": "Half-typed table row shows no pipes",
+      "text": "| Plan | Price |\n| --- | --- |\n| Free | $0",
+      "streaming": true,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><div class=\"llx-table\"><table><thead><tr><th>Plan</th><th>Price</th></tr></thead></table></div></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><div class=\"my-4 flex flex-col gap-2 rounded-lg border border-border bg-sidebar p-2\" data-streamdown=\"table-wrapper\" data-sd-caret-hidden=\"\"><div class=\"flex items-center justify-end gap-1\"><div class=\"relative\"><button class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" disabled=\"\" title=\"Copy table\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"14\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"14\"><path clip-rule=\"evenodd\" d=\"M2.75 0.5C1.7835 0.5 1 1.2835 1 2.25V9.75C1 10.7165 1.7835 11.5 2.75 11.5H3.75H4.5V10H3.75H2.75C2.61193 10 2.5 9.88807 2.5 9.75V2.25C2.5 2.11193 2.61193 2 2.75 2H8.25C8.38807 2 8.5 2.11193 8.5 2.25V3H10V2.25C10 1.2835 9.2165 0.5 8.25 0.5H2.75ZM7.75 4.5C6.7835 4.5 6 5.2835 6 6.25V13.75C6 14.7165 6.7835 15.5 7.75 15.5H13.25C14.2165 15.5 15 14.7165 15 13.75V6.25C15 5.2835 14.2165 4.5 13.25 4.5H7.75ZM7.5 6.25C7.5 6.11193 7.61193 6 7.75 6H13.25C13.3881 6 13.5 6.11193 13.5 6.25V13.75C13.5 13.8881 13.3881 14 13.25 14H7.75C7.61193 14 7.5 13.8881 7.5 13.75V6.25Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div><div class=\"relative\"><button class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" disabled=\"\" title=\"Download table\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"16\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"16\" size=\"14\"><path clip-rule=\"evenodd\" d=\"M8.75 1V1.75V8.68934L10.7197 6.71967L11.25 6.18934L12.3107 7.25L11.7803 7.78033L8.70711 10.8536C8.31658 11.2441 7.68342 11.2441 7.29289 10.8536L4.21967 7.78033L3.68934 7.25L4.75 6.18934L5.28033 6.71967L7.25 8.68934V1.75V1H8.75ZM13.5 9.25V13.5H2.5V9.25V8.5H1V9.25V14C1 14.5523 1.44771 15 2 15H14C14.5523 15 15 14.5523 15 14V9.25V8.5H13.5V9.25Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div><button class=\"cursor-pointer p-1 text-muted-foreground transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50\" disabled=\"\" title=\"View fullscreen\" type=\"button\"><svg aria-hidden=\"true\" color=\"currentColor\" height=\"16\" stroke-linejoin=\"round\" viewBox=\"0 0 16 16\" width=\"16\" size=\"14\"><path clip-rule=\"evenodd\" d=\"M1 5.25V6H2.5V5.25V2.5H5.25H6V1H5.25H2C1.44772 1 1 1.44772 1 2V5.25ZM5.25 14.9994H6V13.4994H5.25H2.5V10.7494V9.99939H1V10.7494V13.9994C1 14.5517 1.44772 14.9994 2 14.9994H5.25ZM15 10V10.75V14C15 14.5523 14.5523 15 14 15H10.75H10V13.5H10.75H13.5V10.75V10H15ZM10.75 1H10V2.5H10.75H13.5V5.25V6H15V5.25V2C15 1.44772 14.5523 1 14 1H10.75Z\" fill=\"currentColor\" fill-rule=\"evenodd\"></path></svg></button></div><div class=\"border-collapse overflow-x-auto overflow-y-auto rounded-md border border-border bg-background\" style=\"max-height: 300px;\"><table class=\"w-full divide-y divide-border\" data-streamdown=\"table\"><thead class=\"bg-muted/80\" data-streamdown=\"table-header\"><tr class=\"border-border\" data-streamdown=\"table-row\"><th class=\"whitespace-nowrap px-4 py-2 text-left font-semibold text-sm\" data-streamdown=\"table-header-cell\">Plan</th><th class=\"whitespace-nowrap px-4 py-2 text-left font-semibold text-sm\" data-streamdown=\"table-header-cell\">Price</th></tr></thead><tbody class=\"divide-y divide-border\" data-streamdown=\"table-body\"><tr class=\"border-border\" data-streamdown=\"table-row\"><td class=\"px-4 py-2 text-sm\" data-streamdown=\"table-cell\">Free</td><td class=\"px-4 py-2 text-sm\" data-streamdown=\"table-cell\">$0</td></tr></tbody></table></div></div></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"table\"><div class=\"node-content\"><div class=\"table-node-wrapper\" data-index-key=\"markdown-renderer-0\"><table class=\"my-8 text-sm table-node\" aria-busy=\"false\"><thead class=\"border-[var(--table-border,#cbd5e1)]\"><tr class=\"border-b\"><th class=\"font-semibold p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Plan</span></span><button type=\"button\" class=\"table-node__resize-handle\" aria-label=\"Resize columns 1 and 2\"></button></th><th class=\"font-semibold p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Price</span></span></th></tr></thead><tbody><tr class=\"border-[var(--table-border,#cbd5e1)]\"><td class=\"p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Free</span></span></td><td class=\"p-[calc(4/7*1em)] text-left\" dir=\"auto\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>$0</span></span></td></tr></tbody></table></div></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table>"
+        }
+      }
+    },
+    {
+      "group": "Safety",
+      "label": "Drops `onerror` and other handlers",
+      "text": "<img src=\"x\" onerror=\"alert(1)\">\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><img src=\"x\"></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><span class=\"inline-block bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-3 py-1 rounded text-sm\">[Image blocked: No description]</span></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "&lt;img src=\"x\" onerror=\"alert(1)\"&gt;"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<img src=\"x\">"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"html_block\"><div class=\"node-content\"><div class=\"html-block-node\" src=\"x\"><div><img src=\"x\">\n</div></div></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "&lt;img src=\"x\" onerror=\"alert(1)\"&gt;\n"
+        }
+      }
+    },
+    {
+      "group": "Safety",
+      "label": "Drops `javascript:` links",
+      "text": "[click me](javascript:alert(1))\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><p><a href=\"\">click me</a></p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><p><span title=\"Blocked URL: undefined\" class=\"text-gray-500\">click me [blocked]</span></p></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<p><a href=\"\">click me</a></p>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<p><a>click me</a></p>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>click me)</span></span></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<p><a href=\"javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')\" target=\"_blank\">click me</a></p>"
+        }
+      }
+    },
+    {
+      "group": "Safety",
+      "label": "Never mounts `<script>`",
+      "text": "<script>alert(1)</script>\n",
+      "streaming": false,
+      "server": false,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "&lt;script&gt;alert(1)&lt;/script&gt;"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<span>&lt;script&gt;alert(1)&lt;/script&gt;</span>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"html_block\"><div class=\"node-content\"><div class=\"html-block-node\"><div></div></div></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "&lt;script&gt;alert(1)&lt;/script&gt;\n"
+        }
+      }
+    },
+    {
+      "group": "Rendering",
+      "label": "Renders on the server (`renderToString`)",
+      "text": "# Title\n\nSome **bold** text.\n",
+      "streaming": false,
+      "server": true,
+      "results": {
+        "llx": {
+          "pass": true,
+          "html": "<div class=\"llx-markdown\"><h1>Title</h1>\n<p>Some <strong>bold</strong> text.</p></div>"
+        },
+        "streamdown": {
+          "pass": true,
+          "html": "<div class=\"space-y-4 whitespace-normal [&amp;>*:first-child]:mt-0 [&amp;>*:last-child]:mb-0\"><h1 class=\"mt-6 mb-2 font-semibold text-3xl\" data-streamdown=\"heading-1\">Title</h1>\n<p>Some <span class=\"font-semibold\" data-streamdown=\"strong\">bold</span> text.</p></div>"
+        },
+        "react-markdown": {
+          "pass": true,
+          "html": "<h1>Title</h1>\n<p>Some <strong>bold</strong> text.</p>"
+        },
+        "markdown-to-jsx": {
+          "pass": true,
+          "html": "<div><h1 id=\"title\">Title</h1><p>Some <strong>bold</strong> text.</p></div>"
+        },
+        "markstream": {
+          "pass": true,
+          "html": "<div class=\"markstream-react markdown-renderer\" data-stream-final=\"\"><div class=\"node-slot\" data-node-index=\"0\" data-node-type=\"heading\"><div class=\"node-content\"><h1 dir=\"auto\" class=\"heading-node font-semibold heading-1\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Title</span></span></h1></div></div><div class=\"node-slot\" data-node-index=\"1\" data-node-type=\"paragraph\"><div class=\"node-content\"><p dir=\"auto\" class=\"paragraph-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>Some </span></span><strong class=\"strong-node\"><span class=\"text-node whitespace-pre-wrap break-words\"><span>bold</span></span></strong><span class=\"text-node whitespace-pre-wrap break-words\"><span> text.</span></span></p></div></div></div>"
+        },
+        "marked-react": {
+          "pass": true,
+          "html": "<h1>Title</h1><p>Some <strong>bold</strong> text.</p>"
+        }
+      }
+    }
+  ]
+}

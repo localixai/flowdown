@@ -31,6 +31,15 @@ const CASES = [
     code: `import Markdown from 'react-markdown'; import gfm from 'remark-gfm'; console.log(Markdown, gfm)`,
   },
   { name: 'streamdown', code: `import { Streamdown } from 'streamdown'; console.log(Streamdown)` },
+  {
+    name: 'markdown-to-jsx',
+    code: `import Markdown from 'markdown-to-jsx/react'; console.log(Markdown)`,
+  },
+  {
+    name: 'markstream-react',
+    code: `import MarkdownRender from 'markstream-react'; console.log(MarkdownRender)`,
+  },
+  { name: 'marked-react', code: `import Markdown from 'marked-react'; console.log(Markdown)` },
 ]
 
 const kb = (bytes: number) => bytes / 1024
@@ -51,7 +60,19 @@ async function measure(code: string) {
       minify: true,
       splitting: true,
       target: 'browser',
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      // React is the page's own. The rest are optional peers a renderer imports only when a reply
+      // needs them (markstream's diagrams, math and diffs); a page that never installs them never
+      // downloads them, and llx-markdown's KaTeX and Mermaid are left out the same way.
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        '@antv/infographic',
+        '@terrastruct/d2',
+        'katex',
+        'mermaid',
+        'stream-diffs',
+      ],
       // A production build, as Vite or Next.js makes it: micromark's development build carries
       // assertions and the `debug` package.
       conditions: ['production'],

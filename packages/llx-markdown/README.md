@@ -60,8 +60,9 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
 
 82 KB, minified and gzipped in a production build, loads with `<Markdown>`, without React. The HTML
 parser (48 KB) is loaded only for a reply with raw HTML, and KaTeX and Mermaid only for math and
-diagrams. For comparison: react-markdown with remark-gfm is 50 KB, Streamdown 156 KB without its
-plugins. [How it is measured](https://github.com/rsaryev/llx-markdown/blob/main/bench/src/size.ts).
+diagrams. How it compares with Streamdown, react-markdown, markdown-to-jsx, markstream and
+marked-react on size, speed and what each draws, every figure from a script you can rerun:
+[the comparison](https://github.com/rsaryev/llx-markdown#compared-with-similar-libraries).
 
 ## Documentation
 

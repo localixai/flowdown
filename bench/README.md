@@ -148,3 +148,12 @@ bench/
     latest.json
     <date>-<label>.json
 ```
+
+## Size and features
+
+- `bun run size`: what a page downloads for each renderer, in a production build, into
+  [results/size.md](results/size.md) ([src/size.ts](src/size.ts)).
+- `bun run features`: the same inputs through each renderer, checked on the DOM it drew, into
+  [results/features.md](results/features.md) and [results/features.json](results/features.json),
+  which keeps the markup behind every mark ([src/features.tsx](src/features.tsx)).
+

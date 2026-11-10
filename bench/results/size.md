@@ -9,3 +9,6 @@ What a page downloads for each library, without React. `bun run size` in bench/ 
 | llx-markdown/stream | 17.1 KB | — | 55 KB |
 | react-markdown + remark-gfm | 50.0 KB | — | 167 KB |
 | streamdown | 155.5 KB | 0.4 KB | 522 KB |
+| markdown-to-jsx | 31.0 KB | — | 85 KB |
+| markstream-react | 211.5 KB | 8.3 KB | 668 KB |
+| marked-react | 26.9 KB | — | 70 KB |
