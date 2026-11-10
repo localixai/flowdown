@@ -7,6 +7,7 @@
 import { describe, expect, test } from 'bun:test'
 import { prefixes } from '../../test/chunks'
 import { CORPUS } from '../../test/corpus'
+import { heavyDescribe } from '../../test/heavy'
 import { scaling, scenarios } from '../../test/replies'
 import { createBlockSplitter, splitBlocks } from './blocks'
 import { closePartialMarkdown } from './heal'
@@ -18,7 +19,7 @@ const replies = [
     .map((s) => ({ name: s.name, text: s.text.slice(0, 12_000) })),
 ]
 
-describe('a remembered split is a fresh split', () => {
+heavyDescribe('a remembered split is a fresh split', () => {
   for (const { name, text } of replies) {
     test(`${name}, every prefix`, () => {
       const splitter = createBlockSplitter()
@@ -35,7 +36,9 @@ describe('a remembered split is a fresh split', () => {
       }
     })
   }
+})
 
+describe('a remembered split is a fresh split', () => {
   test('a text that is not the last one grown is split afresh', () => {
     const splitter = createBlockSplitter()
     const [first, second] = [scenarios()[1]!.text, scenarios()[2]!.text]

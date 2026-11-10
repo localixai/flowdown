@@ -15,7 +15,7 @@ The package and how to install and use it: [packages/llx-markdown](packages/llx-
 
 ```sh
 bun install
-bun run test        # the library's tests
+bun run test        # the library's tests; CI skips the heavy sweeps (LLX_SKIP_HEAVY=1)
 bun run check       # build output: exports, types, entry isolation
 bun run bench       # the benchmarks
 ```

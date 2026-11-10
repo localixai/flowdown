@@ -3,9 +3,10 @@
  * fresh <Markdown> given that frame would: the blocks it remembers between tokens never leave a
  * stale piece behind. The replies are the seeded ones the benchmark streams.
  */
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test'
+import { afterAll, beforeAll, expect, test } from 'bun:test'
 import type { ReactNode } from 'react'
 import { prefixes } from '../../test/chunks'
+import { heavyDescribe } from '../../test/heavy'
 import { registerDom } from '../../test/dom'
 import { scenarios } from '../../test/replies'
 import { Markdown } from './markdown'
@@ -61,7 +62,7 @@ async function root() {
  */
 const REPLY_DEADLINE_MS = 30_000
 
-describe('a reply streamed into one <Markdown>', () => {
+heavyDescribe('a reply streamed into one <Markdown>', () => {
   for (const { name, text } of replies) {
     test(
       `${name}: every frame is a fresh render of it`,

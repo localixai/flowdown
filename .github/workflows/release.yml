@@ -44,7 +44,10 @@ jobs:
           fi
 
       - run: bun run typecheck
+      # The sweeps over every prefix of the seeded replies run locally; see test/heavy.ts.
       - run: bun run test
+        env:
+          LLX_SKIP_HEAVY: '1'
       - run: bun run build
       - run: bun run check
 
