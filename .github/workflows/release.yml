@@ -1,0 +1,72 @@
+name: Release
+
+# Push a tag `v<version>`, the version in packages/llx-markdown/package.json, to publish it.
+#
+# For now the package goes to GitHub Packages, which takes only scoped names: it is published as
+# `@<owner>/llx-markdown`, the name and repository rewritten here and not in the source, so the
+# code and its imports stay `llx-markdown`. A project installs it under that name with an alias,
+# `"llx-markdown": "npm:@<owner>/llx-markdown@<version>"`. Publishing to npm later drops the rewrite.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+
+      - name: The tag names the package's version
+        working-directory: packages/llx-markdown
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(jq -r .version package.json)"
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::tag $TAG, but packages/llx-markdown/package.json is $version"
+            exit 1
+          fi
+
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run build
+      - run: bun run check
+
+      - name: Name the package for GitHub Packages
+        working-directory: packages/llx-markdown
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPOSITORY: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          scope="$(printf '%s' "$OWNER" | tr '[:upper:]' '[:lower:]')"
+          jq --arg name "@$scope/llx-markdown" --arg url "git+$REPOSITORY.git" '
+            .name = $name
+            | .repository = { type: "git", url: $url, directory: "packages/llx-markdown" }
+            | .publishConfig = { registry: "https://npm.pkg.github.com" }
+          ' package.json > package.json.next
+          mv package.json.next package.json
+          jq '{ name, version, repository, publishConfig }' package.json
+
+      - name: Publish
+        working-directory: packages/llx-markdown
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" > .npmrc
+          npm publish --registry https://npm.pkg.github.com
