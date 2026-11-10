@@ -6,6 +6,8 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # To publish again a version whose run failed before npm took it: run from main, by hand.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,9 +33,16 @@ jobs:
         working-directory: packages/llx-markdown
         env:
           TAG: ${{ github.ref_name }}
+          EVENT: ${{ github.event_name }}
         run: |
           version="$(jq -r .version package.json)"
-          if [ "$TAG" != "v$version" ]; then
+          if [ "$EVENT" = workflow_dispatch ]; then
+            git fetch --quiet --tags origin
+            if ! git rev-parse --quiet --verify "refs/tags/v$version" > /dev/null; then
+              echo "::error::no tag v$version for packages/llx-markdown/package.json"
+              exit 1
+            fi
+          elif [ "$TAG" != "v$version" ]; then
             echo "::error::tag $TAG, but packages/llx-markdown/package.json is $version"
             exit 1
           fi
