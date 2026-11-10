@@ -54,26 +54,37 @@ async function root() {
   }
 }
 
+/**
+ * Each reply is some 300 frames, and every frame is drawn twice, once from scratch: the forms reply
+ * takes over 3 s on a laptop and twice that on a two-core CI runner. The default 5 s is for a unit
+ * test; this one's work is fixed by the replies, so its deadline is too.
+ */
+const REPLY_DEADLINE_MS = 30_000
+
 describe('a reply streamed into one <Markdown>', () => {
   for (const { name, text } of replies) {
-    test(`${name}: every frame is a fresh render of it`, async () => {
-      const streamed = await root()
-      try {
-        const frames = prefixes(text, 'frame')
-        for (const [index, frame] of frames.entries()) {
-          const node = (
-            <Markdown streaming={index < frames.length - 1} headingIds>
-              {frame}
-            </Markdown>
-          )
-          const fresh = await root()
-          const expected = await fresh.render(node)
-          await fresh.close()
-          expect(await streamed.render(node), `${name} @${frame.length}`).toBe(expected)
+    test(
+      `${name}: every frame is a fresh render of it`,
+      async () => {
+        const streamed = await root()
+        try {
+          const frames = prefixes(text, 'frame')
+          for (const [index, frame] of frames.entries()) {
+            const node = (
+              <Markdown streaming={index < frames.length - 1} headingIds>
+                {frame}
+              </Markdown>
+            )
+            const fresh = await root()
+            const expected = await fresh.render(node)
+            await fresh.close()
+            expect(await streamed.render(node), `${name} @${frame.length}`).toBe(expected)
+          }
+        } finally {
+          await streamed.close()
         }
-      } finally {
-        await streamed.close()
-      }
-    })
+      },
+      REPLY_DEADLINE_MS,
+    )
   }
 })
