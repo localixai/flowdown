@@ -15,29 +15,32 @@ exactly what the defaults let through, so you can decide what to tighten.
 
 | `html`                         | What happens to `<b>`, `<details>`, `<img onerror=…>`                                                                       |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `true` (the default)           | The HTML parser is fetched the first time a document holds HTML. Until it arrives, the tags are left out. Then they are parsed and sanitized. |
+| `true` (the default)           | The HTML reader is fetched the first time a document holds HTML. Until it arrives, the tags are left out. Then they are parsed and sanitized. |
 | `html` from `llx-markdown/html` | Parsed and sanitized in the first render (for a server or a hydrating page).                                               |
 | `false`                        | Every tag is dropped. The text between the tags stays.                                                                     |
 
-HTML is never shown unsanitized: while the parser loads, tags are skipped, not printed or
+HTML is never shown unsanitized: while the reader loads, tags are skipped, not printed or
 inserted.
 
-The sanitizer is [rehype-sanitize](https://github.com/rehypejs/rehype-sanitize) with GitHub's
-schema, the rules github.com applies to a README, extended for what llx-markdown itself draws:
+The sanitizer is the package's own. It keeps an allow-list: GitHub's schema, the rules github.com
+applies to a README, extended for what llx-markdown itself draws. An element, attribute or URL
+protocol that is not on the list does not reach the page:
 
 - **Removed:** `<script>`, `<style>`, `<iframe>`, `<form>` and every other element the schema does
   not list; every `on…` attribute; `style`; any URL in `href` or `src` whose protocol is not allowed.
 - **Allowed on top of GitHub's list:** `div`, `span`, `picture`, `source`, `aside`, `figure`,
   `figcaption`, `footer`, and the dialect's `answer-tabs` and `answer-tab`.
 - **Attributes allowed on top of GitHub's list:** `align`, `width` and `height` everywhere; a class
-  only when it starts with `llx-`; `data-callout`, `data-callout-title`, `data-verdict` and
-  `data-label`; `target` and `rel` on links; `srcset`, `media` and `type` on `<source>`; the task
+  only when it starts with `llx-`; `data-callout`, `data-callout-title`, `data-verdict`,
+  `data-label` and `data-title`; `target` and `rel` on links; `srcset`, `media` and `type` on `<source>`; the task
   list classes on lists.
 - **Prefixed:** an `id` or `name` in the reply becomes `user-content-…`, so a reply cannot replace
   an element of your page that `document.getElementById` or a form looks up.
 
-The sanitizer runs after the HTML is parsed and before formulas are typeset, so KaTeX's own markup
-is not stripped and nothing in a reply can disguise itself as KaTeX's.
+HTML never becomes a string that the browser parses: each allowed tag is made a React element
+with its allowed attributes, so there is no markup for a reply to break out of. Formulas are
+typeset after the sanitizer, so KaTeX's own markup is not stripped and nothing in a reply can
+disguise itself as KaTeX's.
 
 Turn HTML off where replies have no reason to contain it:
 
@@ -47,8 +50,8 @@ Turn HTML off where replies have no reason to contain it:
 
 ## Links and images
 
-Every link and image URL goes through `urlTransform`. The default is react-markdown's: relative
-URLs, fragments and the protocols `http`, `https`, `mailto`, `irc`, `ircs` and `xmpp` are kept; any
+Every link and image URL goes through `urlTransform`. The default, `defaultUrlTransform`, is the check
+react-markdown made familiar: relative URLs, fragments and the protocols `http`, `https`, `mailto`, `irc`, `ircs` and `xmpp` are kept; any
 other URL (`javascript:`, `data:`, `vbscript:`, but also `tel:`) is replaced with an empty one.
 
 Pass your own to allow more, or less:
@@ -63,7 +66,7 @@ const urlTransform = (url: string) => (!hasProtocol.test(url) || allowed.test(ur
 ;<Markdown urlTransform={urlTransform}>{text}</Markdown>
 ```
 
-`urlTransform={null}` does not turn the check off: react-markdown then uses its default. To accept
+`urlTransform={null}` does not turn the check off: the default is used. To accept
 every URL, pass `(url) => url`, and do not do that for untrusted text.
 
 Two things the defaults do not do:

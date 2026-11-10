@@ -1,10 +1,6 @@
-import { unified } from 'unified'
-import remarkParse from 'remark-parse'
-import remarkGfm from 'remark-gfm'
-import { toString } from 'mdast-util-to-string'
-import { visit } from 'unist-util-visit'
-import type { Root } from 'mdast'
-import type { Root as HastRoot } from 'hast'
+import { parse } from '../engine'
+import type { Node, Tree } from '../engine/types'
+import { toText, visit } from '../engine/visit'
 
 export interface MarkdownHeading {
   depth: number
@@ -20,32 +16,32 @@ function slugifyHeading(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-/** One AST pass owns both the outline and rendered ids, including repeated headings. */
-function assignHeadings(tree: Root): MarkdownHeading[] {
+/** One pass owns both the outline and the rendered ids, repeated headings included. */
+function assignHeadings(tree: Node): MarkdownHeading[] {
   const headings: MarkdownHeading[] = []
   const used = new Set<string>()
-  visit(tree, 'heading', (node) => {
-    const text = toString(node)
+  visit(tree, (node) => {
+    if (node.type !== 'heading') return
+    const text = toText(node)
     const base = slugifyHeading(text) || 'section'
     let id = base
     let suffix = 1
     while (used.has(id)) id = `${base}-${suffix++}`
     used.add(id)
-    node.data = { ...node.data, hProperties: { ...node.data?.hProperties, id } }
-    headings.push({ depth: node.depth, text, id })
+    node.data = { ...node.data, hProperties: { ...(node.data?.hProperties as object), id } }
+    headings.push({ depth: node.depth ?? 1, text, id })
   })
   return headings
 }
 
-const parser = unified().use(remarkParse).use(remarkGfm)
-
 export function extractMarkdownHeadings(content: string): MarkdownHeading[] {
-  return assignHeadings(parser.parse(content))
+  return assignHeadings(parse(content))
 }
 
+/** remark: give every heading of an mdast tree its id (`data.hProperties.id`). */
 export function remarkHeadingIds() {
-  return (tree: Root) => {
-    assignHeadings(tree)
+  return (tree: Tree): void => {
+    assignHeadings(tree as Node)
   }
 }
 
@@ -55,40 +51,25 @@ export function remarkHeadingIds() {
  */
 export function headingBases(content: string): Array<{ offset: number; base: string }> {
   const bases: Array<{ offset: number; base: string }> = []
-  visit(parser.parse(content), 'heading', (node) => {
+  visit(parse(content), (node) => {
     const offset = node.position?.start.offset
-    if (offset !== undefined)
-      bases.push({ offset, base: slugifyHeading(toString(node)) || 'section' })
+    if (node.type === 'heading' && offset !== undefined)
+      bases.push({ offset, base: slugifyHeading(toText(node)) || 'section' })
   })
   return bases
 }
 
 /** Every heading's id, keyed by where the heading starts in `content`. */
 export function headingIdsByOffset(content: string): Map<number, string> {
-  const tree = parser.parse(content)
-  assignHeadings(tree)
+  const tree = parse(content)
   const ids = new Map<number, string>()
-  visit(tree, 'heading', (node) => {
+  const headings = assignHeadings(tree)
+  let at = 0
+  visit(tree, (node) => {
+    if (node.type !== 'heading') return
     const offset = node.position?.start.offset
-    const id = node.data?.hProperties?.id
-    if (offset !== undefined && typeof id === 'string') ids.set(offset, id)
+    const id = headings[at++]?.id
+    if (offset !== undefined && id !== undefined) ids.set(offset, id)
   })
   return ids
-}
-
-/**
- * Set heading ids from a whole-document map (`headingIdsByOffset`). Run after the sanitizer,
- * which prefixes ids, and on positions that are the document's: a renderer that parses a reply
- * block by block still gives the second `## Setup` the id `setup-1`, and the outline built from
- * the same map links to it.
- */
-export function rehypeHeadingIds(ids: ReadonlyMap<number, string>) {
-  return () => (hast: HastRoot) => {
-    visit(hast, 'element', (node) => {
-      const offset = node.position?.start.offset
-      if (!/^h[1-6]$/.test(node.tagName) || offset === undefined) return
-      const id = ids.get(offset)
-      if (id) node.properties.id = id
-    })
-  }
 }

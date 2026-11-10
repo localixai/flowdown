@@ -2,6 +2,7 @@ import type { LanguageFn, Mode } from 'highlight.js'
 import hljs from 'highlight.js/lib/core'
 import bash from 'highlight.js/lib/languages/bash'
 import css from 'highlight.js/lib/languages/css'
+import diff from 'highlight.js/lib/languages/diff'
 import javascript from 'highlight.js/lib/languages/javascript'
 import json from 'highlight.js/lib/languages/json'
 import markdown from 'highlight.js/lib/languages/markdown'
@@ -47,6 +48,7 @@ const highlighter = hljs.newInstance()
 for (const [name, grammar] of Object.entries({
   bash: shell,
   css,
+  diff,
   javascript,
   json,
   markdown,
@@ -68,6 +70,7 @@ const aliases: Record<string, string> = {
   tsx: 'typescript',
   html: 'xml',
   md: 'markdown',
+  patch: 'diff',
   yml: 'yaml',
 }
 

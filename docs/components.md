@@ -7,7 +7,8 @@ description:
 
 # Components
 
-`components` maps an element to the React component that draws it, as in react-markdown:
+`components` maps an element to the React component that draws it, the map react-markdown made
+familiar:
 
 ```tsx
 import { Markdown, type Components } from 'llx-markdown'
@@ -25,8 +26,8 @@ const components: Components = {
 ;<Markdown components={components}>{text}</Markdown>
 ```
 
-Each component receives the element's attributes as props, its `children`, and `node`, the hast
-element it was made from. Leave `node` out of what you spread onto the DOM.
+Each component receives the element's attributes as props, its `children`, and `node`, the node of
+the parsed tree it was made from. Leave `node` out of what you spread onto the DOM.
 
 > [!IMPORTANT] Keep `components` stable
 > Define the map at module level, or in `useMemo`. Blocks are remembered between updates, and a new
@@ -103,6 +104,9 @@ see [Styling](styling.md). To change their markup, override the HTML element and
 | Stats         | `ul.llx-stats`, each item a `div.llx-stat`               |
 | Pros and cons | `div.llx-verdicts`, each side an `aside.llx-verdict` with `data-verdict="pros"` or `"cons"` |
 | Tabs          | `answer-tabs` with `answer-tab` children                 |
+| Folded section | `details.llx-details` with its `summary`                |
+| Sources       | `ul.llx-sources`, each item a `div.llx-source` holding the link |
+| Code file name | `data-title` on the fence's `code`                      |
 | Quote source  | `footer.llx-quote-source`                                |
 | Figure        | `figure.llx-figure` with a `figcaption`                  |
 | Section number | `span.llx-section-number` at the start of a heading      |

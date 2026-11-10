@@ -9,7 +9,9 @@ description:
 
 ## From react-markdown
 
-llx-markdown is built on react-markdown, so most of a page carries over.
+llx-markdown reads Markdown with its own parser (it passes every example of CommonMark and of
+GitHub's extensions; see [Conformance](../conformance.md)) and takes the props react-markdown made
+familiar, so most of a page carries over.
 
 ```tsx
 // Before
@@ -32,7 +34,7 @@ import 'llx-markdown/styles.css'
 | react-markdown                          | llx-markdown                                                         |
 | --------------------------------------- | -------------------------------------------------------------------- |
 | `children`                              | `children`                                                           |
-| `components`                            | `components`, the same map. Keep it stable.                          |
+| `components`                            | `components`, the same map. Keep it stable. `node` is the package's own node, not a hast element. |
 | `remarkPlugins={[remarkGfm]}`           | Built in.                                                            |
 | `rehypeRaw` + `rehypeSanitize`          | Built in, on by default (`html`).                                    |
 | `skipHtml`                              | `html={false}`                                                       |
@@ -40,7 +42,7 @@ import 'llx-markdown/styles.css'
 | `remark-math` + `rehype-katex`          | `math={() => import('llx-markdown/math')}`                           |
 | `rehype-highlight`                      | `highlight={highlight}` from `llx-markdown/highlight`                |
 | `className` on a wrapper                | `className`                                                          |
-| `remarkPlugins`, `rehypePlugins` of your own | Not accepted. Keep react-markdown and add `remarkLlx` from `llx-markdown/remark`; see [Remark and rehype](../remark.md#react-markdown-with-your-own-components). |
+| `remarkPlugins`, `rehypePlugins` of your own | Not accepted: there is no unified pipeline inside. Write the syntax as an [extension](../remark.md#your-own-syntax-in-markdown), or keep react-markdown and add `remarkLlx` from `llx-markdown/remark`; see [Extensions and remark](../remark.md#react-markdown-with-your-own-components). |
 | `allowElement`, `disallowedElements`, `unwrapDisallowed` | Not accepted. Override the element in `components` to drop or unwrap it. |
 
 What changes for the reader:
@@ -88,8 +90,8 @@ import 'llx-markdown/styles.css'
 | `controls`                                   | A copy button on each code block. Other buttons: override `pre` and wrap `CodeBlock`; see [Components](../components.md#wrap-a-built-in-component). |
 | `codeBlockMaxHeight`, `tableMaxHeight`       | CSS on `.llx-code pre` and `.llx-table`.                                      |
 | `linkSafety`                                 | Override `a` in `components`, and `urlTransform`.                             |
-| `allowedTags`                                | No equivalent: the sanitizer's schema is fixed. Use your own pipeline with `sanitizeSchema` from `llx-markdown/remark`. |
-| `remarkPlugins`, `rehypePlugins`             | Not accepted; see the react-markdown section above.                           |
+| `allowedTags`                                | No equivalent: the sanitizer's list is fixed. See [Security](../security.md). |
+| `remarkPlugins`, `rehypePlugins`             | Not accepted; write an [extension](../remark.md#your-own-syntax-in-markdown). |
 | `dir`                                        | Set `dir` on an element around `<Markdown>`.                                  |
 | `animated`                                   | No equivalent. Animate in CSS if you want text to fade in.                    |
 | `BlockComponent`, `parseMarkdownIntoBlocksFn` | No equivalent. `createBlockSplitter` from `llx-markdown/remark` is the splitter `<Markdown>` uses. |
@@ -105,7 +107,7 @@ Tailwind CSS, import `llx-markdown/styles.css`, and set the tokens to your theme
 ### Links and images
 
 Streamdown's default hardening accepts links and images with any prefix and protocol. llx-markdown
-keeps react-markdown's check: relative URLs and `http`, `https`, `mailto`, `irc`, `ircs`, `xmpp`.
+keeps the stricter check react-markdown has: relative URLs and `http`, `https`, `mailto`, `irc`, `ircs`, `xmpp`.
 A reply that linked to `tel:` or another app's scheme now gets an empty link; allow it with
 `urlTransform`, as shown in [Security](../security.md#links-and-images).
 

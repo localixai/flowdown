@@ -8,6 +8,8 @@
 //   stats        the list becomes a row of figures: `**value**` and its label
 //   pros / cons  an aside with a list of points; a `pros` right before a `cons` (or the other way
 //                round) is paired into one two-column block
+//   details      the quote becomes a `<details>`, its title the `<summary>`
+//   sources      the list becomes the reply's references: each link with its site beside it
 //
 // Everything stays in mdast `data.hName`/`hProperties` — no raw HTML — and a container the
 // renderer already shaped carries an `hName`, which is how the block visitor knows to leave it
@@ -16,6 +18,7 @@ import type {
   Blockquote,
   BlockContent,
   DefinitionContent,
+  Link,
   ListItem,
   Paragraph,
   Parents,
@@ -114,6 +117,47 @@ function shapeStat(item: ListItem): void {
   item.children.splice(0, 1, block('llx-stat', [split.lead, label]))
 }
 
+/** The site a reference points at, as a reader names it: `docs.example.com`. '' for a relative link. */
+function hostOf(url: string): string {
+  const host = /^[a-z][a-z0-9+.-]*:\/\/(?:[^/?#@]*@)?([^/?#:]+)/i.exec(url)?.[1] ?? ''
+  return host.replace(/^www\./, '')
+}
+
+const span = (className: string, children: PhrasingContent[]): PhrasingContent => ({
+  // `emphasis` only as a phrasing carrier: hName makes it the span.
+  type: 'emphasis',
+  data: { hName: 'span', ...classed(className) },
+  children,
+})
+
+/**
+ * One reference: its link, the site quiet beside the title, then any note the author added. An
+ * item that does not open with a link stays a plain line. The link itself keeps its own element
+ * (and whatever the page's `a` does with it); only what is inside it is arranged.
+ */
+function shapeSource(item: ListItem): void {
+  const first = item.children[0]
+  if (first?.type !== 'paragraph') return
+  const [link, ...after] = trimLead(first.children)
+  if (link?.type !== 'link') return
+  const host = hostOf(link.url)
+  // A bare URL is its own text: the site names it, and the address is not printed twice.
+  const bare = link.children.length === 1 && labelText(link.children) === link.url
+  ;(link as Link).children = [
+    span('llx-source-title', bare && host ? [{ type: 'text', value: host }] : link.children),
+    ...(host && !bare ? [span('llx-source-host', [{ type: 'text', value: host }])] : []),
+  ]
+  const note = trimLead(after)
+  item.children.splice(
+    0,
+    1,
+    block('llx-source', [
+      link,
+      ...(meaningful(note).length > 0 ? [span('llx-source-note', note)] : []),
+    ]),
+  )
+}
+
 /** The quote's content after its marker paragraph. */
 type QuoteContent = Blockquote['children']
 
@@ -191,6 +235,31 @@ function shape(kind: ContainerKind, title: string, content: QuoteContent): Quote
     case 'cons':
       if (list?.type !== 'list') return null
       return [verdict(kind, title, list), ...content.slice(1)]
+    case 'sources':
+      if (list?.type !== 'list') return null
+      list.data = { ...list.data, ...classed('llx-sources') }
+      for (const item of list.children) shapeSource(item)
+      return [...titleLine('llx-sources-title', title), list, ...content.slice(1)]
+    case 'details':
+      // Without a title there is no summary, and the browser prints its own, in its language.
+      return [
+        {
+          type: 'blockquote',
+          data: { hName: 'details', ...classed('llx-details') },
+          children: [
+            ...(title
+              ? [
+                  {
+                    type: 'paragraph',
+                    data: { hName: 'summary' },
+                    children: [{ type: 'text', value: title }],
+                  } satisfies Paragraph,
+                ]
+              : []),
+            ...content,
+          ],
+        },
+      ]
   }
 }
 
@@ -201,6 +270,8 @@ function shape(kind: ContainerKind, title: string, content: QuoteContent): Quote
  */
 function following(kind: ContainerKind, siblings: Parents['children']): QuoteContent {
   const first = siblings[0]
+  // What folds is what the author quoted: nothing after the quote says where it would end.
+  if (kind === 'details') return []
   if (kind !== 'tabs') return first?.type === 'list' ? [first] : []
   if (first?.type !== 'heading') return []
   const run: QuoteContent = []
@@ -219,10 +290,23 @@ function following(kind: ContainerKind, siblings: Parents['children']): QuoteCon
 export function applyContainer(quote: Blockquote, index: number, parent: Parents): boolean {
   const first = quote.children[0]
   const lead = first?.type === 'paragraph' ? first.children[0] : undefined
-  if (lead?.type !== 'text' || first?.type !== 'paragraph' || first.children.length !== 1)
-    return false
+  if (lead?.type !== 'text' || first?.type !== 'paragraph') return false
   const marker = parseContainerMarker(lead.value)
-  if (!marker || lead.value.slice(marker.consumed).trim()) return false
+  if (!marker) return false
+  if (marker.kind === 'details') {
+    // Its content is prose as often as a list, and prose right under the marker is the marker's
+    // own paragraph: the marker line comes off it, as a callout's does. A title line that carries
+    // formatting ends its text node early; it is then content, not a cut-off title.
+    const titled = marker.consumed < lead.value.length || first.children.length === 1
+    if (titled) lead.value = lead.value.slice(marker.consumed)
+    else {
+      marker.title = ''
+      lead.value = lead.value.slice(lead.value.indexOf(']') + 1).trimStart()
+    }
+    if (lead.value === '') first.children.shift()
+    if (first.children[0]?.type === 'break') first.children.shift()
+    if (first.children.length > 0) quote.children.unshift({ type: 'paragraph', children: [] })
+  } else if (first.children.length !== 1 || lead.value.slice(marker.consumed).trim()) return false
   // A quote holding ONLY the marker takes the blocks right after it. That is how models write
   // these: `> [!TABS]` alone, then the headings unquoted — and Markdown ends a quote at a heading
   // or a list, so read literally the marker governed nothing and its content rendered as prose.

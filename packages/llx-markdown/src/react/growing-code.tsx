@@ -1,6 +1,7 @@
 'use client'
 import { memo, useMemo } from 'react'
 import { CodeFrame } from './code-block'
+import { fenceTitle } from '../dialect'
 import { useRenderContext, type Highlighter } from './context'
 
 /**
@@ -20,7 +21,7 @@ const OPENING = /^(`{3,}|~{3,})([^\n`]*)\n/
 /** The language and code of a block that is one open fence, closed by the healer; else null. */
 export function growingFence(
   source: string,
-): { language: string | undefined; body: string } | null {
+): { language: string | undefined; title: string; body: string } | null {
   const opening = OPENING.exec(source)
   if (!opening) return null
   const fence = opening[1] ?? '```'
@@ -31,8 +32,9 @@ export function growingFence(
   // A fence closed earlier in the block means the block is not just this fence.
   if (new RegExp(`(?:^|\\n) {0,3}\\${marker}{${fence.length},}[ \\t]*(?:\\n|$)`).test(body))
     return null
-  const language = opening[2]?.trim().split(/\s+/)[0] || undefined
-  return { language, body }
+  const info = opening[2]?.trim() ?? ''
+  const language = info.split(/\s+/)[0] || undefined
+  return { language, title: fenceTitle(info.slice(language?.length ?? 0)), body }
 }
 
 /** The pieces of `body`, each ending in its newline but the last. */
@@ -64,7 +66,15 @@ const Piece = memo(function Piece({
   return html === null ? text : <span dangerouslySetInnerHTML={{ __html: html }} />
 })
 
-export function GrowingCode({ language, body }: { language: string | undefined; body: string }) {
+export function GrowingCode({
+  language,
+  title,
+  body,
+}: {
+  language: string | undefined
+  title?: string
+  body: string
+}) {
   const { highlight } = useRenderContext()
   // The class a finished block gets when its language is one the highlighter knows.
   const known = useMemo(
@@ -76,7 +86,7 @@ export function GrowingCode({ language, body }: { language: string | undefined; 
     .join(' ')
   const parts = pieces(body)
   return (
-    <CodeFrame language={language} text={body}>
+    <CodeFrame language={language} title={title} text={body}>
       <code className={className || undefined}>
         {parts.map((text, index) => (
           <Piece

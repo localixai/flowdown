@@ -1,28 +1,18 @@
 /**
- * `llx-markdown/remark`: the dialect as unified plugins, without React.
+ * `llx-markdown/remark`: the dialect as a remark plugin, without React or the engine's renderer.
  *
- * For a renderer other than `<Markdown>`: react-markdown with your own components, a server that
- * renders HTML with rehype-stringify, a static site build. The dialect becomes ordinary HTML with
- * `llx-` classes and data attributes, which `styles.css` draws; `answer-tabs` / `answer-tab`
- * elements hold the variants of a `[!TABS]` form, for your own tab component.
+ * For a unified pipeline of your own: a static site build, a renderer that is not React. The
+ * dialect becomes ordinary HTML with `llx-` classes and data attributes, which `styles.css` draws;
+ * `answer-tabs` / `answer-tab` elements hold the variants of a `[!TABS]` form, for your own tab
+ * component. GitHub's syntax is `remark-gfm`'s to read, before this plugin:
  *
- *     unified().use(remarkParse).use(remarkLlx).use(remarkRehype).use(rehypeStringify)
+ *     unified().use(remarkParse).use(remarkGfm).use(remarkLlx).use(remarkRehype).use(rehypeStringify)
  */
-export { remarkAnswerBlocks } from './core/remark-answer-blocks'
-export {
-  rehypePluginsFor,
-  rehypeTaskKeys,
-  remarkLlx,
-  remarkPluginsFor,
-  sanitizeSchema,
-  type HtmlPlugin,
-  type MathPlugin,
-  type PipelineOptions,
-} from './core/pipeline'
+export { remarkAnswerBlocks, remarkAnswerBlocks as remarkLlx } from './core/remark-answer-blocks'
+export { sanitizeSchemaFor } from './core/sanitize-schema'
 export {
   extractMarkdownHeadings as extractHeadings,
   headingIdsByOffset,
-  rehypeHeadingIds,
   remarkHeadingIds,
   type MarkdownHeading,
 } from './core/headings'
@@ -32,7 +22,6 @@ export {
   type BlockSplitter,
   type MarkdownBlock,
 } from './core/blocks'
-export { remarkBlockOffset } from './core/positions'
 export { escapeLiteralDollars, isLiteralDollar } from './core/dollars'
 export { hasHtmlSyntax, hasMathSyntax } from './core/syntax'
 export { markdownProseWithoutCode } from './core/prose'

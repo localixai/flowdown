@@ -23,7 +23,7 @@ describe('the prompt teaches only what the page renders', () => {
     for (const example of examples) {
       const html = render(example)
       expect(html).not.toContain('[!')
-      expect(html).toMatch(/class="llx-(steps|tabs|stats|pros|cons|sides|verdict)/)
+      expect(html).toMatch(/class="llx-(steps|tabs|stats|pros|cons|sides|verdict|details|sources)/)
     }
   })
 

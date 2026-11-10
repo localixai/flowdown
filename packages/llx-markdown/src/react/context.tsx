@@ -1,6 +1,6 @@
 'use client'
 import { createContext, useContext, type ComponentType } from 'react'
-import type { Components } from 'react-markdown'
+import type { Components } from './render'
 import type { MermaidRenderer } from '../mermaid/renderer'
 
 /**

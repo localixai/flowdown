@@ -53,14 +53,16 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
   them: `math={() => import('llx-markdown/math')}`, `mermaid={() => import('mermaid')}`,
   `highlight={highlight}` from `llx-markdown/highlight`. Install `katex`, `mermaid` or
   `highlight.js` for the ones you use.
-- **Without React.** `llx-markdown/remark` gives the dialect as remark and rehype plugins, for HTML
-  rendered on a server or in a static build.
+- **Your own syntax.** `extensions` adds inline rules, fences and passes over the tree to the
+  parser. In a unified pipeline of your own, `remarkLlx` from `llx-markdown/remark` gives the
+  dialect as a remark plugin.
 
 ## Size
 
-82 KB, minified and gzipped in a production build, loads with `<Markdown>`, without React. The HTML
-parser (48 KB) is loaded only for a reply with raw HTML, and KaTeX and Mermaid only for math and
-diagrams. How it compares with Streamdown, react-markdown, markdown-to-jsx, markstream and
+29 KB, minified and gzipped in a production build, loads with `<Markdown>`, without React, and the
+package has no dependencies: the parser is its own. The HTML reader (14 KB with the full table of
+character references) is loaded only for a reply with raw HTML, and KaTeX and Mermaid only for math
+and diagrams. How it compares with Streamdown, react-markdown, markdown-to-jsx, markstream and
 marked-react on size, speed and what each draws, every figure from a script you can rerun:
 [the comparison](https://github.com/rsaryev/llx-markdown/blob/main/docs/comparison.md).
 

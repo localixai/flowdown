@@ -127,15 +127,17 @@ Every element the dialect adds has a class. Restyle one with a selector that sta
 
 | Form | Classes |
 | --- | --- |
-| Every form | `.llx-form`; a titled form has `.llx-steps-title`, `.llx-tabs-title` or `.llx-stats-title` above it |
+| Every form | `.llx-form`; a titled form has `.llx-steps-title`, `.llx-tabs-title`, `.llx-stats-title` or `.llx-sources-title` above it |
 | Callout | `.llx-callout[data-callout="warning"]`, `.llx-callout-icon`, `.llx-callout-title`, `.llx-callout-body` |
 | Steps | `.llx-steps`, `.llx-step-head`, `.llx-step-title`, `.llx-step-meta`, `.llx-step-body` |
 | Tabs | `.llx-tabs`, `.llx-tab-list`, `.llx-tab`, `.llx-tab-panel` |
 | Stats | `.llx-stats`, `.llx-stat`, `.llx-stat-value`, `.llx-stat-label` |
 | Pros and cons | `.llx-verdicts`, `.llx-verdict[data-verdict="pros"]`, `.llx-verdict-title`, `.llx-verdict-list` |
+| Folded section | `.llx-details` and its `summary` (a `<details>` written as HTML takes the same rules) |
+| Sources | `.llx-sources`, `.llx-source`, `.llx-source-title`, `.llx-source-host`, `.llx-source-note` |
 | File tree | `.llx-tree`, `.llx-tree-row`, `.llx-tree-name`, `.llx-tree-comment` |
 | Diagram | `.llx-diagram`, `.llx-diagram-canvas` |
-| Code block | `.llx-code`, `.llx-code-bar`, `.llx-code-language`, `.llx-code-copy` |
+| Code block | `.llx-code`, `.llx-code-bar`, `.llx-code-title`, `.llx-code-language`, `.llx-code-copy` |
 
 The root carries `data-streaming` while a reply streams, and `data-caret` while its caret shows.
 

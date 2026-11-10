@@ -19,6 +19,7 @@
     "changeset": "changeset",
     "version": "changeset version && bun install",
     "release": "bun run build && bun run check && changeset publish",
+    "conformance": "bun run --cwd packages/llx-markdown conformance",
     "bench": "bun run --cwd bench bench",
     "shots": "bun run --cwd demo shots",
     "size": "bun run --cwd packages/llx-markdown size && bun run --cwd bench size"

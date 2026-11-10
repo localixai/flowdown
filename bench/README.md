@@ -149,6 +149,20 @@ bench/
     <date>-<label>.json
 ```
 
+## Checked with Claude Fable 5.2
+
+On 2026-11-10 Claude Fable 5.2 reran every script here after llx-markdown moved to its own parser
+and compared the output with what is committed: `bun run size`, `bun run features`, `bun run deps`,
+`bun run charts` and the full `bun run bench` (three runs, Apple M5, the run
+[results/latest.md](results/latest.md) names). The feature table came out unchanged; the sizes, the
+package count and the streaming times are the ones in [results/](results/). The parser was checked
+against every example of CommonMark and of GitHub's extensions
+([docs/conformance.md](../docs/conformance.md)), the new renderer against what the previous one
+drew for about 2,300 documents, the block splitter against one parse of the whole document on
+seeded documents ([blocks-fuzz.test.tsx](../packages/llx-markdown/src/core/blocks-fuzz.test.tsx)),
+and the sanitizer with 159 attack inputs, whole and at every prefix of a stream
+([security.test.tsx](../packages/llx-markdown/src/react/security.test.tsx)).
+
 ## Size and features
 
 - `bun run size`: what a page downloads for each renderer, in a production build, into

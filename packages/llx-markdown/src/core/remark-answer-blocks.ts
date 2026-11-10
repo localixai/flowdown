@@ -9,23 +9,37 @@
 //   an image alone in a paragraph → a centred <figure>, captioned by its title
 //     (`![alt](src "Caption")`) or by an emphasis-only line right under it (`*Caption*`)
 //   `## 1.2 Title`              → the section number set apart, quieter than the title
-//   `> [!STEPS]`, `[!TABS]`, `[!STATS]`, `[!PROS]`/`[!CONS]` → container forms, shaped by
-//     `remarkAnswerContainers.ts` (a timeline, tabs, a row of figures, the case for and against)
+//   `> [!STEPS]`, `[!TABS]`, `[!STATS]`, `[!PROS]`/`[!CONS]`, `[!DETAILS]`, `[!SOURCES]` →
+//     container forms, shaped by `remarkAnswerContainers.ts` (a timeline, tabs, a row of figures,
+//     the case for and against, a folded section, the references)
+//   ` ```ts title="src/app.ts" ` → the fence's file name on its <code> (`data-title`)
 // Everything stays in mdast `data.hName`/`hProperties`, so no raw HTML is produced and the
 // sanitize pipeline has nothing new to trust.
-import { visit } from 'unist-util-visit'
+import { visit as walk } from '../engine/visit'
 import type {
   Blockquote,
   Heading,
   Image,
+  Nodes,
   Paragraph,
   Parents,
   PhrasingContent,
   Root,
   Text,
 } from 'mdast'
-import { ATTRIBUTION_PREFIX, parseCalloutMarker } from '../dialect'
+import { ATTRIBUTION_PREFIX, fenceTitle, parseCalloutMarker } from '../dialect'
 import { applyContainer, isShapedContainer, meaningful } from './remark-answer-containers'
+import type { Extension, Tree } from '../engine/types'
+
+/** The engine's tree walker, read with mdast's types: the engine's tree is mdast's. */
+const visit = walk as unknown as (
+  tree: Root,
+  visitor: (
+    node: Nodes,
+    index: number | undefined,
+    parent: Parents | undefined,
+  ) => number | undefined,
+) => void
 
 /** Strip a `[!KIND]` marker off the quote's first paragraph; true when it was a callout. */
 function applyCallout(quote: Blockquote): boolean {
@@ -177,8 +191,8 @@ function applySectionNumber(heading: Heading): void {
 }
 
 export function remarkAnswerBlocks() {
-  return (tree: Root) => {
-    visit(tree, (node, index, parent): number | undefined => {
+  return (tree: Tree): void => {
+    visit(tree as Root, (node, index, parent): number | undefined => {
       if (node.type === 'blockquote') {
         // A container this pass already shaped (a tab, a pros/cons aside) is not a quote.
         if (isShapedContainer(node)) return undefined
@@ -189,8 +203,21 @@ export function remarkAnswerBlocks() {
         applyFigure(node, index, parent)
       } else if (node.type === 'heading') {
         applySectionNumber(node)
+      } else if (node.type === 'code' && node.meta) {
+        // The file a fence names rides on its <code>: a node's `meta` does not survive a sanitizer.
+        const title = fenceTitle(node.meta)
+        if (title)
+          node.data = { ...node.data, hProperties: { ...node.data?.hProperties, dataTitle: title } }
       }
       return undefined
     })
   }
+}
+
+const transform = remarkAnswerBlocks()
+
+/** The dialect as an extension of the engine: what `<Markdown>` reads every document with. */
+export const llxDialect: Extension = {
+  name: 'llx',
+  transform: (root) => transform(root),
 }

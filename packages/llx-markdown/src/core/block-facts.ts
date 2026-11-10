@@ -7,7 +7,8 @@
  * construct these scans look for lies inside one top-level block (a document where something
  * resolves across blocks, footnotes or link definitions, is never split).
  */
-import type { MarkdownBlock } from './blocks'
+import { hasRareEntity } from '../engine/entities'
+import { isFenceBlock, type MarkdownBlock } from './blocks'
 import { escapeLiteralDollars } from './dollars'
 import { headingBases } from './headings'
 import { hasHtmlSyntax, hasMathSyntax } from './syntax'
@@ -22,24 +23,43 @@ function remembered<T>(compute: (block: MarkdownBlock) => T) {
   }
 }
 
-/** Whether the block has a formula. */
-export const blockHasMath = remembered((block) => hasMathSyntax(block.source))
+/** A fence whose language is `math`: a display formula, as GitHub writes one. */
+const MATH_FENCE = /(?:^|\n) {0,3}(?:`{3,}|~{3,})[ \t]*math[ \t]*(?:\n|$)/
+
+/**
+ * Whether the block has a formula. A block that is one fenced code block has no prose to look in
+ * (only its opening line says whether it is a formula): a long fence that is still streaming is
+ * not scanned again on every token.
+ */
+export const blockHasMath = remembered((block) =>
+  isFenceBlock(block)
+    ? MATH_FENCE.test(block.source.slice(0, 40))
+    : hasMathSyntax(block.source) || MATH_FENCE.test(block.source),
+)
+
+/** Whether the block names a character reference outside the common ones (`&nrarr;`). */
+export const blockHasRareEntity = remembered(
+  (block) => block.source.includes('&') && !isFenceBlock(block) && hasRareEntity(block.source),
+)
 
 /** Whether the block has raw HTML in its prose. */
-export const blockHasHtml = remembered((block) => hasHtmlSyntax(block.source))
+export const blockHasHtml = remembered(
+  (block) => !isFenceBlock(block) && hasHtmlSyntax(block.source),
+)
 
 /**
  * The block with its literal dollars escaped (`$5`), for a page that typesets `$…$`. The same
  * block always gives back the same object, so a memoized renderer still skips it.
  */
 export const escapedBlock = remembered((block): MarkdownBlock => {
+  if (isFenceBlock(block)) return block
   const source = escapeLiteralDollars(block.source)
   return source === block.source ? block : { ...block, source }
 })
 
 /** The headings in a block: where each starts in it, and the text its id is made from. */
 const blockHeadings = remembered((block) =>
-  block.source.includes('#') || /\n *(=+|-+) *(\n|$)/.test(block.source)
+  !isFenceBlock(block) && (block.source.includes('#') || /\n *(=+|-+) *(\n|$)/.test(block.source))
     ? headingBases(block.source)
     : [],
 )

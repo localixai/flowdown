@@ -163,6 +163,8 @@ describe('a marker-only quote governs the blocks right after it', () => {
       verdict: ['<div class="llx-verdicts">'],
       steps: ['class="llx-steps"', 'llx-step-title'],
       stats: ['<ul class="llx-stats">', 'llx-stat-value'],
+      details: ['<details class="llx-details">', '<summary>Full log</summary>'],
+      sources: ['<ul class="llx-sources">', 'llx-source-host'],
     }
     for (const [form, lines] of Object.entries(ANSWER_FORM_EXAMPLES)) {
       const html = render(lines.join('\n'))
@@ -242,5 +244,93 @@ describe('steps (`> [!STEPS]` over a list)', () => {
     const html = render('> [!STEPS]\n> Just a sentence.')
     expect(html).not.toContain('llx-steps')
     expect(html).toContain('<blockquote')
+  })
+})
+
+describe('a folded section (`> [!DETAILS]`)', () => {
+  test('the quote becomes a native details, its title the summary, its content kept whole', () => {
+    const html = render('> [!DETAILS] Build log\n> First line.\n>\n> ```sh\n> bun test\n> ```')
+    expect(html).toContain(
+      '<details class="llx-details">\n<summary>Build log</summary>\n<p>First line.</p>',
+    )
+    expect(html).toContain('<p>First line.</p>')
+    expect(html).toContain('language-sh')
+    expect(html).not.toContain('<blockquote')
+    expect(html).not.toContain('[!DETAILS]')
+  })
+
+  test('without a title it has no summary: the browser prints its own, in its language', () => {
+    const html = render('> [!DETAILS]\n> Hidden.')
+    expect(html).toContain('<details class="llx-details">\n<p>Hidden.</p>')
+    expect(html).not.toContain('<summary')
+  })
+
+  test('a title with formatting is content, and a list right under the marker is folded', () => {
+    expect(render('> [!DETAILS] **Bold** title\n> Body.')).toContain(
+      '<details class="llx-details">\n<p><strong>Bold</strong> title\nBody.</p>',
+    )
+    const html = render('> [!DETAILS] Steps taken\n> - one\n> - two')
+    expect(html).toContain('<summary>Steps taken</summary>\n<ul>')
+  })
+
+  test('it folds only what was quoted: a list after the quote is not taken', () => {
+    const html = render('> [!DETAILS] More\n> Inside.\n\n- outside')
+    expect(html.indexOf('outside')).toBeGreaterThan(html.indexOf('</details>'))
+  })
+
+  test('a callout inside it is still a callout, and it survives the sanitizer', () => {
+    const html = render('<b>x</b>\n\n> [!DETAILS] Why\n> > [!TIP]\n> > Cache it.')
+    expect(html).toContain('<details class="llx-details">\n<summary>Why</summary>')
+    expect(html).toContain('data-callout="tip"')
+  })
+})
+
+describe('references (`> [!SOURCES]` over a list of links)', () => {
+  test('each link shows its title and its site, the note after it kept', () => {
+    const html = render(
+      '> [!SOURCES] Further reading\n- [CommonMark spec](https://www.commonmark.org/spec) — the grammar\n- [Local notes](./notes.md)',
+    )
+    expect(html).toContain('<p class="llx-sources-title">Further reading</p>')
+    expect(html).toContain('<ul class="llx-sources">')
+    expect(html).toContain(
+      '<span class="llx-source-title">CommonMark spec</span><span class="llx-source-host">commonmark.org</span></a>',
+    )
+    expect(html).toContain('<span class="llx-source-note">the grammar</span>')
+    // A relative link has no site to name.
+    expect(html).toContain('<span class="llx-source-title">Local notes</span></a>')
+    expect(html).not.toContain('[!SOURCES]')
+  })
+
+  test('a bare URL is named by its site, not printed twice', () => {
+    const html = render('> [!SOURCES]\n- https://example.com/a/b')
+    expect(html).toContain('<span class="llx-source-title">example.com</span></a>')
+    expect(html).not.toContain('llx-source-host')
+  })
+
+  test('an item that is not a link stays a plain line; with raw HTML the form survives', () => {
+    const html = render('<b>x</b>\n\n> [!SOURCES]\n- plain\n- [A](https://a.dev)')
+    expect(html).toContain('<li>plain</li>')
+    expect(html).toContain('<span class="llx-source-host">a.dev</span>')
+  })
+})
+
+describe('a code fence that names its file', () => {
+  test('`title=`, `filename=` and a bare path all title the block; other words do not', () => {
+    for (const info of ['ts title="src/app.ts"', "ts filename='src/app.ts'", 'ts src/app.ts']) {
+      const html = render('```' + info + '\nconst a = 1\n```')
+      expect(html, info).toContain('<span class="llx-code-title">src/app.ts</span>')
+      expect(html, info).toContain('<span class="llx-code-language">ts</span>')
+    }
+    expect(render('```ts {1,3} showLineNumbers\nconst a = 1\n```')).not.toContain('llx-code-title')
+    expect(render('```ts\nconst a = 1\n```')).not.toContain('llx-code-title')
+  })
+
+  test('the title survives the sanitizer and shows while the fence is still open', () => {
+    expect(render('<b>x</b>\n\n```ts title="a.ts"\nconst a = 1\n```')).toContain(
+      '<span class="llx-code-title">a.ts</span>',
+    )
+    expect(render('```ts title="a.ts"\nconst a = 1', { streaming: true })).toContain(
+      '<span class="llx-code-title">a.ts</span>',
+    )
   })
 })

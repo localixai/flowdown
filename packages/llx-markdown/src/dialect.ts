@@ -84,13 +84,24 @@ function readMarker(text: string): { kind: string; title: string; consumed: numb
  *   stats   a list of `**value** label` items → a row of headline figures
  *   pros    a list → the case for, with a check per point
  *   cons    a list → the case against; right after `pros` the two sit side by side
+ *   details the quote's own content, folded under its title (a log, a derivation, an aside the
+ *           reader may skip) → a native `<details>`
+ *   sources a list of links → the numbered references of a reply, each with its site
  *
  * Opt-in by marker, never guessed from shape: models open MANY list items with bold
  * (`**Pros:** …`) and section with headings, and turning each of those into a widget would be
  * wrong far more often than right. In the quote they stay plain Markdown — a quote holding a list
  * or sections — so an answer still reads anywhere this dialect is not rendered.
  */
-export const CONTAINER_KINDS = ['steps', 'tabs', 'stats', 'pros', 'cons'] as const
+export const CONTAINER_KINDS = [
+  'steps',
+  'tabs',
+  'stats',
+  'pros',
+  'cons',
+  'details',
+  'sources',
+] as const
 export type ContainerKind = (typeof CONTAINER_KINDS)[number]
 
 /** The marker as the prompt writes it: `[!STEPS]`, `[!TABS]`, … */
@@ -113,6 +124,8 @@ export const ANSWER_FORM_EXAMPLES = {
     '',
     `> ${containerMarker('cons')}`,
     '- needs a server',
+    '',
+    '---',
   ],
   verdict: [
     `> ${containerMarker('pros')}`,
@@ -128,6 +141,8 @@ export const ANSWER_FORM_EXAMPLES = {
     '   Rest and keep warm.',
   ],
   stats: [`> ${containerMarker('stats')}`, '- **3×** faster installs', '- **−40%** memory'],
+  details: [`> ${containerMarker('details')} Full log`, '> The long part, quoted.'],
+  sources: [`> ${containerMarker('sources')}`, '- [Page title](https://example.com/page)'],
 } as const satisfies Record<string, readonly string[]>
 
 function isContainerKind(value: string): value is ContainerKind {
@@ -153,3 +168,19 @@ export function parseContainerMarker(text: string): ContainerMarker | null {
  * A fence the model already writes as `text`: naming it `tree` is the whole opt-in.
  */
 export const TREE_FENCE_LANGUAGE = 'tree'
+
+const FENCE_TITLE = /(?:^|\s)(?:title|filename|file)=(?:"([^"]*)"|'([^']*)'|(\S+))/
+const FENCE_PATH = /^[\w@.\-/\\[\]()]*[\w)\]]\.[A-Za-z0-9]+$/
+
+/**
+ * The file a code fence names after its language: ` ```ts title="src/app.ts" ` (also `filename=`,
+ * `file=`), or the path alone (` ```ts src/app.ts `), the way an agent writing a file labels it.
+ * '' when the info string names none; any other word there (`{1,3}`, `showLineNumbers`) is not one.
+ */
+export function fenceTitle(meta: string | null | undefined): string {
+  if (!meta) return ''
+  const named = FENCE_TITLE.exec(meta)
+  if (named) return (named[1] ?? named[2] ?? named[3] ?? '').trim()
+  const bare = meta.trim()
+  return FENCE_PATH.test(bare) ? bare : ''
+}

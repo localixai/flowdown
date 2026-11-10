@@ -261,10 +261,8 @@
   font-size: 0.85em;
   color: var(--llx-fg-faint);
 }
-/* Inline code: in text, and in the forms' own text boxes (a step's title and its one-line body). */
-.llx-markdown
-  :where(p, li, blockquote, td, th, h1, h2, h3, h4, h5, h6, .llx-step-title, .llx-step-body)
-  > code {
+/* Inline code: wherever it is not a block's (in text, in bold or a link, in a form's own text). */
+.llx-markdown :where(:not(pre)) > code:where(:not(.math-inline, .math-display)) {
   border-radius: var(--llx-radius-small);
   font-family: var(--llx-font-mono);
   background: var(--llx-veil-strong);

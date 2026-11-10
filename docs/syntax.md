@@ -1,8 +1,9 @@
 ---
 title: Syntax
 description:
-  Every form of the llx dialect — callouts, steps, tabs, stats, pros and cons, quotes, figures,
-  section numbers, file trees, diagrams and math — with its source and its rules.
+  Every form of the llx dialect — callouts, steps, tabs, stats, pros and cons, folded sections,
+  sources, quotes, figures, section numbers, file trees, diagrams and math — with its source and
+  its rules.
 ---
 
 # Syntax
@@ -23,7 +24,8 @@ Two rules hold for all of them:
 Write the marker as a quote line of its own, then the content **unquoted** after it. This is how
 models write these forms, and the renderer reads it by grammar:
 
-- `[!STEPS]`, `[!STATS]`, `[!PROS]` and `[!CONS]` take the **one list** right after the marker.
+- `[!STEPS]`, `[!STATS]`, `[!PROS]`, `[!CONS]` and `[!SOURCES]` take the **one list** right after
+  the marker.
 - `[!TABS]` takes the sections that start with the heading right after it, up to a shallower
   heading, a `---` line, or the end of the text.
 
@@ -43,6 +45,9 @@ forms render the same:
 > 1. **Back up**
 > 2. **Switch**
 ```
+
+`[!DETAILS]` is the exception: it folds what is quoted with it and nothing after, since nothing
+after a quote says where a folded section would end.
 
 A marker with nothing it can take — no list after `[!STEPS]`, no heading after `[!TABS]` — stays the
 quote it was written as.
@@ -202,6 +207,50 @@ Either one also works alone. Text after the marker titles that side.
 Forms nest where it reads well: a tab can hold its option's pros and cons, as in the
 [introduction](index.md#what-it-looks-like).
 
+## Folded sections
+
+Long secondary material — a full log, raw output, a derivation — folded under its title, so the
+reply stays short and the detail is one click away. The text after the marker is the title; the
+content is **quoted** with it.
+
+```markdown
+> [!DETAILS] Timings from the last ten runs
+> | Step  | Before | After |
+> | ----- | -----: | ----: |
+> | Build |  212 s |  47 s |
+```
+
+> [!DETAILS] Timings from the last ten runs
+> | Step  | Before | After |
+> | ----- | -----: | ----: |
+> | Build |  212 s |  47 s |
+
+- It is a native `<details>`: it opens with a click, Enter or Space, the browser's find-in-page
+  opens it on a match, and it prints as the reader left it.
+- Anything can go inside: paragraphs, lists, code, tables, a callout.
+- Without a title the browser prints its own label ("Details"), in the reader's language.
+- A `<details>` written as HTML gets the same look.
+
+## Sources
+
+The pages a reply draws on, as a numbered list of links: each shows its title and its site, and
+whatever follows the link is its note.
+
+```markdown
+> [!SOURCES]
+- [Bundler options](https://bun.sh/docs/bundler) — `typecheck` runs the compiler inside the build
+- [Project references](https://www.typescriptlang.org/docs/handbook/project-references.html)
+```
+
+> [!SOURCES]
+- [Bundler options](https://bun.sh/docs/bundler) — `typecheck` runs the compiler inside the build
+- [Project references](https://www.typescriptlang.org/docs/handbook/project-references.html)
+
+- The site is read from the link (`www.` dropped); a relative link shows none.
+- A bare URL is named by its site instead of being printed in full.
+- Text after the marker titles the list: `> [!SOURCES] Further reading`.
+- An item that does not open with a link stays a plain line.
+
 ## Quotes with a source
 
 A quote whose last line starts with an em dash (or `--`) and a space shows that line as its source.
@@ -291,7 +340,8 @@ flowchart LR
 
 ## Math
 
-`$…$` inline and `$$…$$` on lines of their own, typeset with KaTeX when the page turns math on. See
+`$…$` inline, and `$$…$$` on lines of their own or a ` ```math ` fence for a display formula,
+typeset with KaTeX when the page turns math on. See
 [Math](math.md).
 
 ```markdown
@@ -328,6 +378,40 @@ See [Components](components.md#task-lists).
 
 A fenced block shows its language and a copy button. Code is highlighted when the page passes a
 highlighter; see [Highlighting](highlighting.md).
+
+A fence that names its file shows the name in its bar, the way an agent labels the file it writes.
+Write `title="…"` (or `filename=`, `file=`) after the language, or the path alone:
+
+````markdown
+```ts title="src/routes/users.ts"
+export const users = route('/users/:id', handler)
+```
+
+```ts src/routes/users.ts
+export const users = route('/users/:id', handler)
+```
+````
+
+```ts title="src/routes/users.ts"
+export const users = route('/users/:id', handler)
+```
+
+Other words after the language (`{1,3}`, `showLineNumbers`) are not a title and are ignored.
+
+A change reads best as a `diff` fence: with the package's highlighter the added lines are green and
+the removed ones red.
+
+````markdown
+```diff title="build.config.ts"
+-  typecheck: true,
++  typecheck: false,
+```
+````
+
+```diff title="build.config.ts"
+-  typecheck: true,
++  typecheck: false,
+```
 
 ## Raw HTML
 

@@ -1,28 +1,18 @@
 'use client'
+import { useContext, Fragment, memo, useMemo, useState, type ReactNode } from 'react'
 import {
-  createElement,
-  useContext,
-  Fragment,
-  memo,
-  useMemo,
-  useState,
-  type ElementType,
-  type ReactNode,
-} from 'react'
-import ReactMarkdown, { type Components, type UrlTransform } from 'react-markdown'
-import type { PluggableList } from 'unified'
-import { blockHasHtml, blockHasMath, escapedBlock, headingIdsOfBlocks } from '../core/block-facts'
+  blockHasHtml,
+  blockHasMath,
+  blockHasRareEntity,
+  escapedBlock,
+  headingIdsOfBlocks,
+} from '../core/block-facts'
 import { createBlockSplitter, normalizeLineEndings } from '../core/blocks'
 import { closePartialMarkdown, openFenceBody } from '../core/heal'
-import { rehypeHeadingIds } from '../core/headings'
-import {
-  rehypePluginsFor,
-  remarkPluginsFor,
-  type HtmlPlugin,
-  type MathPlugin,
-} from '../core/pipeline'
-import { remarkBlockOffset } from '../core/positions'
-import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE } from '../dialect'
+import { llxDialect } from '../core/remark-answer-blocks'
+import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
+import { addEntities, hasAllEntities } from '../engine/entities'
+import type { Extension } from '../engine/types'
 import { Diagram } from '../mermaid/diagram'
 import { mermaidRendererFor, type MermaidLoader } from '../mermaid/renderer'
 import { Callout } from './callout'
@@ -36,10 +26,13 @@ import {
   type RenderContext,
 } from './context'
 import { FileTree } from './file-tree'
-import { childrenToText, getLanguage } from './helpers'
 import { LabelsContext, mergeLabels, type LabelOverrides } from './labels'
+import { defaultUrlTransform, type UrlTransform } from '../engine/url'
+import { draw, type BlockOptions } from './draw'
+import type { Components, RenderOptions } from './render'
 import { useStage, type StageOption } from './use-stage'
 import { Table } from './table'
+import { TableRows, tableRows } from './table-rows'
 import { Tab, Tabs } from './tabs'
 
 export interface MarkdownProps {
@@ -58,17 +51,11 @@ export interface MarkdownProps {
    */
   components?: MarkdownComponents
   /**
-   * Your own remark plugins, after the dialect's: they run on each block. Keep the list's
-   * reference stable (a module constant): a new list redraws every block.
+   * Your own syntax, after the dialect's: inline rules, fences by language, and passes over the
+   * tree, each run on every block. A node's position counts from the start of its block. Keep the
+   * list's reference stable (a module constant): a new list reads every block again.
    */
-  remarkPlugins?: PluggableList
-  /**
-   * Your own rehype plugins: after raw HTML is sanitized, before formulas are typeset, on each
-   * block. A node's position is where it sits in the whole document; `file.data.llx.offset` is
-   * where this block starts, so `String(file.value).slice(start - offset, end - offset)` is the
-   * node's Markdown. Keep the list's reference stable, as for `remarkPlugins`.
-   */
-  rehypePlugins?: PluggableList
+  extensions?: Extension[]
   /**
    * Give headings ids (`setup`, `setup-1`) to link to, the same ids `extractHeadings` returns.
    * Each block's headings are read once, so it costs a streaming reply only its last block.
@@ -79,9 +66,9 @@ export interface MarkdownProps {
    * time a document holds HTML, and leaves the tags out until it is there; pass `llx-markdown/html`
    * itself to have it in the first render (a server); `false` drops raw HTML.
    */
-  html?: boolean | StageOption<HtmlPlugin>
+  html?: boolean | StageOption<Extension>
   /** Typeset `$…$`: `llx-markdown/math`, or a loader for it. Off by default. */
-  math?: StageOption<MathPlugin>
+  math?: StageOption<Extension>
   /** Draw ```mermaid fences: `() => import('mermaid')`. Off by default: they show as code. */
   mermaid?: MermaidLoader | null
   /** Highlight fenced code: `llx-markdown/highlight`, or your own. Off by default. */
@@ -89,34 +76,17 @@ export interface MarkdownProps {
   /** The words the renderer adds (callout names, button labels), for a page in another language. */
   labels?: LabelOverrides
   /**
-   * Rewrite or refuse a link or image URL. Omitted (or null), react-markdown's default applies: it
-   * keeps relative URLs and http, https, mailto, irc, ircs and xmpp, and empties everything else
-   * (`javascript:`, `tel:` and `data:` among them).
+   * Rewrite or refuse a link or image URL. Omitted (or null), relative URLs and http, https,
+   * mailto, irc, ircs and xmpp are kept and everything else is emptied (`javascript:`, `tel:` and
+   * `data:` among them).
    */
   urlTransform?: UrlTransform | null
   className?: string
 }
 
-/** What a block needs besides its text; one object per document, so blocks can compare it. */
-interface BlockOptions {
-  components: Components
-  /**
-   * The raw HTML stage, when the document has HTML and the stage is there. Without it, raw HTML
-   * is left out: dropped when the page turned HTML off, not yet parsed while it loads.
-   */
-  html: HtmlPlugin | null
-  math: MathPlugin | null
-  urlTransform: UrlTransform | null | undefined
-  /** The page draws code itself (`components.pre` or `.code`): a growing fence goes to it too. */
-  ownCode: boolean
-  remarkPlugins: PluggableList
-  rehypePlugins: PluggableList
-}
-
 interface BlockProps {
   source: string
   offset: number
-  line: number
   growing: boolean
   /** The anchors of the headings inside this block, by their offset in the document. */
   headingIds: ReadonlyMap<number, string> | null
@@ -125,21 +95,17 @@ interface BlockProps {
   options: BlockOptions
 }
 
-const NO_PLUGINS: PluggableList = []
+export { draw, type BlockOptions } from './draw'
 
 /** The package's own HTML stage, fetched as a chunk of its own the first time it is needed. */
 const loadHtml = () => import('../html/index')
 
-const special = (language: string | undefined) =>
-  language === DIAGRAM_FENCE_LANGUAGE || language === TREE_FENCE_LANGUAGE
-
-function classOf(node: unknown): string | undefined {
-  const child = (
-    node as { children?: Array<{ type: string; properties?: { className?: unknown } }> }
-  )?.children?.[0]
-  const classes = child?.type === 'element' ? child.properties?.className : undefined
-  return Array.isArray(classes) ? classes.join(' ') : undefined
-}
+/** Every HTML5 named reference: ten kilobytes fetched the first time a document uses a rare one. */
+const loadEntities = () =>
+  import('../engine/entity-table').then((module) => {
+    addEntities(module.ENTITY_TABLE)
+    return module
+  })
 
 /** A page's own diagram, told whether its fence is the one still being written. */
 function OwnDiagram({
@@ -154,76 +120,69 @@ function OwnDiagram({
 
 /**
  * The elements a document is drawn with: the dialect's (callouts, tabs, code blocks), then the
- * page's, with the two fences that are not code (```mermaid, ```tree) taken out of both `pre` and
- * `code`, so a page's own code block never receives a diagram.
+ * page's. The two fences that are not code (```mermaid, ```tree) are drawn by `special`, outside
+ * both `pre` and `code`, so a page's own code block never receives a diagram.
  */
-export function buildComponents(overrides: MarkdownComponents | undefined): Components {
+export function buildComponents(overrides: MarkdownComponents | undefined): {
+  components: Components
+  special: RenderOptions['special']
+} {
   const { diagram: PageDiagram, tree: PageTree, ...elements } = overrides ?? {}
-  const PageCode = (elements.code ?? Code) as ElementType
-  const PagePre = (elements.pre ?? CodeBlock) as ElementType
-  const code: Components['code'] = (props) => {
-    const language = getLanguage(props.className)
-    const text = childrenToText(props.children).replace(/\n$/, '')
-    if (language === DIAGRAM_FENCE_LANGUAGE)
-      return PageDiagram ? <OwnDiagram as={PageDiagram} source={text} /> : <Diagram source={text} />
-    if (language === TREE_FENCE_LANGUAGE)
-      return PageTree ? <PageTree source={text} /> : <FileTree source={text} />
-    return createElement(PageCode, props)
-  }
-  // A diagram or a tree is a block of its own, not code: never inside a <pre>.
-  const pre: Components['pre'] = (props) =>
-    special(getLanguage(classOf(props.node))) ? (
-      <>{props.children}</>
-    ) : (
-      createElement(PagePre, props)
-    )
   return {
-    blockquote: Callout,
-    table: Table,
-    'answer-tabs': Tabs,
-    'answer-tab': Tab,
-    ...elements,
-    code,
-    pre,
-  } as Components
+    components: {
+      blockquote: Callout,
+      table: Table,
+      'answer-tabs': Tabs,
+      'answer-tab': Tab,
+      pre: CodeBlock,
+      code: Code,
+      ...elements,
+    } as Components,
+    special: (language, source) =>
+      language === DIAGRAM_FENCE_LANGUAGE ? (
+        PageDiagram ? (
+          <OwnDiagram as={PageDiagram} source={source} />
+        ) : (
+          <Diagram source={source} />
+        )
+      ) : PageTree ? (
+        <PageTree source={source} />
+      ) : (
+        <FileTree source={source} />
+      ),
+  }
 }
 
 const Block = memo(
-  function Block({ source, offset, line, growing, headingIds, options }: BlockProps) {
-    const { components, html, math, urlTransform, ownCode } = options
-    const fence = growing && !ownCode ? growingFence(source) : null
-    if (fence && !special(fence.language)) return <GrowingCode {...fence} />
-    const remarkPlugins = [
-      remarkBlockOffset({ offset, line }),
-      ...remarkPluginsFor({ math }),
-      ...options.remarkPlugins,
-    ]
-    const rehypePlugins = rehypePluginsFor({ html, math }, [
-      ...(headingIds ? [rehypeHeadingIds(headingIds)] : []),
-      ...options.rehypePlugins,
-    ])
+  function Block({ source, offset, growing, headingIds, options }: BlockProps) {
+    const fence = growing && !options.ownCode ? growingFence(source) : null
+    if (
+      fence &&
+      fence.language !== DIAGRAM_FENCE_LANGUAGE &&
+      fence.language !== 'tree' &&
+      // A `math` fence is a formula where the page typesets math, and code where it does not.
+      !(fence.language === 'math' && options.extensions?.some((stage) => stage.name === 'math'))
+    )
+      return <GrowingCode {...fence} />
+    // A table that is the whole block is drawn row by row, unless the page reads tables itself
+    // (its own elements or extensions see the table whole).
+    const table = options.ownTable ? null : tableRows(source)
+    if (table) return <TableRows {...table} options={options} />
     return (
       <GrowingFence.Provider value={growing}>
-        <ReactMarkdown
-          remarkPlugins={remarkPlugins}
-          rehypePlugins={rehypePlugins}
-          components={components}
-          skipHtml={!html}
-          {...(urlTransform === undefined ? {} : { urlTransform })}
-        >
-          {source}
-        </ReactMarkdown>
+        {draw(source, offset, headingIds, options)}
       </GrowingFence.Provider>
     )
   },
   (before, after) =>
     before.source === after.source &&
     before.offset === after.offset &&
-    before.line === after.line &&
     before.growing === after.growing &&
     before.headingKey === after.headingKey &&
     before.options === after.options,
 )
+
+const NO_EXTENSIONS: Extension[] = []
 
 /**
  * Markdown with the llx dialect: GitHub Markdown, callouts, steps, tabs, stats, pros and cons,
@@ -238,8 +197,7 @@ export function Markdown({
   streaming = false,
   caret = streaming,
   components,
-  remarkPlugins,
-  rehypePlugins,
+  extensions = NO_EXTENSIONS,
   headingIds = false,
   html = true,
   math: mathOption = null,
@@ -253,7 +211,7 @@ export function Markdown({
   const text = normalizeLineEndings(children)
   const healed = streaming ? closePartialMarkdown(text) : text
   // One splitter per rendered document: it remembers the blocks it cut, and on the next token
-  // lexes only the end of the reply. Blocks that did not change come back as the same objects,
+  // scans only the end of the reply. Blocks that did not change come back as the same objects,
   // and everything worked out from a block below is kept beside it.
   const [splitter] = useState(createBlockSplitter)
   const cut = useMemo(() => splitter.split(healed), [splitter, healed])
@@ -267,19 +225,28 @@ export function Markdown({
     html === true ? loadHtml : html === false ? null : html,
     html !== false && blocks.some(blockHasHtml),
   )
+  // A name outside the common ones shows as written until the whole table is there.
+  const entities = useStage(loadEntities, !hasAllEntities() && blocks.some(blockHasRareEntity))
   const ids = useMemo(() => (headingIds ? headingIdsOfBlocks(blocks) : null), [headingIds, blocks])
-  const merged = useMemo(() => buildComponents(components), [components])
   const options = useMemo<BlockOptions>(
     () => ({
-      components: merged,
-      html: htmlStage,
-      math,
-      urlTransform,
+      ...buildComponents(components),
+      // Raw HTML is made into elements last, so every pass before it sees the text as written.
+      extensions: [
+        llxDialect,
+        ...(math ? [math] : []),
+        ...extensions,
+        ...(htmlStage ? [htmlStage] : []),
+      ],
+      urlTransform: urlTransform ?? defaultUrlTransform,
       ownCode: Boolean(components?.pre || components?.code),
-      remarkPlugins: remarkPlugins ?? NO_PLUGINS,
-      rehypePlugins: rehypePlugins ?? NO_PLUGINS,
+      ownTable: Boolean(
+        components?.table || components?.thead || components?.tbody || extensions.length,
+      ),
     }),
-    [merged, htmlStage, math, urlTransform, components, remarkPlugins, rehypePlugins],
+    // `entities` is here so that blocks are read again once every name can be decoded.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+    [htmlStage, math, urlTransform, components, extensions, entities],
   )
   const context = useMemo<RenderContext>(
     () => ({ highlight, mermaid: mermaid ? mermaidRendererFor(mermaid) : null }),
@@ -308,7 +275,6 @@ export function Markdown({
                 <Block
                   source={block.source}
                   offset={block.offset}
-                  line={block.line}
                   growing={endsInFence && index === blocks.length - 1}
                   headingIds={own && own.size > 0 ? own : null}
                   headingKey={own ? [...own].map(([at, id]) => `${at}:${id}`).join(';') : ''}

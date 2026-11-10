@@ -1,0 +1,17 @@
+name: A form or an option
+description: Something a reply should be able to hold, or a way to set the renderer up
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What a reply or a page needs
+      description: The case, before the solution. A real reply that would have used it helps most.
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: How it could be written
+      description: The Markdown a model would write, if you have one in mind. It has to read well as plain GitHub Markdown too.
+      render: markdown

@@ -34,7 +34,11 @@ function step(
 ): OpenFence | null {
   const m = FENCE_LINE_RE.exec(line)
   if (!m) return open
-  if (open === null) return { marker: m[1]!, bodyStart: Math.min(lineEnd, textLength) }
+  if (open === null) {
+    // A backtick fence has no backtick in its info string: ```` ```a``` ```` is inline code.
+    if (m[1]![0] === '`' && m[2]!.includes('`')) return null
+    return { marker: m[1]!, bodyStart: Math.min(lineEnd, textLength) }
+  }
   const closes =
     m[1]![0] === open.marker[0] && m[1]!.length >= open.marker.length && m[2]!.trim() === ''
   return closes ? null : open

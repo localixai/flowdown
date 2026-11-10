@@ -2,14 +2,15 @@
 title: Introduction
 description:
   Markdown for AI replies and documentation in React — GitHub Markdown plus steps, tabs, stats, pros
-  and cons, callouts, file trees, diagrams and math, rendered while it streams.
+  and cons, callouts, folded sections, sources, file trees, diagrams and math, rendered while it
+  streams.
 ---
 
 # llx-markdown
 
 Markdown for AI replies and documentation in React. It renders GitHub Markdown, plus a small dialect
 of forms a model can write and a reader can scan: steps, tabs, headline figures, the case for and
-against, callouts, file trees, diagrams and math. It renders while the text is still arriving,
+against, callouts, folded sections, sources, file trees, diagrams and math. It renders while the text is still arriving,
 without flicker or raw syntax showing.
 
 ```tsx
@@ -75,7 +76,7 @@ quote line and a list. Nothing is lost by writing it.
 > [!STATS]
 - **1** block re-parsed per token while streaming
 - **5** forms beyond GitHub Markdown
-- **0** heavy dependencies you must ship
+- **0** dependencies: the parser is its own
 
 What sets it apart:
 

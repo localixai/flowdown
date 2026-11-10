@@ -91,25 +91,34 @@ function CopyButton({ text }: { text: string }) {
  */
 export function CodeBlock({ node: _node, children, ...props }: PreProps) {
   const code = isValidElement(children)
-    ? (children as ReactElement<{ className?: string; children?: unknown }>)
+    ? (children as ReactElement<{
+        className?: string
+        children?: unknown
+        'data-title'?: string
+      }>)
     : null
   const language = getLanguage(code?.props.className)
   const text = childrenToText(code?.props.children as never).replace(/\n$/, '')
   return (
-    <CodeFrame language={language} text={text} preProps={props}>
+    <CodeFrame language={language} title={code?.props['data-title']} text={text} preProps={props}>
       {children}
     </CodeFrame>
   )
 }
 
-/** The frame of a code block: the bar with its language and copy button, then the `<pre>`. */
+/**
+ * The frame of a code block: the bar with its language and copy button, then the `<pre>`. A fence
+ * that names its file (` ```ts title="src/app.ts" `) shows the file first, the language after it.
+ */
 export function CodeFrame({
   language,
+  title,
   text,
   preProps,
   children,
 }: {
   language: string | undefined
+  title?: string | undefined
   text: string
   preProps?: ComponentPropsWithoutRef<'pre'>
   children: ReactNode
@@ -117,6 +126,7 @@ export function CodeFrame({
   return (
     <figure className="llx-code" data-language={language}>
       <figcaption className="llx-code-bar">
+        {title ? <span className="llx-code-title">{title}</span> : null}
         <span className="llx-code-language">{language ?? ''}</span>
         <CopyButton text={text} />
       </figcaption>

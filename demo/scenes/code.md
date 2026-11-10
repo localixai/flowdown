@@ -12,7 +12,7 @@ my-app/
 
 Each route is a function from a request to a response:
 
-```ts
+```ts title="src/routes/users.ts"
 import { route } from './router'
 
 export const users = route('/users/:id', async ({ params }) => {

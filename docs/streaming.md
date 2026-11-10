@@ -75,6 +75,17 @@ alone. When `streaming` turns off, the final text is rendered exactly as written
   a token redraws and highlights only the last piece, so a file of a thousand lines streams as fast
   as a short one. When the fence closes, the block is highlighted whole.
 
+## Tables while streaming
+
+A table is one block, and a model that prints results row by row grows it to hundreds of rows. It is
+drawn as its header and its rows in pieces of 16: a piece that is complete is parsed and drawn once,
+and a token redraws only the last piece, so a table of 160 rows streams about seven times faster
+than through one parse. Every piece is read with the table's own header, so the result is the table
+one parse draws, element for element.
+
+A page that passes its own `table`, `thead` or `tbody` element, or its own extensions, gets each
+table whole, as its code expects.
+
 ## The caret
 
 A caret follows the text while it streams. It is drawn in CSS, after the last line, when the reply
@@ -121,5 +132,5 @@ for (const block of splitBlocks(stable)) {
 | `openFenceBody(text)`          | The body of the code fence `text` ends inside, or `null`.                    |
 | `isGrowingFence(body, source)` | Whether a fence's source is that growing body.                               |
 
-Blocks carry their `offset` in the document: pass it to [`remarkBlockOffset`](remark.md) so the
-positions in each block's tree point into the whole document.
+Blocks carry their `offset` and `line` in the document: add them to a position inside a block to
+get the place in the whole text.

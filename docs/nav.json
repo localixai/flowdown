@@ -6,7 +6,7 @@
     },
     {
       "title": "Writing",
-      "pages": ["syntax.md", "prompting.md"]
+      "pages": ["syntax.md", "prompting.md", "conformance.md"]
     },
     {
       "title": "Rendering",

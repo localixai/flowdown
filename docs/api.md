@@ -10,12 +10,12 @@ description:
 
 | Import                    | Holds                                                         | Needs                       |
 | ------------------------- | ------------------------------------------------------------- | --------------------------- |
-| `llx-markdown`            | `<Markdown>`, its components, types and labels.                | `react` 18.2 or 19          |
+| `llx-markdown`            | `<Markdown>`, its components, types and labels. No dependencies. | `react` 18.2 or 19        |
 | `llx-markdown/styles.css` | The stylesheet and its `--llx-*` tokens.                      |                             |
-| `llx-markdown/remark`     | The dialect as unified plugins, the sanitize schema, blocks, headings. |                    |
+| `llx-markdown/remark`     | The dialect as a remark plugin, blocks, headings, helpers. No React. |                    |
 | `llx-markdown/stream`     | Completing a partial reply, without React.                    |                             |
 | `llx-markdown/prompt`     | The instructions that teach a model the dialect. Plain text.  |                             |
-| `llx-markdown/html`       | The raw HTML stage (parser and sanitizer).                    |                             |
+| `llx-markdown/html`       | The raw HTML stage (reader and sanitizer).                    |                             |
 | `llx-markdown/math`       | The math stage.                                               | `katex` 0.16 or later       |
 | `llx-markdown/highlight`  | A highlighter for fenced code.                                | `highlight.js` 11           |
 
@@ -37,15 +37,14 @@ import 'llx-markdown/styles.css'
 | `streaming`    | `boolean`                               | `false`            | The text is still arriving: its unfinished end is completed and a caret follows it. See [Streaming](streaming.md). |
 | `caret`        | `boolean`                               | `streaming`        | Show the caret after streaming text. |
 | `components`   | `MarkdownComponents`                    |                    | Your own elements for any tag or the dialect's, and `diagram` / `tree` for the two fences that are not code. Keep the object stable. See [Components](components.md). |
-| `remarkPlugins` | `PluggableList`                        |                    | Your remark plugins, after the dialect's, on each block. Keep the list stable. See [Plugins](remark.md#your-own-plugins-in-markdown). |
-| `rehypePlugins` | `PluggableList`                        |                    | Your rehype plugins: after the sanitizer, before formulas are typeset, on each block. Keep the list stable. |
+| `extensions`   | `Extension[]`                           |                    | Your own syntax: inline rules, fences, passes over the tree, on each block. Keep the list stable. See [Extensions](remark.md#your-own-syntax-in-markdown). |
 | `headingIds`   | `boolean`                               | `false`            | Give headings ids (`setup`, `setup-1`), the ids `extractHeadings` returns. |
-| `html`         | `boolean \| StageOption<HtmlPlugin>`    | `true`             | Raw HTML. `true` loads the parser the first time a document holds HTML and leaves the tags out until then; `html` from `llx-markdown/html` parses in the first render; `false` drops raw HTML. See [Security](security.md). |
-| `math`         | `StageOption<MathPlugin>`               | `null`             | Typeset `$…$`: `llx-markdown/math`, or a loader for it. See [Math](math.md). |
+| `html`         | `boolean \| StageOption<Extension>`     | `true`             | Raw HTML. `true` loads the reader the first time a document holds HTML and leaves the tags out until then; `html` from `llx-markdown/html` reads it in the first render; `false` drops raw HTML. See [Security](security.md). |
+| `math`         | `StageOption<Extension>`                | `null`             | Typeset `$…$`, `$$…$$` and ` ```math `: `llx-markdown/math`, or a loader for it. See [Math](math.md). |
 | `mermaid`      | `MermaidLoader \| null`                 | `null`             | Draw ` ```mermaid ` fences: `() => import('mermaid')`. See [Diagrams](diagrams.md). |
 | `highlight`    | `Highlighter \| null`                   | `null`             | Highlight fenced code. See [Highlighting](highlighting.md). |
 | `labels`       | `LabelOverrides`                        | `DEFAULT_LABELS`   | The words the renderer adds, for another language. See [Components](components.md#labels). |
-| `urlTransform` | `UrlTransform \| null`                  | react-markdown's   | Rewrite or refuse a link or image URL. See [Security](security.md#links-and-images). |
+| `urlTransform` | `UrlTransform \| null`                  | `defaultUrlTransform` | Rewrite or refuse a link or image URL. See [Security](security.md#links-and-images). |
 | `className`    | `string`                                |                    | Added to the root element beside `llx-markdown`. |
 
 The root element is a `div.llx-markdown`. While streaming it has `data-streaming`, and
@@ -83,12 +82,14 @@ every block render again.
 | Type                         | Shape                                                                       |
 | ---------------------------- | --------------------------------------------------------------------------- |
 | `MarkdownProps`              | The props above.                                                            |
-| `Components`                 | react-markdown's element map.                                               |
+| `Components`                 | The element map: a component for any tag name, which gets the tag's props and `node`. |
 | `Highlighter`                | `(code: string, language: string) => string \| null`: HTML, escaped, or `null` to leave the code plain. |
 | `StageLoader<T>`             | `() => Promise<T \| { default: T }>`: a dynamic `import()` of a stage.      |
 | `StageOption<T>`             | `T \| StageLoader<T> \| null`.                                              |
-| `HtmlPlugin`                 | `{ rehypePlugins }`: the raw HTML stage.                                    |
-| `MathPlugin`                 | `{ remarkPlugins, rehypePlugins }`: the math stage.                         |
+| `Extension`                  | `{ name, inline?, fences?, transform? }`: syntax added to the parser. The HTML and math stages are extensions. |
+| `InlineRule`, `InlineState`, `FenceRule` | The parts of an extension. See [Extensions](remark.md#your-own-syntax-in-markdown). |
+| `Node`                       | A node of the parsed tree: `{ type, children?, value?, position?, data? }` and the fields of its kind. |
+| `UrlTransform`               | `(url, key, node) => string \| null \| undefined`.                         |
 | `MermaidLoader`              | `() => Promise<Mermaid \| { default: Mermaid }>`.                           |
 | `MarkdownLabels`             | Every label. `LabelOverrides` is the same with every key optional.          |
 | `FileTreeProps`              | `{ source: string; getIcon?: (row: TreeRow, open: boolean) => TreeIcon }`.   |
@@ -101,40 +102,34 @@ load that fails leaves the document readable without it.
 
 ## `llx-markdown/remark`
 
-See [Remark and rehype](remark.md).
+See [Extensions and remark](remark.md). The entry has no dependencies: unified is your pipeline's.
 
 | Export                                              | What it is                                                                      |
 | --------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `remarkLlx`                                         | The plugin list: `remark-gfm` and `remarkAnswerBlocks`.                         |
-| `remarkAnswerBlocks`                                | The dialect alone: callouts, forms, quote sources, figures, section numbers.    |
-| `remarkPluginsFor({ math })`                        | `remarkLlx`, plus the math stage's plugins when given.                          |
-| `rehypePluginsFor({ html, math }, beforeMath?)`     | Raw HTML and the sanitizer when `html` is given, task keys, `beforeMath`, then math. |
-| `sanitizeSchema`                                    | GitHub's sanitize schema, extended for the dialect.                             |
-| `rehypeTaskKeys`                                    | Adds `data-task-key`, the source offset, to task-list checkboxes.               |
+| `remarkLlx`                                         | The dialect as a remark plugin: callouts, forms, quote sources, figures, section numbers. Use it after `remark-gfm`. |
+| `remarkAnswerBlocks`                                | The same plugin under its older name.                                           |
+| `sanitizeSchemaFor(schema)`                         | A `rehype-sanitize` schema with the dialect's classes, attributes and elements added. |
 | `extractHeadings(markdown)`                         | Every heading with its id.                                                      |
 | `remarkHeadingIds`                                  | Gives each heading its id.                                                      |
 | `headingIdsByOffset(markdown)`                      | `Map<offset, id>` for every heading.                                            |
-| `rehypeHeadingIds(ids)`                             | Sets heading ids from that map.                                                 |
 | `splitBlocks(markdown)`                             | `MarkdownBlock[]`: the top-level blocks, `{ source, offset, line }`.            |
-| `createBlockSplitter()`                             | A `BlockSplitter`: `split(markdown)` for a growing text, reusing unchanged blocks; `lexed`, the characters lexed so far. |
-| `remarkBlockOffset({ offset, line })`               | Shifts a block's positions to where it sits in its document.                    |
+| `createBlockSplitter()`                             | A `BlockSplitter`: `split(markdown)` for a growing text, reusing unchanged blocks; `lexed`, the characters scanned so far. |
 | `escapeLiteralDollars(markdown)`                    | The text with dollar signs that are not math escaped.                           |
 | `isLiteralDollar(text, index)`                      | Whether one `$` is a dollar sign.                                               |
 | `hasMathSyntax(markdown)`, `hasHtmlSyntax(markdown)` | Whether the text holds math, or raw HTML, outside code.                        |
 | `markdownProseWithoutCode(markdown)`                | The text with code blanked out, same length.                                    |
 | `parseFileTree(source)`                             | `TreeRow[]` from a ` ```tree ` fence body.                                      |
 | `parseCalloutMarker(text)`                          | `{ kind, title, consumed }` for a `[!NOTE]`-style marker, or `null`.            |
-| `parseContainerMarker(text)`                        | The same for `[!STEPS]`, `[!TABS]`, `[!STATS]`, `[!PROS]`, `[!CONS]`.           |
+| `parseContainerMarker(text)`                        | The same for `[!STEPS]`, `[!TABS]`, `[!STATS]`, `[!PROS]`, `[!CONS]`, `[!DETAILS]`, `[!SOURCES]`. |
 | `containerMarker(kind)`                             | The marker text for a kind: `[!STEPS]`.                                         |
 | `CALLOUT_KINDS`                                     | `note`, `tip`, `important`, `warning`, `caution`.                               |
-| `CONTAINER_KINDS`                                   | `steps`, `tabs`, `stats`, `pros`, `cons`.                                       |
+| `CONTAINER_KINDS`                                   | `steps`, `tabs`, `stats`, `pros`, `cons`, `details`, `sources`.                 |
 | `DIAGRAM_FENCE_LANGUAGE`, `TREE_FENCE_LANGUAGE`     | `'mermaid'` and `'tree'`.                                                       |
 | `DIAGRAM_KINDS`                                     | The Mermaid kinds the prompt teaches.                                           |
 | `ANSWER_FORM_EXAMPLES`                              | The examples the prompt shows.                                                  |
 | `ATTRIBUTION_PREFIX`                                | The pattern of a quote's source line, `— Author`.                               |
 
-Types: `HtmlPlugin`, `MathPlugin`, `PipelineOptions`, `MarkdownHeading`, `MarkdownBlock`,
-`BlockSplitter`, `TreeRow`.
+Types: `MarkdownHeading`, `MarkdownBlock`, `BlockSplitter`, `TreeRow`.
 
 ## `llx-markdown/stream`
 
@@ -165,18 +160,18 @@ See [Prompting](prompting.md).
 
 | Export               | What it is                                                                 |
 | -------------------- | -------------------------------------------------------------------------- |
-| `html` (and default) | The raw HTML stage: `{ rehypePlugins: [rehypeRaw] }`. The sanitizer is added by the pipeline. |
+| `html` (and default) | The raw HTML stage, an `Extension`: reads the HTML in a block, sanitizes it and makes elements of it. |
 
-The HTML parser is about a third of the renderer's weight, which is why it is its own entry and
-loaded only when a document holds HTML.
+It is its own entry, fetched only when a document holds HTML, and it brings every HTML5 character
+reference with it (`&nrarr;`); the main entry knows the 253 of HTML 4 and fetches the rest when a
+document uses one.
 
 ## `llx-markdown/math`
 
 | Export                          | What it is                                                         |
 | ------------------------------- | ------------------------------------------------------------------ |
-| `math` (and default)            | The math stage: remark-math and a KaTeX typesetter that caches each expression. |
-| `typesetMath(source, display)`  | The typeset hast nodes for one expression.                         |
-| `MathPlugin`                    | The stage's type.                                                  |
+| `math` (and default)            | The math stage, an `Extension`: `$…$`, `$$…$$` and ` ```math `, typeset with KaTeX and cached by expression. |
+| `typesetMath(source, display)`  | One expression typeset: KaTeX's HTML, or its error form.           |
 
 Import `katex/dist/katex.min.css` on the page.
 

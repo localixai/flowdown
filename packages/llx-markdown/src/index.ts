@@ -7,10 +7,11 @@
  *     <Markdown streaming={!done}>{reply}</Markdown>
  */
 export { Markdown, type MarkdownProps } from './react/markdown'
-export type { Components } from 'react-markdown'
+export type { Components } from './react/render'
 export type { Highlighter, MarkdownComponents } from './react/context'
 export type { StageLoader, StageOption } from './react/use-stage'
-export type { HtmlPlugin, MathPlugin } from './core/pipeline'
+export { defaultUrlTransform, type UrlTransform } from './engine/url'
+export type { Extension, FenceRule, InlineRule, InlineState, Node } from './engine/types'
 export type { MermaidLoader } from './mermaid/renderer'
 export { DEFAULT_LABELS, type LabelOverrides, type MarkdownLabels } from './react/labels'
 

@@ -1,9 +1,7 @@
 import { describe, expect, test } from 'bun:test'
-import { renderToStaticMarkup } from 'react-dom/server'
-import ReactMarkdown from 'react-markdown'
-import remarkMath from 'remark-math'
+import { render } from '../../test/render'
+import { math } from '../math'
 import { escapeLiteralDollars, isLiteralDollar } from './dollars'
-import rehypeMathCached from '../math/rehype-math-cached'
 
 describe('isLiteralDollar', () => {
   test('currency amounts and shell variables are dollar signs', () => {
@@ -39,15 +37,11 @@ describe('escapeLiteralDollars', () => {
   })
 
   test('a reply with one real formula no longer typesets its prices and variables', () => {
-    // The shape of the reported reply: remark-math paired `$5 and $` into a formula and turned
-    // `$HOME/bin and $PATH` into italic math that swallowed the code span after it.
+    // The shape of the reported reply: `$5 and $` paired into a formula, and `$HOME/bin and $PATH`
+    // became italic math that swallowed the code span after it.
     const reply =
       'Formula $a*b$, price $5 and $10, variables $HOME/bin and $PATH, command `echo $USER`.'
-    const html = renderToStaticMarkup(
-      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeMathCached]}>
-        {escapeLiteralDollars(reply)}
-      </ReactMarkdown>,
-    )
+    const html = render(reply, { math })
     expect(html.match(/class="katex"/g)).toHaveLength(1)
     expect(html).toContain('price $5 and $10, variables $HOME/bin and $PATH, command')
     expect(html).toContain('<code>echo $USER</code>')

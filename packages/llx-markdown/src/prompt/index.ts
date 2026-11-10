@@ -60,7 +60,7 @@ export function answerFormatPrompt({
   diagrams = false,
 }: AnswerFormatOptions = {}): string {
   const markers = CALLOUT_KINDS.map((kind) => `[!${kind.toUpperCase()}]`).join(' ')
-  const { comparison, verdict, steps, stats } = ANSWER_FORM_EXAMPLES
+  const { comparison, verdict, steps, stats, details, sources } = ANSWER_FORM_EXAMPLES
   const lines = [
     header,
     answerFormsPrinciple(header),
@@ -69,13 +69,16 @@ export function answerFormatPrompt({
     // in a table" the only rule a "compare X and Y" request matched, and every comparison a table.
     'Match the content to the first form that fits; a table or list is the fallback. Write a marker as its own quote line, the content unquoted after it.',
     '- Lead with the answer. Short replies use prose; long ones use `##` per thread, short paragraphs and selective bold.',
-    `- Options compared (X vs Y, which to use) or variants (per OS, language): a tab per option, \`#### Label\`; a compared option holds its sides. Then one line on when to pick which:\n${shown(comparison)}`,
+    `- Options compared (X vs Y, which to use) or variants (per OS, language): a tab per option, \`#### Label\`; a compared option holds its sides. After them a \`---\`, then one line on when to pick which:\n${shown(comparison)}`,
     `- One option weighed (should I, is it worth it): its sides, then the verdict:\n${shown(verdict)}`,
     `- Stages in order (a plan, recovery, schedule, by day, a procedure): steps, never a numbered list:\n${shown(steps)}`,
     `- Headline figures (speedups, sizes, key numbers): stats:\n${shown(stats)}`,
     '- Exact values across options (specs, prices, limits): a table.',
     `- A risk or key aside: one or two callouts, quotes starting \`> [!KIND]\` (${markers}); text after the marker titles it.`,
+    `- Long secondary material (a full log, raw output, a derivation): folded, its content quoted:\n${shown(details)}`,
+    `- Pages the reply draws on: sources, last:\n${shown(sources)}`,
     `- A directory layout: a \`\`\`${TREE_FENCE_LANGUAGE} fence of \`├──\`/\`└──\` lines. Things to do: \`- [ ] item\`.`,
+    '- Code for a file names it: ```ts title="src/app.ts". A change to code: a ```diff fence.',
   ]
   if (diagrams) {
     lines.push(

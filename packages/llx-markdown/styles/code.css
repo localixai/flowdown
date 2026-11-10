@@ -20,6 +20,22 @@
   font-family: var(--llx-font-mono);
   text-transform: lowercase;
 }
+/* The file a fence names: first in the bar, the language pushed to the copy button's side. */
+.llx-markdown .llx-code-title {
+  overflow: hidden;
+  min-width: 0;
+  margin-right: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--llx-font-mono);
+  color: var(--llx-fg-soft);
+}
+.llx-markdown .llx-code-title + .llx-code-language {
+  flex: none;
+}
+.llx-markdown .llx-code-bar > .llx-code-language:first-child {
+  margin-right: auto;
+}
 .llx-markdown .llx-code-copy {
   display: inline-grid;
   place-items: center;
@@ -79,7 +95,7 @@
 .llx-markdown :is(.hljs-keyword, .hljs-selector-tag, .hljs-doctag, .hljs-meta .hljs-keyword) {
   color: var(--llx-code-keyword);
 }
-.llx-markdown :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string, .hljs-addition) {
+.llx-markdown :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string) {
   color: var(--llx-code-string);
 }
 .llx-markdown
@@ -104,8 +120,16 @@
 .llx-markdown :is(.hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class) {
   color: var(--llx-code-tag);
 }
+/* A diff: the added and the removed lines in the status hues, the hunk header quiet. */
+.llx-markdown .hljs-addition {
+  color: var(--llx-success);
+}
 .llx-markdown .hljs-deletion {
   color: var(--llx-danger);
+}
+.llx-markdown .language-diff :is(.hljs-meta, .hljs-comment) {
+  color: var(--llx-fg-faint);
+  font-style: normal;
 }
 .llx-markdown .hljs-emphasis {
   font-style: italic;

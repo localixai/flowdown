@@ -1,13 +1,15 @@
 ---
 title: Math
 description:
-  Typeset `$…$` and `$$…$$` with KaTeX, loaded only when a reply holds a formula, and leave the
+  Typeset `$…$`, `$$…$$` and math fences with KaTeX, loaded only when a reply holds a formula, and leave the
   dollar signs that are prices or shell variables alone.
 ---
 
 # Math
 
-Math is off by default: `$…$` stays text and KaTeX is not in the page. Pass the math stage to turn it
+Math is off by default: `$…$` stays text and KaTeX is not in the page. With it on, three ways of
+writing a formula are typeset, the three GitHub reads: `$…$` in a line, `$$…$$` on lines of its own,
+and a fence whose language is `math`. Pass the math stage to turn it
 on:
 
 ```tsx
@@ -109,7 +111,7 @@ See [Prompting](prompting.md).
 
 ## Without React
 
-`llx-markdown/math` exports the stage as a plain object, `{ remarkPlugins, rehypePlugins }`. Use it
-in your own unified pipeline with `remarkPluginsFor({ math })` and `rehypePluginsFor({ math })` from
-[`llx-markdown/remark`](remark.md). `typesetMath(source, displayMode)` returns the typeset hast nodes
-for one expression, from the same cache.
+`llx-markdown/math` is an [extension](remark.md#your-own-syntax-in-markdown) of `<Markdown>`'s own
+parser, not a unified plugin. In a unified pipeline of your own use `remark-math` and `rehype-katex`
+with [`remarkLlx`](remark.md). `typesetMath(source, display)` typesets one expression with KaTeX,
+from the same cache `<Markdown>` uses.

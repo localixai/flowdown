@@ -8,68 +8,76 @@
  * version here did) would shift every position after the first code block.
  */
 export function markdownProseWithoutCode(markdown: string): string {
+  // Nothing here can be code: no backtick or tilde run, no line indented four.
+  if (!CODE_HINT.test(markdown)) return markdown
   const prose: string[] = []
   let fence: { character: string; length: number } | null = null
   const blank = (line: string) => ' '.repeat(line.length)
 
   for (const line of markdown.split('\n')) {
-    const marker = line.match(/^ {0,3}(`{3,}|~{3,})/)
+    const marker = FENCE_MARKER.exec(line)
     if (fence) {
       if (
         marker &&
         marker[1]![0] === fence.character &&
         marker[1]!.length >= fence.length &&
-        line.slice(marker[0].length).trim() === ''
+        marker[2]!.trim() === ''
       ) {
         fence = null
       }
       prose.push(blank(line))
       continue
     }
-    if (marker) {
+    // A backtick fence has no backtick in its info string: ```` ```a``` ```` is inline code.
+    if (marker && !(marker[1]![0] === '`' && marker[2]!.includes('`'))) {
       fence = { character: marker[1]![0]!, length: marker[1]!.length }
       prose.push(blank(line))
       continue
     }
 
     // Four-space/tab-indented CommonMark code is as inert as a fenced block.
-    prose.push(/^(?: {4}|\t)/.test(line) ? blank(line) : line)
+    prose.push(INDENTED.test(line) ? blank(line) : line)
   }
 
   // Inline code spans may cross line breaks. Blank only complete spans; an
   // unmatched backtick stays prose, matching CommonMark's literal treatment.
   const source = prose.join('\n')
-  const visible = source.split('')
-  for (let index = 0; index < visible.length;) {
-    if (source[index] !== '`' || isEscaped(source, index)) {
+  let visible = ''
+  let copied = 0
+  for (let index = source.indexOf('`'); index !== -1; index = source.indexOf('`', index)) {
+    if (isEscaped(source, index)) {
       index += 1
       continue
     }
     let delimiterLength = 1
     while (source[index + delimiterLength] === '`') delimiterLength += 1
-    let closing = index + delimiterLength
-    while (closing < visible.length) {
-      if (source[closing] !== '`' || isEscaped(source, closing)) {
-        closing += 1
+    let closing = source.indexOf('`', index + delimiterLength)
+    while (closing !== -1) {
+      if (isEscaped(source, closing)) {
+        closing = source.indexOf('`', closing + 1)
         continue
       }
       let closingLength = 1
       while (source[closing + closingLength] === '`') closingLength += 1
       if (closingLength === delimiterLength) break
-      closing += closingLength
+      closing = source.indexOf('`', closing + closingLength)
     }
-    if (closing >= visible.length) {
+    if (closing === -1) {
       index += delimiterLength
       continue
     }
     const end = closing + delimiterLength
-    for (let cursor = index; cursor < end; cursor += 1) {
-      if (visible[cursor] !== '\n') visible[cursor] = ' '
-    }
+    visible += source.slice(copied, index) + source.slice(index, end).replace(NOT_NEWLINE, ' ')
+    copied = end
     index = end
   }
-  return visible.join('')
+  return copied === 0 ? source : visible + source.slice(copied)
 }
+
+const CODE_HINT = /`|~~~|^(?: {4}|\t)/m
+const FENCE_MARKER = /^ {0,3}(`{3,}|~{3,})(.*)$/
+const INDENTED = /^(?: {4}|\t)/
+const NOT_NEWLINE = /[^\n]/g
 
 /** Whether the character at `index` is backslash-escaped (an odd run of `\` before it). */
 export function isEscaped(text: string, index: number): boolean {

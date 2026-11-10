@@ -1,8 +1,31 @@
-# llx-markdown
+<p align="center">
+  <img src="docs/assets/logo.svg" width="72" height="72" alt="llx-markdown">
+</p>
 
-Markdown for AI replies and documentation in React: GitHub Markdown plus steps, tabs, stats, pros
-and cons, callouts, file trees, diagrams and math, rendered while it streams, without flicker or
-raw syntax showing.
+<h1 align="center">llx-markdown</h1>
+
+<p align="center">
+  <strong>Markdown for AI replies and documentation in React, rendered while it streams</strong>
+</p>
+
+<p align="center">
+  <a href="https://www.anthropic.com/claude/fable"><img alt="Built with Claude Fable 5.2" src="https://img.shields.io/badge/built%20with-Claude%20Fable%205.2-d97757"></a>
+  <a href="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="bench/results/size.md"><img alt="29 KB gzipped" src="https://img.shields.io/badge/gzip-29%20KB-2ea44f"></a>
+  <a href="packages/llx-markdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
+</p>
+
+<p align="center">
+  <a href="docs/getting-started.md">Get started</a> ·
+  <a href="docs/syntax.md">Syntax</a> ·
+  <a href="docs/api.md">API</a> ·
+  <a href="docs/comparison.md">Comparison</a> ·
+  <a href="bench/README.md">Benchmarks</a>
+</p>
+
+GitHub Markdown plus steps, tabs, stats, pros and cons, callouts, folded sections, sources, file
+trees, titled code, diagrams and math,
+drawn as the text arrives, without flicker or raw syntax showing.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/stream-dark.png" />
@@ -30,20 +53,23 @@ Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/READM
 
 **Where llx-markdown is strong**
 
-- **It stays fast as a reply grows.** A 100k-character reply streams in 0.9 s. The next fastest
-  takes 2.6 s, and Streamdown takes 7.3 s.
+- **It stays fast as a reply grows.** A 100k-character reply streams in 0.25 s. The next fastest
+  takes 2.6 s, and Streamdown takes 6.0 s.
 - **It repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences
   never show their raw syntax.
 - **It draws more Markdown.** GitHub alerts, footnotes and raw HTML need no setup. Of six
   renderers, it is the only one that passes every check.
-- **It is half the size of Streamdown**, 82 KB against 156 KB gzipped, and comes styled without
+- **It has no dependencies.** The parser is its own and passes every example of CommonMark and of
+  GitHub's extensions ([conformance](docs/conformance.md)). One package is installed, and 29 KB
+  gzipped loads with the component, against 156 KB for Streamdown; it comes styled without
   Tailwind.
 
 **Where it is not**
 
-- **markdown-to-jsx is smaller and faster on short text.** It is 31 KB and one package, and several
-  times faster on short replies, code and tables.
-- **It installs the most packages of the six**, 125.
+- **markdown-to-jsx is faster on a long code block**, 58 ms against 94 ms for 50k characters, and
+  marked-react is a little smaller, 27 KB.
+- **It does not take remark or rehype plugins.** Your own syntax is an
+  [extension](docs/remark.md); react-markdown is the one with the plugin ecosystem.
 
 **[Read the full comparison →](docs/comparison.md)** It has every check, figure and source, and
 says which renderer suits which project. Every number comes from a script in [bench](bench) that you
@@ -66,7 +92,14 @@ forms a model writes once its system prompt has the dialect (`answerFormatPrompt
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/code-dark.png" />
-  <img alt="A foldable file tree, a highlighted TypeScript block and a tip" src="docs/assets/readme/code-light.png" width="760" />
+  <img alt="A foldable file tree, a highlighted TypeScript block titled with its file and a tip" src="docs/assets/readme/code-light.png" width="760" />
+</picture>
+
+**A diff with its file name, a folded section and sources**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/sources-dark.png" />
+  <img alt="A diff titled with its file, a folded section of timings and a numbered list of sources with their sites" src="docs/assets/readme/sources-light.png" width="760" />
 </picture>
 
 **Diagrams and math**, drawn with Mermaid and KaTeX in the page's colours
@@ -93,6 +126,8 @@ bun run shots       # the pictures above, from demo/scenes
 bun run size        # bundle size, against its budgets
 bun run bench       # the benchmarks
 ```
+
+How to work on it, and what a change has to keep: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Releases
 

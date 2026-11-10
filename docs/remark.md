@@ -1,82 +1,134 @@
 ---
-title: Remark and rehype
+title: Extensions and remark
 description:
-  The dialect as unified plugins, without React — render HTML on a server, use react-markdown with
-  your own components, or cut a document into blocks yourself.
+  Your own syntax in <Markdown>, and the dialect as a remark plugin without React — render HTML on
+  a server, use another renderer, or cut a document into blocks yourself.
 ---
 
-# Remark and rehype
+# Extensions and remark
 
-`llx-markdown/remark` is the dialect without React: the plugins `<Markdown>` runs, as ordinary
-[unified](https://unifiedjs.com) plugins. The forms become HTML elements with `llx-` classes and
-data attributes, which `llx-markdown/styles.css` draws the same way it draws `<Markdown>`.
+llx-markdown reads Markdown with a parser of its own: `<Markdown>` has no dependencies. There are
+two ways to go beyond what it draws:
 
-Use it for:
+- **An extension** adds your syntax to `<Markdown>`: an inline rule, a fence, a pass over the tree.
+- **`llx-markdown/remark`** is the dialect as a [unified](https://unifiedjs.com) plugin, for a
+  pipeline that is not `<Markdown>`: HTML built on a server, in an email or in a static site, or
+  another renderer with components of your own.
 
-- HTML rendered on a server, in an email or in a static site build;
-- react-markdown, or another renderer, with components of your own;
-- a search index, an outline or a table of contents built from the same parse.
+## Your own syntax in `<Markdown>`
 
-## Your own plugins in `<Markdown>`
-
-`<Markdown>` takes your plugins too, so you keep its streaming and its block memory. They run on
-each block, not on the whole document: a block is parsed once and kept while the text below it
-grows.
+An extension is a plain object. `<Markdown>` runs it on each block, not on the whole document: a
+block is read once and kept while the text below it grows, so an extension costs a streaming reply
+only its last block.
 
 ```tsx
-import { Markdown } from 'llx-markdown'
+import { Markdown, type Extension } from 'llx-markdown'
 
-// Module constants: a new list on every render redraws every block.
-const remarkPlugins = [remarkMentions]
-const rehypePlugins = [rehypeBlockActions]
-
-<Markdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{reply}</Markdown>
-```
-
-Your rehype plugins run after raw HTML is sanitized, so what they add is kept, and before
-formulas are typeset, so they see `code.language-math`. Positions are where a node sits in the
-whole document. `file.data.llx.offset` is where the block starts, which gives a node's own
-Markdown:
-
-```ts
-import type { Root } from 'hast'
-import type { VFile } from 'vfile'
-
-function rehypeBlockActions() {
-  return (tree: Root, file: VFile) => {
-    const offset = file.data.llx?.offset ?? 0
-    for (const node of tree.children) {
-      if (node.type !== 'element' || !node.position) continue
-      const { start, end } = node.position
-      node.properties.dataMarkdown = String(file.value).slice(
-        start.offset! - offset,
-        end.offset! - offset,
-      )
-    }
-  }
+/** `@name` as a link to the person. */
+const mentions: Extension = {
+  name: 'mentions',
+  inline: [
+    {
+      chars: '@',
+      parse(state) {
+        const match = /^@([a-z\d-]+)/i.exec(state.text.slice(state.pos))
+        if (!match) return false
+        state.push({
+          type: 'element',
+          data: { hName: 'a', hProperties: { href: `/people/${match[1]}`, className: 'mention' } },
+          children: [{ type: 'text', value: match[0] }],
+        })
+        state.pos += match[0].length
+        return true
+      },
+    },
+  ],
 }
+
+// A module constant: a new list on every render reads every block again.
+const extensions = [mentions]
+
+<Markdown extensions={extensions}>{reply}</Markdown>
 ```
+
+An extension has a `name` and any of three parts:
+
+| Part        | What it does                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| `inline`    | Rules tried when the parser meets one of their `chars` in text (never inside code). `parse` reads from `state.pos` in `state.text`; on a match it calls `state.push(node)`, moves `state.pos` past what it read and returns `true`. Returning `false` leaves the character as text. |
+| `fences`    | Fenced blocks by language: the rule gets the `code` node (`value` is the body, `meta` the rest of the opening line) and returns the node that replaces it. |
+| `transform` | A pass over the finished tree of a block, with the block's text: how the dialect turns a quote into a callout. |
+
+A node is `{ type, children?, value?, data? }`. Give a node `data.hName` and `data.hProperties`
+and it is drawn as that element with those properties; a name you list in
+[`components`](components.md) is drawn by your component. So a fence becomes a chart of your own:
+
+```tsx
+const charts: Extension = {
+  name: 'charts',
+  fences: {
+    chart: (node) => ({
+      type: 'element',
+      data: { hName: 'my-chart', hProperties: { dataSpec: node.value ?? '' } },
+    }),
+  },
+}
+
+<Markdown extensions={[charts]} components={{ 'my-chart': Chart }}>{reply}</Markdown>
+```
+
+What to know:
+
+- Your extensions run after the dialect's own pass and math, and before raw HTML is made into
+  elements: a pass sees raw HTML as `html` nodes holding the text as written.
+- `node.position` counts from the start of the block the node is in.
+- A URL an extension writes in `href` or `src` passes [`urlTransform`](security.md#links-and-images)
+  like any link's. Nothing else an extension makes is sanitized: it is your code, not the reply's.
+- A page that passes extensions has its tables read whole, not row by row, so a pass sees all of a
+  table; see [Streaming](streaming.md).
+
+These examples are tests in the repository (`src/react/extensions.test.tsx`).
 
 ## HTML on a server
 
+With React on the server, `<Markdown>` itself is the simplest way: it renders to a string like any
+component, with every form drawn.
+
+```tsx
+import { renderToStaticMarkup } from 'react-dom/server'
+import { Markdown } from 'llx-markdown'
+import { html } from 'llx-markdown/html'
+
+const page = renderToStaticMarkup(<Markdown html={html}>{markdown}</Markdown>)
+```
+
+Without React, use the remark plugin in a unified pipeline of your own. The plugin is the dialect
+only: GitHub's syntax is `remark-gfm`'s to read, before it.
+
 ```sh
-bun add llx-markdown unified remark-parse remark-rehype rehype-stringify
+bun add llx-markdown unified remark-parse remark-gfm remark-rehype rehype-stringify
 ```
 
 ```ts
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import { remarkLlx } from 'llx-markdown/remark'
 
-const processor = unified().use(remarkParse).use(remarkLlx).use(remarkRehype).use(rehypeStringify)
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkLlx)
+  .use(remarkRehype)
+  .use(rehypeStringify)
 
 const html = String(await processor.process(markdown))
 ```
 
-`remarkLlx` is GitHub Flavored Markdown (`remark-gfm`) plus the dialect (`remarkAnswerBlocks`).
-Wrap the output in an element with the class `llx-markdown` and import the stylesheet:
+`llx-markdown/remark` does not depend on unified; these packages are your pipeline's. Wrap the
+output in an element with the class `llx-markdown` and import the stylesheet:
 
 ```html
 <link rel="stylesheet" href="/llx-markdown/styles.css" />
@@ -88,44 +140,21 @@ another, until a script or your own component turns `answer-tabs` into tabs), th
 drawn diagrams, and file trees that open and close. ` ```mermaid ` and ` ```tree ` stay code blocks
 with `language-mermaid` and `language-tree` classes.
 
-## Raw HTML and math
-
-`remarkPluginsFor` and `rehypePluginsFor` build the same plugin lists `<Markdown>` uses, with the
-optional stages:
-
-```ts
-import { unified } from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeStringify from 'rehype-stringify'
-import { rehypePluginsFor, remarkPluginsFor } from 'llx-markdown/remark'
-import { html } from 'llx-markdown/html'
-import { math } from 'llx-markdown/math'
-
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkPluginsFor({ math }))
-  .use(remarkRehype, { allowDangerousHtml: true })
-  .use(rehypePluginsFor({ html, math }))
-  .use(rehypeStringify)
-```
-
-With `html`, raw HTML is parsed (`rehype-raw`) and then cleaned with `sanitizeSchema`; it needs
-`allowDangerousHtml` on `remark-rehype` so the HTML reaches the parser. Without `html`, leave that
-option off and `remark-rehype` drops raw HTML. Math is typeset last, after the sanitizer, so KaTeX's
-markup is kept. The second argument of `rehypePluginsFor` is a list of plugins to run between the
-sanitizer and the math; put a pass that must see the cleaned tree there.
-
-With math, escape literal dollars first, as `<Markdown>` does: `processor.process(escapeLiteralDollars(markdown))`.
+Raw HTML and math in such a pipeline are the pipeline's own: `rehype-raw` and `rehype-sanitize`
+(with [the schema below](#the-sanitize-schema)), `remark-math` and `rehype-katex`. With math, escape
+literal dollars first, as `<Markdown>` does: `processor.process(escapeLiteralDollars(markdown))`.
 See [Math](math.md#dollar-signs-that-are-not-math) for the rules.
 
 ## react-markdown with your own components
 
 ```tsx
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { remarkLlx } from 'llx-markdown/remark'
 
-;<ReactMarkdown remarkPlugins={remarkLlx} components={components}>
+const remarkPlugins = [remarkGfm, remarkLlx]
+
+;<ReactMarkdown remarkPlugins={remarkPlugins} components={components}>
   {text}
 </ReactMarkdown>
 ```
@@ -143,6 +172,9 @@ its label in `data-label`.
 | Stats         | `<ul class="llx-stats">`, each `<li>` holding `div.llx-stat` (`span.llx-stat-value`, `span.llx-stat-label`) |
 | Pros and cons | `<div class="llx-verdicts">` holding `aside.llx-verdict[data-verdict=pros]` and `[data-verdict=cons]`, each with `ul.llx-verdict-list` |
 | Tabs          | `<answer-tabs>` holding `<answer-tab data-label="…">`                                                  |
+| Folded section | `<details class="llx-details">` with a `<summary>` when the marker has a title                        |
+| Sources       | `<ul class="llx-sources">`, each `<li>` holding `div.llx-source`: the link (`span.llx-source-title`, `span.llx-source-host`) and `span.llx-source-note` |
+| Code file name | `<code class="language-ts" data-title="src/app.ts">` for a fence that names its file                  |
 | A titled form | `<div class="llx-form">` with `p.llx-steps-title` (or `llx-tabs-title`, `llx-stats-title`, …) before the form |
 | Quote source  | `<footer class="llx-quote-source">` inside the quote                                                   |
 | Figure        | `<figure class="llx-figure">` with the `<img>` and a `<figcaption>`                                    |
@@ -176,17 +208,18 @@ A callout stays a `blockquote` in the HTML; `<Markdown>`'s `Callout` component d
 
 ## The sanitize schema
 
-`sanitizeSchema` is GitHub's schema from `rehype-sanitize`, extended with the elements, classes and
-attributes above. Use it in a pipeline of your own that sanitizes, so the dialect's markup is not
-stripped:
+A pipeline of your own that sanitizes would strip the dialect's markup: it does not know the
+classes and attributes above. `sanitizeSchemaFor` adds them to a schema:
 
 ```ts
-import rehypeSanitize from 'rehype-sanitize'
-import { sanitizeSchema } from 'llx-markdown/remark'
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
+import { sanitizeSchemaFor } from 'llx-markdown/remark'
 
-processor.use(rehypeSanitize, sanitizeSchema)
+processor.use(rehypeSanitize, sanitizeSchemaFor(defaultSchema))
 ```
 
+Only the dialect's own names pass: `llx-` classes, the forms' data attributes and the two tab
+elements. `<Markdown>` does not need this: it has its own sanitizer, with the same rules.
 [Security](security.md) lists what it allows.
 
 ## Heading ids
@@ -196,14 +229,10 @@ processor.use(rehypeSanitize, sanitizeSchema)
 | `extractHeadings(markdown)`    | Every heading as `{ depth, text, id }`: an outline or table of contents.              |
 | `remarkHeadingIds`             | A remark plugin that gives each heading the same id.                                  |
 | `headingIdsByOffset(markdown)` | The ids as a map from where each heading starts in the text.                          |
-| `rehypeHeadingIds(ids)`        | A rehype plugin that sets ids from that map.                                          |
 
 Ids are made from the heading's text (`## Set up` is `set-up`), and a repeated heading is numbered
-(`setup`, `setup-1`), so the outline from `extractHeadings` links to the ids the page has.
-
-With the html stage, the sanitizer prefixes every id with `user-content-`. To keep the plain ids,
-set them after the sanitizer: pass `[rehypeHeadingIds(headingIdsByOffset(markdown))]` as the second
-argument of `rehypePluginsFor`.
+(`setup`, `setup-1`), so the outline from `extractHeadings` links to the ids `<Markdown headingIds>`
+gives the page. `extractHeadings` is also exported from `llx-markdown` itself.
 
 ## Cutting a document into blocks
 
@@ -221,15 +250,11 @@ Each block is a top-level piece of the document: a paragraph, a list, a table, a
 
 `createBlockSplitter()` is the same for a text that grows at its end. `splitter.split(text)` returns
 the same blocks as `splitBlocks`, and the blocks that did not change are the very same objects as
-last time, so `React.memo` or a `WeakMap` can skip them. Each call lexes only the end of the text;
+last time, so `React.memo` or a `WeakMap` can skip them. Each call scans only the end of the text;
 a text that changed above its end is split afresh.
 
-Parse a block on its own with `remarkBlockOffset({ offset, line })` first in the plugin list:
-its positions then count from the start of the document, so heading ids and task-list keys are the
-same as in a whole-document parse.
-
-`rehypeTaskKeys` adds `data-task-key`, the source offset of the task, to each task-list checkbox: a
-stable key for storing a tick or rewriting the `[ ]` it came from.
+In `<Markdown>` every task-list checkbox carries `data-task-key`, where its `[ ]` starts in the
+document: a stable key for storing a tick or rewriting the text it came from.
 
 ## More helpers
 

@@ -1,50 +1,47 @@
 /**
- * What a host page adds to the dialect: its own remark and rehype plugins, and its own drawing of
- * a diagram or a file tree. A chat app turns `@path` into a file chip, wraps each block in its
- * actions (copy, save) with the block's own Markdown, and shows diagrams in its own viewer.
+ * What a host page adds to the dialect: its own syntax and passes over the tree, and its own
+ * drawing of a diagram or a file tree. A chat app turns `@path` into a file chip, wraps each block
+ * in its actions (copy, save) with the block's own Markdown, and shows diagrams in its own viewer.
  */
 import { describe, expect, test } from 'bun:test'
-import type { Element, Root as HastRoot } from 'hast'
-import type { Emphasis, Root as MdastRoot, Text } from 'mdast'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { visit } from 'unist-util-visit'
-import type { VFile } from 'vfile'
-import { Markdown, type MarkdownComponents } from '../index'
+import { Markdown, type Extension, type MarkdownComponents } from '../index'
 
-/** remark: every `@name` in text becomes emphasis, as a mention chip would. */
-function remarkMentions() {
-  return (tree: MdastRoot) => {
-    visit(tree, 'text', (node: Text, index, parent) => {
-      if (!parent || index === undefined) return
-      const parts = node.value.split(/(@\w+)/)
-      if (parts.length === 1) return
-      parent.children.splice(
-        index,
-        1,
-        ...parts.map((value) =>
-          value.startsWith('@')
-            ? ({ type: 'emphasis', children: [{ type: 'text', value }] } satisfies Emphasis)
-            : ({ type: 'text', value } satisfies Text),
-        ),
-      )
-      return index + parts.length
-    })
-  }
+/** An inline rule: `@name` in text becomes emphasis, as a mention chip would. */
+const mentions: Extension = {
+  name: 'mentions',
+  inline: [
+    {
+      chars: '@',
+      parse(state) {
+        const name = /^@\w+/.exec(state.text.slice(state.pos, state.pos + 64))
+        if (!name) return false
+        state.push({ type: 'emphasis', children: [{ type: 'text', value: name[0] }] })
+        state.pos += name[0].length
+        return true
+      },
+    },
+  ],
 }
 
-/** rehype: each top-level element carries the Markdown it was drawn from. */
-function rehypeBlockSource() {
-  return (tree: HastRoot, file: VFile) => {
-    const { offset } = file.data.llx ?? { offset: 0 }
-    const text = String(file.value)
-    for (const node of tree.children) {
-      if (node.type !== 'element' || !node.position) continue
-      const start = (node.position.start.offset ?? 0) - offset
-      const end = (node.position.end.offset ?? 0) - offset
-      ;(node as Element).properties.dataMarkdown = text.slice(start, end)
+/** A pass over the tree: each top-level block carries the Markdown it was drawn from. */
+const blockSource: Extension = {
+  name: 'block-source',
+  transform(root, source) {
+    for (const node of root.children ?? []) {
+      if (!node.position) continue
+      node.data = {
+        ...node.data,
+        hProperties: {
+          ...(node.data?.hProperties as object | undefined),
+          dataMarkdown: source.slice(node.position.start.offset, node.position.end.offset),
+        },
+      }
     }
-  }
+  },
 }
+const MENTIONS = [mentions]
+const BLOCK_SOURCE = [blockSource]
 
 const attributes = (html: string) =>
   [...html.matchAll(/data-markdown="([^"]*)"/g)].map((m) =>
@@ -55,16 +52,16 @@ const attributes = (html: string) =>
       .replaceAll('&amp;', '&'),
   )
 
-describe('a page’s own plugins', () => {
-  test('a remark plugin runs on every block', () => {
+describe('a page’s own extensions', () => {
+  test('an inline rule runs on every block', () => {
     const html = renderToStaticMarkup(
-      <Markdown remarkPlugins={[remarkMentions]}>{'Ask @ana\n\nThen @bo'}</Markdown>,
+      <Markdown extensions={MENTIONS}>{'Ask @ana\n\nThen @bo'}</Markdown>,
     )
     expect(html).toContain('<em>@ana</em>')
     expect(html).toContain('<em>@bo</em>')
   })
 
-  test('a rehype plugin can read the Markdown each block was drawn from', () => {
+  test('a pass can read the Markdown each block was drawn from', () => {
     const blocks = [
       '# Title',
       'Costs $5 and $x^2$ here.',
@@ -72,7 +69,7 @@ describe('a page’s own plugins', () => {
       '> [!TIP]\n> Cache it.',
     ]
     const html = renderToStaticMarkup(
-      <Markdown rehypePlugins={[rehypeBlockSource]} math={() => import('../math/index')}>
+      <Markdown extensions={BLOCK_SOURCE} math={() => import('../math/index')}>
         {blocks.join('\n\n')}
       </Markdown>,
     )
@@ -84,9 +81,9 @@ describe('a page’s own plugins', () => {
     ])
   })
 
-  test('a rehype plugin runs after the sanitizer, so what it adds is kept', () => {
+  test('what a pass adds is kept when the block holds raw HTML', () => {
     const html = renderToStaticMarkup(
-      <Markdown rehypePlugins={[rehypeBlockSource]}>{'<b>bold</b> text'}</Markdown>,
+      <Markdown extensions={BLOCK_SOURCE}>{'<b>bold</b> text'}</Markdown>,
     )
     expect(attributes(html)).toEqual(['<b>bold</b> text'])
   })

@@ -23,8 +23,8 @@ a build script.
 
 | Call                                            | Characters | Tokens, about |
 | ----------------------------------------------- | ---------- | ------------- |
-| `answerFormatPrompt()`                          | 1,621      | 400           |
-| `answerFormatPrompt({ math: true, diagrams: true })` | 2,092 | 520           |
+| `answerFormatPrompt()`                          | 1,983      | 500           |
+| `answerFormatPrompt({ math: true, diagrams: true })` | 2,454 | 610           |
 
 Tokens are estimated at four characters each; the exact count depends on the model's tokenizer.
 
@@ -41,7 +41,7 @@ The default prompt, in full:
 Replies render as GitHub Markdown plus the forms below; the user's style preferences override them.
 Match the content to the first form that fits; a table or list is the fallback. Write a marker as its own quote line, the content unquoted after it.
 - Lead with the answer. Short replies use prose; long ones use `##` per thread, short paragraphs and selective bold.
-- Options compared (X vs Y, which to use) or variants (per OS, language): a tab per option, `#### Label`; a compared option holds its sides. Then one line on when to pick which:
+- Options compared (X vs Y, which to use) or variants (per OS, language): a tab per option, `#### Label`; a compared option holds its sides. After them a `---`, then one line on when to pick which:
   > [!TABS]
   #### PostgreSQL
   > [!PROS]
@@ -49,6 +49,8 @@ Match the content to the first form that fits; a table or list is the fallback. 
 
   > [!CONS]
   - needs a server
+
+  ---
 - One option weighed (should I, is it worth it): its sides, then the verdict:
   > [!PROS]
   - typed APIs
@@ -66,7 +68,14 @@ Match the content to the first form that fits; a table or list is the fallback. 
   - **−40%** memory
 - Exact values across options (specs, prices, limits): a table.
 - A risk or key aside: one or two callouts, quotes starting `> [!KIND]` ([!NOTE] [!TIP] [!IMPORTANT] [!WARNING] [!CAUTION]); text after the marker titles it.
+- Long secondary material (a full log, raw output, a derivation): folded, its content quoted:
+  > [!DETAILS] Full log
+  > The long part, quoted.
+- Pages the reply draws on: sources, last:
+  > [!SOURCES]
+  - [Page title](https://example.com/page)
 - A directory layout: a ```tree fence of `├──`/`└──` lines. Things to do: `- [ ] item`.
+- Code for a file names it: ```ts title="src/app.ts". A change to code: a ```diff fence.
 - Quote attribution: `> — Author`. Image caption: `![alt](url "Caption")`.
 ```
 
@@ -127,8 +136,8 @@ Pass the same `header` to both if you change it: the principle names the section
 
 ## Building your own prompt
 
-`ANSWER_FORM_EXAMPLES` holds the examples the prompt shows (`comparison`, `verdict`, `steps`,
-`stats`), each as an array of lines, and `ANSWER_FORMAT_HEADER` the default heading. Use them to
+`ANSWER_FORM_EXAMPLES` holds the examples the prompt shows (`comparison`, `verdict`, `steps`, `stats`,
+`details`, `sources`), each as an array of lines, and `ANSWER_FORMAT_HEADER` the default heading. Use them to
 write instructions in your own words while showing the model forms the renderer is known to draw.
 
 The full syntax a model can use is on [Syntax](syntax.md).

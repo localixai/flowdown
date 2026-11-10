@@ -1,18 +1,18 @@
 import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import ReactMarkdown from 'react-markdown'
 import { CORPUS } from '../../test/corpus'
+import { defaultUrlTransform } from '../engine/url'
 import { html } from '../html'
 import { math } from '../math'
-import { buildComponents, Markdown } from '../react/markdown'
+import { buildComponents, draw, Markdown } from '../react/markdown'
 import { splitBlocks } from './blocks'
 import { escapeLiteralDollars } from './dollars'
 import { closePartialMarkdown } from './heal'
-import { headingIdsByOffset, rehypeHeadingIds } from './headings'
-import { rehypePluginsFor, remarkPluginsFor } from './pipeline'
+import { headingIdsByOffset } from './headings'
+import { llxDialect } from './remark-answer-blocks'
 import { hasHtmlSyntax } from './syntax'
 
-const components = buildComponents(undefined)
+const drawn = buildComponents(undefined)
 
 /** `useId` values depend on where a component sits in the React tree, which blocks change. */
 const sameIds = (markup: string) => markup.replace(/_R_[0-9a-z]+_/g, '_R_')
@@ -21,8 +21,6 @@ const sameIds = (markup: string) => markup.replace(/_R_[0-9a-z]+_/g, '_R_')
 function whole(markdown: string, { streaming = false, withMath = false, headingIds = false } = {}) {
   const healed = streaming ? closePartialMarkdown(markdown) : markdown
   const source = withMath ? escapeLiteralDollars(healed) : healed
-  const plugin = withMath ? math : null
-  const ids = headingIds ? headingIdsByOffset(source) : null
   return sameIds(
     renderToStaticMarkup(
       <div
@@ -30,17 +28,17 @@ function whole(markdown: string, { streaming = false, withMath = false, headingI
         data-streaming={streaming || undefined}
         data-caret={streaming || undefined}
       >
-        <ReactMarkdown
-          remarkPlugins={remarkPluginsFor({ math: plugin })}
-          rehypePlugins={rehypePluginsFor(
-            { html: hasHtmlSyntax(source) ? html : null, math: plugin },
-            ids ? [rehypeHeadingIds(ids)] : [],
-          )}
-          skipHtml={!hasHtmlSyntax(source)}
-          components={components}
-        >
-          {source}
-        </ReactMarkdown>
+        {draw(source, 0, headingIds ? headingIdsByOffset(source) : null, {
+          ...drawn,
+          extensions: [
+            llxDialect,
+            ...(withMath ? [math] : []),
+            ...(hasHtmlSyntax(source) ? [html] : []),
+          ],
+          urlTransform: defaultUrlTransform,
+          ownCode: false,
+          ownTable: false,
+        })}
       </div>,
     ),
   )

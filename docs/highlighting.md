@@ -29,6 +29,7 @@ The bundled highlighter knows the languages replies and READMEs mostly contain:
 | ---------- | ------------------------------ |
 | Bash       | `bash`, `sh`, `shell`, `zsh`   |
 | CSS        | `css`                          |
+| Diff       | `diff`, `patch`                |
 | JavaScript | `javascript`, `js`, `jsx`      |
 | JSON       | `json`                         |
 | Markdown   | `markdown`, `md`               |

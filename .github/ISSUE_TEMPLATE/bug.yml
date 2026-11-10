@@ -1,0 +1,36 @@
+name: Something is drawn wrong
+description: A reply or a document that llx-markdown renders incorrectly, flickers or shows raw syntax
+labels: [bug]
+body:
+  - type: textarea
+    id: markdown
+    attributes:
+      label: The Markdown
+      description: The smallest text that shows it. For a streaming problem, the text up to the frame that looks wrong.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: seen
+    attributes:
+      label: What you see, and what you expected
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: llx-markdown and React versions
+      placeholder: llx-markdown 0.1.0, React 19.2
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Where
+      options:
+        - While streaming (`streaming` on)
+        - A finished reply or a document
+        - On the server (`renderToString`, RSC)
+        - The remark plugins without React
+    validations:
+      required: true
