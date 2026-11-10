@@ -22,7 +22,8 @@ const BUDGET: Record<string, number> = {
   './prompt': 2,
   './html': 0.5,
   './math': 1.2,
-  './highlight': 0.8,
+  // Past 0.8 KB since a shell line shows its command, flags and numbers (highlight.ts).
+  './highlight': 1.1,
   './styles.css': 5,
 }
 

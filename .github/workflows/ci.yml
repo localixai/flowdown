@@ -32,3 +32,5 @@ jobs:
       # The package as it would be published: exports, types, entry isolation, 'use client'.
       - run: bun run build
       - run: bun run check
+      # Bundle size: each entry's own code and what loads with <Markdown>, against their budgets.
+      - run: bun run size

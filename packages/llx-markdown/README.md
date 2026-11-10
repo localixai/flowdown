@@ -56,6 +56,13 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
 - **Without React.** `llx-markdown/remark` gives the dialect as remark and rehype plugins, for HTML
   rendered on a server or in a static build.
 
+## Size
+
+89 KB minified and gzipped loads with `<Markdown>`, without React; the HTML parser (48 KB) is loaded
+only for a reply with raw HTML, and KaTeX and Mermaid only for math and diagrams. For comparison:
+react-markdown with remark-gfm is 58 KB, Streamdown 163 KB.
+[How it is measured](https://github.com/rsaryev/llx-markdown/blob/main/bench/src/size.ts).
+
 ## Documentation
 
 [Getting started](https://github.com/rsaryev/llx-markdown/blob/main/docs/getting-started.md) · [Syntax](https://github.com/rsaryev/llx-markdown/blob/main/docs/syntax.md) ·

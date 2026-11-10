@@ -5,16 +5,17 @@
   "scripts": {
     "bench": "bun run --cwd ../packages/llx-markdown build && NODE_ENV=production bun src/run.ts",
     "bench:quick": "NODE_ENV=production bun src/run.ts --quick",
-    "bench:check": "bun src/check.ts"
+    "bench:check": "bun src/check.ts",
+    "size": "bun src/size.ts"
   },
   "dependencies": {
     "@happy-dom/global-registrator": "21.0.4",
+    "highlight.js": "11.11.1",
     "llx-markdown": "workspace:*",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",
-    "streamdown": "2.7.1",
-    "highlight.js": "11.11.1"
+    "streamdown": "2.7.1"
   }
 }

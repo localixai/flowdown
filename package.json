@@ -20,7 +20,8 @@
     "version": "changeset version && bun install",
     "release": "bun run build && bun run check && changeset publish",
     "bench": "bun run --cwd bench bench",
-    "shots": "bun run --cwd demo shots"
+    "shots": "bun run --cwd demo shots",
+    "size": "bun run --cwd packages/llx-markdown size && bun run --cwd bench size"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",

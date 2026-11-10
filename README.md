@@ -21,6 +21,23 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/README.md) and
 [the documentation](docs/getting-started.md).
 
+## Size
+
+What a page downloads to render Markdown, minified and gzipped, without React (the page has it):
+
+| | Loads with the component | Loaded only when a reply needs it |
+| --- | --- | --- |
+| **llx-markdown** | **89 KB** | 48 KB, the HTML parser, for a reply with raw HTML |
+| llx-markdown with code highlighting | 110 KB | 48 KB |
+| `llx-markdown/stream` (healing and splitting, no React) | 17 KB | — |
+| react-markdown with remark-gfm | 58 KB | — |
+| Streamdown 2.7 | 163 KB | — |
+
+KaTeX and Mermaid are loaded by the page on demand, only when a reply has math or a diagram, and
+are counted for no one. CI holds the package to a budget: 95 KB for what loads with `<Markdown>`, and
+one for each entry's own code. How it is measured: [bench/src/size.ts](bench/src/size.ts); the latest
+run: [bench/results/size.md](bench/results/size.md).
+
 ## What a reply can hold
 
 Each picture is one reply drawn by `<Markdown>`, from the Markdown in [demo/scenes](demo/scenes): the
@@ -62,6 +79,7 @@ bun install
 bun run test        # the library's tests; CI skips the heavy sweeps (LLX_SKIP_HEAVY=1)
 bun run check       # build output: exports, types, entry isolation
 bun run shots       # the pictures above, from demo/scenes
+bun run size        # bundle size, against its budgets
 bun run bench       # the benchmarks
 ```
 
