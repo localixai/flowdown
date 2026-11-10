@@ -82,6 +82,11 @@ export interface MarkdownProps {
    */
   urlTransform?: UrlTransform | null
   className?: string
+  /**
+   * Leaves the `llx-markdown` class off the root element, so the package's stylesheet does not
+   * apply: for a small surface that draws every element with `components` at its own scale.
+   */
+  unstyled?: boolean
 }
 
 interface BlockProps {
@@ -206,6 +211,7 @@ export function Markdown({
   labels,
   urlTransform,
   className,
+  unstyled = false,
 }: MarkdownProps): ReactNode {
   // `\r\n` from a Windows file or a server that sends it reads as `\n` everywhere below.
   const text = normalizeLineEndings(children)
@@ -259,7 +265,9 @@ export function Markdown({
     <LabelsContext.Provider value={labelValue}>
       <RenderContextValue.Provider value={context}>
         <div
-          className={className ? `llx-markdown ${className}` : 'llx-markdown'}
+          className={
+            unstyled ? className : className ? `llx-markdown ${className}` : 'llx-markdown'
+          }
           data-streaming={streaming || undefined}
           data-caret={(streaming && caret) || undefined}
         >

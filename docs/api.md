@@ -46,6 +46,7 @@ import 'llx-markdown/styles.css'
 | `labels`       | `LabelOverrides`                        | `DEFAULT_LABELS`   | The words the renderer adds, for another language. See [Components](components.md#labels). |
 | `urlTransform` | `UrlTransform \| null`                  | `defaultUrlTransform` | Rewrite or refuse a link or image URL. See [Security](security.md#links-and-images). |
 | `className`    | `string`                                |                    | Added to the root element beside `llx-markdown`. |
+| `unstyled`     | `boolean`                               | `false`            | Leaves the `llx-markdown` class off the root, so the stylesheet does not apply: for a surface drawn entirely by `components`. |
 
 The root element is a `div.llx-markdown`. While streaming it has `data-streaming`, and
 `data-caret` while the caret shows.

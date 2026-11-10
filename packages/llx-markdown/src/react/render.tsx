@@ -9,7 +9,12 @@ export type Components = {
   [Tag in keyof React.JSX.IntrinsicElements]?: ComponentType<
     React.JSX.IntrinsicElements[Tag] & { node?: Node }
   >
-} & { [tag: string]: ComponentType<never> | undefined }
+} & {
+  // `any`: a page's own tag takes whatever props its extension wrote. `never` here refused a map
+  // that spreads one in beside HTML tags (a class component's `defaultProps` do not fit it).
+  // oxlint-disable-next-line typescript/no-explicit-any
+  [tag: string]: ComponentType<any> | undefined
+}
 
 export interface RenderOptions {
   components: Components
@@ -58,6 +63,9 @@ const own = (node: Node, tag: string, props: Props | null): [string, Props | nul
 /** Draws a tree. Every call gives new elements; the caller remembers them by the tree's text. */
 export const render = (root: Node, options: RenderOptions): ReactNode => {
   const { components, urlTransform } = options
+  /** The page's component for an element the renderer writes itself, or the element. */
+  const pageTag = (name: string): string | ComponentType<Props> =>
+    (components[name] as ComponentType<Props> | undefined) ?? name
 
   const element = (
     node: Node,
@@ -107,7 +115,7 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
     const out: ReactNode[] = []
     const task = typeof node.checked === 'boolean'
     const box = task
-      ? createElement('input', {
+      ? createElement(pageTag('input'), {
           type: 'checkbox',
           disabled: true,
           'data-task-key': options.offset + (node.position?.start.offset ?? 0),
@@ -120,7 +128,7 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
       box !== null &&
       (first === undefined || first.type !== 'paragraph' || first.data?.hName !== undefined)
     ) {
-      if (loose) out.push(NEWLINE, createElement('p', null, box))
+      if (loose) out.push(NEWLINE, createElement(pageTag('p'), null, box))
       else out.push(box)
     }
     for (let index = 0; index < children.length; index++) {
@@ -158,7 +166,7 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
         if (nth > 1) back.push(' ')
         back.push(
           createElement(
-            components.a ?? 'a',
+            pageTag('a'),
             {
               href: `#${ID_PREFIX}fnref-${id}${suffix}`,
               'data-footnote-backref': '',
@@ -166,7 +174,7 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
               className: 'data-footnote-backref',
             } as never,
             '↩',
-            nth > 1 ? createElement('sup', null, String(nth)) : null,
+            nth > 1 ? createElement(pageTag('sup'), null, String(nth)) : null,
           ),
         )
       }
@@ -177,22 +185,26 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
         const child = content[index] as Node
         if (index > 0) body.push(NEWLINE)
         if (child === tail && child.type === 'paragraph' && child.data?.hName === undefined)
-          body.push(createElement('p', null, ...inline(child.children), ' ', ...back))
+          body.push(createElement(pageTag('p'), null, ...inline(child.children), ' ', ...back))
         else one(child, body, false)
       }
       if (tail === undefined || tail.type !== 'paragraph' || tail.data?.hName !== undefined)
         body.push(NEWLINE, ...back)
       body.push(NEWLINE)
       if (at > 0) items.push(NEWLINE)
-      items.push(createElement('li', { id: `${ID_PREFIX}fn-${id}` }, ...body))
+      items.push(createElement(pageTag('li'), { id: `${ID_PREFIX}fn-${id}` }, ...body))
     }
     items.push(NEWLINE)
     return createElement(
-      'section',
+      pageTag('section'),
       { 'data-footnotes': '', className: 'footnotes' },
-      createElement('h2', { className: 'sr-only', id: `${ID_PREFIX}footnote-label` }, 'Footnotes'),
+      createElement(
+        pageTag('h2'),
+        { className: 'sr-only', id: `${ID_PREFIX}footnote-label` },
+        'Footnotes',
+      ),
       NEWLINE,
-      createElement('ol', null, ...items),
+      createElement(pageTag('ol'), null, ...items),
       NEWLINE,
     )
   }
@@ -324,15 +336,10 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
           )
         const parts: ReactNode[] = []
         const head = rows[0]
-        if (head !== undefined)
-          parts.push(createElement(components.thead ?? 'thead', null, row(head, true)))
+        if (head !== undefined) parts.push(createElement(pageTag('thead'), null, row(head, true)))
         if (rows.length > 1)
           parts.push(
-            createElement(
-              components.tbody ?? 'tbody',
-              null,
-              ...rows.slice(1).map((from) => row(from, false)),
-            ),
+            createElement(pageTag('tbody'), null, ...rows.slice(1).map((from) => row(from, false))),
           )
         out.push(element(node, 'table', null, parts))
         return
@@ -342,10 +349,10 @@ export const render = (root: Node, options: RenderOptions): ReactNode => {
         const nth = (node.occurrence ?? 1) > 1 ? `-${node.occurrence}` : ''
         out.push(
           createElement(
-            'sup',
+            pageTag('sup'),
             null,
             createElement(
-              components.a ?? 'a',
+              pageTag('a'),
               {
                 href: `#${ID_PREFIX}fn-${id}`,
                 id: `${ID_PREFIX}fnref-${id}${nth}`,
