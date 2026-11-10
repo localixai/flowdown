@@ -1,4 +1,5 @@
 'use client'
+import { DEFAULT_CATCH_UP_MS, useSmoothText } from './use-smooth-text'
 import { useContext, Fragment, memo, useMemo, useState, type ReactNode } from 'react'
 import {
   blockHasHtml,
@@ -43,6 +44,12 @@ export interface MarkdownProps {
    * syntax (`**bo` reads as bold, a fence still being written as code), and a caret follows it.
    */
   streaming?: boolean
+  /**
+   * Show a streaming reply at an even pace instead of in the bursts it arrives in: whole words,
+   * a few frames behind the text, finishing at the same pace when the reply ends. `true`, or the
+   * time in milliseconds a burst takes to show (240 by default). Off by default.
+   */
+  smooth?: boolean | number
   /** The caret after streaming text; on by default while `streaming`. */
   caret?: boolean
   /**
@@ -199,8 +206,9 @@ const NO_EXTENSIONS: Extension[] = []
  */
 export function Markdown({
   children,
-  streaming = false,
-  caret = streaming,
+  streaming: arriving = false,
+  smooth = false,
+  caret: caretOption,
   components,
   extensions = NO_EXTENSIONS,
   headingIds = false,
@@ -214,7 +222,15 @@ export function Markdown({
   unstyled = false,
 }: MarkdownProps): ReactNode {
   // `\r\n` from a Windows file or a server that sends it reads as `\n` everywhere below.
-  const text = normalizeLineEndings(children)
+  const whole = normalizeLineEndings(children)
+  // Paced, the reply is still "streaming" until all of it is shown, a moment after it ended.
+  const [text, behind] = useSmoothText(
+    whole,
+    arriving && smooth !== false,
+    typeof smooth === 'number' ? smooth : DEFAULT_CATCH_UP_MS,
+  )
+  const streaming = arriving || behind
+  const caret = caretOption ?? streaming
   const healed = streaming ? closePartialMarkdown(text) : text
   // One splitter per rendered document: it remembers the blocks it cut, and on the next token
   // scans only the end of the reply. Blocks that did not change come back as the same objects,

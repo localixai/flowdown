@@ -8,7 +8,7 @@ import { Markdown } from 'llx-markdown'
 import { highlight } from 'llx-markdown/highlight'
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { scenes } from './scenes'
+import { reviewScenes, scenes } from './scenes'
 
 declare global {
   interface Window {
@@ -17,11 +17,13 @@ declare global {
 }
 
 const params = new URLSearchParams(location.search)
-const scene = scenes[params.get('scene') ?? 'hero'] ?? scenes.hero!
+const scene =
+  reviewScenes[params.get('review') ?? ''] ?? scenes[params.get('scene') ?? 'hero'] ?? scenes.hero!
 document.documentElement.dataset.theme = params.get('theme') === 'dark' ? 'dark' : 'light'
 const streamed = params.has('stream')
 
 const math = () => import('llx-markdown/math')
+const html = () => import('llx-markdown/html')
 const mermaid = () => import('mermaid')
 
 function Scene() {
@@ -33,7 +35,13 @@ function Scene() {
     <main className="chat" data-scene>
       <div className="question">{scene.question}</div>
       <div className="reply">
-        <Markdown streaming={reply.streaming} math={math} mermaid={mermaid} highlight={highlight}>
+        <Markdown
+          streaming={reply.streaming}
+          math={math}
+          html={html}
+          mermaid={mermaid}
+          highlight={highlight}
+        >
           {reply.text}
         </Markdown>
       </div>

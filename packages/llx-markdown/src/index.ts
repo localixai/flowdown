@@ -8,6 +8,8 @@
  */
 export { Markdown, type MarkdownProps } from './react/markdown'
 export type { Components } from './react/render'
+// The pacing `<Markdown smooth>` uses, for text a page draws itself (a tool's output, a title).
+export { useSmoothText } from './react/use-smooth-text'
 export type { Highlighter, MarkdownComponents } from './react/context'
 export type { StageLoader, StageOption } from './react/use-stage'
 export { defaultUrlTransform, type UrlTransform } from './engine/url'

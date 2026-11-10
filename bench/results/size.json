@@ -1,10 +1,10 @@
 {
   "llx-markdown": {
-    "atOnce": 29.4,
+    "atOnce": 30.2,
     "onDemand": 14.2
   },
   "llx-markdown + highlight": {
-    "atOnce": 50.5,
+    "atOnce": 51.3,
     "onDemand": 14.2
   },
   "llx-markdown/stream": {

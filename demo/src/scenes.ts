@@ -1,3 +1,6 @@
+import basics from '../review/basics.md' with { type: 'text' }
+import folded from '../review/folded.md' with { type: 'text' }
+import forms from '../review/forms.md' with { type: 'text' }
 import code from '../scenes/code.md' with { type: 'text' }
 import diagram from '../scenes/diagram.md' with { type: 'text' }
 import hero from '../scenes/hero.md' with { type: 'text' }
@@ -16,4 +19,11 @@ export const scenes: Record<string, { question: string; reply: string }> = {
   code: scene(code),
   diagram: scene(diagram),
   sources: scene(sources),
+}
+
+/** Every form at once, for looking at (`bun run review`); not in the README. */
+export const reviewScenes: Record<string, { question: string; reply: string }> = {
+  basics: scene(basics),
+  forms: scene(forms),
+  folded: scene(folded),
 }

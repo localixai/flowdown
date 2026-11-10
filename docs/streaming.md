@@ -101,12 +101,36 @@ With `prefers-reduced-motion`, the caret stays still.
 
 ## Smoothing
 
-Models send tokens in bursts. If your transport delivers large chunks, the text jumps. Smoothing is
-the transport's job, not the renderer's: the Vercel AI SDK's `smoothStream()` on the server paces
-the text by words. See [Vercel AI SDK](recipes/ai-sdk.md).
+A model's text reaches the page in uneven pieces: one network frame holds a word, the next holds
+forty. Drawn as it lands, the reply jumps by a line and then stands still. `smooth` shows it at an
+even pace instead:
 
-The renderer itself has no timer: it draws what it is given, as often as it is given it. React
-batches updates within a frame, so rendering on every token is fine.
+```tsx
+<Markdown streaming={!done} smooth>
+  {reply}
+</Markdown>
+```
+
+- **Even speed.** What has arrived and is not shown yet is shown over about 240 ms, and the speed
+  changes gradually: a burst makes the flow faster, it does not land whole. `smooth={400}` sets the
+  time.
+- **Whole words.** A word typed letter by letter at the end of a line grows there and then jumps to
+  the next line when it stops fitting. A word shown whole is placed once. The word still being
+  typed is held back until it ends, or until the reply has stood still for a moment; a long token
+  (a URL, a hash) is not waited for.
+- **A soft end.** When `streaming` turns false, what is left is shown at the same pace, and the
+  caret and the completed syntax stay until it is all there.
+- **No replay.** Text that is there when streaming begins is shown at once; only growth is paced.
+- **Nothing extra when idle.** The frame loop runs only while there is text to show, about 30
+  steps a second, each of which parses the last block only.
+- With `prefers-reduced-motion`, text is shown as it arrives.
+
+Beside the pacing, the stylesheet brings the newest block in over a 200 ms fade, so the panel of a
+code block or a table does not pop onto the page, and stops re-balancing the lines of the paragraph
+that is still growing. Neither needs `smooth`.
+
+`useSmoothText(text, streaming, catchUpMs?)` is the same pacing for text a page draws itself (a
+tool's output, a title): it returns `[shown, behind]`.
 
 ## Without React
 

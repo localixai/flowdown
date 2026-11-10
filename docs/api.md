@@ -36,6 +36,7 @@ import 'llx-markdown/styles.css'
 | `children`     | `string`                                |                    | The Markdown. While streaming, the whole text so far, not the new part. |
 | `streaming`    | `boolean`                               | `false`            | The text is still arriving: its unfinished end is completed and a caret follows it. See [Streaming](streaming.md). |
 | `caret`        | `boolean`                               | `streaming`        | Show the caret after streaming text. |
+| `smooth`       | `boolean \| number`                     | `false`            | Show a streaming reply at an even pace, in whole words; a number is the time in ms a burst takes to show. See [Streaming](streaming.md#smoothing). |
 | `components`   | `MarkdownComponents`                    |                    | Your own elements for any tag or the dialect's, and `diagram` / `tree` for the two fences that are not code. Keep the object stable. See [Components](components.md). |
 | `extensions`   | `Extension[]`                           |                    | Your own syntax: inline rules, fences, passes over the tree, on each block. Keep the list stable. See [Extensions](remark.md#your-own-syntax-in-markdown). |
 | `headingIds`   | `boolean`                               | `false`            | Give headings ids (`setup`, `setup-1`), the ids `extractHeadings` returns. |

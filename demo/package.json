@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun src/serve.ts",
+    "review": "bun run --cwd ../packages/llx-markdown build && bun src/review.ts",
     "shots": "bun run --cwd ../packages/llx-markdown build && bun src/capture.ts"
   },
   "dependencies": {

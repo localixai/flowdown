@@ -1,5 +1,21 @@
 # llx-markdown
 
+## 0.3.0
+
+### Minor Changes
+
+- `<Markdown smooth>` shows a streaming reply at an even pace instead of in the bursts it arrives in:
+  whole words, a gradual change of speed, and a soft end when the reply finishes. `useSmoothText` is
+  the same pacing as a hook. The newest block of a streaming reply fades in.
+  
+  Folded sections (`> [!DETAILS]`, `<details>`) are an outlined panel whose content is inset by the
+  panel itself, so text written straight after the summary and a code block inside line up; opening
+  fades the content in. Checklists draw their own box, centred on the line. `<kbd>` is a keycap.
+  Source numbers are centred on their row.
+  
+  Fixed: a callout's title was merged into its body when the body opened with formatting
+  (`> [!CAUTION] Data loss` over a line starting with inline code).
+
 ## 0.2.1
 
 ### Patch Changes

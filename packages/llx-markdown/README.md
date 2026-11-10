@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/llx-markdown"><img alt="npm" src="https://img.shields.io/npm/v/llx-markdown?color=cb3837"></a>
   <a href="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/rsaryev/llx-markdown/blob/main/bench/results/size.md"><img alt="29 KB gzipped" src="https://img.shields.io/badge/gzip-29%20KB-2ea44f"></a>
+  <a href="https://github.com/rsaryev/llx-markdown/blob/main/bench/results/size.md"><img alt="30 KB gzipped" src="https://img.shields.io/badge/gzip-30%20KB-2ea44f"></a>
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-0-2ea44f">
   <a href="https://github.com/rsaryev/llx-markdown/blob/main/packages/llx-markdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
 </p>
@@ -56,7 +56,7 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
 - **It repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences
   never show their raw syntax.
 - **It has no dependencies.** The parser is its own and passes every example of CommonMark and of
-  GitHub's extensions ([conformance](https://github.com/rsaryev/llx-markdown/blob/main/docs/conformance.md)). 29 KB gzipped loads with the
+  GitHub's extensions ([conformance](https://github.com/rsaryev/llx-markdown/blob/main/docs/conformance.md)). 30 KB gzipped loads with the
   component, and it comes styled, without Tailwind.
 - **It is safe by default.** Raw HTML from a reply is parsed and sanitized, and links are held to
   safe protocols ([security](https://github.com/rsaryev/llx-markdown/blob/main/docs/security.md)).
@@ -104,7 +104,7 @@ prompt has the dialect: `answerFormatPrompt()` from `llx-markdown/prompt`.
 
 ## Size
 
-29 KB, minified and gzipped in a production build, loads with `<Markdown>`, without React, and the
+30 KB, minified and gzipped in a production build, loads with `<Markdown>`, without React, and the
 package has no dependencies. The HTML reader (14 KB with the full table of character references) is
 loaded only for a reply with raw HTML, and KaTeX and Mermaid only for math and diagrams.
 

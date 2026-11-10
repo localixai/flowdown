@@ -63,6 +63,9 @@
   --llx-radius: 0.75rem;
   --llx-radius-small: 0.375rem;
   --llx-duration: 120ms;
+  /* What opens, turns or arrives: slower, and easing out so it settles instead of stopping. */
+  --llx-duration-slow: 200ms;
+  --llx-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
 :where(.dark, [data-theme='dark']) :where(.llx-markdown),

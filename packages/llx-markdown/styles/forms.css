@@ -220,23 +220,31 @@
 }
 
 /* ─── A folded section (`> [!DETAILS] Title`, or a `<details>` written as HTML) ───
-   A panel on the veil: the title and a chevron that turns when it opens. Closed, it is one line. */
+   An outlined row with its title and a chevron that turns when it opens. Closed, it is one line;
+   open, the content sits under a hairline, inset by the panel's own padding, so text written
+   straight after the summary lines up with a paragraph or a code block beside it. */
 .llx-markdown details {
+  --llx-details-pad: 0.9rem;
   margin: 0.8rem 0;
+  border: 1px solid var(--llx-border-subtle);
   border-radius: var(--llx-radius);
-  background: var(--llx-veil);
+  padding: 0 var(--llx-details-pad);
+  color: var(--llx-fg-soft);
 }
 .llx-markdown details > summary {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  border-radius: var(--llx-radius);
-  padding: 0.55rem 0.9rem;
+  gap: 0.6rem;
+  margin: 0 calc(-1 * var(--llx-details-pad));
+  border-radius: calc(var(--llx-radius) - 1px);
+  padding: 0.6rem var(--llx-details-pad);
   font-weight: 600;
+  line-height: 1.4;
   color: var(--llx-fg);
   cursor: pointer;
   list-style: none;
   user-select: none;
+  transition: background-color var(--llx-duration) ease;
 }
 .llx-markdown details > summary::-webkit-details-marker {
   display: none;
@@ -246,14 +254,19 @@
   flex: none;
   width: 0.4rem;
   height: 0.4rem;
-  margin-left: 0.1rem;
+  margin: 0 0.15rem;
   border: solid var(--llx-fg-faint);
   border-width: 0 1.5px 1.5px 0;
   transform: translateX(-0.1rem) rotate(-45deg);
-  transition: transform var(--llx-duration) ease;
+  transition:
+    transform var(--llx-duration-slow) var(--llx-ease),
+    border-color var(--llx-duration) ease;
 }
 .llx-markdown details[open] > summary::before {
   transform: translateY(-0.1rem) rotate(45deg);
+}
+.llx-markdown details > summary:hover {
+  background: var(--llx-veil);
 }
 .llx-markdown details > summary:hover::before {
   border-color: var(--llx-fg);
@@ -261,18 +274,35 @@
 .llx-markdown details > summary:focus-visible {
   outline-offset: -2px;
 }
-.llx-markdown details > :not(summary) {
-  margin-left: 0.9rem;
-  margin-right: 0.9rem;
+.llx-markdown details[open] {
+  padding-bottom: 0.8rem;
+}
+.llx-markdown details[open] > summary {
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid var(--llx-border-subtle);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 .llx-markdown details > summary + * {
-  margin-top: 0.1rem;
-}
-.llx-markdown details[open] {
-  padding-bottom: 0.75rem;
+  margin-top: 0;
 }
 .llx-markdown details > :last-child:not(summary) {
   margin-bottom: 0;
+}
+/* Opening is a short fade down from the title, not a pop. */
+@keyframes llx-unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-0.2rem);
+  }
+}
+.llx-markdown details[open] > :not(summary) {
+  animation: llx-unfold var(--llx-duration-slow) var(--llx-ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .llx-markdown details[open] > :not(summary) {
+    animation: none;
+  }
 }
 
 /* ─── References (`> [!SOURCES]` over a list of links) ───
@@ -294,7 +324,8 @@
   content: counter(llx-source);
   position: absolute;
   left: 0;
-  top: calc((1lh - 1.3rem) / 2);
+  /* `lh` is this badge's own, 0.72 of the row's: scale it back to centre on the first line. */
+  top: calc((1lh / 0.72 - 1.3rem) / 2);
   display: grid;
   place-items: center;
   min-width: 1.3rem;
@@ -400,7 +431,9 @@
   content: '# ';
 }
 
-/* ─── Checklists (GFM `- [ ] item`) ─── */
+/* ─── Checklists (GFM `- [ ] item`) ───
+   The box is drawn here, not by the browser: a native one differs per platform, sits off the
+   line, and has no quiet state. It stands in the margin, centred on the first line. */
 .llx-markdown ul.contains-task-list,
 .llx-markdown ol.contains-task-list {
   padding-left: 0;
@@ -408,18 +441,57 @@
 }
 .llx-markdown li.task-list-item {
   position: relative;
-  padding-left: 1.55rem;
+  padding-left: 1.6rem;
 }
 .llx-markdown li.task-list-item input[type='checkbox'] {
   /* Anchor to the first line without making loose paragraphs and nested lists flex columns. */
   position: absolute;
   left: 0;
   top: calc((1lh - 1rem) / 2);
+  /* The row's font, so `lh` above is the row's line and not a form control's. */
+  font: inherit;
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
   margin: 0;
-  accent-color: var(--llx-fg);
+  appearance: none;
+  border: 1.5px solid var(--llx-border-strong);
+  border-radius: 0.3rem;
+  background: transparent;
+  transition:
+    background-color var(--llx-duration) ease,
+    border-color var(--llx-duration) ease;
+}
+.llx-markdown li.task-list-item input[type='checkbox']:checked {
+  border-color: var(--llx-fg-soft);
+  background-color: var(--llx-fg-soft);
+}
+/* The tick: two sides of a turned box, in the ground's colour. */
+.llx-markdown li.task-list-item input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 0.25rem;
+  height: 0.5rem;
+  /* The opaque ground when the page's own is translucent (a glass panel). */
+  border: solid var(--llx-bg-solid, var(--llx-bg));
+  border-width: 0 1.75px 1.75px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.llx-markdown li.task-list-item input[type='checkbox']:not(:disabled) {
+  cursor: pointer;
+}
+.llx-markdown li.task-list-item input[type='checkbox']:not(:disabled):hover {
+  border-color: var(--llx-fg-soft);
 }
 .llx-markdown li.task-list-item:has(> input:checked, > p:first-child > input:checked) {
   color: var(--llx-fg-faint);
   text-decoration: line-through;
   text-decoration-color: color-mix(in oklab, var(--llx-fg) 30%, transparent);
+}
+/* A nested list keeps its own text: only the done item is struck, not what is under it. */
+.llx-markdown li.task-list-item:has(> input:checked) > :is(ul, ol) {
+  color: var(--llx-fg);
+  text-decoration: none;
 }

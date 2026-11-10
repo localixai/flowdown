@@ -12,7 +12,7 @@
   <a href="https://www.anthropic.com/claude/fable"><img alt="Built with Claude Fable 5.2" src="https://img.shields.io/badge/built%20with-Claude%20Fable%205.2-d97757"></a>
   <a href="https://www.npmjs.com/package/llx-markdown"><img alt="npm" src="https://img.shields.io/npm/v/llx-markdown?color=cb3837"></a>
   <a href="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="bench/results/size.md"><img alt="29 KB gzipped" src="https://img.shields.io/badge/gzip-29%20KB-2ea44f"></a>
+  <a href="bench/results/size.md"><img alt="30 KB gzipped" src="https://img.shields.io/badge/gzip-30%20KB-2ea44f"></a>
   <a href="packages/llx-markdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
 </p>
 
@@ -61,7 +61,7 @@ Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/READM
 - **It draws more Markdown.** GitHub alerts, footnotes and raw HTML need no setup. Of six
   renderers, it is the only one that passes every check.
 - **It has no dependencies.** The parser is its own and passes every example of CommonMark and of
-  GitHub's extensions ([conformance](docs/conformance.md)). One package is installed, and 29 KB
+  GitHub's extensions ([conformance](docs/conformance.md)). One package is installed, and 30 KB
   gzipped loads with the component, against 156 KB for Streamdown; it comes styled without
   Tailwind.
 

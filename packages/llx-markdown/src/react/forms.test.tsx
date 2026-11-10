@@ -334,3 +334,16 @@ describe('a code fence that names its file', () => {
     )
   })
 })
+
+describe('a callout title on the marker line', () => {
+  test('stays the title when the body under it opens with formatting', () => {
+    const html = render('> [!CAUTION] Data loss\n> `--force` drops the column.')
+    expect(html).toContain('aria-label="Data loss"')
+    expect(html).toContain('<p><code>--force</code> drops the column.</p>')
+  })
+  test('is body text when the marker line itself carries formatting', () => {
+    const html = render('> [!NOTE] **Do not** run it twice')
+    expect(html).not.toContain('aria-label="Do not')
+    expect(html).toContain('<strong>Do not</strong> run it twice')
+  })
+})

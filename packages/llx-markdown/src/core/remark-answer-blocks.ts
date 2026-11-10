@@ -51,8 +51,9 @@ function applyCallout(quote: Blockquote): boolean {
   if (!marker) return false
 
   // The title is the marker line's own text. When that line carries formatting (`[!TIP] **x**`)
-  // the lead text node ends before the line does, so the line is body content instead.
-  const titleIsWholeLine = marker.consumed < lead.value.length || first.children.length === 1
+  // the lead text node ends before the line does, so the line is body content instead. The line
+  // ended inside the lead when the lead has a line break, or is all there is.
+  const titleIsWholeLine = lead.value.includes('\n') || first.children.length === 1
   const title = titleIsWholeLine ? marker.title : ''
   lead.value = titleIsWholeLine
     ? lead.value.slice(marker.consumed)

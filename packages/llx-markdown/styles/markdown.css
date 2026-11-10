@@ -60,7 +60,7 @@
   text-wrap: pretty;
 }
 .llx-markdown[data-streaming] > :last-child,
-.llx-markdown[data-streaming] > :last-child :is(p, li) {
+.llx-markdown[data-streaming] > :last-child :is(p, li, h1, h2, h3, h4, h5, h6) {
   text-wrap: wrap;
 }
 /* Bold marks what a reader scans for; Inter's 700 turned a bolded phrase into a shout. */
@@ -331,4 +331,42 @@
   /* Cap inline height so a tall/narrow image doesn't dominate the message. */
   max-height: 28rem;
   border-radius: var(--llx-radius);
+}
+
+/* A key (`<kbd>⌘</kbd>`): a keycap, raised by a heavier bottom edge. */
+.llx-markdown kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  box-sizing: border-box;
+  border: 1px solid var(--llx-border);
+  border-bottom-width: 2px;
+  border-radius: var(--llx-radius-small);
+  padding: 0.05em 0.4em;
+  background: var(--llx-veil);
+  font-family: var(--llx-font-mono);
+  font-size: 0.82em;
+  line-height: 1.35;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: 0.06em;
+}
+
+/* ─── A reply arriving (`<Markdown streaming>`) ───
+   A block that starts (a paragraph, then the panel of a code block or a table under it) comes in
+   over a short fade instead of popping onto the page. Only the newest block is ever animated, and
+   only once: the blocks above it are finished and do not move. It starts faint, not invisible:
+   a block that changes kind as it grows (a line that turns out to be a table) is drawn anew, and
+   must not blink out on the way. */
+@keyframes llx-arrive {
+  from {
+    opacity: 0.3;
+  }
+}
+.llx-markdown[data-streaming] > :last-child {
+  animation: llx-arrive var(--llx-duration-slow) ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .llx-markdown[data-streaming] > :last-child {
+    animation: none;
+  }
 }
