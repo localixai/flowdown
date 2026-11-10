@@ -261,7 +261,10 @@
   font-size: 0.85em;
   color: var(--llx-fg-faint);
 }
-.llx-markdown :where(p, li, blockquote, td, th, h1, h2, h3, h4, h5, h6) > code {
+/* Inline code: in text, and in the forms' own text boxes (a step's title and its one-line body). */
+.llx-markdown
+  :where(p, li, blockquote, td, th, h1, h2, h3, h4, h5, h6, .llx-step-title, .llx-step-body)
+  > code {
   border-radius: var(--llx-radius-small);
   font-family: var(--llx-font-mono);
   background: var(--llx-veil-strong);
