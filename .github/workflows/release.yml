@@ -51,5 +51,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > .npmrc
+          # In the user's config: inside a workspace npm reads the root's .npmrc, not this folder's.
+          echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
+          npm whoami --registry https://registry.npmjs.org
           npm publish --access public --registry https://registry.npmjs.org
