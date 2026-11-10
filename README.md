@@ -1,9 +1,52 @@
 # llx-markdown
 
 Markdown for AI replies and documentation in React: GitHub Markdown plus steps, tabs, stats, pros
-and cons, callouts, file trees, diagrams and math, rendered while it streams.
+and cons, callouts, file trees, diagrams and math, rendered while it streams, without flicker or
+raw syntax showing.
 
-The package and how to install and use it: [packages/llx-markdown](packages/llx-markdown/README.md).
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/stream-dark.png" />
+  <img alt="A reply streaming in: tabs with pros and cons, then headline figures, drawn as the text arrives" src="docs/assets/readme/stream-light.png" width="760" />
+</picture>
+
+```tsx
+import { Markdown } from 'llx-markdown'
+import 'llx-markdown/styles.css'
+
+export function Reply({ text, done }: { text: string; done: boolean }) {
+  return <Markdown streaming={!done}>{text}</Markdown>
+}
+```
+
+Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/README.md) and
+[the documentation](docs/getting-started.md).
+
+## What a reply can hold
+
+Each picture is one reply drawn by `<Markdown>`, from the Markdown in [demo/scenes](demo/scenes): the
+forms a model writes once its system prompt has the dialect (`answerFormatPrompt()` from
+`llx-markdown/prompt`).
+
+**Steps, a code block and a callout**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/steps-dark.png" />
+  <img alt="Numbered steps to roll back a deploy, a highlighted shell command and a warning callout" src="docs/assets/readme/steps-light.png" width="760" />
+</picture>
+
+**A file tree and highlighted code**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/code-dark.png" />
+  <img alt="A foldable file tree, a highlighted TypeScript block and a tip" src="docs/assets/readme/code-light.png" width="760" />
+</picture>
+
+**Diagrams and math**, drawn with Mermaid and KaTeX in the page's colours
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/diagram-dark.png" />
+  <img alt="A Mermaid flowchart in the page colours and a KaTeX formula" src="docs/assets/readme/diagram-light.png" width="760" />
+</picture>
 
 ## Repository
 
@@ -11,12 +54,14 @@ The package and how to install and use it: [packages/llx-markdown](packages/llx-
 | ----------------------- | ---------------------------------------------------- |
 | `packages/llx-markdown` | the library                                          |
 | `docs/`                 | the documentation, as Markdown; `nav.json` orders it |
+| `demo/`                 | the scenes above and the script that captures them   |
 | `bench/`                | rendering benchmarks against other renderers         |
 
 ```sh
 bun install
 bun run test        # the library's tests; CI skips the heavy sweeps (LLX_SKIP_HEAVY=1)
 bun run check       # build output: exports, types, entry isolation
+bun run shots       # the pictures above, from demo/scenes
 bun run bench       # the benchmarks
 ```
 

@@ -1,0 +1,40 @@
+/* The page around a scene: a chat with one question and its reply, in GitHub's colours. */
+:root {
+  color-scheme: light dark;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  background: light-dark(#ffffff, #0d1117);
+  color: light-dark(#1f2328, #e6edf3);
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+}
+.chat {
+  box-sizing: border-box;
+  width: 760px;
+  padding: 28px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.question {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 10px 16px;
+  border-radius: 18px 18px 4px 18px;
+  background: light-dark(#f0f2f5, #1c2128);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.reply {
+  font-size: 15px;
+}
+.reply .llx-markdown > :first-child {
+  margin-top: 0;
+}

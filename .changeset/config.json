@@ -8,6 +8,7 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "llx-markdown-example-*"
+    "llx-markdown-example-*",
+    "llx-markdown-demo"
   ]
 }
