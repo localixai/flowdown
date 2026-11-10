@@ -16,26 +16,8 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 
 ## Install
 
-For now the package is published to GitHub Packages as `@rsaryev/llx-markdown`. Install it under
-the name `llx-markdown`, so imports stay the same when it moves to npm:
-
 ```sh
-bun add llx-markdown@npm:@rsaryev/llx-markdown
-```
-
-GitHub Packages asks for a token even to read a package: a personal access token with
-`read:packages`. Point the `@rsaryev` scope at the registry with it, in `bunfig.toml`:
-
-```toml
-[install.scopes]
-rsaryev = { url = "https://npm.pkg.github.com", token = "$GITHUB_TOKEN" }
-```
-
-or in `.npmrc`, for npm, pnpm and yarn:
-
-```ini
-@rsaryev:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+npm install llx-markdown
 ```
 
 React 18 or 19 is the only required peer. The package is ESM only, ships its own types and runs in

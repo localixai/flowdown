@@ -132,5 +132,5 @@ How to work on it, and what a change has to keep: [CONTRIBUTING.md](CONTRIBUTING
 ## Releases
 
 CI checks every push to `main` and every pull request. A tag `v<version>`, the version in
-`packages/llx-markdown/package.json`, publishes that version to GitHub Packages as
-`@rsaryev/llx-markdown` ([release workflow](.github/workflows/release.yml)).
+`packages/llx-markdown/package.json`, publishes that version to npm as `llx-markdown`
+([release workflow](.github/workflows/release.yml)).
