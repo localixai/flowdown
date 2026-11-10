@@ -1,22 +1,42 @@
 {
   "name": "llx-markdown",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Markdown for AI replies and docs in React, with its own parser and no dependencies: GitHub Markdown plus steps, tabs, stats, pros and cons, callouts, file trees, diagrams and math, rendered while it streams.",
   "keywords": [
     "ai",
+    "ai-sdk",
     "callouts",
+    "chat",
+    "chatbot",
+    "commonmark",
+    "gfm",
     "katex",
     "llm",
     "markdown",
+    "markdown-parser",
+    "math",
     "mermaid",
     "react",
+    "react-component",
     "react-markdown",
     "remark",
     "steps",
     "streaming",
+    "streaming-markdown",
+    "syntax-highlighting",
     "tabs"
   ],
+  "homepage": "https://github.com/rsaryev/llx-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/rsaryev/llx-markdown/issues"
+  },
   "license": "MIT",
+  "author": "rsaryev (https://github.com/rsaryev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsaryev/llx-markdown.git",
+    "directory": "packages/llx-markdown"
+  },
   "files": [
     "dist",
     "README.md",

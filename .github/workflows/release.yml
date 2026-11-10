@@ -22,6 +22,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+      # For npm provenance: the package page links the build that published it.
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -63,4 +65,4 @@ jobs:
           # In the user's config: inside a workspace npm reads the root's .npmrc, not this folder's.
           echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
           npm whoami --registry https://registry.npmjs.org
-          npm publish --access public --registry https://registry.npmjs.org
+          npm publish --access public --provenance --registry https://registry.npmjs.org

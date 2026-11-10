@@ -1,5 +1,11 @@
 # llx-markdown
 
+## 0.2.1
+
+### Patch Changes
+
+- The package names its repository, home page and issue tracker, its README shows what a reply looks like, and releases are published with npm provenance. No change to the code.
+
 ## 0.2.0
 
 ### Minor Changes
