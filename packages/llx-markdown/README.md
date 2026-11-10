@@ -62,7 +62,7 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
 parser (48 KB) is loaded only for a reply with raw HTML, and KaTeX and Mermaid only for math and
 diagrams. How it compares with Streamdown, react-markdown, markdown-to-jsx, markstream and
 marked-react on size, speed and what each draws, every figure from a script you can rerun:
-[the comparison](https://github.com/rsaryev/llx-markdown#compared-with-similar-libraries).
+[the comparison](https://github.com/rsaryev/llx-markdown/blob/main/docs/comparison.md).
 
 ## Documentation
 

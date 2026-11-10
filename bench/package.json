@@ -7,7 +7,9 @@
     "bench:quick": "NODE_ENV=production bun src/run.ts --quick",
     "bench:check": "bun src/check.ts",
     "size": "bun src/size.ts",
-    "features": "NODE_ENV=production bun src/features.tsx"
+    "features": "NODE_ENV=production bun src/features.tsx",
+    "deps": "bun src/install.ts",
+    "charts": "bun src/charts.ts"
   },
   "dependencies": {
     "@happy-dom/global-registrator": "21.0.4",

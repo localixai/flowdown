@@ -2,7 +2,7 @@
   "sections": [
     {
       "title": "Start",
-      "pages": ["index.md", "getting-started.md"]
+      "pages": ["index.md", "getting-started.md", "comparison.md"]
     },
     {
       "title": "Writing",

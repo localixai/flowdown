@@ -1,0 +1,32 @@
+{
+  "llx-markdown": {
+    "packages": 125,
+    "license": "MIT",
+    "styles": "Own stylesheet, light and dark (`llx-markdown/styles.css`)"
+  },
+  "streamdown": {
+    "packages": 118,
+    "license": "Apache-2.0",
+    "styles": "Tailwind utility classes: needs Tailwind in the page"
+  },
+  "react-markdown": {
+    "packages": 82,
+    "license": "MIT",
+    "styles": "None: plain HTML elements"
+  },
+  "markdown-to-jsx": {
+    "packages": 1,
+    "license": "MIT",
+    "styles": "None: plain HTML elements"
+  },
+  "markstream-react": {
+    "packages": 19,
+    "license": "MIT",
+    "styles": "Own stylesheet (`markstream-react/index.css`) or Tailwind"
+  },
+  "marked-react": {
+    "packages": 3,
+    "license": "MIT",
+    "styles": "None: plain HTML elements"
+  }
+}

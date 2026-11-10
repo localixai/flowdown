@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="492" viewBox="0 0 1200 492" role="img" aria-label="llx-markdown compared with five React Markdown renderers on download size and streaming speed">
+<defs>
+<pattern id="stopped" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#d1d9e0"/><rect width="3" height="8" fill="#59636e" opacity="0.35"/></pattern>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: #1f2328; }
+.title { font-size: 15px; font-weight: 600; }
+.note { font-size: 12px; fill: #59636e; }
+.label, .value { font-size: 12.5px; }
+.value { fill: #59636e; font-variant-numeric: tabular-nums; }
+.ours { font-size: 12.5px; font-weight: 600; fill: #6e56cf; font-variant-numeric: tabular-nums; }
+.inside { font-size: 11.5px; fill: #1f2328; }
+</style>
+</defs>
+<text x="0" y="18" class="title">Download size</text>
+<text x="0" y="37" class="note">loads with the component, gzip, lower is better</text>
+<text x="106" y="71" text-anchor="end" class="ours">llx-markdown</text>
+<rect x="116" y="59" width="74.3" height="16" rx="3" fill="#6e56cf"/>
+<text x="198.2581560283688" y="71" class="ours">82 KB</text>
+<text x="106" y="97" text-anchor="end" class="label">Streamdown</text>
+<rect x="116" y="85" width="141.2" height="16" rx="3" fill="#d1d9e0"/>
+<text x="265.16312056737587" y="97" class="value">156 KB</text>
+<text x="106" y="123" text-anchor="end" class="label">react-markdown</text>
+<rect x="116" y="111" width="45.4" height="16" rx="3" fill="#d1d9e0"/>
+<text x="169.39007092198582" y="123" class="value">50 KB</text>
+<text x="106" y="149" text-anchor="end" class="label">markdown-to-jsx</text>
+<rect x="116" y="137" width="28.1" height="16" rx="3" fill="#d1d9e0"/>
+<text x="152.1418439716312" y="149" class="value">31 KB</text>
+<text x="106" y="175" text-anchor="end" class="label">markstream</text>
+<rect x="116" y="163" width="192.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="316" y="175" class="value">212 KB</text>
+<text x="106" y="201" text-anchor="end" class="label">marked-react</text>
+<rect x="116" y="189" width="24.4" height="16" rx="3" fill="#d1d9e0"/>
+<text x="148.41985815602837" y="201" class="value">27 KB</text>
+<text x="414" y="18" class="title">Chat answer, 5k characters</text>
+<text x="414" y="37" class="note">main-thread time to stream it, lower is better</text>
+<text x="520" y="71" text-anchor="end" class="ours">llx-markdown</text>
+<rect x="530" y="59" width="38.3" height="16" rx="3" fill="#6e56cf"/>
+<text x="576.3192465671519" y="71" class="ours">45 ms</text>
+<text x="520" y="97" text-anchor="end" class="label">Streamdown</text>
+<rect x="530" y="85" width="42.1" height="16" rx="3" fill="#d1d9e0"/>
+<text x="580.05920510869" y="97" class="value">49 ms</text>
+<text x="520" y="123" text-anchor="end" class="label">react-markdown</text>
+<rect x="530" y="111" width="192.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="730" y="123" class="value">225 ms</text>
+<text x="520" y="149" text-anchor="end" class="label">markdown-to-jsx</text>
+<rect x="530" y="137" width="9.5" height="16" rx="3" fill="#d1d9e0"/>
+<text x="547.4691498023526" y="149" class="value">11 ms</text>
+<text x="520" y="175" text-anchor="end" class="label">markstream</text>
+<rect x="530" y="163" width="32.8" height="16" rx="3" fill="#d1d9e0"/>
+<text x="570.7669080918442" y="175" class="value">38 ms</text>
+<text x="520" y="201" text-anchor="end" class="label">marked-react</text>
+<rect x="530" y="189" width="29.1" height="16" rx="3" fill="#d1d9e0"/>
+<text x="567.0999235255869" y="201" class="value">34 ms</text>
+<text x="828" y="18" class="title">Long answer, 20k</text>
+<text x="828" y="37" class="note">main-thread time to stream it, lower is better</text>
+<text x="934" y="71" text-anchor="end" class="ours">llx-markdown</text>
+<rect x="944" y="59" width="8.2" height="16" rx="3" fill="#6e56cf"/>
+<text x="960.2025212246483" y="71" class="ours">123 ms</text>
+<text x="934" y="97" text-anchor="end" class="label">Streamdown</text>
+<rect x="944" y="85" width="18.7" height="16" rx="3" fill="#d1d9e0"/>
+<text x="970.741319106565" y="97" class="value">282 ms</text>
+<text x="934" y="123" text-anchor="end" class="label">react-markdown</text>
+<rect x="944" y="111" width="192.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="1144" y="123" class="value">2.9 s</text>
+<text x="934" y="149" text-anchor="end" class="label">markdown-to-jsx</text>
+<rect x="944" y="137" width="8.6" height="16" rx="3" fill="#d1d9e0"/>
+<text x="960.5688986365005" y="149" class="value">129 ms</text>
+<text x="934" y="175" text-anchor="end" class="label">markstream</text>
+<rect x="944" y="163" width="21.3" height="16" rx="3" fill="#d1d9e0"/>
+<text x="973.3195023970444" y="175" class="value">321 ms</text>
+<text x="934" y="201" text-anchor="end" class="label">marked-react</text>
+<rect x="944" y="189" width="20.4" height="16" rx="3" fill="#d1d9e0"/>
+<text x="972.3734560733752" y="201" class="value">306 ms</text>
+<text x="0" y="262" class="title">Code, 50k</text>
+<text x="0" y="281" class="note">main-thread time to stream it, lower is better</text>
+<text x="106" y="315" text-anchor="end" class="ours">llx-markdown</text>
+<rect x="116" y="303" width="20.1" height="16" rx="3" fill="#6e56cf"/>
+<text x="144.06768336975725" y="315" class="ours">593 ms</text>
+<text x="106" y="341" text-anchor="end" class="label">Streamdown</text>
+<rect x="116" y="329" width="185.9" height="16" rx="3" fill="#d1d9e0"/>
+<text x="309.8707021469709" y="341" class="value">5.5 s</text>
+<text x="106" y="367" text-anchor="end" class="label">react-markdown</text>
+<rect x="116" y="355" width="192.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="316" y="367" class="value">5.7 s</text>
+<text x="106" y="393" text-anchor="end" class="label">markdown-to-jsx</text>
+<rect x="116" y="381" width="2.1" height="16" rx="3" fill="#d1d9e0"/>
+<text x="126.10212887841216" y="393" class="value">62 ms</text>
+<text x="106" y="419" text-anchor="end" class="label">markstream</text>
+<rect x="116" y="407" width="55.4" height="16" rx="3" fill="#d1d9e0"/>
+<text x="179.39827623610864" y="419" class="value">1.6 s</text>
+<text x="106" y="445" text-anchor="end" class="label">marked-react</text>
+<rect x="116" y="433" width="2.8" height="16" rx="3" fill="#d1d9e0"/>
+<text x="126.7635773917581" y="445" class="value">82 ms</text>
+<text x="414" y="262" class="title">Very long answer, 100k</text>
+<text x="414" y="281" class="note">main-thread time to stream it, lower is better</text>
+<text x="520" y="315" text-anchor="end" class="ours">llx-markdown</text>
+<rect x="530" y="303" width="17.5" height="16" rx="3" fill="#6e56cf"/>
+<text x="555.5048990710673" y="315" class="ours">880 ms</text>
+<text x="520" y="341" text-anchor="end" class="label">Streamdown</text>
+<rect x="530" y="329" width="144.9" height="16" rx="3" fill="#d1d9e0"/>
+<text x="682.9143495673034" y="341" class="value">7.3 s</text>
+<text x="520" y="367" text-anchor="end" class="label">react-markdown</text>
+<rect x="530" y="355" width="192.0" height="16" rx="3" fill="url(#stopped)"/>
+<text x="538" y="367" class="inside">stopped at 65%</text>
+<text x="520" y="393" text-anchor="end" class="label">markdown-to-jsx</text>
+<rect x="530" y="381" width="51.3" height="16" rx="3" fill="#d1d9e0"/>
+<text x="589.2846413508322" y="393" class="value">2.6 s</text>
+<text x="520" y="419" text-anchor="end" class="label">markstream</text>
+<rect x="530" y="407" width="120.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="658.0338750435053" y="419" class="value">6.0 s</text>
+<text x="520" y="445" text-anchor="end" class="label">marked-react</text>
+<rect x="530" y="433" width="192.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="730" y="445" class="value">9.6 s</text>
+<text x="828" y="262" class="title">A thread of 30 replies</text>
+<text x="828" y="281" class="note">main-thread time to stream it, lower is better</text>
+<text x="934" y="315" text-anchor="end" class="ours">llx-markdown</text>
+<rect x="944" y="303" width="2.0" height="16" rx="3" fill="#6e56cf"/>
+<text x="954" y="315" class="ours">134 ms</text>
+<text x="934" y="341" text-anchor="end" class="label">Streamdown</text>
+<rect x="944" y="329" width="2.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="954" y="341" class="value">150 ms</text>
+<text x="934" y="367" text-anchor="end" class="label">react-markdown</text>
+<rect x="944" y="355" width="192.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="1144" y="367" class="value">17.2 s</text>
+<text x="934" y="393" text-anchor="end" class="label">markdown-to-jsx</text>
+<rect x="944" y="381" width="6.7" height="16" rx="3" fill="#d1d9e0"/>
+<text x="958.7499927179375" y="393" class="value">605 ms</text>
+<text x="934" y="419" text-anchor="end" class="label">markstream</text>
+<rect x="944" y="407" width="2.0" height="16" rx="3" fill="#d1d9e0"/>
+<text x="954" y="419" class="value">131 ms</text>
+<text x="934" y="445" text-anchor="end" class="label">marked-react</text>
+<rect x="944" y="433" width="20.3" height="16" rx="3" fill="#d1d9e0"/>
+<text x="972.3038724465093" y="445" class="value">1.8 s</text>
+<line x1="0" y1="466" x2="1200" y2="466" stroke="#d1d9e0"/>
+<text x="0" y="484" class="note">Speed: one update per animation frame, median of 3 runs, bun 1.4.4 with happy-dom on an Apple M5. Every figure comes from bench/ in this repository.</text>
+</svg>

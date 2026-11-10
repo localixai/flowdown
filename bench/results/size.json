@@ -1,0 +1,34 @@
+{
+  "llx-markdown": {
+    "atOnce": 81.8,
+    "onDemand": 47.8
+  },
+  "llx-markdown + highlight": {
+    "atOnce": 102.5,
+    "onDemand": 47.8
+  },
+  "llx-markdown/stream": {
+    "atOnce": 17.1,
+    "onDemand": 0
+  },
+  "react-markdown + remark-gfm": {
+    "atOnce": 50,
+    "onDemand": 0
+  },
+  "streamdown": {
+    "atOnce": 155.5,
+    "onDemand": 0.4
+  },
+  "markdown-to-jsx": {
+    "atOnce": 31,
+    "onDemand": 0
+  },
+  "markstream-react": {
+    "atOnce": 211.5,
+    "onDemand": 8.3
+  },
+  "marked-react": {
+    "atOnce": 26.9,
+    "onDemand": 0
+  }
+}

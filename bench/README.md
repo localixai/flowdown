@@ -156,4 +156,8 @@ bench/
 - `bun run features`: the same inputs through each renderer, checked on the DOM it drew, into
   [results/features.md](results/features.md) and [results/features.json](results/features.json),
   which keeps the markup behind every mark ([src/features.tsx](src/features.tsx)).
+- `bun run deps`: how many packages each renderer installs, its licence and its styles, from the
+  lockfile, into [results/install.json](results/install.json) ([src/install.ts](src/install.ts)).
+- `bun run charts`: the README's comparison chart, drawn from results/size.json and
+  results/latest.json into [results/charts](results/charts) ([src/charts.ts](src/charts.ts)).
 

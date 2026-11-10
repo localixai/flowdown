@@ -106,9 +106,11 @@ async function measure(code: string) {
 }
 
 const rows: string[] = []
+const figures: Record<string, { atOnce: number; onDemand: number }> = {}
 let over = false
 for (const { name, code } of CASES) {
   const { atOnce, onDemand, minified } = await measure(code)
+  figures[name] = { atOnce: Number(atOnce.toFixed(1)), onDemand: Number(onDemand.toFixed(1)) }
   const budget = name === 'llx-markdown' ? ` (budget ${BUDGET_KB} KB)` : ''
   if (name === 'llx-markdown' && atOnce > BUDGET_KB) over = true
   rows.push(
@@ -127,6 +129,10 @@ const table = [
 await Bun.write(
   join(import.meta.dir, '../results/size.md'),
   `# Bundle size\n\nWhat a page downloads for each library, without React. \`bun run size\` in bench/ writes this file; [src/size.ts](../src/size.ts) says how it is measured.\n\n${table}\n`,
+)
+await Bun.write(
+  join(import.meta.dir, '../results/size.json'),
+  `${JSON.stringify(figures, null, 2)}\n`,
 )
 if (over) {
   console.error(`llx-markdown loads more than its ${BUDGET_KB} KB budget at once`)
