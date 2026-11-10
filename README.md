@@ -23,20 +23,27 @@ Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/READM
 
 ## Size
 
-What a page downloads to render Markdown, minified and gzipped, without React (the page has it):
+What a page downloads to render Markdown, in a production build, minified and gzipped, without
+React (the page has it):
 
 | | Loads with the component | Loaded only when a reply needs it |
 | --- | --- | --- |
-| **llx-markdown** | **89 KB** | 48 KB, the HTML parser, for a reply with raw HTML |
-| llx-markdown with code highlighting | 110 KB | 48 KB |
+| **llx-markdown** | **82 KB** | 48 KB, the HTML parser, for a reply with raw HTML |
+| llx-markdown with code highlighting | 103 KB | 48 KB |
 | `llx-markdown/stream` (healing and splitting, no React) | 17 KB | — |
-| react-markdown with remark-gfm | 58 KB | — |
-| Streamdown 2.7 | 163 KB | — |
+| react-markdown with remark-gfm | 50 KB | — |
+| Streamdown 2.7, without its plugins | 156 KB | — |
 
-KaTeX and Mermaid are loaded by the page on demand, only when a reply has math or a diagram, and
-are counted for no one. CI holds the package to a budget: 95 KB for what loads with `<Markdown>`, and
-one for each entry's own code. How it is measured: [bench/src/size.ts](bench/src/size.ts); the latest
-run: [bench/results/size.md](bench/results/size.md).
+All three share the same base, unified, remark and micromark, and llx-markdown and Streamdown both
+use marked to split a stream into blocks. Streamdown loads the HTML parser (rehype-raw and parse5,
+48 KB) with the component and adds its own 80 KB minified, tailwind-merge and remend; llx-markdown
+loads the parser only for a reply that has raw HTML. Streamdown's code highlighting (Shiki), math,
+Mermaid and CJK are separate plugin packages and are not in its figure; KaTeX and Mermaid are
+loaded on demand and are counted for no one.
+
+CI holds the package to a budget: 88 KB for what loads with `<Markdown>`, and one for each entry's
+own code. How it is measured: [bench/src/size.ts](bench/src/size.ts); the latest run:
+[bench/results/size.md](bench/results/size.md).
 
 ## What a reply can hold
 

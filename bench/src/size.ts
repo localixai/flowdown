@@ -14,7 +14,7 @@ import { basename, join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 
 /** llx-markdown's own budget for what loads with `<Markdown>`, in KB gzipped: today and a margin. */
-const BUDGET_KB = 95
+const BUDGET_KB = 88
 
 const CASES = [
   { name: 'llx-markdown', code: `import { Markdown } from 'llx-markdown'; console.log(Markdown)` },
@@ -52,6 +52,10 @@ async function measure(code: string) {
       splitting: true,
       target: 'browser',
       external: ['react', 'react-dom', 'react/jsx-runtime'],
+      // A production build, as Vite or Next.js makes it: micromark's development build carries
+      // assertions and the `debug` package.
+      conditions: ['production'],
+      define: { 'process.env.NODE_ENV': '"production"' },
       throw: false,
     })
     if (!result.success) throw new AggregateError(result.logs, 'could not bundle')
