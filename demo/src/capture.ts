@@ -1,7 +1,8 @@
 /**
  * The README's pictures, into docs/assets/readme: the scenes in light and dark
  * (`<scene>-<theme>.png`), the hero reply streaming (`stream-<theme>.png`, animated) and a diagram
- * enlarged, zoomed and panned in its viewer (`viewer-<theme>.png`, animated). Needs Playwright's Chromium
+ * enlarged, zoomed and panned in its viewer (`viewer-<theme>.png`, animated). Each animation also
+ * gets an `.mp4` and a `.gif` beside it, for sites that do not play APNG. Needs Playwright's Chromium
  * (`bunx playwright-core install chromium-headless-shell`) and ffmpeg for the animation.
  *
  *   bun run shots              everything
@@ -115,6 +116,42 @@ function encode(frames: string, count: number, path: string, hold: number) {
     path,
   ])
   if (ffmpeg.exitCode !== 0) throw new Error(ffmpeg.stderr.toString())
+  shareable(path)
+}
+
+/**
+ * Copies of an animated PNG for places that do not play one, such as Reddit, which shows APNG still
+ * or not at all: an MP4 at full size, and a GIF 1000 pixels wide whose palette is fitted to the
+ * frames, written next to it with the same name.
+ */
+function shareable(apng: string) {
+  const base = apng.replace(/\.png$/, '')
+  const runs = [
+    [
+      '-vf',
+      'pad=ceil(iw/2)*2:ceil(ih/2)*2',
+      '-c:v',
+      'libx264',
+      '-pix_fmt',
+      'yuv420p',
+      '-crf',
+      '20',
+      '-movflags',
+      '+faststart',
+      `${base}.mp4`,
+    ],
+    [
+      '-vf',
+      'scale=1000:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4',
+      '-loop',
+      '0',
+      `${base}.gif`,
+    ],
+  ]
+  for (const args of runs) {
+    const ffmpeg = Bun.spawnSync(['ffmpeg', '-y', '-loglevel', 'error', '-i', apng, ...args])
+    if (ffmpeg.exitCode !== 0) throw new Error(ffmpeg.stderr.toString())
+  }
 }
 
 /** A pointer drawn on the page (a headless browser has none), in whatever layer is on top. */
