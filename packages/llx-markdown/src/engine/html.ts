@@ -25,9 +25,19 @@ export interface HtmlOptions {
 
 export const toHtml = (root: Node, options: HtmlOptions = {}): string => {
   let out = ''
-  /** Starts a new line unless the output is already at the start of one. */
+  /**
+   * The last character written. `cr` asks for it after every block, and reading it from `out`
+   * would make the engine flatten the string built so far each time: quadratic in the document.
+   */
+  let lastChar = 10
+  const put = (text: string): void => {
+    if (text === '') return
+    out += text
+    lastChar = text.charCodeAt(text.length - 1)
+  }
+  /** Starts a new line unless the output is already at the start of one (or of the document). */
   const cr = (): void => {
-    if (out !== '' && out.charCodeAt(out.length - 1) !== 10) out += '\n'
+    if (lastChar !== 10) put('\n')
   }
   const raw = (value: string): string =>
     options.tagFilter ? value.replace(reFiltered, '&lt;') : value
@@ -52,52 +62,54 @@ export const toHtml = (root: Node, options: HtmlOptions = {}): string => {
         all(node.children, false)
         break
       case 'text':
-        out += escapeHtml(node.value ?? '')
+        put(escapeHtml(node.value ?? ''))
         break
       case 'break':
-        out += '<br />\n'
+        put('<br />\n')
         break
       case 'emphasis':
-        out += '<em>'
+        put('<em>')
         all(node.children, false)
-        out += '</em>'
+        put('</em>')
         break
       case 'strong':
-        out += '<strong>'
+        put('<strong>')
         all(node.children, false)
-        out += '</strong>'
+        put('</strong>')
         break
       case 'delete':
-        out += '<del>'
+        put('<del>')
         all(node.children, false)
-        out += '</del>'
+        put('</del>')
         break
       case 'inlineCode':
-        out += `<code>${escapeHtml(node.value ?? '')}</code>`
+        put(`<code>${escapeHtml(node.value ?? '')}</code>`)
         break
       case 'link':
-        out += `<a href="${escapeHtml(node.url ?? '')}"`
-        if (node.title) out += ` title="${escapeHtml(node.title)}"`
-        out += '>'
+        put(`<a href="${escapeHtml(node.url ?? '')}"`)
+        if (node.title) put(` title="${escapeHtml(node.title)}"`)
+        put('>')
         all(node.children, false)
-        out += '</a>'
+        put('</a>')
         break
       case 'image':
-        out += `<img src="${escapeHtml(node.url ?? '')}" alt="${escapeHtml(node.alt ?? '')}"`
-        if (node.title) out += ` title="${escapeHtml(node.title)}"`
-        out += ' />'
+        put(`<img src="${escapeHtml(node.url ?? '')}" alt="${escapeHtml(node.alt ?? '')}"`)
+        if (node.title) put(` title="${escapeHtml(node.title)}"`)
+        put(' />')
         break
       case 'footnoteReference': {
         const id = normalizeUri(node.label ?? '')
         const nth = (node.occurrence ?? 1) > 1 ? `-${node.occurrence}` : ''
-        out += `<sup class="footnote-ref"><a href="#fn-${id}" id="fnref-${id}${nth}" data-footnote-ref>${node.index}</a></sup>`
+        put(
+          `<sup class="footnote-ref"><a href="#fn-${id}" id="fnref-${id}${nth}" data-footnote-ref>${node.index}</a></sup>`,
+        )
         break
       }
       case 'footnotes':
         cr()
-        out += '<section class="footnotes" data-footnotes>\n<ol>\n'
+        put('<section class="footnotes" data-footnotes>\n<ol>\n')
         all(node.children, false)
-        out += '</ol>\n</section>\n'
+        put('</ol>\n</section>\n')
         break
       case 'footnoteDefinition': {
         const id = normalizeUri(node.label ?? '')
@@ -106,98 +118,98 @@ export const toHtml = (root: Node, options: HtmlOptions = {}): string => {
           const suffix = nth > 1 ? `-${nth}` : ''
           back += `${nth > 1 ? ' ' : ''}<a href="#fnref-${id}${suffix}" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="${node.index}${suffix}" aria-label="Back to reference ${node.index}${suffix}">↩${nth > 1 ? `<sup class="footnote-ref">${nth}</sup>` : ''}</a>`
         }
-        out += `<li id="fn-${id}">\n`
+        put(`<li id="fn-${id}">\n`)
         const children = node.children ?? []
         const last = children[children.length - 1]
         for (const child of children) {
           if (child === last && child.type === 'paragraph') {
-            out += '<p>'
+            put('<p>')
             phrasing(child.children)
-            out += ` ${back}</p>\n`
+            put(` ${back}</p>\n`)
           } else one(child, false)
         }
-        if (last === undefined || last.type !== 'paragraph') out += `${back}\n`
-        out += '</li>\n'
+        if (last === undefined || last.type !== 'paragraph') put(`${back}\n`)
+        put('</li>\n')
         break
       }
       case 'paragraph':
         if (tight) phrasing(node.children)
         else {
           cr()
-          out += '<p>'
+          put('<p>')
           phrasing(node.children)
-          out += '</p>\n'
+          put('</p>\n')
         }
         break
       case 'heading':
         cr()
-        out += `<h${node.depth}>`
+        put(`<h${node.depth}>`)
         phrasing(node.children)
-        out += `</h${node.depth}>\n`
+        put(`</h${node.depth}>\n`)
         break
       case 'thematicBreak':
         cr()
-        out += '<hr />\n'
+        put('<hr />\n')
         break
       case 'blockquote':
         cr()
-        out += '<blockquote>\n'
+        put('<blockquote>\n')
         all(node.children, false)
         cr()
-        out += '</blockquote>\n'
+        put('</blockquote>\n')
         break
       case 'code':
         cr()
-        out += node.lang ? `<pre><code class="language-${escapeHtml(node.lang)}">` : '<pre><code>'
-        out += `${escapeHtml(node.value ?? '')}</code></pre>\n`
+        put(node.lang ? `<pre><code class="language-${escapeHtml(node.lang)}">` : '<pre><code>')
+        put(`${escapeHtml(node.value ?? '')}</code></pre>\n`)
         break
       case 'html':
-        if (inline) out += raw(node.value ?? '')
+        if (inline) put(raw(node.value ?? ''))
         else {
           cr()
-          out += `${raw(node.value ?? '')}\n`
+          put(`${raw(node.value ?? '')}\n`)
         }
         break
       case 'list': {
         const tag = node.ordered ? 'ol' : 'ul'
         cr()
-        out += node.ordered && node.start !== 1 ? `<ol start="${node.start}">\n` : `<${tag}>\n`
+        put(node.ordered && node.start !== 1 ? `<ol start="${node.start}">\n` : `<${tag}>\n`)
         all(node.children, node.spread === false)
         cr()
-        out += `</${tag}>\n`
+        put(`</${tag}>\n`)
         break
       }
       case 'listItem':
-        out += '<li>'
+        put('<li>')
         if (node.checked !== undefined)
-          out += `<input ${node.checked ? 'checked="" ' : ''}disabled="" type="checkbox"> `
+          put(`<input ${node.checked ? 'checked="" ' : ''}disabled="" type="checkbox"> `)
         all(node.children, tight)
-        out += '</li>\n'
+        put('</li>\n')
         break
       case 'table': {
         const rows = node.children ?? []
         cr()
-        out += '<table>\n<thead>\n'
+        put('<table>\n<thead>\n')
         if (rows[0]) one(rows[0], false)
-        out += '</thead>\n'
+        put('</thead>\n')
         if (rows.length > 1) {
-          out += '<tbody>\n'
+          put('<tbody>\n')
           for (let index = 1; index < rows.length; index++) one(rows[index] as Node, false)
-          out += '</tbody>\n'
+          put('</tbody>\n')
         }
-        out += '</table>\n'
+        put('</table>\n')
         break
       }
       case 'tableRow':
-        out += '<tr>\n'
+        put('<tr>\n')
         all(node.children, false)
-        out += '</tr>\n'
+        put('</tr>\n')
         break
       case 'tableCell': {
         const tag = node.header ? 'th' : 'td'
-        out += node.cellAlign ? `<${tag} align="${node.cellAlign}">` : `<${tag}>`
+        put(node.cellAlign ? `<${tag} align="${node.cellAlign}">` : `<${tag}>`)
         phrasing(node.children)
-        out += `</${tag}>\n`
+        put(`</${tag}>\n`)
         break
       }
       default:

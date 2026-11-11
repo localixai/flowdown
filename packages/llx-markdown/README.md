@@ -56,8 +56,8 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
 
 ## Why this one
 
-- **It stays fast as a reply grows.** A 100k-character reply streams in 0.25 s. The next fastest
-  of five other renderers takes 2.4 s.
+- **It stays fast as a reply grows.** A 100k-character reply streams in 0.24 s. The next fastest
+  of five other renderers takes 2.3 s.
 - **It repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences
   never show their raw syntax.
 - **It has no dependencies.** The parser is its own and passes every example of CommonMark and of

@@ -22,7 +22,7 @@ const installed: Record<string, { packages: number }> = JSON.parse(
   readFileSync(join(dir, 'install.json'), 'utf8'),
 )
 const speed: {
-  meta: { cpu: string; runtime: string; runs: number }
+  meta: { cpu: string; runtime: string; runs: number; passes?: number }
   rows: Array<{
     scenario: string
     pattern: string
@@ -35,7 +35,13 @@ const speed: {
 
 /** Every chart lists the libraries in this order, so a row means the same library everywhere. */
 const LIBRARIES = [
-  { label: 'llx-markdown', size: 'llx-markdown', install: 'llx-markdown', speed: 'llx', ours: true },
+  {
+    label: 'llx-markdown',
+    size: 'llx-markdown',
+    install: 'llx-markdown',
+    speed: 'llx',
+    ours: true,
+  },
   { label: 'Streamdown', size: 'streamdown', install: 'streamdown', speed: 'streamdown' },
   {
     label: 'react-markdown',
@@ -49,7 +55,12 @@ const LIBRARIES = [
     install: 'markdown-to-jsx',
     speed: 'markdown-to-jsx',
   },
-  { label: 'markstream', size: 'markstream-react', install: 'markstream-react', speed: 'markstream' },
+  {
+    label: 'markstream',
+    size: 'markstream-react',
+    install: 'markstream-react',
+    speed: 'markstream',
+  },
   { label: 'marked-react', size: 'marked-react', install: 'marked-react', speed: 'marked-react' },
 ]
 
@@ -211,11 +222,13 @@ function draw() {
     top += rows * PANEL_H + (rows - 1) * GAP_Y
   }
   const footY = top + 34
-  const { cpu, runtime, runs } = speed.meta
+  const { cpu, runtime, runs, passes = 1 } = speed.meta
+  const sampled =
+    passes > 1 ? `median of ${passes} passes of ${runs} runs` : `median of ${runs} runs`
   parts.push(
     `<line x1="0" y1="${footY - 18}" x2="${WIDTH}" y2="${footY - 18}" stroke="${theme.rule}"/>`,
     `<text x="0" y="${footY}" class="note">Each panel has its own scale; the number beside a bar is the measurement. Every figure comes from a script in bench/.</text>`,
-    `<text x="0" y="${footY + 18}" class="note">Speed: one update per animation frame, median of ${runs} runs, ${escape(runtime)} with happy-dom on an ${escape(cpu)}.</text>`,
+    `<text x="0" y="${footY + 18}" class="note">Speed: one update per animation frame, ${sampled}, ${escape(runtime)} with happy-dom on an ${escape(cpu)}.</text>`,
   )
   const width = WIDTH + PAD * 2
   const height = footY + 26 + PAD * 2

@@ -87,25 +87,54 @@ better.
 
 | | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **llx-markdown** | **15** | **36** | **40** | **38** | **245** | **63** |
-| Streamdown | 54 | 286 | 4,795 | 3,924 | 6,310 | 143 |
-| react-markdown | 207 | 2,736 | 2,740 | 3,067 | stopped at 68% | 15,620 |
-| markdown-to-jsx | 17 | 122 | 69 | 170 | 2,420 | 572 |
-| markstream | 43 | 317 | 947 | 903 | 5,917 | 127 |
-| marked-react | 35 | 289 | 84 | 281 | 7,187 | 1,724 |
+| **llx-markdown** | **9** | **34** | **36** | **30** | **240** | **66** |
+| Streamdown | 55 | 285 | 5,379 | 3,955 | 6,022 | 127 |
+| react-markdown | 202 | 3,297 | 2,955 | 3,190 | stopped at 68% | 15,882 |
+| markdown-to-jsx | 16 | 128 | 59 | 176 | 2,300 | 601 |
+| markstream | 43 | 330 | 932 | 876 | 5,657 | 147 |
+| marked-react | 40 | 315 | 77 | 262 | 7,266 | 1,773 |
 
 - **Where llx-markdown wins: everywhere here, and most on length.** It parses again only the block
   still being written, and reads only the new lines of a growing code block, so a 100k reply and a
   30-reply thread cost about as much per update as the first lines.
 - **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
-  a few milliseconds on a 5k chat answer, and it and marked-react are within 2× on 50k of code.
+  7 ms on a 5k chat answer and within 2× on 50k of code, where marked-react takes a little over 2×.
   markdown-to-jsx holds unfinished syntax back instead of repairing it.
 - **Why react-markdown is slowest.** It parses the whole text again on every update.
 
-How speed is measured: median of three runs on an Apple M5 in Bun 1.4.4. Pages are drawn with
+How speed is measured: the whole table three times over on an Apple M5 in Bun 1.4.4, three runs
+of each stream every time, and the median kept. Pages are drawn with
 happy-dom, not a real browser, so the figures compare renderers rather than predict a real page.
 Every scenario, chunk pattern and percentile is in
 [bench/results/latest.md](../bench/results/latest.md).
+
+## Parser speed
+
+The parser alone, with no React and no DOM: megabytes of Markdown read in a second, each text of
+the benchmark parsed whole. Higher is better.
+
+| | Writes | Bun (JavaScriptCore) | Node (V8) |
+| :--- | :--- | ---: | ---: |
+| **llx-markdown** | a tree | **179** | **176** |
+| markdown-it | HTML | 49 | 39 |
+| marked | HTML | 32 | 46 |
+| micromark | HTML | 3 | 4 |
+| mdast-util-from-markdown | a tree | 3 | 3 |
+
+- **What is compared.** llx-markdown's parser is the one `<Markdown>` runs.
+  mdast-util-from-markdown is remark's, the one react-markdown and Streamdown run; micromark is the
+  tokenizer under it. All read GitHub's extensions: tables, task lists, strikethrough, autolinks
+  and, except marked, footnotes.
+- **A tree against HTML.** marked and markdown-it write HTML and build no tree. llx-markdown
+  writing HTML from its tree reads 122 and 135 MB in a second.
+- **Where the trees differ.** mdast gives every node its position in the source; llx-markdown's
+  tree gives positions to blocks only, which is part of the gap.
+- **In a reply's terms.** A 100k-character reply is parsed whole in under 0.6 ms, so the parser is
+  a small share of what streaming one costs: the rest is React and the DOM.
+
+How it is measured: the median of three runs on an Apple M5, each parser in a process of its own,
+in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
+[bench/results/parse.md](../bench/results/parse.md).
 
 ## Which one to pick
 

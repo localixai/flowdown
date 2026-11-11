@@ -1,0 +1,3496 @@
+{
+  "meta": {
+    "date": "2026-11-11T02:14:34.972Z",
+    "commit": "ad88e30",
+    "dirty": true,
+    "cpu": "Apple M5",
+    "cores": 10,
+    "os": "darwin 25.6.0",
+    "runtimes": [
+      "bun 1.4.4 (JavaScriptCore)",
+      "node 25.6.1 (V8)"
+    ],
+    "runs": 3,
+    "quick": false,
+    "parsers": {
+      "llx-markdown": "0.4.0",
+      "llx-markdown → HTML": "0.4.0",
+      "mdast-util-from-markdown": "2.1.0",
+      "micromark": "4.0.3",
+      "marked": "18.1.3",
+      "markdown-it": "15.0.3"
+    },
+    "corpus": {
+      "chat-5k": "059d0804",
+      "answer-20k": "a3bd4a1e",
+      "forms-20k": "ed658195",
+      "math-20k": "744a9464",
+      "code-50k": "92dc53ef",
+      "table-20k": "fbc52529",
+      "long-100k": "64ec1420",
+      "crlf-20k": "5fe655d2",
+      "footnotes-20k": "33685216",
+      "answer-10k": "fb21dac3",
+      "answer-40k": "7fda91d3",
+      "commonmark-spec": "b16c7bc0"
+    }
+  },
+  "rows": [
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.02626878873239471,
+      "spread": [
+        0.02585225000000055,
+        0.03103044871794917
+      ],
+      "mbPerS": 187.25842954293722,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.09169047619047346,
+      "spread": [
+        0.09102084999999534,
+        0.09815283333333961
+      ],
+      "mbPerS": 208.10357318919407,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.15204169230768316,
+      "spread": [
+        0.14859773076921978,
+        0.18549618181817673
+      ],
+      "mbPerS": 129.13725523679727,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.12004164705882325,
+      "spread": [
+        0.11759191176470801,
+        0.13838985714291344
+      ],
+      "mbPerS": 159.97103093517396,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.01938222666666358,
+      "spread": [
+        0.019341500000002593,
+        0.019924278846155212
+      ],
+      "mbPerS": 2402.953664267992,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.12002941176470973,
+      "spread": [
+        0.11699264705882395,
+        0.1286746538461767
+      ],
+      "mbPerS": 141.7368949847093,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 0.5410832500001561,
+      "spread": [
+        0.5265990000000329,
+        0.6020973333331009
+      ],
+      "mbPerS": 177.38609396252153,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.10217984210526322,
+      "spread": [
+        0.09859733333299421,
+        0.11448749999999563
+      ],
+      "mbPerS": 190.48315912921734,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.11149218750006185,
+      "spread": [
+        0.10970372222224493,
+        0.11273147222219551
+      ],
+      "mbPerS": 179.95341842713023,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 75,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.05092948717948531,
+      "spread": [
+        0.0497446428571493,
+        0.06085251315787326
+      ],
+      "mbPerS": 190.3622761096868,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.17386554545456337,
+      "spread": [
+        0.17253816666667868,
+        0.19331944444456894
+      ],
+      "mbPerS": 220.09614107308923,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 1.3158644999998614,
+      "spread": [
+        1.3001039999999193,
+        1.3638959999998406
+      ],
+      "mbPerS": 148.59210558626057,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.03341109999999882,
+      "spread": [
+        0.03327837931034447,
+        0.033422526315791255
+      ],
+      "mbPerS": 147.22808060864838,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.12070535714282674,
+      "spread": [
+        0.11858199999999641,
+        0.1239687499999848
+      ],
+      "mbPerS": 158.08010658614086,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.19047909999999318,
+      "spread": [
+        0.19015415000001212,
+        0.2025909090909243
+      ],
+      "mbPerS": 103.0782213175754,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.16031092307695452,
+      "spread": [
+        0.1581586538461754,
+        0.1711944166666702
+      ],
+      "mbPerS": 119.78713406782698,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.03651042592592704,
+      "spread": [
+        0.036409057692297284,
+        0.037025938775504794
+      ],
+      "mbPerS": 1275.6518558513487,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.1889964999999544,
+      "spread": [
+        0.18533333333327087,
+        0.18906074999999117
+      ],
+      "mbPerS": 90.0154030914604,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 0.8376529999998942,
+      "spread": [
+        0.8361320000000585,
+        0.9069306666666913
+      ],
+      "mbPerS": 114.58282155747827,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.12899306666665022,
+      "spread": [
+        0.12707293749997461,
+        0.14153871428568113
+      ],
+      "mbPerS": 150.8882580009802,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.1540799166665844,
+      "spread": [
+        0.14810899999988927,
+        0.2306428571428114
+      ],
+      "mbPerS": 130.21424662352425,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 76,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.07521153846153958,
+      "spread": [
+        0.0742586206896045,
+        0.09316474999997643
+      ],
+      "mbPerS": 128.90379985437517,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.2397754444445026,
+      "spread": [
+        0.23201049999988754,
+        0.24849072222221164
+      ],
+      "mbPerS": 159.5957238605988,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "llx-markdown → HTML",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 1.9680419999995138,
+      "spread": [
+        1.8762090000000171,
+        1.9909999999999854
+      ],
+      "mbPerS": 99.35106909366756,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 1.6580000000000155,
+      "spread": [
+        1.6323127500000112,
+        1.7310415000000035
+      ],
+      "mbPerS": 2.96685894090675,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 5.536916999999903,
+      "spread": [
+        5.448500000000081,
+        5.584458000000268
+      ],
+      "mbPerS": 3.446162498490872,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 7.378416000000016,
+      "spread": [
+        6.992958999999701,
+        7.3956670000002305
+      ],
+      "mbPerS": 2.661038199279064,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 6.601582999999664,
+      "spread": [
+        6.471125000000029,
+        6.858813000000737
+      ],
+      "mbPerS": 2.9088759522007415,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 2.6992499999996653,
+      "spread": [
+        2.648917000000438,
+        2.951000000000022
+      ],
+      "mbPerS": 17.254642063661315,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 6.959999499999867,
+      "spread": [
+        6.906229000000167,
+        8.412250000000313
+      ],
+      "mbPerS": 2.444338700077697,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 29.496624999999767,
+      "spread": [
+        29.06714550000015,
+        43.05029150000064
+      ],
+      "mbPerS": 3.253953434539544,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 5.538374999998268,
+      "spread": [
+        5.096665999999459,
+        6.994250000000648
+      ],
+      "mbPerS": 3.514305030544382,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 6.483541499999774,
+      "spread": [
+        6.379249999999956,
+        8.303270999999768
+      ],
+      "mbPerS": 3.0945125081030773,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 75,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 3.08337500000016,
+      "spread": [
+        3.0581254999997327,
+        3.5544170000011945
+      ],
+      "mbPerS": 3.144299055608038,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 10.389395999999579,
+      "spread": [
+        9.916291999999885,
+        12.477457999999388
+      ],
+      "mbPerS": 3.6832878080803484,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "mdast-util-from-markdown",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 70.47891700000037,
+      "spread": [
+        69.29185400000097,
+        77.36945849999756
+      ],
+      "mbPerS": 2.7742633548297913,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 1.631458500000008,
+      "spread": [
+        1.5698750000000246,
+        1.7360834999999923
+      ],
+      "mbPerS": 3.015125499069338,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 5.629853999999909,
+      "spread": [
+        5.18224999999984,
+        5.742250000000013
+      ],
+      "mbPerS": 3.389273633500364,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 7.149645999999848,
+      "spread": [
+        7.042750000000069,
+        7.856270999999879
+      ],
+      "mbPerS": 2.7461844720944635,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 6.595041999999921,
+      "spread": [
+        5.875583000000006,
+        6.856042000000343
+      ],
+      "mbPerS": 2.9117609918415197,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 2.915916500000094,
+      "spread": [
+        2.7682089999998425,
+        3.0384164999995846
+      ],
+      "mbPerS": 15.972539882513964,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 6.2624580000001515,
+      "spread": [
+        6.097583000000213,
+        6.972270500000377
+      ],
+      "mbPerS": 2.7166004355431497,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 29.118978999999854,
+      "spread": [
+        26.967999999999847,
+        30.55762500000037
+      ],
+      "mbPerS": 3.2961541758066004,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 5.001500000000306,
+      "spread": [
+        4.934124999999767,
+        5.4835000000002765
+      ],
+      "mbPerS": 3.8915403625980143,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 6.028853999999228,
+      "spread": [
+        5.933708000000479,
+        6.296500500000548
+      ],
+      "mbPerS": 3.3278961919723478,
+      "counts": {
+        "headings": 9,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 76,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 2.947958999999173,
+      "spread": [
+        2.8450419999990118,
+        3.137104000000363
+      ],
+      "mbPerS": 3.28873403618865,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 9.748332999999548,
+      "spread": [
+        9.122624999999971,
+        12.334084000000075
+      ],
+      "mbPerS": 3.9255055833770722,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "micromark",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 68.4163335000012,
+      "spread": [
+        66.30416649999825,
+        68.44614550000006
+      ],
+      "mbPerS": 2.8579005438984533,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.2192546111111066,
+      "spread": [
+        0.2118309999999989,
+        0.21968055555555566
+      ],
+      "mbPerS": 22.43534172027389,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.563569333333362,
+      "spread": [
+        0.542843750000003,
+        0.5716301250000129
+      ],
+      "mbPerS": 33.85761891939107,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.9429582500000606,
+      "spread": [
+        0.9230416666666011,
+        1.0572709999999006
+      ],
+      "mbPerS": 20.82196833865191,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.6036249999999654,
+      "spread": [
+        0.5780000000002019,
+        0.6197430000001987
+      ],
+      "mbPerS": 31.813105877253843,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.07792000000001281,
+      "spread": [
+        0.07791667999998025,
+        0.07831750000001193
+      ],
+      "mbPerS": 597.7232108614525,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.4380166000000827,
+      "spread": [
+        0.4346333999999843,
+        0.4382042000000183
+      ],
+      "mbPerS": 38.84007165565844,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 3.0781669999996666,
+      "spread": [
+        3.0750829999997222,
+        3.103353999999854
+      ],
+      "mbPerS": 31.181103632806348,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.4917812500002583,
+      "spread": [
+        0.48483325000006516,
+        0.5169374999995853
+      ],
+      "mbPerS": 39.57763563276342,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.6551354999999148,
+      "spread": [
+        0.649114499999996,
+        0.6680969999997615
+      ],
+      "mbPerS": 30.62481008670313,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 75,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.28932742857146615,
+      "spread": [
+        0.2865505714285713,
+        0.39991674999964744
+      ],
+      "mbPerS": 33.50893189924847,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 1.0070937499999673,
+      "spread": [
+        0.9890000000004875,
+        1.0337917500000913
+      ],
+      "mbPerS": 37.997590214534085,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "marked",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 7.6115209999998115,
+      "spread": [
+        7.493916999999783,
+        7.871124999999665
+      ],
+      "mbPerS": 25.68830549389488,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.12829556249999996,
+      "spread": [
+        0.12182293749999928,
+        0.13830693333333294
+      ],
+      "mbPerS": 38.34156090958672,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.397400000000016,
+      "spread": [
+        0.3873459000000139,
+        0.4159167499999512
+      ],
+      "mbPerS": 48.014886066068144,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.5098750000000223,
+      "spread": [
+        0.5030416249999803,
+        0.5139896249999651
+      ],
+      "mbPerS": 38.50796141440749,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.5150207500000761,
+      "spread": [
+        0.49690099999997983,
+        0.5164164999998775
+      ],
+      "mbPerS": 37.286237564512525,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.09738095238095584,
+      "spread": [
+        0.09558928571429229,
+        0.09926040000000284
+      ],
+      "mbPerS": 478.2720999496029,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.6401666666667248,
+      "spread": [
+        0.6391769999997905,
+        0.6622360000001208
+      ],
+      "mbPerS": 26.575260812865736,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 2.201188000000002,
+      "spread": [
+        2.19714600000043,
+        2.225624999999127
+      ],
+      "mbPerS": 43.604019386837535,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.365347333333375,
+      "spread": [
+        0.36340266666654014,
+        0.5419303333334634
+      ],
+      "mbPerS": 53.27406921504725,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.4760000000002037,
+      "spread": [
+        0.46668750000026193,
+        1.106770499999584
+      ],
+      "mbPerS": 42.15000056417248,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 76,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.23526388888896893,
+      "spread": [
+        0.22580725000011626,
+        0.29408349999994243
+      ],
+      "mbPerS": 41.2092699239595,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.7476530000000519,
+      "spread": [
+        0.7040973333332659,
+        1.6213229999998475
+      ],
+      "mbPerS": 51.183016212219485,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "bun",
+      "parser": "markdown-it",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 4.066084000000046,
+      "spread": [
+        3.9220409999998083,
+        4.437042000001384
+      ],
+      "mbPerS": 48.08731858987399,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.03242727118644059,
+      "spread": [
+        0.0323128524590167,
+        0.05325847457627102
+      ],
+      "mbPerS": 151.69491431275077,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.10088259090908154,
+      "spread": [
+        0.0975657894736957,
+        0.1012839999999941
+      ],
+      "mbPerS": 189.14180881667414,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.14574137500000006,
+      "spread": [
+        0.14037499999994907,
+        0.16510415384615185
+      ],
+      "mbPerS": 134.71978582727016,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.1212180333333284,
+      "spread": [
+        0.11791146874998049,
+        0.13752645454538157
+      ],
+      "mbPerS": 158.41855792488272,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.018917261904759168,
+      "spread": [
+        0.01858044827584873,
+        0.020160653846154182
+      ],
+      "mbPerS": 2462.015529774681,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.13640970833334146,
+      "spread": [
+        0.1235556111111388,
+        0.13735425000004398
+      ],
+      "mbPerS": 124.71690129853353,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 0.5648750000000291,
+      "spread": [
+        0.5503330000010465,
+        0.5822083333332557
+      ],
+      "mbPerS": 169.9148381961837,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.09907289999996464,
+      "spread": [
+        0.09458700000002007,
+        0.10003726315790118
+      ],
+      "mbPerS": 196.45674168760684,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.11700858823528773,
+      "spread": [
+        0.1096960882352826,
+        0.23921530000000835
+      ],
+      "mbPerS": 171.4694670805704,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 75,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.05391511111109274,
+      "spread": [
+        0.05209010810815655,
+        0.05470888157893378
+      ],
+      "mbPerS": 179.82070148402667,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.17048076923073005,
+      "spread": [
+        0.1664826666666007,
+        0.17149077777786362
+      ],
+      "mbPerS": 224.46599574129172,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 1.3144164999994246,
+      "spread": [
+        1.3053335000004154,
+        1.3376045000004524
+      ],
+      "mbPerS": 148.7557990342308,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.03509895535714236,
+      "spread": [
+        0.03458485454545594,
+        0.03933681249999903
+      ],
+      "mbPerS": 140.14810623195513,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.11420220588234663,
+      "spread": [
+        0.11121323529411095,
+        0.12820899999996982
+      ],
+      "mbPerS": 167.08184903463243,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.16472216666663067,
+      "spread": [
+        0.15994620833333784,
+        0.1852708000000348
+      ],
+      "mbPerS": 119.19614234985272,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.13941393333334418,
+      "spread": [
+        0.13741393333330051,
+        0.17345141666665617
+      ],
+      "mbPerS": 137.7422297471565,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.020501099999996532,
+      "spread": [
+        0.020060846534648805,
+        0.023025402439033338
+      ],
+      "mbPerS": 2271.809443900079,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.1762083181818277,
+      "spread": [
+        0.1669930416666527,
+        0.17759850000001362
+      ],
+      "mbPerS": 96.5482010492601,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 0.6119427500000256,
+      "spread": [
+        0.6043335000001662,
+        0.6588613333333342
+      ],
+      "mbPerS": 156.84579027379638,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.10867594444445988,
+      "spread": [
+        0.10772807894734701,
+        0.21320830000004207
+      ],
+      "mbPerS": 179.09703221840624,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.13433886666662148,
+      "spread": [
+        0.13067712499992012,
+        0.14259900000001835
+      ],
+      "mbPerS": 149.3491851345188,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 76,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.06452000000004773,
+      "spread": [
+        0.06403764516125515,
+        0.07082182758620484
+      ],
+      "mbPerS": 150.26430720053884,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.2015041000000565,
+      "spread": [
+        0.20086670000000595,
+        0.21988433333333685
+      ],
+      "mbPerS": 189.90747890542406,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "llx-markdown → HTML",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 1.9731455000001006,
+      "spread": [
+        1.9188329999988127,
+        2.061375000001135
+      ],
+      "mbPerS": 99.09409960957336,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 1.357968750000012,
+      "spread": [
+        1.3467500000000001,
+        1.4238539999999489
+      ],
+      "mbPerS": 3.622360326055658,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 5.200457999999799,
+      "spread": [
+        4.886937499999931,
+        5.328249999999912
+      ],
+      "mbPerS": 3.66912216628939,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 6.525103500000114,
+      "spread": [
+        6.291500000000269,
+        7.1003125000002
+      ],
+      "mbPerS": 3.0090322438826496,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 6.756978999999774,
+      "spread": [
+        6.66675000000032,
+        6.871208000000479
+      ],
+      "mbPerS": 2.84197805486104,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 2.452187500000491,
+      "spread": [
+        2.357458499999666,
+        2.4854584999998224
+      ],
+      "mbPerS": 18.993079685106746,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 7.6001249999999345,
+      "spread": [
+        7.408083000000261,
+        8.07950050000045
+      ],
+      "mbPerS": 2.2384626740180247,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 32.377354499999456,
+      "spread": [
+        30.95470849999947,
+        35.92558299999928
+      ],
+      "mbPerS": 2.9644375122147744,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 5.156750000000102,
+      "spread": [
+        4.491125000000466,
+        5.199499999998807
+      ],
+      "mbPerS": 3.774380980954045,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 6.175145499999417,
+      "spread": [
+        5.72925000000032,
+        6.571124999999483
+      ],
+      "mbPerS": 3.2490570899999978,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 75,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 2.7992079999985435,
+      "spread": [
+        2.7520414999999048,
+        3.112666999999419
+      ],
+      "mbPerS": 3.4634986398263305,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 9.36779099999876,
+      "spread": [
+        9.280437999999776,
+        10.76366699999926
+      ],
+      "mbPerS": 4.084968977224434,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "mdast-util-from-markdown",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 66.36787550000008,
+      "spread": [
+        65.5591044999992,
+        69.56424999999945
+      ],
+      "mbPerS": 2.9461102264934063,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 1.189770999999979,
+      "spread": [
+        1.1748227500000326,
+        1.2709894999999847
+      ],
+      "mbPerS": 4.134452868681052,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 4.476499999999987,
+      "spread": [
+        4.1714170000000195,
+        5.014937499999974
+      ],
+      "mbPerS": 4.262507700805608,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 5.757625499999904,
+      "spread": [
+        5.579166499999928,
+        6.411021000000119
+      ],
+      "mbPerS": 3.410129197561078,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 5.913041999999223,
+      "spread": [
+        5.309208000000581,
+        8.348041499999908
+      ],
+      "mbPerS": 3.247598450198523,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 2.6007909999998446,
+      "spread": [
+        2.5653744999999617,
+        2.7124375000003056
+      ],
+      "mbPerS": 17.907856721410838,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 6.429770499999904,
+      "spread": [
+        6.145459000000301,
+        6.919896000000335
+      ],
+      "mbPerS": 2.645910321429256,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 29.614416999999776,
+      "spread": [
+        28.98675000000003,
+        29.700645999999324
+      ],
+      "mbPerS": 3.241010762632097,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 4.112999999999374,
+      "spread": [
+        4.066749999999956,
+        4.516875000000255
+      ],
+      "mbPerS": 4.732200127288626,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 5.423291999999492,
+      "spread": [
+        5.026749999999993,
+        6.583625000000211
+      ],
+      "mbPerS": 3.6994873719793375,
+      "counts": {
+        "headings": 9,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 76,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 2.4569790000005014,
+      "spread": [
+        2.4151664999990317,
+        2.793187499999476
+      ],
+      "mbPerS": 3.9459242836768076,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 8.514709000000948,
+      "spread": [
+        8.164999999999964,
+        9.4369585000004
+      ],
+      "mbPerS": 4.494238807234978,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "micromark",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 63.23333349999939,
+      "spread": [
+        60.18202100000053,
+        72.93541650000134
+      ],
+      "mbPerS": 3.09215196951768,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.13681666666666387,
+      "spread": [
+        0.12782083333333957,
+        0.1441964285714253
+      ],
+      "mbPerS": 35.95360305048268,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.3681944999999966,
+      "spread": [
+        0.367684000000016,
+        0.40320312500000455
+      ],
+      "mbPerS": 51.82346754950556,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.566239625000037,
+      "spread": [
+        0.5472917499999994,
+        0.5972916666667061
+      ],
+      "mbPerS": 34.674801902411176,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.4719750999999633,
+      "spread": [
+        0.45197920000000524,
+        0.5192958999999064
+      ],
+      "mbPerS": 40.686862580584744,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.054730851351352514,
+      "spread": [
+        0.05194241176468495,
+        0.05569670588235621
+      ],
+      "mbPerS": 850.9751162345308,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.5466249999999491,
+      "spread": [
+        0.5384582499998487,
+        0.6151095000000169
+      ],
+      "mbPerS": 31.122974855472542,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 2.0696250000000873,
+      "spread": [
+        2.045084000001225,
+        2.4988330000014685
+      ],
+      "mbPerS": 46.37586240312625,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.33666666666658784,
+      "spread": [
+        0.3366110000000238,
+        0.3853000000002794
+      ],
+      "mbPerS": 57.81249244615757,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.4744915999999648,
+      "spread": [
+        0.44585419999984877,
+        0.5679531250000309
+      ],
+      "mbPerS": 42.2839946345861,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 75,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.23068750000002183,
+      "spread": [
+        0.2192153333334217,
+        0.25339583333303983
+      ],
+      "mbPerS": 42.02678125422929,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.6858888333332895,
+      "spread": [
+        0.6676806666667593,
+        1.2982499999998254
+      ],
+      "mbPerS": 55.7920376603103,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "marked",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 5.1498750000000655,
+      "spread": [
+        4.722375000001193,
+        12.74212500000067
+      ],
+      "mbPerS": 37.96734420178915,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "chat-5k",
+      "bytes": 5158,
+      "ms": 0.1255091249999971,
+      "spread": [
+        0.11724505882352787,
+        0.12968033333334006
+      ],
+      "mbPerS": 39.19278477978036,
+      "counts": {
+        "headings": 5,
+        "codeBlocks": 0,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 25,
+        "strong": 6,
+        "emphasis": 8,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "answer-20k",
+      "bytes": 20008,
+      "ms": 0.46132299999999304,
+      "spread": [
+        0.4244498999999905,
+        0.5061251249999827
+      ],
+      "mbPerS": 41.3617264317117,
+      "counts": {
+        "headings": 21,
+        "codeBlocks": 8,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 40,
+        "strong": 14,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "forms-20k",
+      "bytes": 20588,
+      "ms": 0.5639166666668037,
+      "spread": [
+        0.5377187499999536,
+        0.594277666666585
+      ],
+      "mbPerS": 34.817638822817386,
+      "counts": {
+        "headings": 41,
+        "codeBlocks": 39,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 75,
+        "strong": 43,
+        "emphasis": 51,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "math-20k",
+      "bytes": 20136,
+      "ms": 0.6404579999998532,
+      "spread": [
+        0.600614500000006,
+        0.6985276666667536
+      ],
+      "mbPerS": 29.98352122256362,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 10,
+        "rows": 56,
+        "listItems": 60,
+        "strong": 13,
+        "emphasis": 13,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "code-50k",
+      "bytes": 48837,
+      "ms": 0.1133429230769532,
+      "spread": [
+        0.10898134210528473,
+        0.12112963888891196
+      ],
+      "mbPerS": 410.91751761784553,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 1,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 0,
+        "strong": 0,
+        "emphasis": 0,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "table-20k",
+      "bytes": 17839,
+      "ms": 0.9404029999999087,
+      "spread": [
+        0.8908886666664936,
+        1.1314062500000546
+      ],
+      "mbPerS": 18.090750593493155,
+      "counts": {
+        "headings": 0,
+        "codeBlocks": 0,
+        "tables": 1,
+        "rows": 161,
+        "listItems": 0,
+        "strong": 22,
+        "emphasis": 24,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "long-100k",
+      "bytes": 100643,
+      "ms": 2.527124999998705,
+      "spread": [
+        2.4227920000002996,
+        2.995375000000422
+      ],
+      "mbPerS": 37.98017281540225,
+      "counts": {
+        "headings": 52,
+        "codeBlocks": 28,
+        "tables": 27,
+        "rows": 166,
+        "listItems": 276,
+        "strong": 84,
+        "emphasis": 99,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "crlf-20k",
+      "bytes": 20409,
+      "ms": 0.44505225000011706,
+      "spread": [
+        0.43949580000007704,
+        0.7931124000000636
+      ],
+      "mbPerS": 43.73315520487771,
+      "counts": {
+        "headings": 7,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 30,
+        "listItems": 42,
+        "strong": 4,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "footnotes-20k",
+      "bytes": 21038,
+      "ms": 0.5762812500001928,
+      "spread": [
+        0.5462812500004475,
+        0.578611000000213
+      ],
+      "mbPerS": 34.815292478365336,
+      "counts": {
+        "headings": 8,
+        "codeBlocks": 6,
+        "tables": 5,
+        "rows": 35,
+        "listItems": 76,
+        "strong": 12,
+        "emphasis": 19,
+        "strikethrough": 0,
+        "footnoteRefs": 1,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "answer-10k",
+      "bytes": 10166,
+      "ms": 0.28330357142866497,
+      "spread": [
+        0.278307249999898,
+        0.3034612857142877
+      ],
+      "mbPerS": 34.22142916058199,
+      "counts": {
+        "headings": 11,
+        "codeBlocks": 2,
+        "tables": 4,
+        "rows": 28,
+        "listItems": 12,
+        "strong": 6,
+        "emphasis": 10,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "answer-40k",
+      "bytes": 40126,
+      "ms": 0.8169513333335393,
+      "spread": [
+        0.8108890000003157,
+        0.8192359999999704
+      ],
+      "mbPerS": 46.84138951578618,
+      "counts": {
+        "headings": 32,
+        "codeBlocks": 18,
+        "tables": 7,
+        "rows": 49,
+        "listItems": 71,
+        "strong": 28,
+        "emphasis": 22,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    },
+    {
+      "runtime": "node",
+      "parser": "markdown-it",
+      "text": "commonmark-spec",
+      "bytes": 205025,
+      "ms": 5.466083500000423,
+      "spread": [
+        5.19104200000038,
+        5.617334000000483
+      ],
+      "mbPerS": 35.7709641137345,
+      "counts": {
+        "headings": 45,
+        "codeBlocks": 708,
+        "tables": 0,
+        "rows": 0,
+        "listItems": 113,
+        "strong": 29,
+        "emphasis": 74,
+        "strikethrough": 0,
+        "footnoteRefs": 0,
+        "checkboxes": 0
+      }
+    }
+  ]
+}

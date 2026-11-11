@@ -60,7 +60,7 @@ Install, usage and the rest: [packages/llx-markdown](packages/llx-markdown/READM
 
 - **It is the fastest to stream.** It wins all 16 streaming runs, and stays fast as a reply
   grows: a reply four times longer costs about three times more, not sixteen. A 100k-character
-  reply streams in 0.25 s; the next fastest takes 2.4 s, Streamdown 6.3 s, and react-markdown does
+  reply streams in 0.24 s; the next fastest takes 2.3 s, Streamdown 6.0 s, and react-markdown does
   not finish. No update takes more than 3 ms, so a stream never drops a frame.
 - **It repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences
   never show their raw syntax.

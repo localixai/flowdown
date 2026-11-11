@@ -117,26 +117,29 @@ const isContainer = (type: string): boolean =>
 const acceptsLines = (type: string): boolean =>
   type === 'paragraph' || type === 'code' || type === 'html'
 
-/** A table row cut into its cells: on each `|` that is not escaped, without the outer pipes. */
+/**
+ * A table row cut into its cells: on each `|` that is not escaped, without the outer pipes. Each
+ * cell is one cut of the row, joined from pieces only where an escaped pipe (`\\|`) is taken out.
+ */
 const splitRow = (row: string): string[] => {
   const cells: string[] = []
   let line = row.trim()
   if (line.charCodeAt(0) === C_PIPE) line = line.slice(1)
+  /** The cell's text before `from`: what came before an escaped pipe, and that pipe. */
   let cell = ''
-  let index = 0
-  for (; index < line.length; index++) {
-    const code = line.charCodeAt(index)
-    if (code === C_BACKSLASH && line.charCodeAt(index + 1) === C_PIPE) {
-      cell += '|'
-      index++
-    } else if (code === C_PIPE) {
-      cells.push(cell.trim())
+  let from = 0
+  for (let pipe = line.indexOf('|'); pipe !== -1; pipe = line.indexOf('|', pipe + 1)) {
+    if (pipe > 0 && line.charCodeAt(pipe - 1) === C_BACKSLASH)
+      cell += `${line.slice(from, pipe - 1)}|`
+    else {
+      cells.push((cell + line.slice(from, pipe)).trim())
       cell = ''
-    } else cell += line.charAt(index)
+    }
+    from = pipe + 1
   }
+  const last = (cell + line.slice(from)).trim()
   // Text after the last pipe is a cell; nothing after it is the row's closing pipe.
-  if (cell.trim() !== '' || line.charCodeAt(line.length - 1) !== C_PIPE || line === '')
-    cells.push(cell.trim())
+  if (last !== '' || line.charCodeAt(line.length - 1) !== C_PIPE || line === '') cells.push(last)
   return cells
 }
 
@@ -162,23 +165,41 @@ export interface BlockResult {
 /** Parses a whole document into its tree. */
 export const parseBlocks = (input: string, context: InlineContext): BlockResult => {
   const gfm = context.gfm
-  // The lines, and where each starts in the document: a node's position is counted from these.
-  const lines: string[] = []
+  // Where each line starts and ends in the document (its ending left out): a node's position is
+  // counted from these, and a line's text is cut from the document only when it is read.
   const starts: number[] = []
-  for (let at = 0; ;) {
-    reLineEnding.lastIndex = at
-    const ending = reLineEnding.exec(input)
-    starts.push(at)
-    if (ending === null) {
-      lines.push(input.slice(at))
-      break
+  const ends: number[] = []
+  // Most text has no carriage return: its lines are found by a plain search, not a pattern.
+  const onlyLf = input.indexOf('\r') === -1
+  if (onlyLf) {
+    for (let at = 0; ;) {
+      const ending = input.indexOf('\n', at)
+      starts.push(at)
+      if (ending === -1) {
+        ends.push(input.length)
+        break
+      }
+      ends.push(ending)
+      at = ending + 1
     }
-    lines.push(input.slice(at, ending.index))
-    at = ending.index + ending[0].length
+  } else {
+    for (let at = 0; ;) {
+      reLineEnding.lastIndex = at
+      const ending = reLineEnding.exec(input)
+      starts.push(at)
+      if (ending === null) {
+        ends.push(input.length)
+        break
+      }
+      ends.push(ending.index)
+      at = ending.index + ending[0].length
+    }
   }
-  let count = lines.length
+  let count = starts.length
   // A final line ending ends the last line; it does not start an empty one.
-  if (count > 0 && lines[count - 1] === '') count--
+  if (count > 0 && starts[count - 1] === ends[count - 1]) count--
+  /** No NUL in the document: a line is then the document's own text, with nothing to replace. */
+  const noNul = input.indexOf('\u0000') === -1
 
   const block = (type: string, startLine: number): Block => ({
     type,
@@ -652,7 +673,7 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
     blank = false
     partiallyConsumedTab = false
     lineNumber++
-    line = text.indexOf('\u0000') === -1 ? text : text.replace(/\0/g, '�')
+    line = noNul || text.indexOf('\u0000') === -1 ? text : text.replace(/\0/g, '�')
 
     // The open blocks this line goes on with, from the outermost in.
     for (;;) {
@@ -724,7 +745,42 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
     }
   }
 
-  for (let index = 0; index < count; index++) incorporateLine(lines[index] as string)
+  /**
+   * The lines of a fenced code block at the top of the document, taken without the work a line
+   * gets elsewhere: from the line after `index`, every line up to one that may close the fence
+   * goes into the code as it is written, in one cut of the document. Returns the last line taken.
+   *
+   * A line may close the fence when, after at most three spaces, it starts with the fence's
+   * character; that line, and whatever follows a fence that did not close, is read the long way.
+   */
+  const takeFencedLines = (code: Block, index: number): number => {
+    const fenceChar = code.fenceChar
+    let next = index + 1
+    for (; next < count; next++) {
+      let at = starts[next] as number
+      if (input.charCodeAt(at) === C_SPACE) {
+        at++
+        if (input.charCodeAt(at) === C_SPACE) {
+          at++
+          if (input.charCodeAt(at) === C_SPACE) at++
+        }
+      }
+      if (input.charCodeAt(at) === fenceChar) break
+    }
+    const last = next - 1
+    if (last === index) return index
+    const taken = input.slice(starts[index + 1] as number, ends[last] as number)
+    code.text += `${onlyLf ? taken : taken.replace(reLineEnding, '\n')}\n`
+    lineNumber += last - index
+    return last
+  }
+
+  for (let index = 0; index < count; index++) {
+    incorporateLine(input.slice(starts[index] as number, ends[index] as number))
+    // Inside a container, or under an indented fence, each line has a prefix to take off first.
+    if (tip.fenced && tip.parent === doc && tip.fenceOffset === 0 && noNul)
+      index = takeFencedLines(tip, index)
+  }
   // oxlint-disable-next-line no-unmodified-loop-condition -- `finalize` moves `tip` up.
   while (tip !== doc) finalize(tip, count)
   finalize(doc, count)
@@ -759,9 +815,9 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
 
   /** Where a block sits in the document: from its first character to the end of its last line. */
   const place = (from: Block): Position => {
-    const last = Math.min(Math.max(from.endLine, from.startLine), lines.length)
+    const last = Math.min(Math.max(from.endLine, from.startLine), starts.length)
     const lastStart = starts[last - 1] ?? 0
-    const length = (lines[last - 1] ?? '').length
+    const length = (ends[last - 1] ?? 0) - lastStart
     return {
       start: {
         line: from.startLine,

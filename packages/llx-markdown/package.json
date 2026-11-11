@@ -1,6 +1,6 @@
 {
   "name": "llx-markdown",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, zero dependencies, 30 KB gzipped, 9× faster than the next renderer on a long stream. GitHub Markdown plus steps, tabs, stats, pros and cons, callouts, file trees, diagrams and math.",
   "keywords": [
     "ai",

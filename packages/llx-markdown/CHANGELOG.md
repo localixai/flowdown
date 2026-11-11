@@ -1,5 +1,20 @@
 # llx-markdown
 
+## 0.4.1
+
+### Patch Changes
+
+- The parser reads code and tables faster. The body of a fenced code block is taken as one slice of
+  the source instead of line by line, and a table row is cut into its cells by slices instead of
+  character by character. A reply that is mostly code parses about five times faster, and what the
+  parser reads is unchanged: the new tree is the old one on every text it was compared on.
+  
+  Each icon is one `<path>`. Its strokes are subpaths of a single outline, and its circle or rounded
+  square is written out as arcs, so a callout, a code block's buttons and a diagram's toolbar put
+  fewer elements on the page: a 20k-character reply draws 452 where it drew 498. The icons look the
+  same. A stylesheet that addressed an icon's `<circle>`, `<rect>` or one of its strokes by position
+  no longer matches; `svg` and `svg path` still do.
+
 ## 0.4.0
 
 ### Minor Changes

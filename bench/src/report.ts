@@ -97,6 +97,26 @@ export function summarize(
   }
 }
 
+/**
+ * One row for a cell measured in several passes over the whole table: the median of each number
+ * across its passes. The runs of one cell follow each other within seconds, so other work on the
+ * machine can slow all of them at once and their median with them; the passes are minutes apart,
+ * and such a burst reaches one of them.
+ */
+export function across(passes: Row[]): Row {
+  const first = passes[0]!
+  if (passes.length === 1) return first
+  const row: Record<string, unknown> = { ...first }
+  for (const [key, value] of Object.entries(first)) {
+    if (typeof value !== 'number') continue
+    const values = passes.map((pass) => pass[key as keyof Row] as number)
+    row[key] = median(values.filter((v) => !Number.isNaN(v)))
+  }
+  // Stopped is what most passes saw: one that ran out of time in a burst does not decide it.
+  row.timedOut = passes.filter((pass) => pass.timedOut).length * 2 > passes.length
+  return row as unknown as Row
+}
+
 const mb = (bytes: number) => (Number.isNaN(bytes) ? '–' : `${(bytes / 2 ** 20).toFixed(1)}`)
 const ms = (value: number) => (value >= 100 ? value.toFixed(0) : value.toFixed(value >= 10 ? 1 : 2))
 

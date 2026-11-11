@@ -1,11 +1,13 @@
 /**
- * `bun src/run.ts [--quick] [--only=a,b] [--renderers=llx,streamdown] [--runs=3] [--label=name]
- * [--no-write]`
+ * `bun src/run.ts [--quick] [--only=a,b] [--renderers=llx,streamdown] [--runs=3] [--passes=1]
+ * [--label=name] [--no-write]`
  *
  * Every scenario, under each of its chunk patterns, through every renderer, each in a process of
- * its own (cell.ts): one warm-up run, then `--runs` measured ones, of which the median is kept. Writes `results/<date>-<label>.json` with
- * every number and the machine it ran on, and `results/latest.md` with the tables the README
- * quotes.
+ * its own (cell.ts): one warm-up run, then `--runs` measured ones, of which the median is kept.
+ * With `--passes`, the whole table is measured that many times over and each cell keeps the median
+ * of its passes (report.ts, `across`): for a machine that is not quiet. Writes
+ * `results/<date>-<label>.json` with every number and the machine it ran on, and
+ * `results/latest.md` with the tables the README quotes.
  */
 import { execSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -15,7 +17,7 @@ import type { Pattern } from '../../packages/llx-markdown/test/chunks'
 import { type Scenario, scaling, scenarios } from '../../packages/llx-markdown/test/replies'
 import { hash } from '../../packages/llx-markdown/test/random'
 import type { RunResult } from './measure'
-import { report, type Row, summarize } from './report'
+import { across, report, type Row, summarize } from './report'
 
 if (process.env.NODE_ENV !== 'production') {
   // React's development build checks far more on every render; the numbers would be its, not ours.
@@ -28,6 +30,7 @@ const flag = (name: string) =>
   process.argv.find((arg) => arg.startsWith(`--${name}=`))?.split('=')[1]
 const quick = process.argv.includes('--quick')
 const runs = Number(flag('runs') ?? (quick ? 1 : 3))
+const passes = Number(flag('passes') ?? 1)
 const only = flag('only')?.split(',')
 const renderers = RENDERERS.filter(
   (r) => !flag('renderers') || flag('renderers')!.split(',').includes(r.name),
@@ -63,22 +66,28 @@ const cell = (scenario: string, pattern: Pattern, renderer: string): RunResult[]
 
 const [small, large] = scaling()
 const all: Scenario[] = [...scenarios(), small, large].filter((s) => !only || only.includes(s.name))
-const rows: Row[] = []
-for (const scenario of all) {
-  const patterns = quick ? (['frame'] as Pattern[]) : (PATTERNS[scenario.name] ?? ['frame'])
-  for (const pattern of patterns) {
-    for (const renderer of renderers) {
-      const results = cell(scenario.name, pattern, renderer.name)
-      const row = summarize(scenario, pattern, renderer, results)
-      rows.push(row)
-      console.log(
-        `${scenario.name.padEnd(14)} ${pattern.padEnd(6)} ${renderer.name.padEnd(15)} ` +
-          `${row.timedOut ? `timed out at ${row.drawnShare}%` : `${row.totalMs.toFixed(0)} ms`} · ` +
-          `p95 ${row.p95.toFixed(2)} · max ${row.max.toFixed(1)} ms · ${(row.liveBytes / 2 ** 20).toFixed(1)} MB`,
-      )
+/** Each cell's row from every pass, in the order of the table. */
+const measured: Row[][] = []
+for (let pass = 1; pass <= passes; pass++) {
+  let at = 0
+  for (const scenario of all) {
+    const patterns = quick ? (['frame'] as Pattern[]) : (PATTERNS[scenario.name] ?? ['frame'])
+    for (const pattern of patterns) {
+      for (const renderer of renderers) {
+        const results = cell(scenario.name, pattern, renderer.name)
+        const row = summarize(scenario, pattern, renderer, results)
+        ;(measured[at++] ??= []).push(row)
+        console.log(
+          `${passes > 1 ? `pass ${pass}/${passes}  ` : ''}` +
+            `${scenario.name.padEnd(14)} ${pattern.padEnd(6)} ${renderer.name.padEnd(15)} ` +
+            `${row.timedOut ? `timed out at ${row.drawnShare}%` : `${row.totalMs.toFixed(0)} ms`} · ` +
+            `p95 ${row.p95.toFixed(2)} · max ${row.max.toFixed(1)} ms · ${(row.liveBytes / 2 ** 20).toFixed(1)} MB`,
+        )
+      }
     }
   }
 }
+const rows = measured.map(across)
 
 const git = (command: string) => {
   try {
@@ -97,6 +106,7 @@ const meta = {
   os: `${platform()} ${release()}`,
   runtime: `bun ${Bun.version}`,
   runs,
+  passes,
   quick,
   budgetMs,
   renderers: Object.fromEntries(renderers.map((r) => [r.name, r.version])),
