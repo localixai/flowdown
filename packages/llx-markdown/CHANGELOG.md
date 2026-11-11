@@ -1,5 +1,14 @@
 # llx-markdown
 
+## 0.4.3
+
+### Patch Changes
+
+- A shorter README and package description. The page leads with one line of facts, the reasons to
+  use the library and the comparison chart, and gives the download as 30.5 KB gzipped, the figure
+  the size results and the chart show, where it said 30 KB. The description no longer quotes a
+  speed ratio. The code is the same as in 0.4.2.
+
 ## 0.4.2
 
 ### Patch Changes
