@@ -20,11 +20,6 @@ interface ScanState {
   open: OpenFence | null
 }
 
-let cached: ScanState = { prefix: '', open: null }
-
-/** The last answer: a renderer asks about the same text more than once in one update. */
-let answered: { text: string; open: OpenFence | null } | null = null
-
 /** Complete lines scanned so far; tests read it to prove the scan resumes instead of restarting. */
 export const fenceScanStats = { lines: 0 }
 
@@ -52,30 +47,46 @@ function step(
  * or null when all fenced code blocks are closed. A closing fence must use the same character,
  * be at least as long as the opener, and carry no info string.
  */
-export function openFence(text: string): OpenFence | null {
-  if (answered !== null && answered.text === text) return answered.open
-  const open = scanFence(text)
-  answered = { text, open }
-  return open
+export type FenceScanner = (text: string) => OpenFence | null
+
+/**
+ * A scan that remembers one growing text. Each rendered document has its own: two replies that
+ * stream at once would otherwise take turns forgetting each other and scan from the start on
+ * every token.
+ */
+export function createFenceScanner(): FenceScanner {
+  let cached: ScanState = { prefix: '', open: null }
+  /** The last answer: a renderer asks about the same text more than once in one update. */
+  let answered: { text: string; open: OpenFence | null } | null = null
+
+  const scan = (text: string): OpenFence | null => {
+    let { prefix, open } = cached
+    if (!text.startsWith(prefix)) {
+      prefix = ''
+      open = null
+    }
+    let offset = prefix.length
+    const lastNewline = text.lastIndexOf('\n')
+    while (offset <= lastNewline) {
+      const nl = text.indexOf('\n', offset)
+      open = step(open, text.slice(offset, nl), nl + 1, text.length)
+      fenceScanStats.lines += 1
+      offset = nl + 1
+    }
+    if (offset !== prefix.length) cached = { prefix: text.slice(0, offset), open }
+    // The unterminated last line is evaluated but never committed: it may still change.
+    return offset < text.length || lastNewline === -1
+      ? step(open, text.slice(offset), text.length + 1, text.length)
+      : open
+  }
+
+  return (text) => {
+    if (answered !== null && answered.text === text) return answered.open
+    const open = scan(text)
+    answered = { text, open }
+    return open
+  }
 }
 
-function scanFence(text: string): OpenFence | null {
-  let { prefix, open } = cached
-  if (!text.startsWith(prefix)) {
-    prefix = ''
-    open = null
-  }
-  let offset = prefix.length
-  const lastNewline = text.lastIndexOf('\n')
-  while (offset <= lastNewline) {
-    const nl = text.indexOf('\n', offset)
-    open = step(open, text.slice(offset, nl), nl + 1, text.length)
-    fenceScanStats.lines += 1
-    offset = nl + 1
-  }
-  if (offset !== prefix.length) cached = { prefix: text.slice(0, offset), open }
-  // The unterminated last line is evaluated but never committed: it may still change.
-  return offset < text.length || lastNewline === -1
-    ? step(open, text.slice(offset), text.length + 1, text.length)
-    : open
-}
+/** The scan for a caller that follows one text at a time: `llx-markdown/stream`'s functions. */
+export const openFence: FenceScanner = createFenceScanner()

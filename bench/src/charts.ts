@@ -156,7 +156,8 @@ const theme = {
 
 /** One unit to a panel, and milliseconds everywhere in the speed section: 37 ms reads against 2,773 ms. */
 const format = (value: number, unit: Unit) => {
-  if (unit === 'kb') return `${Math.round(value)} KB`
+  // To a tenth, as size.md has it: a whole number would round a figure already rounded.
+  if (unit === 'kb') return `${value.toFixed(1)} KB`
   if (unit === 'count') return `${value}`
   if (unit === 'times') return `${value.toFixed(1)}×`
   return `${Math.round(value).toLocaleString('en-US')} ms`

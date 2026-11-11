@@ -154,22 +154,30 @@ function balanceSingleEmphasis(tail: string, char: '*' | '_'): string {
   return tail.endsWith(char) ? tail.slice(0, -1) : `${tail}${char}`
 }
 
+const ROW_START = /^\s{0,3}\|/
+/** The row of dashes under a table's header: `|---|:--:|`, its outer pipes optional. */
+const DELIMITER_ROW = /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$/
+
 /** Hide only a partial row of an already established GFM table. A line starting
  * with `|` outside a table may be ordinary prose and must remain visible. */
 function dropTrailingPartialTableRow(text: string): string {
   if (text.endsWith('\n')) return text
   const nl = text.lastIndexOf('\n')
-  const lastLine = text.slice(nl + 1)
-  if (nl === -1 || !/^\s{0,3}\|/.test(lastLine)) return text
+  if (nl === -1 || !ROW_START.test(text.slice(nl + 1))) return text
 
-  const preceding = text.slice(0, nl).split('\n')
-  for (let i = preceding.length - 1; i >= 1; i -= 1) {
-    const line = preceding[i]!.trim().replace(/^\|/, '').replace(/\|$/, '')
-    const cells = line.split('|')
-    if (cells.every((cell) => /^:?-{3,}:?$/.test(cell.trim()))) {
-      return /^\s{0,3}\|/.test(preceding[i - 1]!) ? text.slice(0, nl) : text
+  // Up the lines above, one at a time: the rows of the table, to the row of dashes under its
+  // header. The reply is not cut into its lines; a long one would be on every token of a row.
+  for (let end = nl; end > 0;) {
+    const start = text.lastIndexOf('\n', end - 1) + 1
+    // The first line of the text has no header above it.
+    if (start === 0) break
+    const line = text.slice(start, end)
+    if (DELIMITER_ROW.test(line)) {
+      const above = start === 1 ? 0 : text.lastIndexOf('\n', start - 2) + 1
+      return ROW_START.test(text.slice(above, start - 1)) ? text.slice(0, nl) : text
     }
-    if (!/^\s{0,3}\|/.test(preceding[i]!)) break
+    if (!ROW_START.test(line)) break
+    end = start - 1
   }
   return text
 }
@@ -206,6 +214,15 @@ export function closePartialMarkdown(text: string): string {
   // after the opener is code, where emphasis/link syntax has no meaning.
   const fence = openFence(text)
   if (fence) return `${text}${text.endsWith('\n') ? '' : '\n'}${fence.marker}`
+  return closePartialProse(text)
+}
+
+/**
+ * `closePartialMarkdown` for a text known to end outside a fenced code block: the renderer asks
+ * its own scanner about the fence, and comes here with the answer.
+ */
+export function closePartialProse(text: string): string {
+  if (!text) return text
 
   // A half-typed table row is its own kind of flash — hide it. The active edit
   // is that row, so there's nothing else to stabilize this frame.

@@ -93,6 +93,9 @@ export function Diagram({ source }: { source: string }) {
       loadDrawing().then(draw, failed)
     }
     return () => controller.abort()
+    // `scheme` is not read here: it changes when the page's colours do, and the diagram is drawn
+    // again in the new ones.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [mermaid, growing, source, scheme])
 
   const drawn = state?.source === source ? state : null

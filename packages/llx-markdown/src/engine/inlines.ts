@@ -108,7 +108,10 @@ const reUnicodePunctuation = /[\p{P}\p{S}]/u
 /** Bare addresses: a URL with a scheme, one that starts `www.`, or an email address. */
 const reBareLink =
   /(?:(?:https?|ftp):\/\/|www\.)[^\s<]*|(mailto:|xmpp:)?[A-Za-z0-9._+-]+@[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+(\/[A-Za-z0-9@.]+)?/g
-const reBareLinkHint = /www\.|:\/\/|@/
+
+/** Whether the text may hold a bare address: three searches for a few characters, no regex. */
+const mayHoldBareLink = (text: string): boolean =>
+  text.indexOf('@') !== -1 || text.indexOf('://') !== -1 || text.indexOf('www.') !== -1
 
 let subject = ''
 let pos = 0
@@ -748,7 +751,7 @@ const linkify = (nodes: Node[]): Node[] => {
   for (let index = 0; index < nodes.length; index++) {
     const node = nodes[index] as Node
     const value = node.type === 'text' ? (node.value ?? '') : ''
-    const found = value !== '' && reBareLinkHint.test(value) ? findBareLinks(value) : null
+    const found = value !== '' && mayHoldBareLink(value) ? findBareLinks(value) : null
     if (found === null || found.length === 0) {
       if (out !== null) out.push(node)
       continue
@@ -825,6 +828,35 @@ const finish = (parent: Inl, links: boolean): Node[] => {
   return links ? linkify(out) : out
 }
 
+/**
+ * Runs one parse of a document and puts back what the inline parser was reading before it. The
+ * parser keeps its place in this module, which is what makes it fast; an extension's rule that
+ * parses a text of its own (a caption, a cell) starts a second parse in the middle of the first,
+ * and the first one goes on from where it was.
+ */
+export const isolated = <T>(run: () => T): T => {
+  const held = [subject, pos, end, ctx, root, delimiters, brackets, bareLinks, noBacktickCloser]
+  const heldText = state.text
+  const heldPos = state.pos
+  try {
+    return run()
+  } finally {
+    ;[subject, pos, end, ctx, root, delimiters, brackets, bareLinks, noBacktickCloser] = held as [
+      string,
+      number,
+      number,
+      InlineContext,
+      Inl,
+      typeof delimiters,
+      typeof brackets,
+      boolean,
+      typeof noBacktickCloser,
+    ]
+    state.text = heldText
+    state.pos = heldPos
+  }
+}
+
 const state: InlineState = {
   text: '',
   pos: 0,
@@ -852,7 +884,7 @@ export const parseInlines = (source: string, context: InlineContext): Node[] => 
   delimiters = null
   brackets = null
   noBacktickCloser = null
-  bareLinks = context.gfm && reBareLinkHint.test(subject)
+  bareLinks = context.gfm && mayHoldBareLink(subject)
   const special = context.special
   const rules = context.rules
 

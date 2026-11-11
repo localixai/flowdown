@@ -183,6 +183,13 @@ the three passes are the answer to that. The new parser was set against the one 
 of line ending, and 120,000 generated code blocks and tables) and wrote the same tree for each, and
 0.4.0's build was streamed in turn with the new one to tell a slower stream from a noisy one.
 
+The same day, for 0.4.2, the same scripts ran once more, `bun run bench` again with `--passes=3`.
+The five other renderers came within 1% of their figures for 0.4.1 over the table, which is how
+much the machine differed between the two runs; llx-markdown's own moved by what 0.4.2 changed.
+0.4.1's build was streamed in turn with the new one, in one process, on each kind of reply; the
+repair of an unfinished table row was set against 0.4.1's on about 438,000 texts and the parser
+against 0.4.1's on about 198,000 documents, and each wrote what the old one did.
+
 ## The parser alone
 
 `bun run parse` times each Markdown parser reading a whole text once, with no React and no DOM,

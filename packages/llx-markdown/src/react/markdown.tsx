@@ -8,9 +8,9 @@ import {
   escapedBlock,
   headingIdsOfBlocks,
 } from '../core/block-facts'
-import { createBlockSplitter, normalizeLineEndings } from '../core/blocks'
-import { openFence } from '../core/fence-scan'
-import { closePartialMarkdown } from '../core/heal'
+import { createBlockSplitter, normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
+import { createFenceScanner } from '../core/fence-scan'
+import { closePartialProse } from '../core/heal'
 import { llxDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
@@ -19,7 +19,7 @@ import { Diagram } from '../mermaid/diagram'
 import { setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
 import { Callout } from './callout'
 import { Code, CodeBlock } from './code-block'
-import { GrowingCode, growingFence } from './growing-code'
+import { createFenceMemory, GrowingCode, growingFence } from './growing-code'
 import {
   GrowingFence,
   RenderContextValue,
@@ -173,7 +173,8 @@ export function buildComponents(overrides: MarkdownComponents | undefined): {
 
 const Block = memo(
   function Block({ source: open, closer, offset, growing, headingIds, options }: BlockProps) {
-    const fence = growing && !options.ownCode ? growingFence(open, closer) : null
+    const [memory] = useState(createFenceMemory)
+    const fence = growing && !options.ownCode ? growingFence(open, closer, memory) : null
     if (
       fence &&
       fence.language !== DIAGRAM_FENCE_LANGUAGE &&
@@ -203,6 +204,90 @@ const Block = memo(
 )
 
 const NO_EXTENSIONS: Extension[] = []
+
+/**
+ * How many blocks a group holds. Small enough that the group a reply is growing in is cheap to
+ * go through on every token, large enough that a long reply is few groups.
+ */
+const GROUP = 32
+
+const headingKeyOf = (own: ReadonlyMap<number, string> | null | undefined): string =>
+  own ? [...own].map(([at, id]) => `${at}:${id}`).join(';') : ''
+
+interface BlockGroupProps {
+  /** The document's blocks and anchors; the group draws the ones from `from` up to `to`. */
+  blocks: readonly MarkdownBlock[]
+  ids: ReadonlyArray<ReadonlyMap<number, string>> | null
+  from: number
+  to: number
+  /** The closing line and the growing fence of the document's last block, when it is in here. */
+  closer: string
+  growing: boolean
+  options: BlockOptions
+}
+
+/**
+ * The blocks at one run of places in the document. A block never moves to another group, so it
+ * keeps what it holds (an open tab, a drawn diagram) for as long as it is there. While a reply
+ * streams only its last group changes: React passes over each group above as one element, where
+ * a flat list had it compare every block of the reply on every token.
+ */
+const BlockGroup = memo(
+  function BlockGroup({ blocks, ids, from, to, closer, growing, options }: BlockGroupProps) {
+    const drawn: ReactNode[] = []
+    for (let index = from; index < to; index++) {
+      const block = blocks[index]!
+      // A block gets only its own anchors, keyed by their text: a map is new on every render,
+      // and comparing it would redraw every block.
+      const own = ids?.[index] ?? null
+      const last = index === to - 1
+      drawn.push(
+        <Fragment key={index}>
+          {/* One parse puts a line break between top-level blocks; so does this, so the text of
+              the page (and a copy of it) is the same either way. */}
+          {index > 0 ? '\n' : null}
+          <Block
+            source={block.source}
+            closer={last ? closer : ''}
+            offset={block.offset}
+            growing={last && growing}
+            headingIds={own && own.size > 0 ? own : null}
+            headingKey={headingKeyOf(own)}
+            options={options}
+          />
+        </Fragment>,
+      )
+    }
+    return drawn
+  },
+  (before, after) => {
+    if (
+      before.from !== after.from ||
+      before.to !== after.to ||
+      before.closer !== after.closer ||
+      before.growing !== after.growing ||
+      before.options !== after.options ||
+      (before.ids === null) !== (after.ids === null)
+    )
+      return false
+    // From the end: in the group a reply is growing in, the block that changed is the last one.
+    for (let index = after.to - 1; index >= after.from; index--) {
+      const was = before.blocks[index]!
+      const is = after.blocks[index]!
+      // The splitter hands back a block that did not change as the same object.
+      if (was !== is && (was.source !== is.source || was.offset !== is.offset)) return false
+      if (after.ids) {
+        const had = before.ids![index]
+        const has = after.ids[index]
+        // Most blocks have no heading: two empty maps are not spelled out to be compared.
+        if (had !== has && ((had?.size ?? 0) > 0 || (has?.size ?? 0) > 0)) {
+          if (headingKeyOf(had) !== headingKeyOf(has)) return false
+        }
+      }
+    }
+    return true
+  },
+)
 
 /**
  * Markdown with the llx dialect: GitHub Markdown, callouts, steps, tabs, stats, pros and cons,
@@ -239,11 +324,13 @@ export function Markdown({
   )
   const streaming = arriving || behind
   const caret = caretOption ?? streaming
+  // The scan is this document's own: another reply streaming beside it does not make it start over.
+  const [openFence] = useState(createFenceScanner)
   // Inside a fence left open, the reply is read as it is and the line that closes the fence goes
   // to the last block beside its text: joined here, every token would copy the whole reply.
   const fence = streaming ? openFence(text) : null
   const closer = fence ? `${text.endsWith('\n') ? '' : '\n'}${fence.marker}` : ''
-  const healed = streaming && !fence ? closePartialMarkdown(text) : text
+  const healed = streaming && !fence ? closePartialProse(text) : text
   // One splitter per rendered document: it remembers the blocks it cut, and on the next token
   // scans only the end of the reply. Blocks that did not change come back as the same objects,
   // and everything worked out from a block below is kept beside it.
@@ -288,6 +375,23 @@ export function Markdown({
   }, [highlight, mermaid])
   const labelValue = useMemo(() => mergeLabels(labels), [labels])
   const endsInFence = fence !== null
+  const groups: ReactNode[] = []
+  for (let from = 0; from < blocks.length; from += GROUP) {
+    const to = Math.min(from + GROUP, blocks.length)
+    const last = to === blocks.length
+    groups.push(
+      <BlockGroup
+        key={from}
+        blocks={blocks}
+        ids={ids}
+        from={from}
+        to={to}
+        closer={last ? closer : ''}
+        growing={last && endsInFence}
+        options={options}
+      />,
+    )
+  }
 
   return (
     <LabelsContext.Provider value={labelValue}>
@@ -299,27 +403,7 @@ export function Markdown({
           data-streaming={streaming || undefined}
           data-caret={(streaming && caret) || undefined}
         >
-          {blocks.map((block, index) => {
-            // A block gets only its own anchors, keyed by their text: a map is new on every
-            // render, and comparing it would redraw every block.
-            const own = ids?.[index] ?? null
-            return (
-              <Fragment key={index}>
-                {/* One parse puts a line break between top-level blocks; so does this, so the
-                    text of the page (and a copy of it) is the same either way. */}
-                {index > 0 ? '\n' : null}
-                <Block
-                  source={block.source}
-                  closer={index === blocks.length - 1 ? closer : ''}
-                  offset={block.offset}
-                  growing={endsInFence && index === blocks.length - 1}
-                  headingIds={own && own.size > 0 ? own : null}
-                  headingKey={own ? [...own].map(([at, id]) => `${at}:${id}`).join(';') : ''}
-                  options={options}
-                />
-              </Fragment>
-            )
-          })}
+          {groups}
         </div>
       </RenderContextValue.Provider>
     </LabelsContext.Provider>

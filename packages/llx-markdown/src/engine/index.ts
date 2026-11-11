@@ -3,7 +3,7 @@
  * and whatever a page registers on top, with no dependency.
  */
 import { parseBlocks } from './blocks'
-import { specialCharacters, type InlineContext } from './inlines'
+import { isolated, specialCharacters, type InlineContext } from './inlines'
 import type { Extension, InlineRule, Node, ParseOptions } from './types'
 
 export { toHtml, escapeHtml, type HtmlOptions } from './html'
@@ -87,7 +87,7 @@ export const parse = (markdown: string, options: ParseOptions = {}): Node => {
     rules: use.rules,
     special: use.special,
   }
-  const { root, footnotes } = parseBlocks(markdown, context)
+  const { root, footnotes } = isolated(() => parseBlocks(markdown, context))
   if (footnotes.length > 0) root.children?.push({ type: 'footnotes', children: footnotes })
   for (const extension of use.extensions) {
     if (extension.fences) applyFences(root, [extension])

@@ -40,7 +40,14 @@ function closesFence(
  * The fence read last time: its body up to `clean` is complete lines, none of which closes it. A
  * fence that grows is read once per token, and the next read starts where this one stopped.
  */
-let read: { fence: string; body: string; clean: number } | null = null
+export interface FenceMemory {
+  read: { fence: string; body: string; clean: number } | null
+}
+
+/** A place for it. A block that draws a growing fence keeps its own; this one is the default. */
+export const createFenceMemory = (): FenceMemory => ({ read: null })
+
+const shared = createFenceMemory()
 
 /** `rest` without its last line, when that line closes the fence: the healer's is not code. */
 function unclosed(rest: string, marker: string, length: number): string {
@@ -58,9 +65,10 @@ function unclosed(rest: string, marker: string, length: number): string {
 export function growingFence(
   source: string,
   closer = '',
+  memory: FenceMemory = shared,
 ): { language: string | undefined; title: string; body: string } | null {
   // The opening line is still being written: short, and read joined.
-  if (closer && !source.includes('\n')) return growingFence(source + closer)
+  if (closer && !source.includes('\n')) return growingFence(source + closer, '', memory)
   const opening = OPENING.exec(source)
   if (!opening) return null
   const fence = opening[1] ?? '```'
@@ -75,6 +83,7 @@ export function growingFence(
   // It closes the fence: the code is what is above it, without the newline that ends that.
   else body = closer !== markers || !rest ? rest : rest.slice(0, -1)
   // A fence closed earlier in the block means the block is not just this fence.
+  const read = memory.read
   let at =
     read !== null &&
     read.fence === fence &&
@@ -82,14 +91,14 @@ export function growingFence(
     body.startsWith(read.body.slice(0, read.clean))
       ? read.clean
       : 0
-  read = null
+  memory.read = null
   for (let end = body.indexOf('\n', at); end !== -1; end = body.indexOf('\n', at)) {
     if (closesFence(body, at, end, marker, fence.length, 3)) return null
     at = end + 1
   }
   // The last line is still being written: read, but not remembered.
   if (closesFence(body, at, body.length, marker, fence.length, 3)) return null
-  read = { fence, body, clean: at }
+  memory.read = { fence, body, clean: at }
   const info = opening[2]?.trim() ?? ''
   const language = info.split(/\s+/)[0] || undefined
   return { language, title: fenceTitle(info.slice(language?.length ?? 0)), body }

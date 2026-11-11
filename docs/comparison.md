@@ -87,18 +87,18 @@ better.
 
 | | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **llx-markdown** | **9** | **34** | **36** | **30** | **240** | **66** |
-| Streamdown | 55 | 285 | 5,379 | 3,955 | 6,022 | 127 |
-| react-markdown | 202 | 3,297 | 2,955 | 3,190 | stopped at 68% | 15,882 |
-| markdown-to-jsx | 16 | 128 | 59 | 176 | 2,300 | 601 |
-| markstream | 43 | 330 | 932 | 876 | 5,657 | 147 |
-| marked-react | 40 | 315 | 77 | 262 | 7,266 | 1,773 |
+| **llx-markdown** | **10** | **27** | **35** | **20** | **132** | **42** |
+| Streamdown | 51 | 285 | 4,960 | 4,058 | 6,265 | 129 |
+| react-markdown | 204 | 2,869 | 2,871 | 3,401 | stopped at 67% | 16,010 |
+| markdown-to-jsx | 14 | 129 | 56 | 167 | 2,293 | 603 |
+| markstream | 40 | 361 | 944 | 892 | 5,522 | 132 |
+| marked-react | 36 | 290 | 78 | 269 | 7,371 | 1,792 |
 
 - **Where llx-markdown wins: everywhere here, and most on length.** It parses again only the block
   still being written, and reads only the new lines of a growing code block, so a 100k reply and a
   30-reply thread cost about as much per update as the first lines.
 - **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
-  7 ms on a 5k chat answer and within 2× on 50k of code, where marked-react takes a little over 2×.
+  5 ms on a 5k chat answer and within 2× on 50k of code, where marked-react takes a little over 2×.
   markdown-to-jsx holds unfinished syntax back instead of repairing it.
 - **Why react-markdown is slowest.** It parses the whole text again on every update.
 
@@ -115,18 +115,18 @@ the benchmark parsed whole. Higher is better.
 
 | | Writes | Bun (JavaScriptCore) | Node (V8) |
 | :--- | :--- | ---: | ---: |
-| **llx-markdown** | a tree | **179** | **176** |
-| markdown-it | HTML | 49 | 39 |
-| marked | HTML | 32 | 46 |
-| micromark | HTML | 3 | 4 |
-| mdast-util-from-markdown | a tree | 3 | 3 |
+| **llx-markdown** | a tree | **187** | **187** |
+| markdown-it | HTML | 51 | 43 |
+| marked | HTML | 33 | 48 |
+| micromark | HTML | 4 | 4 |
+| mdast-util-from-markdown | a tree | 4 | 3 |
 
 - **What is compared.** llx-markdown's parser is the one `<Markdown>` runs.
   mdast-util-from-markdown is remark's, the one react-markdown and Streamdown run; micromark is the
   tokenizer under it. All read GitHub's extensions: tables, task lists, strikethrough, autolinks
   and, except marked, footnotes.
 - **A tree against HTML.** marked and markdown-it write HTML and build no tree. llx-markdown
-  writing HTML from its tree reads 122 and 135 MB in a second.
+  writing HTML from its tree reads 131 and 139 MB in a second.
 - **Where the trees differ.** mdast gives every node its position in the source; llx-markdown's
   tree gives positions to blocks only, which is part of the gap.
 - **In a reply's terms.** A 100k-character reply is parsed whole in under 0.6 ms, so the parser is

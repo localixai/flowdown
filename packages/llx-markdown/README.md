@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <b>9× faster</b> than the next renderer on a 100k-character stream ·
+  <b>17× faster</b> than the next renderer on a 100k-character stream ·
   <b>linear</b> as a reply grows · <b>0 dependencies</b>, <b>30 KB</b> gzipped
 </p>
 
@@ -56,7 +56,7 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
 
 ## Why this one
 
-- **It stays fast as a reply grows.** A 100k-character reply streams in 0.24 s. The next fastest
+- **It stays fast as a reply grows.** A 100k-character reply streams in 0.13 s. The next fastest
   of five other renderers takes 2.3 s.
 - **It repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences
   never show their raw syntax.
