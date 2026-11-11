@@ -408,11 +408,13 @@ describe('server markup', () => {
 })
 
 describe('loaders written inline, a new function on every render', () => {
-  // Wait on the module a math loader imports, then a tick: a cold load takes longer than one.
+  // Wait on the modules the page loads lazily, the math a loader imports and the chunk that draws a
+  // diagram, then a tick: a cold load takes longer than one.
   const settle = async () => {
     const { act } = await import('react')
     await act(async () => {
       await import('../math')
+      await import('../mermaid/drawing')
       await new Promise((resolve) => setTimeout(resolve, 0))
     })
   }
