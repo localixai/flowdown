@@ -9,7 +9,7 @@ description:
 # llx-markdown
 
 Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, no
-dependencies, 30 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
+dependencies, 30.5 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
 of forms a model can write and a reader can scan: steps, tabs, headline figures, the case for and
 against, callouts, folded sections, sources, file trees, diagrams and math. It renders while the text is still arriving,
 without flicker or raw syntax showing.

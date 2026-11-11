@@ -49,12 +49,12 @@ in [bench/results/features.json](../bench/results/features.json).
 
 | | Download, gzip | Packages installed | Styles | Licence |
 | :--- | ---: | ---: | :--- | :--- |
-| **llx-markdown** | 30 KB | 1 | Own CSS, light and dark | MIT |
-| Streamdown | 156 KB | 118 | Tailwind classes; the page needs Tailwind | Apache-2.0 |
-| react-markdown | 50 KB | 82 | None | MIT |
-| markdown-to-jsx | 31 KB | 1 | None | MIT |
-| markstream | 212 KB | 19 | Own CSS, or Tailwind | MIT |
-| marked-react | 27 KB | 3 | None | MIT |
+| **llx-markdown** | 30.5 KB | 1 | Own CSS, light and dark | MIT |
+| Streamdown | 155.5 KB | 118 | Tailwind classes; the page needs Tailwind | Apache-2.0 |
+| react-markdown | 50.0 KB | 82 | None | MIT |
+| markdown-to-jsx | 31.0 KB | 1 | None | MIT |
+| markstream | 211.5 KB | 19 | Own CSS, or Tailwind | MIT |
+| marked-react | 26.9 KB | 3 | None | MIT |
 
 - **Download** is what loads with the component. Each library is bundled as a page's bundler would
   do it: a production build, minified and gzipped, without React; react-markdown with remark-gfm
@@ -139,7 +139,7 @@ in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
 ## Which one to pick
 
 - **llx-markdown.** For an AI chat or assistant whose replies run long, threads that grow, and
-  documentation. It repairs unfinished syntax, comes styled, and is one package of 30 KB with its
+  documentation. It repairs unfinished syntax, comes styled, and is one package of 30.5 KB with its
   own parser. It does not take remark or rehype plugins.
 - **markdown-to-jsx.** When a small, unstyled renderer for short replies is enough. It is one
   package and 31 KB. It slows down on very long replies and threads, and ships no styles.
