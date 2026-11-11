@@ -56,10 +56,8 @@ export type FenceScanner = (text: string) => OpenFence | null
  */
 export function createFenceScanner(): FenceScanner {
   let cached: ScanState = { prefix: '', open: null }
-  /** The last answer: a renderer asks about the same text more than once in one update. */
-  let answered: { text: string; open: OpenFence | null } | null = null
 
-  const scan = (text: string): OpenFence | null => {
+  return (text) => {
     let { prefix, open } = cached
     if (!text.startsWith(prefix)) {
       prefix = ''
@@ -78,13 +76,6 @@ export function createFenceScanner(): FenceScanner {
     return offset < text.length || lastNewline === -1
       ? step(open, text.slice(offset), text.length + 1, text.length)
       : open
-  }
-
-  return (text) => {
-    if (answered !== null && answered.text === text) return answered.open
-    const open = scan(text)
-    answered = { text, open }
-    return open
   }
 }
 
