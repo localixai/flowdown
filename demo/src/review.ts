@@ -23,7 +23,7 @@ try {
     })
     for (const name of names) {
       await page.goto(`${server.url.href}?review=${name}&theme=${theme}`)
-      await page.waitForSelector('.llx-markdown')
+      await page.waitForSelector('.flowdown')
       await page.evaluate(() => document.fonts.ready)
       await page.waitForTimeout(1200)
       await page.locator('[data-scene]').screenshot({ path: join(out, `${name}-${theme}.png`) })

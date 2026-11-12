@@ -1,14 +1,14 @@
 ---
 title: Security
 description:
-  What llx-markdown does with untrusted text by default — raw HTML, links, images, code, formulas
+  What flowdown does with untrusted text by default — raw HTML, links, images, code, formulas
   and diagrams — and where to tighten it.
 ---
 
 # Security
 
 A model's reply is untrusted text: it repeats what it read on a web page, in a file or in another
-user's message. llx-markdown renders it without running anything it contains. This page lists
+user's message. flowdown renders it without running anything it contains. This page lists
 exactly what the defaults let through, so you can decide what to tighten.
 
 ## Raw HTML
@@ -16,14 +16,14 @@ exactly what the defaults let through, so you can decide what to tighten.
 | `html`                         | What happens to `<b>`, `<details>`, `<img onerror=…>`                                                                       |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `true` (the default)           | The HTML reader is fetched the first time a document holds HTML. Until it arrives, the tags are left out. Then they are parsed and sanitized. |
-| `html` from `llx-markdown/html` | Parsed and sanitized in the first render (for a server or a hydrating page).                                               |
+| `html` from `flowdown/html` | Parsed and sanitized in the first render (for a server or a hydrating page).                                               |
 | `false`                        | Every tag is dropped. The text between the tags stays.                                                                     |
 
 HTML is never shown unsanitized: while the reader loads, tags are skipped, not printed or
 inserted.
 
 The sanitizer is the package's own. It keeps an allow-list: GitHub's schema, the rules github.com
-applies to a README, extended for what llx-markdown itself draws. An element, attribute or URL
+applies to a README, extended for what flowdown itself draws. An element, attribute or URL
 protocol that is not on the list does not reach the page:
 
 - **Removed:** `<script>`, `<style>`, `<iframe>`, `<form>` and every other element the schema does
@@ -31,7 +31,7 @@ protocol that is not on the list does not reach the page:
 - **Allowed on top of GitHub's list:** `div`, `span`, `picture`, `source`, `aside`, `figure`,
   `figcaption`, `footer`, and the dialect's `answer-tabs` and `answer-tab`.
 - **Attributes allowed on top of GitHub's list:** `align`, `width` and `height` everywhere; a class
-  only when it starts with `llx-`; `data-callout`, `data-callout-title`, `data-verdict`,
+  only when it starts with `fd-`; `data-callout`, `data-callout-title`, `data-verdict`,
   `data-label` and `data-title`; `target` and `rel` on links; `srcset`, `media` and `type` on `<source>`; the task
   list classes on lists.
 - **Prefixed:** an `id` or `name` in the reply becomes `user-content-…`, so a reply cannot replace
@@ -84,7 +84,7 @@ Two things the defaults do not do:
 ## Code
 
 Code is text. Fenced and inline code are printed as escaped text, and a highlighter's output is the
-one place HTML from code reaches the page: the bundled `llx-markdown/highlight` escapes the code
+one place HTML from code reaches the page: the bundled `flowdown/highlight` escapes the code
 first. A [highlighter of your own](highlighting.md#your-own-highlighter) must do the same.
 
 The copy button writes to the clipboard only when the reader presses it.
@@ -103,7 +103,7 @@ a loader.
 
 ## What it does not replace
 
-llx-markdown keeps a reply from running code in your page. It does not decide what a reply may say
+flowdown keeps a reply from running code in your page. It does not decide what a reply may say
 or link to. For a page that shows replies to other people:
 
 - send a **Content Security Policy** that forbids inline script and limits `img-src`;

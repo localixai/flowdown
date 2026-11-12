@@ -34,13 +34,13 @@ const wanted = (name: string) => asked.length === 0 || asked.includes(name)
 
 /** Everything the scene loads is drawn: formulas, diagrams, fonts, and a frame after that. */
 async function settled(page: Page) {
-  await page.waitForSelector('.llx-markdown')
+  await page.waitForSelector('.flowdown')
   await page.waitForFunction(() => {
     const reply = document.querySelector('.reply')!
     // The reply's source, not its text: a drawn diagram's own styles are text too.
     const mathDone = !window.demo?.reply.includes('$') || reply.querySelector('.katex')
-    const diagrams = reply.querySelectorAll('.llx-diagram')
-    const drawn = [...diagrams].every((node) => node.querySelector('.llx-diagram-canvas svg'))
+    const diagrams = reply.querySelectorAll('.fd-diagram')
+    const drawn = [...diagrams].every((node) => node.querySelector('.fd-diagram-canvas svg'))
     return mathDone && drawn
   })
   await page.evaluate(() => document.fonts.ready)
@@ -53,7 +53,7 @@ async function still(page: Page, base: string, scene: string, theme: string) {
   await page.goto(`${base}?scene=${scene}&theme=${theme}`)
   await settled(page)
   // A diagram's toolbar shows under the pointer: the picture has it.
-  const diagram = page.locator('.llx-diagram').first()
+  const diagram = page.locator('.fd-diagram').first()
   if ((await diagram.count()) > 0) await diagram.hover()
   const path = join(OUT, `${scene}-${theme}.png`)
   await page.locator('[data-scene]').screenshot({ path, animations: 'disabled' })
@@ -70,7 +70,7 @@ async function stream(page: Page, base: string, theme: string) {
   await page.waitForFunction(() => window.demo)
   const reply = await page.evaluate(() => window.demo.reply)
 
-  const frames = await mkdtemp(join(tmpdir(), 'llx-demo-'))
+  const frames = await mkdtemp(join(tmpdir(), 'fd-demo-'))
   try {
     let index = 0
     const shoot = async (text: string, streaming: boolean) => {
@@ -168,8 +168,8 @@ async function pair(page: Page, base: string) {
     await page
       .waitForFunction(
         () =>
-          [...document.querySelectorAll('.llx-diagram')].every((node) =>
-            node.querySelector('.llx-diagram-canvas svg'),
+          [...document.querySelectorAll('.fd-diagram')].every((node) =>
+            node.querySelector('.fd-diagram-canvas svg'),
           ) && [...document.images].every((image) => image.complete),
         undefined,
         { timeout: 1500 },
@@ -184,7 +184,7 @@ async function pair(page: Page, base: string) {
   await show(reply.length)
   await settled(page)
 
-  const frames = await mkdtemp(join(tmpdir(), 'llx-demo-'))
+  const frames = await mkdtemp(join(tmpdir(), 'fd-demo-'))
   try {
     const count = Math.ceil(terminal.to * 20) + 1
     for (let index = 0; index < count; index++) {
@@ -337,7 +337,7 @@ async function viewer(page: Page, base: string, theme: string) {
   await page.setViewportSize({ width: 760, height: Math.max(height, 620) })
   await page.evaluate(POINTER)
 
-  const frames = await mkdtemp(join(tmpdir(), 'llx-demo-'))
+  const frames = await mkdtemp(join(tmpdir(), 'fd-demo-'))
   try {
     let index = 0
     let at = { x: 700, y: 40 }
@@ -366,13 +366,13 @@ async function viewer(page: Page, base: string, theme: string) {
 
     await page.mouse.move(at.x, at.y)
     await hold(8)
-    await glide(await middle(`.llx-diagram ${button('Enlarge')}`), 14)
+    await glide(await middle(`.fd-diagram ${button('Enlarge')}`), 14)
     await hold(6)
     await page.mouse.click(at.x, at.y)
     await page.waitForSelector('dialog[open] svg')
     await hold(10)
 
-    const stage = await middle('dialog[open] .llx-diagram-viewer-canvas')
+    const stage = await middle('dialog[open] .fd-diagram-viewer-canvas')
     await glide({ x: stage.x - 60, y: stage.y - 40 }, 10)
     for (let notch = 0; notch < 9; notch += 1) {
       await page.mouse.wheel(0, -70)

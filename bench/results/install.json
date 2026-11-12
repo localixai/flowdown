@@ -1,8 +1,8 @@
 {
-  "llx-markdown": {
+  "flowdown": {
     "packages": 1,
     "license": "MIT",
-    "styles": "Own stylesheet, light and dark (`llx-markdown/styles.css`)"
+    "styles": "Own stylesheet, light and dark (`flowdown/styles.css`)"
   },
   "streamdown": {
     "packages": 118,

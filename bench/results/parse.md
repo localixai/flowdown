@@ -18,10 +18,10 @@ better.
 
 ### bun 1.4.4 (JavaScriptCore)
 
-| Parser | Output | Throughput | llx-markdown is faster by |
+| Parser | Output | Throughput | flowdown is faster by |
 | --- | --- | ---: | ---: |
-| `llx-markdown` | tree | 187 MB/s | 1.0× |
-| `llx-markdown → HTML` | html | 131 MB/s | 1.4× |
+| `flowdown` | tree | 187 MB/s | 1.0× |
+| `flowdown → HTML` | html | 131 MB/s | 1.4× |
 | `markdown-it` | html | 51 MB/s | 3.7× |
 | `marked` | html | 33 MB/s | 5.7× |
 | `micromark` | html | 4 MB/s | 50.2× |
@@ -29,10 +29,10 @@ better.
 
 ### node 25.6.1 (V8)
 
-| Parser | Output | Throughput | llx-markdown is faster by |
+| Parser | Output | Throughput | flowdown is faster by |
 | --- | --- | ---: | ---: |
-| `llx-markdown` | tree | 187 MB/s | 1.0× |
-| `llx-markdown → HTML` | html | 139 MB/s | 1.4× |
+| `flowdown` | tree | 187 MB/s | 1.0× |
+| `flowdown → HTML` | html | 139 MB/s | 1.4× |
 | `marked` | html | 48 MB/s | 3.9× |
 | `markdown-it` | html | 43 MB/s | 4.4× |
 | `micromark` | html | 4 MB/s | 49.5× |
@@ -44,7 +44,7 @@ The median time of one whole parse.
 
 ### bun 1.4.4
 
-| Text | Size | `llx-markdown` | `llx-markdown → HTML` | `mdast-util-from-markdown` | `micromark` | `marked` | `markdown-it` |
+| Text | Size | `flowdown` | `flowdown → HTML` | `mdast-util-from-markdown` | `micromark` | `marked` | `markdown-it` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | chat-5k | 5 KB | 0.03 ms | 0.03 ms | 1.60 ms | 1.53 ms | 0.21 ms | 0.12 ms |
 | answer-20k | 20 KB | 0.09 ms | 0.12 ms | 5.34 ms | 5.02 ms | 0.53 ms | 0.37 ms |
@@ -61,7 +61,7 @@ The median time of one whole parse.
 
 ### node 25.6.1
 
-| Text | Size | `llx-markdown` | `llx-markdown → HTML` | `mdast-util-from-markdown` | `micromark` | `marked` | `markdown-it` |
+| Text | Size | `flowdown` | `flowdown → HTML` | `mdast-util-from-markdown` | `micromark` | `marked` | `markdown-it` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | chat-5k | 5 KB | 0.03 ms | 0.03 ms | 1.33 ms | 1.17 ms | 0.13 ms | 0.12 ms |
 | answer-20k | 20 KB | 0.09 ms | 0.11 ms | 4.85 ms | 4.38 ms | 0.37 ms | 0.41 ms |
@@ -80,30 +80,30 @@ The median time of one whole parse.
 
 | Parser | Version | Output | What it reads, set up as here |
 | --- | --- | --- | --- |
-| `llx-markdown` | 0.4.2 | tree | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
-| `llx-markdown → HTML` | 0.4.2 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
+| `flowdown` | 0.4.2 | tree | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
+| `flowdown → HTML` | 0.4.2 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
 | `mdast-util-from-markdown` | 2.1.0 | tree | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
 | `micromark` | 4.0.3 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
 | `marked` | 18.1.3 | html | CommonMark, tables, task lists, strikethrough, bare links (no footnotes) |
 | `markdown-it` | 15.0.3 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes (with markdown-it-footnote and markdown-it-task-lists) |
 
-Raw HTML is passed through by all of them; none sanitizes. `llx-markdown` is the engine
+Raw HTML is passed through by all of them; none sanitizes. `flowdown` is the engine
 `<Markdown>` runs, called directly: it is not a public entry of the package.
 `mdast-util-from-markdown` is remark's parser, the one react-markdown and Streamdown run.
 The two trees differ in one way that costs time: mdast gives every node its position in the
-source, inline ones too, where llx-markdown's tree gives positions to blocks only.
+source, inline ones too, where flowdown's tree gives positions to blocks only.
 
 ## What each one read
 
 Headings, code blocks, tables, rows, list items, strong, emphasis, strikethrough, footnote
 references and checkboxes in each output, counted on the tree or the HTML, against
-llx-markdown's tree. Only the differences are listed. In HTML a footnote's definition is a list
+flowdown's tree. Only the differences are listed. In HTML a footnote's definition is a list
 item, one more than a tree counts, and micromark heads the footnotes with a heading of its own;
 marked reads no footnotes.
 
-| Text | Parser | Counted vs llx-markdown |
+| Text | Parser | Counted vs flowdown |
 | --- | --- | --- |
-| footnotes-20k | `llx-markdown → HTML` | listItems 76 vs 75 |
+| footnotes-20k | `flowdown → HTML` | listItems 76 vs 75 |
 | footnotes-20k | `micromark` | headings 9 vs 8, listItems 76 vs 75 |
 | footnotes-20k | `marked` | footnoteRefs 0 vs 1 |
 | footnotes-20k | `markdown-it` | listItems 76 vs 75 |

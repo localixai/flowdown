@@ -1,0 +1,129 @@
+{
+  "name": "flowdown",
+  "version": "0.4.3",
+  "description": "Ultrafast, lightweight streaming Markdown for React and AI replies. Its own parser, zero dependencies, 31.7 KB gzipped. GitHub Markdown plus steps, tabs, callouts, diagrams and math. Also as HTML text, on a page with no framework, as a custom element and in a terminal.",
+  "keywords": [
+    "ai",
+    "ai-chat",
+    "ai-sdk",
+    "callouts",
+    "chat",
+    "chatbot",
+    "commonmark",
+    "custom-element",
+    "fast",
+    "gfm",
+    "katex",
+    "lightweight",
+    "llm",
+    "markdown",
+    "markdown-parser",
+    "markdown-renderer",
+    "math",
+    "mermaid",
+    "react",
+    "react-component",
+    "react-markdown",
+    "remark",
+    "ssr",
+    "steps",
+    "streaming",
+    "streaming-markdown",
+    "syntax-highlighting",
+    "tabs",
+    "terminal",
+    "tui",
+    "web-components",
+    "zero-dependency"
+  ],
+  "homepage": "https://flowdown.dev",
+  "bugs": {
+    "url": "https://github.com/rsaryev/flowdown/issues"
+  },
+  "license": "MIT",
+  "author": "rsaryev (https://github.com/rsaryev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsaryev/flowdown.git",
+    "directory": "packages/flowdown"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./react": "./dist/index.js",
+    "./static": "./dist/static/index.js",
+    "./dom": "./dist/dom/index.js",
+    "./element": "./dist/element/index.js",
+    "./tui": "./dist/tui/index.js",
+    "./document": "./dist/document/index.js",
+    "./engine": "./dist/engine/index.js",
+    "./remark": "./dist/remark.js",
+    "./stream": "./dist/stream.js",
+    "./prompt": "./dist/prompt/index.js",
+    "./html": "./dist/html/index.js",
+    "./math": "./dist/math/index.js",
+    "./highlight": "./dist/highlight/index.js",
+    "./mermaid": "./dist/mermaid/index.js",
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown && bun scripts/build-css.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "check": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints styles.css && bun scripts/check-package.ts",
+    "size": "bun scripts/size.ts",
+    "conformance": "bun scripts/conformance.ts"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@happy-dom/global-registrator": "21.0.4",
+    "@types/bun": "1.4.3",
+    "@types/mdast": "^4.0.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "character-entities": "2.0.2",
+    "character-entities-html4": "2.1.0",
+    "commonmark-spec": "0.31.2",
+    "highlight.js": "11.12.0",
+    "katex": "0.19.1",
+    "mermaid": "12.3.0",
+    "publint": "0.3.25",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "rehype-stringify": "10.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "remark-rehype": "11.1.2",
+    "tsdown": "0.23.7",
+    "typescript": "7.0.2",
+    "unified": "11.0.5"
+  },
+  "peerDependencies": {
+    "highlight.js": "^11.0.0",
+    "katex": ">=0.16.0",
+    "react": "^18.2.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "highlight.js": {
+      "optional": true
+    },
+    "katex": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

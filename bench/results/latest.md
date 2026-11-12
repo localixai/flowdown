@@ -12,7 +12,7 @@
 - **passes:** 3
 - **quick:** false
 - **budgetMs:** 30000
-- **renderers:** llx 0.4.2, llx+highlight 0.4.2, streamdown 2.7.1, react-markdown 10.1.0, markdown-to-jsx 9.10.6, markstream 2.0.24, marked-react 4.0.0
+- **renderers:** flowdown 0.4.2, flowdown+highlight 0.4.2, streamdown 2.7.1, react-markdown 10.1.0, markdown-to-jsx 9.10.6, markstream 2.0.24, marked-react 4.0.0
 
 ## Whole stream
 
@@ -20,7 +20,7 @@ Total main-thread time to stream the reply, in milliseconds, with the 95th perce
 update in brackets. Lower is better. "Stopped" means the renderer used up the time budget
 (30000 ms) before the reply ended.
 
-| | `llx` | `llx+highlight` | `streamdown` | `react-markdown` | `markdown-to-jsx` | `markstream` | `marked-react` |
+| | `flowdown` | `flowdown+highlight` | `streamdown` | `react-markdown` | `markdown-to-jsx` | `markstream` | `marked-react` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | chat-5k · token | 20.1 ms (0.03) | 22.4 ms (0.03) | 172 ms (0.27) | 885 ms (1.58) | 41.5 ms (0.06) | 125 ms (0.19) | 131 ms (0.20) |
 | chat-5k · frame | 9.67 ms (0.07) | 8.71 ms (0.06) | 51.1 ms (0.33) | 204 ms (1.59) | 14.4 ms (0.09) | 40.0 ms (0.24) | 35.9 ms (0.22) |
@@ -42,7 +42,7 @@ update in brackets. Lower is better. "Stopped" means the renderer used up the ti
 Updates longer than a 60 Hz frame (16.7 ms) / longer than a long task
 (50 ms) / the longest update.
 
-| | `llx` | `llx+highlight` | `streamdown` | `react-markdown` | `markdown-to-jsx` | `markstream` | `marked-react` |
+| | `flowdown` | `flowdown+highlight` | `streamdown` | `react-markdown` | `markdown-to-jsx` | `markstream` | `marked-react` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | chat-5k · token | 0 / 0 / 0.15 ms | 0 / 0 / 0.15 ms | 0 / 0 / 1.92 ms | 0 / 0 / 2.58 ms | 0 / 0 / 1.40 ms | 0 / 0 / 3.22 ms | 0 / 0 / 1.45 ms |
 | chat-5k · frame | 0 / 0 / 0.15 ms | 0 / 0 / 0.14 ms | 0 / 0 / 2.09 ms | 0 / 0 / 2.93 ms | 0 / 0 / 0.21 ms | 0 / 0 / 2.20 ms | 0 / 0 / 0.29 ms |
@@ -64,7 +64,7 @@ Updates longer than a 60 Hz frame (16.7 ms) / longer than a long task
 Heap held while the streamed page is mounted / kept after it is unmounted (caches the reply
 warmed, which are bounded) / grown by streaming the same reply again (a leak), in MB.
 
-| | `llx` | `llx+highlight` | `streamdown` | `react-markdown` | `markdown-to-jsx` | `markstream` | `marked-react` |
+| | `flowdown` | `flowdown+highlight` | `streamdown` | `react-markdown` | `markdown-to-jsx` | `markstream` | `marked-react` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | chat-5k · token | 0.7 / 1.0 / 0.5 | 0.7 / 1.0 / 0.5 | 1.2 / 1.4 / -0.4 | 0.7 / 1.1 / 0.5 | 0.6 / 1.1 / 0.2 | 4.3 / 4.4 / 0.3 | 0.6 / 0.8 / 0.1 |
 | chat-5k · frame | 0.7 / 0.5 / 0.2 | 0.7 / 0.5 / 0.2 | 1.0 / 0.5 / 0.2 | 0.7 / 0.4 / 0.1 | 0.7 / 0.2 / 0.3 | 4.0 / 1.0 / 0.3 | 0.5 / 0.3 / 0.1 |
@@ -88,8 +88,8 @@ the whole reply on every update is about 16× (n^2.00).
 
 | | 10 KB | 40 KB | Growth |
 | --- | ---: | ---: | ---: |
-| `llx` | 16.1 ms | 51.6 ms | 3.2× (n^0.84) |
-| `llx+highlight` | 37.9 ms | 191 ms | 5.0× (n^1.17) |
+| `flowdown` | 16.1 ms | 51.6 ms | 3.2× (n^0.84) |
+| `flowdown+highlight` | 37.9 ms | 191 ms | 5.0× (n^1.17) |
 | `streamdown` | 145 ms | 756 ms | 5.2× (n^1.19) |
 | `react-markdown` | 876 ms | 10768 ms | 12.3× (n^1.81) |
 | `markdown-to-jsx` | 44.2 ms | 370 ms | 8.4× (n^1.53) |

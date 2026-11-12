@@ -1,13 +1,13 @@
 {
-  "llx-markdown": {
+  "flowdown": {
     "atOnce": 31.7,
     "onDemand": 19.9
   },
-  "llx-markdown + highlight": {
+  "flowdown + highlight": {
     "atOnce": 69.4,
     "onDemand": 19.9
   },
-  "llx-markdown/stream": {
+  "flowdown/stream": {
     "atOnce": 4.6,
     "onDemand": 0
   },

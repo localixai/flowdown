@@ -1,0 +1,527 @@
+/* ─── Answer forms: the dialect's structured shapes (`dialect.ts`) ───
+   Steps, tabs, headline figures, the case for and against, file trees and checklists. Each is
+   plain Markdown underneath; these rules are what make it read as the shape it is. Nothing here
+   is a status except the pros/cons glyphs, so the neutral parts take the text tiers and the
+   veil the callouts use (the foreground at a few percent), right in every theme and under glass. */
+
+/* ─── Steps (`> [!STEPS]` over a list) ───
+   A sequence read in order: each step's number in a round mark, a line down to the next one, the
+   step's title, its "when" quieter beneath, then its text. */
+.flowdown .fd-steps-title,
+.flowdown .fd-stats-title,
+.flowdown .fd-sources-title,
+.flowdown .fd-tabs-title {
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  color: var(--fd-fg);
+}
+.flowdown .fd-steps-title + .fd-steps,
+.flowdown .fd-stats-title + .fd-stats,
+.flowdown .fd-sources-title + .fd-sources,
+.flowdown .fd-tabs-title + .fd-tabs {
+  margin-top: 0;
+}
+.flowdown ol.fd-steps,
+.flowdown ul.fd-steps {
+  list-style: none;
+  margin: 0.8rem 0;
+  padding-left: 0;
+}
+.flowdown .fd-steps > li {
+  --fd-mark: 1.5rem;
+  position: relative;
+  margin: 0;
+  padding: 0 0 1rem 2.25rem;
+}
+.flowdown .fd-steps > li:last-child {
+  padding-bottom: 0;
+}
+/* A numbered mark (a step's, a source's): a round badge on the row's first line. In `line-height`,
+   `lh` is the parent's, so the mark takes the row's line whatever its own font size and the page's
+   leading (a number, a length, `normal`), and the `1lh` in `top` centres it on that line exactly.
+   That line is taller than a small mark: the track is centred, or the number would sink. */
+.flowdown .fd-steps > li::before,
+.flowdown .fd-sources > li::before {
+  position: absolute;
+  left: 0;
+  top: calc((1lh - var(--fd-mark)) / 2);
+  display: grid;
+  place-content: center;
+  min-width: var(--fd-mark);
+  height: var(--fd-mark);
+  border-radius: 9999px;
+  background: var(--fd-veil-strong);
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1lh;
+  color: var(--fd-fg-soft);
+}
+/* A step's mark is its place in the list, the one `start` and `value` give it; steps in no order
+   get a dot. */
+.flowdown .fd-steps > li::before {
+  content: counter(list-item);
+}
+.flowdown ul.fd-steps > li::before {
+  content: '●';
+}
+/* The line runs from this mark to the next one, the same gap at both ends; the last step has none
+   to reach. Its box starts at this mark's bottom edge and ends at the next mark's top, and the
+   gaps are its padding: a browser snaps each box to whole pixels on its own, and a line placed by
+   its own offsets landed a pixel closer to one mark than to the other. */
+.flowdown .fd-steps > li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--fd-mark) / 2 - 1px);
+  top: calc((1lh + var(--fd-mark)) / 2);
+  bottom: calc((var(--fd-mark) - 1lh) / 2);
+  width: 2px;
+  padding: 0.25rem 0;
+  background: var(--fd-border) content-box;
+}
+.flowdown .fd-step-head {
+  margin: 0;
+}
+.flowdown .fd-step-title {
+  font-weight: 600;
+  color: var(--fd-fg);
+}
+.flowdown .fd-step-meta {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.85em;
+  font-style: italic;
+  color: var(--fd-fg-faint);
+}
+/* The step's text sits one small, fixed gap under its title whatever it starts with: a block's
+   own top margin (a code block's, a list's) would otherwise set the gap, a different one per step. */
+/* A block right under the title (a code block, a table) belongs to its step: it sits nearer its
+   own title than the next step's, whatever margin the block has elsewhere. */
+.flowdown .fd-step-head + :not(.fd-step-body) {
+  margin-top: 0.5rem;
+}
+.flowdown .fd-step-body {
+  margin-top: 0.15rem;
+}
+.flowdown .fd-step-body > :first-child {
+  margin-top: 0;
+}
+.flowdown .fd-steps > li > :last-child,
+.flowdown .fd-step-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Tabs (`> [!TABS]` with a heading per variant) ───
+   The variants share one bordered panel, the tab row on top: the selected tab is marked by its
+   text colour and a rule under it, the rest are quiet. */
+.flowdown .fd-tabs {
+  margin: 0.8rem 0;
+  overflow: hidden;
+  border: 1px solid var(--fd-border);
+  border-radius: var(--fd-radius);
+}
+.flowdown .fd-tab-list {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--fd-border);
+  /* With a tab's own 0.5rem, its label starts where a code block's text does (0.9rem). */
+  padding: 0 0.4rem;
+  scrollbar-width: none;
+}
+.flowdown .fd-tab {
+  position: relative;
+  flex: none;
+  margin: 0;
+  border: 0;
+  background: none;
+  padding: 0.55rem 0.5rem;
+  font: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--fd-fg-faint);
+  cursor: pointer;
+  transition: color var(--fd-duration) ease;
+}
+.flowdown .fd-tab:hover {
+  color: var(--fd-fg-soft);
+}
+.flowdown .fd-tab[aria-selected='true'] {
+  color: var(--fd-fg);
+}
+.flowdown .fd-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  inset: auto 0.5rem -1px;
+  border-bottom: 2px solid var(--fd-fg);
+}
+.flowdown .fd-tab:focus-visible {
+  outline-offset: -2px;
+}
+.flowdown .fd-tab-panel {
+  padding: 0.6rem 0.9rem 0.75rem;
+}
+.flowdown .fd-tab-panel > :first-child {
+  margin-top: 0;
+}
+.flowdown .fd-tab-panel > :last-child {
+  margin-bottom: 0;
+}
+/* A variant that is one code block (install commands per system) is that block, edge to edge
+   under the tab row: a rounded panel inside the bordered one was a box in a box. */
+.flowdown .fd-tab-panel:has(> .fd-code:only-child) {
+  padding: 0;
+}
+.flowdown .fd-tab-panel > .fd-code:only-child {
+  border-radius: 0;
+}
+
+/* ─── Headline figures (`> [!STATS]` over `- **value** label`) ───
+   A row of figures that wraps: the value large, its label quiet under it. */
+.flowdown ul.fd-stats,
+.flowdown ol.fd-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(8.5rem, 100%), 1fr));
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+  padding: 0;
+  list-style: none;
+}
+.flowdown .fd-stats > li {
+  min-width: 0;
+  margin: 0;
+  border-radius: var(--fd-radius);
+  background: var(--fd-veil);
+  padding: 0.6rem 0.8rem;
+}
+.flowdown .fd-stat-value {
+  display: block;
+  font-size: 1.35em;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--fd-fg);
+}
+.flowdown .fd-stat-label {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.85em;
+  font-style: normal;
+  color: var(--fd-fg-soft);
+}
+
+/* ─── The case for and against (`> [!PROS]` / `> [!CONS]`) ───
+   A point per row with its glyph in the status hue — the one status in these forms. Written one
+   after the other, the two sit side by side, and stack where the reply is narrow. */
+.flowdown .fd-verdicts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+}
+.flowdown .fd-verdict {
+  min-width: 0;
+  --fd-verdict: var(--fd-success);
+  margin: 0.8rem 0;
+  border-radius: var(--fd-radius);
+  background: var(--fd-veil);
+  padding: 0.6rem 0.9rem;
+}
+.flowdown .fd-verdicts > .fd-verdict {
+  margin: 0;
+}
+.flowdown .fd-verdict[data-verdict='cons'] {
+  --fd-verdict: var(--fd-danger);
+}
+.flowdown .fd-verdict-title {
+  margin: 0 0 0.3rem;
+  font-weight: 600;
+  color: var(--fd-fg);
+}
+.flowdown ul.fd-verdict-list,
+.flowdown ol.fd-verdict-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.flowdown .fd-verdict-list > li {
+  position: relative;
+  margin: 0.2rem 0;
+  padding-left: 1.35rem;
+}
+.flowdown .fd-verdict-list > li::before {
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: var(--fd-verdict);
+}
+.flowdown .fd-verdict[data-verdict='pros'] .fd-verdict-list > li::before {
+  content: '✓';
+}
+.flowdown .fd-verdict[data-verdict='cons'] .fd-verdict-list > li::before {
+  content: '✕';
+}
+
+/* ─── A folded section (`> [!DETAILS] Title`, or a `<details>` written as HTML) ───
+   An outlined row with its title and a chevron that turns when it opens. Closed, it is one line;
+   open, the content sits under a hairline, inset by the panel's own padding, so text written
+   straight after the summary lines up with a paragraph or a code block beside it. */
+.flowdown details {
+  --fd-details-pad: 0.9rem;
+  margin: 0.8rem 0;
+  border: 1px solid var(--fd-border-subtle);
+  border-radius: var(--fd-radius);
+  padding: 0 var(--fd-details-pad);
+  color: var(--fd-fg-soft);
+}
+.flowdown details > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 calc(-1 * var(--fd-details-pad));
+  border-radius: calc(var(--fd-radius) - 1px);
+  padding: 0.6rem var(--fd-details-pad);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fd-fg);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background-color var(--fd-duration) ease;
+}
+.flowdown details > summary::-webkit-details-marker {
+  display: none;
+}
+.flowdown details > summary::before {
+  content: '';
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0 0.15rem;
+  border: solid var(--fd-fg-faint);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateX(-0.1rem) rotate(-45deg);
+  transition:
+    transform var(--fd-duration-slow) var(--fd-ease),
+    border-color var(--fd-duration) ease;
+}
+.flowdown details[open] > summary::before {
+  transform: translateY(-0.1rem) rotate(45deg);
+}
+.flowdown details > summary:hover {
+  background: var(--fd-veil);
+}
+.flowdown details > summary:hover::before {
+  border-color: var(--fd-fg);
+}
+.flowdown details > summary:focus-visible {
+  outline-offset: -2px;
+}
+.flowdown details[open] {
+  padding-bottom: 0.8rem;
+}
+.flowdown details[open] > summary {
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid var(--fd-border-subtle);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.flowdown details > summary + * {
+  margin-top: 0;
+}
+.flowdown details > :last-child:not(summary) {
+  margin-bottom: 0;
+}
+/* Opening is a short fade down from the title, not a pop. */
+@keyframes fd-unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-0.2rem);
+  }
+}
+.flowdown details[open] > :not(summary) {
+  animation: fd-unfold var(--fd-duration-slow) var(--fd-ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .flowdown details[open] > :not(summary) {
+    animation: none;
+  }
+}
+
+/* ─── References (`> [!SOURCES]` over a list of links) ───
+   A numbered row per page: its title, the site quiet beside it, the author's note after. */
+.flowdown ul.fd-sources,
+.flowdown ol.fd-sources {
+  margin: 0.8rem 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: fd-source;
+}
+.flowdown .fd-sources > li {
+  --fd-mark: 1.25rem;
+  position: relative;
+  margin: 0.45rem 0;
+  padding-left: 1.85rem;
+  counter-increment: fd-source;
+}
+/* The badge itself is the numbered mark the steps draw (above). */
+.flowdown .fd-sources > li::before {
+  content: counter(fd-source);
+}
+.flowdown .fd-source > a {
+  text-decoration: none;
+}
+.flowdown .fd-source > a:hover .fd-source-title {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.flowdown .fd-source-title {
+  font-weight: 500;
+  color: var(--fd-fg);
+}
+.flowdown .fd-source-host {
+  margin-left: 0.5rem;
+  font-size: 0.85em;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--fd-fg-faint);
+}
+.flowdown .fd-source-note {
+  display: block;
+  font-size: 0.9em;
+  font-style: normal;
+  color: var(--fd-fg-soft);
+}
+
+/* ─── File tree (a ```tree fence) ───
+   Rows in a monospace column, indented by depth with a guide per level; a folder folds. */
+.flowdown .fd-tree {
+  margin: 0.8rem 0;
+  font-family: var(--fd-font-mono);
+  font-size: 0.86em;
+  line-height: normal;
+}
+.flowdown .fd-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  border-radius: var(--fd-radius-small);
+  padding: 0.2rem 0.4rem 0.2rem calc(0.4rem + var(--fd-tree-depth, 0) * 1.1rem + 1.15rem);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 0.775rem,
+    var(--fd-border-subtle) 0.775rem calc(0.775rem + 1px),
+    transparent calc(0.775rem + 1px) 1.1rem
+  );
+  background-size: calc(var(--fd-tree-depth, 0) * 1.1rem) 100%;
+  background-repeat: no-repeat;
+  color: var(--fd-fg-soft);
+  cursor: default;
+}
+.flowdown .fd-tree-row[data-folder] {
+  padding-left: calc(0.4rem + var(--fd-tree-depth, 0) * 1.1rem);
+  color: var(--fd-fg);
+  cursor: pointer;
+}
+.flowdown .fd-tree-row:hover {
+  background-color: var(--fd-veil);
+}
+.flowdown .fd-tree-row:focus-visible {
+  outline-offset: -2px;
+}
+.flowdown .fd-tree-chevron,
+.flowdown .fd-tree-icon {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--fd-fg-faint);
+}
+.flowdown .fd-tree-chevron {
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: transform var(--fd-duration) ease;
+}
+.flowdown .fd-tree-chevron[data-open] {
+  transform: rotate(90deg);
+}
+.flowdown .fd-tree-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.flowdown .fd-tree-comment {
+  overflow: hidden;
+  margin-left: 0.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: inherit;
+  color: var(--fd-fg-faint);
+}
+.flowdown .fd-tree-comment::before {
+  content: '# ';
+}
+
+/* ─── Checklists (GFM `- [ ] item`) ───
+   The box is drawn here, not by the browser: a native one differs per platform, sits off the
+   line, and has no quiet state. It stands in the margin, centred on the first line. */
+.flowdown ul.contains-task-list,
+.flowdown ol.contains-task-list {
+  padding-left: 0;
+  list-style: none;
+}
+.flowdown li.task-list-item {
+  position: relative;
+  padding-left: 1.6rem;
+}
+.flowdown li.task-list-item input[type='checkbox'] {
+  /* Anchor to the first line without making loose paragraphs and nested lists flex columns. */
+  position: absolute;
+  left: 0;
+  top: calc((1lh - 1rem) / 2);
+  /* The row's font, so `lh` above is the row's line and not a form control's. */
+  font: inherit;
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  appearance: none;
+  border: 1.5px solid var(--fd-border-strong);
+  border-radius: 0.3rem;
+  background: transparent;
+  transition:
+    background-color var(--fd-duration) ease,
+    border-color var(--fd-duration) ease;
+}
+.flowdown li.task-list-item input[type='checkbox']:checked {
+  border-color: var(--fd-fg-soft);
+  background-color: var(--fd-fg-soft);
+}
+/* The tick: two sides of a turned box, in the ground's colour. */
+.flowdown li.task-list-item input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 0.25rem;
+  height: 0.5rem;
+  /* The opaque ground when the page's own is translucent (a glass panel). */
+  border: solid var(--fd-bg-solid, var(--fd-bg));
+  border-width: 0 1.75px 1.75px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.flowdown li.task-list-item input[type='checkbox']:not(:disabled) {
+  cursor: pointer;
+}
+.flowdown li.task-list-item input[type='checkbox']:not(:disabled):hover {
+  border-color: var(--fd-fg-soft);
+}
+.flowdown li.task-list-item:has(> input:checked, > p:first-child > input:checked) {
+  color: var(--fd-fg-faint);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--fd-fg) 30%, transparent);
+}
+/* A nested list keeps its own text: only the done item is struck, not what is under it. */
+.flowdown li.task-list-item:has(> input:checked) > :is(ul, ol) {
+  color: var(--fd-fg);
+  text-decoration: none;
+}

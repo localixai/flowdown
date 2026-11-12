@@ -1,5 +1,5 @@
 /**
- * `bun src/run.ts [--quick] [--only=a,b] [--renderers=llx,streamdown] [--runs=3] [--passes=1]
+ * `bun src/run.ts [--quick] [--only=a,b] [--renderers=flowdown,streamdown] [--runs=3] [--passes=1]
  * [--label=name] [--no-write]`
  *
  * Every scenario, under each of its chunk patterns, through every renderer, each in a process of
@@ -13,9 +13,9 @@ import { execSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { cpus, platform, release } from 'node:os'
 import { join } from 'node:path'
-import type { Pattern } from '../../packages/llx-markdown/test/chunks'
-import { type Scenario, scaling, scenarios } from '../../packages/llx-markdown/test/replies'
-import { hash } from '../../packages/llx-markdown/test/random'
+import type { Pattern } from '../../packages/flowdown/test/chunks'
+import { type Scenario, scaling, scenarios } from '../../packages/flowdown/test/replies'
+import { hash } from '../../packages/flowdown/test/random'
 import type { RunResult } from './measure'
 import { across, report, type Row, summarize } from './report'
 

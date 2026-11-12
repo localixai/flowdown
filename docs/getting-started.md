@@ -1,7 +1,7 @@
 ---
 title: Getting started
 description:
-  Install llx-markdown, render a document, stream a reply and teach the model the dialect.
+  Install flowdown, render a document, stream a reply and teach the model the dialect.
 ---
 
 # Getting started
@@ -24,25 +24,25 @@ description:
 #### bun
 
 ```sh
-bun add llx-markdown
+bun add flowdown
 ```
 
 #### npm
 
 ```sh
-npm install llx-markdown
+npm install flowdown
 ```
 
 #### pnpm
 
 ```sh
-pnpm add llx-markdown
+pnpm add flowdown
 ```
 
 #### yarn
 
 ```sh
-yarn add llx-markdown
+yarn add flowdown
 ```
 
 ---
@@ -53,17 +53,17 @@ field (Vite, Next.js, webpack 5, Rspack, esbuild, Bun) and in Node 20 or later.
 ## 2. Import the stylesheet
 
 ```ts
-import 'llx-markdown/styles.css'
+import 'flowdown/styles.css'
 ```
 
-Import it once, in your app's entry or root layout. Every rule is scoped to the `.llx-markdown`
+Import it once, in your app's entry or root layout. Every rule is scoped to the `.flowdown`
 element the renderer draws, so it touches nothing else on the page. Colours, fonts and radii are
 tokens you can set; [Styling](styling.md) lists them.
 
 ## 3. Render
 
 ```tsx
-import { Markdown } from 'llx-markdown'
+import { Markdown } from 'flowdown'
 
 export function Doc({ source }: { source: string }) {
   return <Markdown>{source}</Markdown>
@@ -96,7 +96,7 @@ A model writes the forms it was told about and no others. Add the dialect's inst
 system prompt:
 
 ```ts
-import { answerFormatPrompt } from 'llx-markdown/prompt'
+import { answerFormatPrompt } from 'flowdown/prompt'
 
 const system = ['You are a helpful assistant.', answerFormatPrompt()].join('\n\n')
 ```
@@ -110,12 +110,12 @@ turn on `answerFormatPrompt({ math: true, diagrams: true })` together with the p
 They are off by default, so a page that does not use them does not ship them:
 
 ```tsx
-import { Markdown } from 'llx-markdown'
-import { highlight } from 'llx-markdown/highlight'
+import { Markdown } from 'flowdown'
+import { highlight } from 'flowdown/highlight'
 import 'katex/dist/katex.min.css'
 
 ;<Markdown
-  math={() => import('llx-markdown/math')}
+  math={() => import('flowdown/math')}
   mermaid={() => import('mermaid')}
   highlight={highlight}
 >

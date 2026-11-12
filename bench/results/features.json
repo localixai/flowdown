@@ -1,7 +1,7 @@
 {
   "renderers": [
     {
-      "name": "llx",
+      "name": "flowdown",
       "version": "0.4.2"
     },
     {
@@ -33,9 +33,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><div class=\"llx-table\"><table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table></div></div>"
+          "html": "<div class=\"flowdown\"><div class=\"fd-table\"><table><thead><tr><th>Plan</th><th>Price</th></tr></thead><tbody><tr><td>Free</td><td>$0</td></tr></tbody></table></div></div>"
         },
         "streamdown": {
           "pass": true,
@@ -66,9 +66,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><ul class=\"contains-task-list\">\n<li class=\"task-list-item\"><input disabled=\"\" data-task-key=\"0\" type=\"checkbox\" checked=\"\"> write the plan</li>\n<li class=\"task-list-item\"><input disabled=\"\" data-task-key=\"21\" type=\"checkbox\"> tell the team</li>\n</ul></div>"
+          "html": "<div class=\"flowdown\"><ul class=\"contains-task-list\">\n<li class=\"task-list-item\"><input disabled=\"\" data-task-key=\"0\" type=\"checkbox\" checked=\"\"> write the plan</li>\n<li class=\"task-list-item\"><input disabled=\"\" data-task-key=\"21\" type=\"checkbox\"> tell the team</li>\n</ul></div>"
         },
         "streamdown": {
           "pass": true,
@@ -99,9 +99,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><p>The <del>old</del> new way.</p></div>"
+          "html": "<div class=\"flowdown\"><p>The <del>old</del> new way.</p></div>"
         },
         "streamdown": {
           "pass": true,
@@ -132,9 +132,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><p>A claim.<sup><a href=\"#user-content-fn-1\" id=\"user-content-fnref-1\" data-footnote-ref=\"\" aria-describedby=\"user-content-footnote-label\">1</a></sup></p>\n<section data-footnotes=\"\" class=\"footnotes\"><h2 class=\"sr-only\" id=\"user-content-footnote-label\">Footnotes</h2>\n<ol>\n<li id=\"user-content-fn-1\">\n<p>The source. <a href=\"#user-content-fnref-1\" data-footnote-backref=\"\" aria-label=\"Back to reference 1\" class=\"data-footnote-backref\">↩</a></p>\n</li>\n</ol>\n</section></div>"
+          "html": "<div class=\"flowdown\"><p>A claim.<sup><a href=\"#user-content-fn-1\" id=\"user-content-fnref-1\" data-footnote-ref=\"\" aria-describedby=\"user-content-footnote-label\">1</a></sup></p>\n<section data-footnotes=\"\" class=\"footnotes\"><h2 class=\"sr-only\" id=\"user-content-footnote-label\">Footnotes</h2>\n<ol>\n<li id=\"user-content-fn-1\">\n<p>The source. <a href=\"#user-content-fnref-1\" data-footnote-backref=\"\" aria-label=\"Back to reference 1\" class=\"data-footnote-backref\">↩</a></p>\n</li>\n</ol>\n</section></div>"
         },
         "streamdown": {
           "pass": true,
@@ -165,9 +165,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><p>See <a href=\"https://example.com\">https://example.com</a> for more.</p></div>"
+          "html": "<div class=\"flowdown\"><p>See <a href=\"https://example.com\">https://example.com</a> for more.</p></div>"
         },
         "streamdown": {
           "pass": true,
@@ -198,9 +198,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><aside class=\"llx-callout\" data-callout=\"warning\" role=\"note\" aria-label=\"Warning\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\" class=\"llx-callout-icon\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01\"></path></svg><div class=\"llx-callout-body\">\n<p>Back up first.</p>\n</div></aside></div>"
+          "html": "<div class=\"flowdown\"><aside class=\"fd-callout\" data-callout=\"warning\" role=\"note\" aria-label=\"Warning\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\" class=\"fd-callout-icon\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01\"></path></svg><div class=\"fd-callout-body\">\n<p>Back up first.</p>\n</div></aside></div>"
         },
         "streamdown": {
           "pass": false,
@@ -231,9 +231,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></div>"
+          "html": "<div class=\"flowdown\"><p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></div>"
         },
         "streamdown": {
           "pass": true,
@@ -264,9 +264,9 @@
       "streaming": true,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>This is <strong>important</strong></p></div>"
+          "html": "<div class=\"flowdown\" data-streaming=\"true\" data-caret=\"true\"><p>This is <strong>important</strong></p></div>"
         },
         "streamdown": {
           "pass": true,
@@ -297,9 +297,9 @@
       "streaming": true,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>Run this:</p>\n<figure class=\"llx-code\" data-language=\"ts\"><figcaption class=\"llx-code-bar\"><span class=\"llx-code-language\">ts</span><button type=\"button\" class=\"llx-code-download\" aria-label=\"Download code\" title=\"Download code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 15V3M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5\"></path></svg></button><button type=\"button\" class=\"llx-code-copy\" aria-label=\"Copy code\" title=\"Copy code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M10 8h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zM4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></svg></button></figcaption><pre><code class=\"language-ts\">const answer = 42\n</code></pre></figure></div>"
+          "html": "<div class=\"flowdown\" data-streaming=\"true\" data-caret=\"true\"><p>Run this:</p>\n<figure class=\"fd-code\" data-language=\"ts\"><figcaption class=\"fd-code-bar\"><span class=\"fd-code-language\">ts</span><button type=\"button\" class=\"fd-code-download\" aria-label=\"Download code\" title=\"Download code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 15V3M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5\"></path></svg></button><button type=\"button\" class=\"fd-code-copy\" aria-label=\"Copy code\" title=\"Copy code\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M10 8h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zM4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></svg></button></figcaption><pre><code class=\"language-ts\">const answer = 42\n</code></pre></figure></div>"
         },
         "streamdown": {
           "pass": true,
@@ -330,9 +330,9 @@
       "streaming": true,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><p>Read <a href=\"https://exa\">the guide</a></p></div>"
+          "html": "<div class=\"flowdown\" data-streaming=\"true\" data-caret=\"true\"><p>Read <a href=\"https://exa\">the guide</a></p></div>"
         },
         "streamdown": {
           "pass": true,
@@ -363,9 +363,9 @@
       "streaming": true,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\" data-streaming=\"true\" data-caret=\"true\"><div class=\"llx-table\"><table><thead><tr><th>Plan</th><th>Price</th></tr></thead></table></div></div>"
+          "html": "<div class=\"flowdown\" data-streaming=\"true\" data-caret=\"true\"><div class=\"fd-table\"><table><thead><tr><th>Plan</th><th>Price</th></tr></thead></table></div></div>"
         },
         "streamdown": {
           "pass": true,
@@ -396,9 +396,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><img src=\"x\"></div>"
+          "html": "<div class=\"flowdown\"><img src=\"x\"></div>"
         },
         "streamdown": {
           "pass": true,
@@ -429,9 +429,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><p><a>click me</a></p></div>"
+          "html": "<div class=\"flowdown\"><p><a>click me</a></p></div>"
         },
         "streamdown": {
           "pass": true,
@@ -462,9 +462,9 @@
       "streaming": false,
       "server": false,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"></div>"
+          "html": "<div class=\"flowdown\"></div>"
         },
         "streamdown": {
           "pass": true,
@@ -495,9 +495,9 @@
       "streaming": false,
       "server": true,
       "results": {
-        "llx": {
+        "flowdown": {
           "pass": true,
-          "html": "<div class=\"llx-markdown\"><h1>Title</h1>\n<p>Some <strong>bold</strong> text.</p></div>"
+          "html": "<div class=\"flowdown\"><h1>Title</h1>\n<p>Some <strong>bold</strong> text.</p></div>"
         },
         "streamdown": {
           "pass": true,

@@ -7,8 +7,8 @@
  * Prints the runs as one line of JSON.
  */
 import { GlobalRegistrator } from '@happy-dom/global-registrator'
-import { type Pattern, prefixes } from '../../packages/llx-markdown/test/chunks'
-import { scaling, scenarios } from '../../packages/llx-markdown/test/replies'
+import { type Pattern, prefixes } from '../../packages/flowdown/test/chunks'
+import { scaling, scenarios } from '../../packages/flowdown/test/replies'
 import { installIdleTracking } from './idle'
 
 GlobalRegistrator.register({ url: 'https://bench.test/' })

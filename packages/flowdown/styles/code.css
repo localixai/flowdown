@@ -1,0 +1,186 @@
+/* ─── Code blocks (fenced code, `CodeBlock`) ───
+   A quiet panel: the language, a download and a copy button in a bar above the code, the code on
+   the veil.
+   No border, so a reply with several blocks does not read as a stack of boxes. */
+.flowdown .fd-code {
+  margin: 0.8rem 0;
+  border-radius: var(--fd-radius);
+  background: var(--fd-code-bg);
+}
+.flowdown .fd-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.35rem 0 0.9rem;
+  font-size: 0.78em;
+  color: var(--fd-fg-faint);
+}
+.flowdown .fd-code-language {
+  font-family: var(--fd-font-mono);
+  text-transform: lowercase;
+}
+/* The file a fence names: first in the bar, the language pushed to the copy button's side. */
+.flowdown .fd-code-title {
+  overflow: hidden;
+  min-width: 0;
+  margin-right: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--fd-font-mono);
+  color: var(--fd-fg-soft);
+}
+.flowdown .fd-code-title + .fd-code-language {
+  flex: none;
+}
+.flowdown .fd-code-bar > .fd-code-language:first-child {
+  margin-right: auto;
+}
+/* With no language or title before them, the buttons still sit at the end of the bar. */
+.flowdown .fd-code-bar > .fd-code-download:first-child {
+  margin-left: auto;
+}
+.flowdown :is(.fd-code-copy, .fd-code-download) {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--fd-radius-small);
+  background: none;
+  color: var(--fd-fg-faint);
+  cursor: pointer;
+  transition:
+    color var(--fd-duration) ease,
+    background-color var(--fd-duration) ease;
+}
+.flowdown .fd-code-download + .fd-code-copy {
+  margin-left: -0.3rem;
+}
+.flowdown :is(.fd-code-copy, .fd-code-download):hover {
+  background: var(--fd-veil-strong);
+  color: var(--fd-fg);
+}
+.flowdown .fd-code-copy[data-copied] {
+  color: var(--fd-success);
+}
+.flowdown :is(.fd-code-copy, .fd-code-download) svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+/* A finger needs a 44 px target; a mouse keeps the small buttons. */
+@media (pointer: coarse) {
+  .flowdown :is(.fd-code-copy, .fd-code-download) {
+    width: 44px;
+    height: 44px;
+  }
+  .flowdown .fd-code-download + .fd-code-copy {
+    margin-left: 0;
+  }
+}
+.flowdown pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 0.25rem 0.9rem 0.8rem;
+  font-family: var(--fd-font-mono);
+  font-size: 0.86em;
+  line-height: 1.55;
+  color: var(--fd-code-fg);
+  tab-size: 2;
+}
+/* A <pre> outside a code block (a page's own, a diagram's source) takes the whole panel look. */
+.flowdown :not(.fd-code) > pre {
+  margin: 0.8rem 0;
+  border-radius: var(--fd-radius);
+  background: var(--fd-code-bg);
+  padding: 0.8rem 0.9rem;
+}
+.flowdown .fd-diagram > pre {
+  margin: 0;
+}
+.flowdown pre code {
+  font: inherit;
+  white-space: pre;
+}
+
+/* Highlighted code (`flowdown/highlight`, or any highlighter that emits highlight.js classes). */
+.flowdown .hljs-comment,
+.flowdown .hljs-quote {
+  color: var(--fd-code-comment);
+  font-style: italic;
+}
+.flowdown :is(.hljs-keyword, .hljs-selector-tag, .hljs-doctag, .hljs-meta .hljs-keyword) {
+  color: var(--fd-code-keyword);
+}
+.flowdown :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string) {
+  color: var(--fd-code-string);
+}
+.flowdown
+  :is(
+    .hljs-number,
+    .hljs-literal,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-symbol,
+    .hljs-bullet
+  ) {
+  color: var(--fd-code-number);
+}
+.flowdown :is(.hljs-title, .hljs-title.function_, .hljs-section) {
+  color: var(--fd-code-function);
+}
+.flowdown :is(.hljs-type, .hljs-built_in, .hljs-title.class_, .hljs-params, .hljs-meta) {
+  color: var(--fd-code-type);
+}
+.flowdown :is(.hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class) {
+  color: var(--fd-code-tag);
+}
+/* A diff: the added and the removed lines in the status hues, the hunk header quiet. */
+.flowdown .hljs-addition {
+  color: var(--fd-success);
+}
+.flowdown .hljs-deletion {
+  color: var(--fd-danger);
+}
+.flowdown .language-diff :is(.hljs-meta, .hljs-comment) {
+  color: var(--fd-fg-faint);
+  font-style: normal;
+}
+.flowdown .hljs-emphasis {
+  font-style: italic;
+}
+.flowdown .hljs-strong {
+  font-weight: 600;
+}
+
+/* ─── The caret after a streaming reply (`<Markdown streaming>`) ───
+   On the last line, when the reply ends in text. It breathes rather than blinks: a hard
+   blink at the end of moving text drew the eye away from the words. */
+@keyframes fd-caret {
+  50% {
+    opacity: 0.2;
+  }
+}
+.flowdown[data-caret] > :last-child:is(p, h1, h2, h3, h4, h5, h6)::after,
+.flowdown[data-caret] > :last-child:is(ul, ol) > li:last-child::after,
+.flowdown[data-caret] > :last-child:is(blockquote, aside) p:last-child::after {
+  content: '';
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 0.15em;
+  border-radius: 1px;
+  background: var(--fd-caret-color, currentColor);
+  vertical-align: -0.15em;
+  opacity: 0.55;
+  animation: fd-caret 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flowdown[data-caret] *::after {
+    animation: none;
+  }
+}

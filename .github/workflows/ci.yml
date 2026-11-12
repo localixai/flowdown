@@ -28,7 +28,7 @@ jobs:
       # The sweeps over every prefix of the seeded replies run locally; see test/heavy.ts.
       - run: bun run test
         env:
-          LLX_SKIP_HEAVY: '1'
+          FLOWDOWN_SKIP_HEAVY: '1'
       # The package as it would be published: exports, types, entry isolation, 'use client'.
       - run: bun run build
       - run: bun run check

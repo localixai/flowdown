@@ -11,12 +11,12 @@
       },
     },
     "bench": {
-      "name": "llx-markdown-bench",
+      "name": "flowdown-bench",
       "dependencies": {
         "@happy-dom/global-registrator": "21.0.4",
         "commonmark-spec": "0.31.2",
+        "flowdown": "workspace:*",
         "highlight.js": "11.11.1",
-        "llx-markdown": "workspace:*",
         "markdown-it": "15.0.3",
         "markdown-it-footnote": "4.0.0",
         "markdown-it-task-lists": "2.1.1",
@@ -39,11 +39,11 @@
       },
     },
     "demo": {
-      "name": "llx-markdown-demo",
+      "name": "flowdown-demo",
       "dependencies": {
+        "flowdown": "workspace:*",
         "highlight.js": "11.12.0",
         "katex": "0.19.1",
-        "llx-markdown": "workspace:*",
         "mermaid": "12.3.0",
         "react": "19.3.1",
         "react-dom": "19.3.1",
@@ -56,17 +56,17 @@
       },
     },
     "examples/tui": {
-      "name": "llx-markdown-example-tui",
+      "name": "flowdown-example-tui",
       "dependencies": {
+        "flowdown": "workspace:*",
         "highlight.js": "11.12.0",
-        "llx-markdown": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "1.4.3",
       },
     },
-    "packages/llx-markdown": {
-      "name": "llx-markdown",
+    "packages/flowdown": {
+      "name": "flowdown",
       "version": "0.4.3",
       "devDependencies": {
         "@arethetypeswrong/cli": "0.18.5",
@@ -643,6 +643,14 @@
 
     "fflate": ["fflate@0.8.3", "", {}, "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA=="],
 
+    "flowdown": ["flowdown@workspace:packages/flowdown"],
+
+    "flowdown-bench": ["flowdown-bench@workspace:bench"],
+
+    "flowdown-demo": ["flowdown-demo@workspace:demo"],
+
+    "flowdown-example-tui": ["flowdown-example-tui@workspace:examples/tui"],
+
     "get-caller-file": ["get-caller-file@2.0.5", "", {}, "sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg=="],
 
     "get-tsconfig": ["get-tsconfig@5.0.0-beta.6", "", { "dependencies": { "resolve-pkg-maps": "^1.0.0" } }, "sha512-X6fBC0pmImC70gvX2zm56go9hx0MyoGVdG0tUCkg/D+Xnh5TJsOZ7iDbOdI3PvmtrDxnu1YdDufpK2QJX1Meqw=="],
@@ -718,14 +726,6 @@
     "layout-base": ["layout-base@1.0.2", "", {}, "sha512-8h2oVEZNktL4BH2JCOI90iD1yXwL6iNW7KcCKT2QZgQJR2vbqDsldCTPRU9NifTCqHZci57XvQQ15YTu+sTYPg=="],
 
     "linkify-it": ["linkify-it@6.1.0", "", { "dependencies": { "uc.micro": "^3.0.0" } }, "sha512-wJ/TwpSDTLepCrQoYWYIExIKg5Zchex2Nn5yk2mFnB+6PtdkHtyLx742md9csRjjOnGkKIS/RrbY7l8D6gT9Vw=="],
-
-    "llx-markdown": ["llx-markdown@workspace:packages/llx-markdown"],
-
-    "llx-markdown-bench": ["llx-markdown-bench@workspace:bench"],
-
-    "llx-markdown-demo": ["llx-markdown-demo@workspace:demo"],
-
-    "llx-markdown-example-tui": ["llx-markdown-example-tui@workspace:examples/tui"],
 
     "lodash-es": ["lodash-es@4.18.1", "", {}, "sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A=="],
 
@@ -1063,13 +1063,13 @@
 
     "d3-sankey/d3-shape": ["d3-shape@1.3.7", "", { "dependencies": { "d3-path": "1" } }, "sha512-EUkvKjqPFUAZyOlhY5gzCxCeI0Aep04LwIRpsZ/mLFelJiUfnK56jo5JMDSE7yyP2kLSb6LtF+S5chMk7uqPqw=="],
 
+    "flowdown-bench/highlight.js": ["highlight.js@11.11.1", "", {}, "sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w=="],
+
     "happy-dom/entities": ["entities@7.0.1", "", {}, "sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA=="],
 
     "hast-util-raw/parse5": ["parse5@8.1.1", "", { "dependencies": { "entities": "^9.0.0" } }, "sha512-EcR/6WDcU7b2N3vQSxKALCk9lXGtUMQxXio008OEMBE0kavu/7JLfBEeFPzi43nMqVDSbEn3QCK+BMCc9zO//w=="],
 
     "katex/commander": ["commander@15.1.0", "", {}, "sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ=="],
-
-    "llx-markdown-bench/highlight.js": ["highlight.js@11.11.1", "", {}, "sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w=="],
 
     "marked-react/marked": ["marked@17.0.6", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA=="],
 

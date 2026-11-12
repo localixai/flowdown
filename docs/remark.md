@@ -7,11 +7,11 @@ description:
 
 # Extensions and remark
 
-llx-markdown reads Markdown with a parser of its own: `<Markdown>` has no dependencies. There are
+flowdown reads Markdown with a parser of its own: `<Markdown>` has no dependencies. There are
 two ways to go beyond what it draws:
 
 - **An extension** adds your syntax to `<Markdown>`: an inline rule, a fence, a pass over the tree.
-- **`llx-markdown/remark`** is the dialect as a [unified](https://unifiedjs.com) plugin, for a
+- **`flowdown/remark`** is the dialect as a [unified](https://unifiedjs.com) plugin, for a
   pipeline that is not `<Markdown>`: HTML built on a server, in an email or in a static site, or
   another renderer with components of your own.
 
@@ -22,7 +22,7 @@ block is read once and kept while the text below it grows, so an extension costs
 only its last block.
 
 ```tsx
-import { Markdown, type Extension } from 'llx-markdown'
+import { Markdown, type Extension } from 'flowdown'
 
 /** `@name` as a link to the person. */
 const mentions: Extension = {
@@ -96,8 +96,8 @@ component, with every form drawn.
 
 ```tsx
 import { renderToStaticMarkup } from 'react-dom/server'
-import { Markdown } from 'llx-markdown'
-import { html } from 'llx-markdown/html'
+import { Markdown } from 'flowdown'
+import { html } from 'flowdown/html'
 
 const page = renderToStaticMarkup(<Markdown html={html}>{markdown}</Markdown>)
 ```
@@ -106,7 +106,7 @@ Without React, use the remark plugin in a unified pipeline of your own. The plug
 only: GitHub's syntax is `remark-gfm`'s to read, before it.
 
 ```sh
-bun add llx-markdown unified remark-parse remark-gfm remark-rehype rehype-stringify
+bun add flowdown unified remark-parse remark-gfm remark-rehype rehype-stringify
 ```
 
 ```ts
@@ -115,24 +115,24 @@ import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
-import { remarkLlx } from 'llx-markdown/remark'
+import { remarkFlowdown } from 'flowdown/remark'
 
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
-  .use(remarkLlx)
+  .use(remarkFlowdown)
   .use(remarkRehype)
   .use(rehypeStringify)
 
 const html = String(await processor.process(markdown))
 ```
 
-`llx-markdown/remark` does not depend on unified; these packages are your pipeline's. Wrap the
-output in an element with the class `llx-markdown` and import the stylesheet:
+`flowdown/remark` does not depend on unified; these packages are your pipeline's. Wrap the
+output in an element with the class `flowdown` and import the stylesheet:
 
 ```html
-<link rel="stylesheet" href="/llx-markdown/styles.css" />
-<div class="llx-markdown"><!-- html --></div>
+<link rel="stylesheet" href="/flowdown/styles.css" />
+<div class="flowdown"><!-- html --></div>
 ```
 
 What the static output does not have: tabs that switch (the variants are all shown, one after
@@ -150,9 +150,9 @@ See [Math](math.md#dollar-signs-that-are-not-math) for the rules.
 ```tsx
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { remarkLlx } from 'llx-markdown/remark'
+import { remarkFlowdown } from 'flowdown/remark'
 
-const remarkPlugins = [remarkGfm, remarkLlx]
+const remarkPlugins = [remarkGfm, remarkFlowdown]
 
 ;<ReactMarkdown remarkPlugins={remarkPlugins} components={components}>
   {text}
@@ -168,17 +168,17 @@ its label in `data-label`.
 | Form          | HTML                                                                                                   |
 | ------------- | ------------------------------------------------------------------------------------------------------ |
 | Callout       | `<blockquote data-callout="warning" data-callout-title="…">`                                           |
-| Steps         | `<ol class="llx-steps">`, each `<li>` holding `div.llx-step-head` (`span.llx-step-title`, `span.llx-step-meta`) and `div.llx-step-body` |
-| Stats         | `<ul class="llx-stats">`, each `<li>` holding `div.llx-stat` (`span.llx-stat-value`, `span.llx-stat-label`) |
-| Pros and cons | `<div class="llx-verdicts">` holding `aside.llx-verdict[data-verdict=pros]` and `[data-verdict=cons]`, each with `ul.llx-verdict-list` |
+| Steps         | `<ol class="fd-steps">`, each `<li>` holding `div.fd-step-head` (`span.fd-step-title`, `span.fd-step-meta`) and `div.fd-step-body` |
+| Stats         | `<ul class="fd-stats">`, each `<li>` holding `div.fd-stat` (`span.fd-stat-value`, `span.fd-stat-label`) |
+| Pros and cons | `<div class="fd-verdicts">` holding `aside.fd-verdict[data-verdict=pros]` and `[data-verdict=cons]`, each with `ul.fd-verdict-list` |
 | Tabs          | `<answer-tabs>` holding `<answer-tab data-label="…">`                                                  |
-| Folded section | `<details class="llx-details">` with a `<summary>` when the marker has a title                        |
-| Sources       | `<ul class="llx-sources">`, each `<li>` holding `div.llx-source`: the link (`span.llx-source-title`, `span.llx-source-host`) and `span.llx-source-note` |
+| Folded section | `<details class="fd-details">` with a `<summary>` when the marker has a title                        |
+| Sources       | `<ul class="fd-sources">`, each `<li>` holding `div.fd-source`: the link (`span.fd-source-title`, `span.fd-source-host`) and `span.fd-source-note` |
 | Code file name | `<code class="language-ts" data-title="src/app.ts">` for a fence that names its file                  |
-| A titled form | `<div class="llx-form">` with `p.llx-steps-title` (or `llx-tabs-title`, `llx-stats-title`, …) before the form |
-| Quote source  | `<footer class="llx-quote-source">` inside the quote                                                   |
-| Figure        | `<figure class="llx-figure">` with the `<img>` and a `<figcaption>`                                    |
-| Section number | `<span class="llx-section-number">1.2</span>` at the start of a heading                               |
+| A titled form | `<div class="fd-form">` with `p.fd-steps-title` (or `fd-tabs-title`, `fd-stats-title`, …) before the form |
+| Quote source  | `<footer class="fd-quote-source">` inside the quote                                                   |
+| Figure        | `<figure class="fd-figure">` with the `<img>` and a `<figcaption>`                                    |
+| Section number | `<span class="fd-section-number">1.2</span>` at the start of a heading                               |
 
 For example, this Markdown:
 
@@ -196,9 +196,9 @@ becomes:
 <blockquote data-callout="warning" data-callout-title="Back up first">
 <p>This deletes the table.</p>
 </blockquote>
-<ul class="llx-stats">
+<ul class="fd-stats">
 <li>
-<div class="llx-stat"><span class="llx-stat-value">42 ms</span><span class="llx-stat-label">p95 update</span></div>
+<div class="fd-stat"><span class="fd-stat-value">42 ms</span><span class="fd-stat-label">p95 update</span></div>
 </li>
 </ul>
 ```
@@ -213,12 +213,12 @@ classes and attributes above. `sanitizeSchemaFor` adds them to a schema:
 
 ```ts
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
-import { sanitizeSchemaFor } from 'llx-markdown/remark'
+import { sanitizeSchemaFor } from 'flowdown/remark'
 
 processor.use(rehypeSanitize, sanitizeSchemaFor(defaultSchema))
 ```
 
-Only the dialect's own names pass: `llx-` classes, the forms' data attributes and the two tab
+Only the dialect's own names pass: `fd-` classes, the forms' data attributes and the two tab
 elements. `<Markdown>` does not need this: it has its own sanitizer, with the same rules.
 [Security](security.md) lists what it allows.
 
@@ -232,14 +232,14 @@ elements. `<Markdown>` does not need this: it has its own sanitizer, with the sa
 
 Ids are made from the heading's text (`## Set up` is `set-up`), and a repeated heading is numbered
 (`setup`, `setup-1`), so the outline from `extractHeadings` links to the ids `<Markdown headingIds>`
-gives the page. `extractHeadings` is also exported from `llx-markdown` itself.
+gives the page. `extractHeadings` is also exported from `flowdown` itself.
 
 ## Cutting a document into blocks
 
 `<Markdown>` parses a reply block by block. The same tools are exported:
 
 ```ts
-import { createBlockSplitter, splitBlocks } from 'llx-markdown/remark'
+import { createBlockSplitter, splitBlocks } from 'flowdown/remark'
 
 splitBlocks('# A\n\nText\n')
 // [{ source: '# A\n\n', offset: 0, line: 1 }, { source: 'Text\n', offset: 5, line: 3 }]
@@ -269,5 +269,5 @@ document: a stable key for storing a tick or rewriting the text it came from.
 | `parseCalloutMarker`, `parseContainerMarker` | Read a `[!WARNING]` or `[!STEPS]` marker at the start of a quote.              |
 | `CALLOUT_KINDS`, `CONTAINER_KINDS`         | The marker kinds: `note`…`caution`, and `steps`, `tabs`, `stats`, `pros`, `cons`. |
 
-`llx-markdown/stream` holds the streaming helpers, also without React: see
+`flowdown/stream` holds the streaming helpers, also without React: see
 [Streaming](streaming.md#without-react).

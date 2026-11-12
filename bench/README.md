@@ -1,7 +1,7 @@
 # Benchmark
 
 How much main-thread work it costs to stream a model's reply into the page, measured the same
-way for llx-markdown and for the renderers it is compared with. This is the number the library
+way for flowdown and for the renderers it is compared with. This is the number the library
 is held to: [`budgets.json`](budgets.json) states the targets, `bun run bench:check` fails when a
 run misses one, and every full run is committed under [`results/`](results/).
 
@@ -45,7 +45,7 @@ are minutes apart, and a burst reaches one of them. The results in git are measu
 ## Scenarios
 
 The replies are generated from fixed seeds by
-[`packages/llx-markdown/test/replies.ts`](../packages/llx-markdown/test/replies.ts): the same text
+[`packages/flowdown/test/replies.ts`](../packages/flowdown/test/replies.ts): the same text
 on every run and every machine, and the run records each one's hash. The package's own tests
 stream the same replies, so a speed-up that changes what is drawn fails there first.
 
@@ -63,7 +63,7 @@ stream the same replies, so a speed-up that changes what is drawn fails there fi
 | `thread-30` | The last reply of a 30-message thread, with the 29 before it on the page. |
 | `answer-10k`, `answer-40k` | The same reply at two sizes, four times apart, for scaling. |
 
-Chunk patterns ([`test/chunks.ts`](../packages/llx-markdown/test/chunks.ts)):
+Chunk patterns ([`test/chunks.ts`](../packages/flowdown/test/chunks.ts)):
 
 - `frame`: 20 characters per update, what a host that batches per animation frame passes. This is
   the pattern markstream's benchmarks use (20-character chunks at 30 Hz), and every scenario runs
@@ -79,9 +79,9 @@ Two kinds of yardstick, both in `budgets.json`.
 highlighter, math or diagrams, so each parses the same Markdown:
 
 - **Streamdown** (Vercel): the closest match, a streaming renderer for AI replies built on
-  react-markdown with block memoization and its own healing (`remend`). The bar llx-markdown has
+  react-markdown with block memoization and its own healing (`remend`). The bar flowdown has
   to clear: `reference` allows at most 25% more total time.
-- **react-markdown** with remark-gfm: what most pages use, and what llx-markdown and Streamdown
+- **react-markdown** with remark-gfm: what most pages use, and what flowdown and Streamdown
   are built on. It reparses the whole reply on every token, which is the cost the other two
   exist to avoid.
 - **markstream-react**: a streaming renderer whose published benchmark this methodology follows.
@@ -95,7 +95,7 @@ highlighter, math or diagrams, so each parses the same Markdown:
   characters.
 - **Linear in the reply.** Streaming a reply four times longer should cost about four times
   more (exponent 1). A renderer that reparses the whole text on every token costs about sixteen
-  times more (exponent 2). The `linear` rule keeps llx-markdown under 1.25.
+  times more (exponent 2). The `linear` rule keeps flowdown under 1.25.
 - **No leak.** Streaming the same reply again keeps less than 1 MB more: what is cached is
   bounded, and nothing grows with use. The `no-leak` rule.
 
@@ -112,7 +112,7 @@ bun run bench:quick    # one run, `frame` only, for a quick look; writes no `lat
 Options for `bun src/run.ts` (with `NODE_ENV=production`):
 
 - `--only=chat-5k,answer-20k`: some scenarios.
-- `--renderers=llx,streamdown`: some renderers.
+- `--renderers=flowdown,streamdown`: some renderers.
 - `--runs=5`: more runs per measurement.
 - `--passes=3`: the whole table that many times over, each number the median of its passes.
 - `--label=name`: the name of the results file, `results/<date>-<name>.json`.
@@ -162,7 +162,7 @@ bench/
 
 ## Checked with Claude Fable 5.2
 
-On 2026-11-10 Claude Fable 5.2 reran every script here after llx-markdown moved to its own parser
+On 2026-11-10 Claude Fable 5.2 reran every script here after flowdown moved to its own parser
 and compared the output with what is committed: `bun run size`, `bun run features`, `bun run deps`,
 `bun run charts` and the full `bun run bench` (three runs, Apple M5:
 [results/2026-11-10-local.json](results/2026-11-10-local.json)). The feature table came out unchanged; the sizes, the
@@ -170,9 +170,9 @@ package count and the streaming times are the ones in [results/](results/). The 
 against every example of CommonMark and of GitHub's extensions
 ([docs/conformance.md](../docs/conformance.md)), the new renderer against what the previous one
 drew for about 2,300 documents, the block splitter against one parse of the whole document on
-seeded documents ([blocks-fuzz.test.tsx](../packages/llx-markdown/src/core/blocks-fuzz.test.tsx)),
+seeded documents ([blocks-fuzz.test.tsx](../packages/flowdown/src/core/blocks-fuzz.test.tsx)),
 and the sanitizer with 159 attack inputs, whole and at every prefix of a stream
-([security.test.tsx](../packages/llx-markdown/src/react/security.test.tsx)).
+([security.test.tsx](../packages/flowdown/src/react/security.test.tsx)).
 
 On 2026-11-11, for 0.4.1, it reran them again: `bun run size`, `bun run features`, `bun run deps`,
 `bun run parse`, `bun run charts` and `bun run bench` with `--passes=3`, which is the run
@@ -185,7 +185,7 @@ of line ending, and 120,000 generated code blocks and tables) and wrote the same
 
 The same day, for 0.4.2, the same scripts ran once more, `bun run bench` again with `--passes=3`.
 The five other renderers came within 1% of their figures for 0.4.1 over the table, which is how
-much the machine differed between the two runs; llx-markdown's own moved by what 0.4.2 changed.
+much the machine differed between the two runs; flowdown's own moved by what 0.4.2 changed.
 0.4.1's build was streamed in turn with the new one, in one process, on each kind of reply; the
 repair of an unfinished table row was set against 0.4.1's on about 438,000 texts and the parser
 against 0.4.1's on about 198,000 documents, and each wrote what the old one did.
@@ -198,7 +198,7 @@ into [results/parse.md](results/parse.md) and [results/parse.json](results/parse
 isolates the step every renderer starts with, so a parser can be compared with parsers that
 render nothing.
 
-- **The parsers** ([src/parsers.ts](src/parsers.ts)): llx-markdown's engine, to its tree and on to
+- **The parsers** ([src/parsers.ts](src/parsers.ts)): flowdown's engine, to its tree and on to
   HTML; mdast-util-from-markdown, remark's parser, which react-markdown and Streamdown run;
   micromark, the tokenizer under it; marked; markdown-it. Each reads GitHub's Markdown as far as
   its own packages go, with raw HTML passed through.
@@ -211,11 +211,11 @@ render nothing.
   row when one is shorter than 2 ms, for at least a second and 40 samples. Garbage collection
   stays in: it is part of what a parse costs. The median sample, then the median of three runs.
 - **What was read**: headings, code blocks, tables, rows, list items, emphasis, strikethrough,
-  footnote references and checkboxes are counted in every output and set against llx-markdown's
+  footnote references and checkboxes are counted in every output and set against flowdown's
   tree, so a parser that skipped part of a text shows it instead of a speed it did not earn.
 
 Options: `--quick` (one short run, writes nothing), `--runs=5`, `--runtimes=bun`,
-`--parsers=llx-markdown,marked`, `--no-write`.
+`--parsers=flowdown,marked`, `--no-write`.
 
 ## Size and features
 

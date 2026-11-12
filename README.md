@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/logo.svg" width="72" height="72" alt="llx-markdown">
+  <img src="docs/assets/logo.svg" width="72" height="72" alt="flowdown">
 </p>
 
-<h1 align="center">llx-markdown</h1>
+<h1 align="center">flowdown</h1>
 
 <p align="center">
   <strong>Ultrafast, lightweight streaming Markdown for React and AI replies</strong><br>
@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/llx-markdown"><img alt="npm" src="https://img.shields.io/npm/v/llx-markdown?color=cb3837"></a>
-  <a href="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/llx-markdown/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="packages/llx-markdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
+  <a href="https://www.npmjs.com/package/flowdown"><img alt="npm" src="https://img.shields.io/npm/v/flowdown?color=cb3837"></a>
+  <a href="https://github.com/rsaryev/flowdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/flowdown/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="packages/flowdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
   <a href="https://www.anthropic.com/claude/fable"><img alt="Built with Claude Fable 5.2" src="https://img.shields.io/badge/built%20with-Claude%20Fable%205.2-d97757"></a>
 </p>
 
@@ -31,7 +31,7 @@
 </p>
 
 <p align="center">
-  <sub>One reply, streamed twice: by <code>&lt;Markdown&gt;</code> on a page and by <code>llx-markdown/tui</code> <a href="#in-a-terminal">in a terminal</a>.</sub>
+  <sub>One reply, streamed twice: by <code>&lt;Markdown&gt;</code> on a page and by <code>flowdown/tui</code> <a href="#in-a-terminal">in a terminal</a>.</sub>
 </p>
 
 GitHub Markdown, plus the forms a model can write and a reader can scan: steps, tabs, headline
@@ -39,12 +39,12 @@ figures, pros and cons, callouts, folded sections, sources, file trees, titled c
 math. It is drawn as the text arrives, without flicker or raw syntax showing.
 
 ```sh
-npm install llx-markdown
+npm install flowdown
 ```
 
 ```tsx
-import { Markdown } from 'llx-markdown'
-import 'llx-markdown/styles.css'
+import { Markdown } from 'flowdown'
+import 'flowdown/styles.css'
 
 export function Reply({ text, done }: { text: string; done: boolean }) {
   return <Markdown streaming={!done}>{text}</Markdown>
@@ -53,10 +53,10 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 
 > [!TIP]
 > A model writes the forms once its system prompt has the dialect: `answerFormatPrompt()` from
-> `llx-markdown/prompt` is that text. [Prompting](docs/prompting.md) has the details.
+> `flowdown/prompt` is that text. [Prompting](docs/prompting.md) has the details.
 
 The same package draws a reply [outside React](#beyond-react) too. The rest is in
-[the package's README](packages/llx-markdown/README.md) and
+[the package's README](packages/flowdown/README.md) and
 [the documentation](docs/getting-started.md).
 
 ## Why
@@ -75,7 +75,7 @@ The same package draws a reply [outside React](#beyond-react) too. The rest is i
   ([security](docs/security.md)).
 
 <p align="center">
-  <img alt="llx-markdown compared with Streamdown, react-markdown, markdown-to-jsx, markstream and marked-react: streaming time in milliseconds, download size, packages installed and how the cost grows with a longer reply" src="bench/results/charts/compare.png">
+  <img alt="flowdown compared with Streamdown, react-markdown, markdown-to-jsx, markstream and marked-react: streaming time in milliseconds, download size, packages installed and how the cost grows with a longer reply" src="bench/results/charts/compare.png">
 </p>
 
 > [!NOTE]
@@ -203,11 +203,11 @@ flowchart LR
 
 | Import                 | Draws                                               | Runs                    |
 | ---------------------- | --------------------------------------------------- | ----------------------- |
-| `llx-markdown`         | React elements                                      | wherever React does     |
-| `llx-markdown/static`  | HTML text: a server, an email, a static site        | anywhere, no page       |
-| `llx-markdown/dom`     | a page with no framework, kept up to date in place  | a browser               |
-| `llx-markdown/element` | `<llx-markdown>`, for Vue, Svelte, Solid or Angular | a browser               |
-| `llx-markdown/tui`     | the rows of a terminal                              | anywhere, no page       |
+| `flowdown`         | React elements                                      | wherever React does     |
+| `flowdown/static`  | HTML text: a server, an email, a static site        | anywhere, no page       |
+| `flowdown/dom`     | a page with no framework, kept up to date in place  | a browser               |
+| `flowdown/element` | `<flow-down>`, for Vue, Svelte, Solid or Angular | a browser               |
+| `flowdown/tui`     | the rows of a terminal                              | anywhere, no page       |
 
 None but the first imports React, and none imports any package. The other four load 28 to 31 KB
 gzipped each.[^size]
@@ -217,7 +217,7 @@ gzipped each.[^size]
 <br>
 
 ```ts
-import { renderToHtml } from 'llx-markdown/static'
+import { renderToHtml } from 'flowdown/static'
 
 const html = renderToHtml(reply, { headingIds: true })
 ```
@@ -229,8 +229,8 @@ const html = renderToHtml(reply, { headingIds: true })
 <br>
 
 ```ts
-import { mount } from 'llx-markdown/dom'
-import 'llx-markdown/styles.css'
+import { mount } from 'flowdown/dom'
+import 'flowdown/styles.css'
 
 const reply = mount(document.querySelector('#reply')!)
 for await (const text of stream) reply.update(text, { streaming: true })
@@ -244,14 +244,14 @@ reply.update(text)
 <br>
 
 ```ts
-import { defineMarkdownElement } from 'llx-markdown/element'
-import 'llx-markdown/styles.css'
+import { defineMarkdownElement } from 'flowdown/element'
+import 'flowdown/styles.css'
 
 defineMarkdownElement()
 ```
 
 ```html
-<llx-markdown streaming></llx-markdown>
+<flow-down streaming></flow-down>
 ```
 
 </details>
@@ -260,7 +260,7 @@ defineMarkdownElement()
 
 ### In a terminal
 
-`llx-markdown/tui` draws the same reply as rows of styled text: steps as a chain, figures as tiles,
+`flowdown/tui` draws the same reply as rows of styled text: steps as a chain, figures as tiles,
 a file tree with its branches and code in the highlighter's colours. A formula is written in
 Unicode: $`\mu = \frac{1}{k} \sum_{i=1}^{k} r_i`$ becomes `μ = 1/k ∑ᵢ₌₁ᵏ rᵢ`.
 
@@ -269,8 +269,8 @@ Unicode: $`\mu = \frac{1}{k} \sum_{i=1}^{k} r_i`$ becomes `μ = 1/k ∑ᵢ₌₁
 </p>
 
 ```ts
-import { highlight } from 'llx-markdown/highlight'
-import { renderToAnsi } from 'llx-markdown/tui'
+import { highlight } from 'flowdown/highlight'
+import { renderToAnsi } from 'flowdown/tui'
 
 process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns, highlight }) + '\n')
 ```
@@ -282,7 +282,7 @@ The recording is [`examples/tui`](examples/tui) as it runs, with every form of t
 
 | Path                    | What it holds                                        |
 | ----------------------- | ---------------------------------------------------- |
-| `packages/llx-markdown` | the library                                          |
+| `packages/flowdown` | the library                                          |
 | `docs/`                 | the documentation, as Markdown; `nav.json` orders it |
 | `demo/`                 | the scenes above and the script that captures them   |
 | `examples/tui`          | a reply streamed into a terminal: `bun start`        |
@@ -290,7 +290,7 @@ The recording is [`examples/tui`](examples/tui) as it runs, with every form of t
 
 ```sh
 bun install
-bun run test        # the library's tests; CI skips the heavy sweeps (LLX_SKIP_HEAVY=1)
+bun run test        # the library's tests; CI skips the heavy sweeps (FLOWDOWN_SKIP_HEAVY=1)
 bun run check       # build output: exports, types, entry isolation
 bun run shots       # the pictures above, from demo/scenes
 bun run size        # bundle size, against its budgets

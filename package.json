@@ -1,5 +1,5 @@
 {
-  "name": "llx-markdown-monorepo",
+  "name": "flowdown-monorepo",
   "private": true,
   "workspaces": [
     "packages/*",
@@ -9,20 +9,20 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "bun run --cwd packages/llx-markdown build",
-    "test": "bun run --cwd packages/llx-markdown test",
-    "typecheck": "bun run --cwd packages/llx-markdown typecheck",
+    "build": "bun run --cwd packages/flowdown build",
+    "test": "bun run --cwd packages/flowdown test",
+    "typecheck": "bun run --cwd packages/flowdown typecheck",
     "lint": "oxlint packages examples demo",
     "format": "oxfmt packages examples demo",
     "format:check": "oxfmt --check packages examples demo",
-    "check": "bun run --cwd packages/llx-markdown check",
+    "check": "bun run --cwd packages/flowdown check",
     "changeset": "changeset",
     "version": "changeset version && bun install",
     "release": "bun run build && bun run check && changeset publish",
-    "conformance": "bun run --cwd packages/llx-markdown conformance",
+    "conformance": "bun run --cwd packages/flowdown conformance",
     "bench": "bun run --cwd bench bench",
     "shots": "bun run --cwd demo shots",
-    "size": "bun run --cwd packages/llx-markdown size && bun run --cwd bench size"
+    "size": "bun run --cwd packages/flowdown size && bun run --cwd bench size"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",

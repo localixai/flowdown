@@ -18,8 +18,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { cpus, platform, release, tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { scaling, scenarios } from '../../packages/llx-markdown/test/replies'
-import { hash } from '../../packages/llx-markdown/test/random'
+import { scaling, scenarios } from '../../packages/flowdown/test/replies'
+import { hash } from '../../packages/flowdown/test/random'
 import { PARSERS } from './parsers'
 
 const flag = (name: string) =>
@@ -44,10 +44,10 @@ const corpus = [
 const bytes = (text: string) => Buffer.byteLength(text, 'utf8')
 
 const versionOf = (pkg: string) =>
-  pkg === 'llx-markdown'
+  pkg === 'flowdown'
     ? (
         JSON.parse(
-          readFileSync(join(import.meta.dir, '../../packages/llx-markdown/package.json'), 'utf8'),
+          readFileSync(join(import.meta.dir, '../../packages/flowdown/package.json'), 'utf8'),
         ) as { version: string }
       ).version
     : (
@@ -75,7 +75,7 @@ const runtimes = wantedRuntimes
   })
   .filter((r) => r !== null)
 
-const work = mkdtempSync(join(tmpdir(), 'llx-parse-'))
+const work = mkdtempSync(join(tmpdir(), 'fd-parse-'))
 try {
   const corpusPath = join(work, 'corpus.json')
   writeFileSync(corpusPath, JSON.stringify(corpus))
@@ -170,19 +170,19 @@ try {
   }
 
   const summary = runtimes.map((runtime) => {
-    const base = overall(runtime.name, 'llx-markdown')
+    const base = overall(runtime.name, 'flowdown')
     const lines = parsers
       .map((p) => ({ p, speed: overall(runtime.name, p.name) }))
       .toSorted((a, b) => b.speed - a.speed)
       .map(
         ({ p, speed }) =>
           `| \`${p.name}\` | ${p.output} | ${speed.toFixed(0)} MB/s | ${
-            p.name === 'llx-markdown' ? '1.0×' : `${(base / speed).toFixed(1)}×`
+            p.name === 'flowdown' ? '1.0×' : `${(base / speed).toFixed(1)}×`
           } |`,
       )
     return `### ${runtime.name} ${runtime.version} (${runtime.engine})
 
-| Parser | Output | Throughput | llx-markdown is faster by |
+| Parser | Output | Throughput | flowdown is faster by |
 | --- | --- | ---: | ---: |
 ${lines.join('\n')}`
   })
@@ -200,15 +200,15 @@ ${lines.join('\n')}`
     return `### ${runtime.name} ${runtime.version}\n\n${[head, rule, ...lines].join('\n')}`
   })
 
-  // What each parser drew, against llx-markdown's tree: a parser that skipped part of a text, or
+  // What each parser drew, against flowdown's tree: a parser that skipped part of a text, or
   // read it differently, shows here rather than as a speed it did not earn.
   const firstRuntime = runtimes[0]!.name
   const differences: string[] = []
   for (const text of corpus) {
-    const base = row(firstRuntime, 'llx-markdown', text.name)?.counts
+    const base = row(firstRuntime, 'flowdown', text.name)?.counts
     if (!base) continue
     for (const p of parsers) {
-      if (p.name === 'llx-markdown') continue
+      if (p.name === 'flowdown') continue
       const counts = row(firstRuntime, p.name, text.name)!.counts
       const off = Object.keys(base)
         .filter((key) => counts[key] !== base[key])
@@ -270,24 +270,24 @@ ${perText.join('\n\n')}
 | --- | --- | --- | --- |
 ${parsers.map((p) => `| \`${p.name}\` | ${versionOf(p.pkg)} | ${p.output} | ${p.reads} |`).join('\n')}
 
-Raw HTML is passed through by all of them; none sanitizes. \`llx-markdown\` is the engine
+Raw HTML is passed through by all of them; none sanitizes. \`flowdown\` is the engine
 \`<Markdown>\` runs, called directly: it is not a public entry of the package.
 \`mdast-util-from-markdown\` is remark's parser, the one react-markdown and Streamdown run.
 The two trees differ in one way that costs time: mdast gives every node its position in the
-source, inline ones too, where llx-markdown's tree gives positions to blocks only.
+source, inline ones too, where flowdown's tree gives positions to blocks only.
 
 ## What each one read
 
 Headings, code blocks, tables, rows, list items, strong, emphasis, strikethrough, footnote
 references and checkboxes in each output, counted on the tree or the HTML, against
-llx-markdown's tree. Only the differences are listed. In HTML a footnote's definition is a list
+flowdown's tree. Only the differences are listed. In HTML a footnote's definition is a list
 item, one more than a tree counts, and micromark heads the footnotes with a heading of its own;
 marked reads no footnotes.
 
 ${
   differences.length === 0
     ? 'None: every parser found the same elements in every text.'
-    : `| Text | Parser | Counted vs llx-markdown |\n| --- | --- | --- |\n${differences.join('\n')}`
+    : `| Text | Parser | Counted vs flowdown |\n| --- | --- | --- |\n${differences.join('\n')}`
 }
 `
 

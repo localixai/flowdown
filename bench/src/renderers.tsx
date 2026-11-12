@@ -2,11 +2,11 @@
  * The renderers compared, each as a component that takes a reply and whether it is still
  * streaming. Each one is configured the way its README tells a chat to use it, with no
  * highlighter, math or diagrams, so every one parses the same Markdown and draws the same kind of
- * page. `llx+highlight` adds the one optional stage that runs on every token of a code fence.
+ * page. `flowdown+highlight` adds the one optional stage that runs on every token of a code fence.
  */
 import { createRequire } from 'node:module'
-import { Markdown } from 'llx-markdown'
-import { highlight } from 'llx-markdown/highlight'
+import { Markdown } from 'flowdown'
+import { highlight } from 'flowdown/highlight'
 import type { ReactNode } from 'react'
 import MarkdownToJsx from 'markdown-to-jsx/react'
 import MarkedReact from 'marked-react'
@@ -29,15 +29,15 @@ const gfm = [remarkGfm]
 
 export const RENDERERS: Renderer[] = [
   {
-    name: 'llx',
-    version: versionOf('llx-markdown'),
+    name: 'flowdown',
+    version: versionOf('flowdown'),
     about: '`<Markdown streaming>`: blocks, healing, the dialect.',
     Render: ({ text, streaming }) => <Markdown streaming={streaming}>{text}</Markdown>,
   },
   {
-    name: 'llx+highlight',
-    version: versionOf('llx-markdown'),
-    about: 'The same, with `llx-markdown/highlight` colouring code.',
+    name: 'flowdown+highlight',
+    version: versionOf('flowdown'),
+    about: 'The same, with `flowdown/highlight` colouring code.',
     Render: ({ text, streaming }) => (
       <Markdown streaming={streaming} highlight={highlight}>
         {text}

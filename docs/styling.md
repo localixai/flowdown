@@ -1,16 +1,16 @@
 ---
 title: Styling
-description: Recolour llx-markdown with CSS tokens, follow your page's light and dark mode, and restyle any element of the dialect.
+description: Recolour flowdown with CSS tokens, follow your page's light and dark mode, and restyle any element of the dialect.
 ---
 
 # Styling
 
 ```ts
-import 'llx-markdown/styles.css'
+import 'flowdown/styles.css'
 ```
 
 One stylesheet, about 4 KB compressed, with no framework behind it. Every rule is scoped to the
-`.llx-markdown` element the renderer draws, so it touches nothing else on the page.
+`.flowdown` element the renderer draws, so it touches nothing else on the page.
 
 ## Light and dark
 
@@ -42,16 +42,16 @@ one block, give it a class and set `color-scheme` on it, or wrap it in an elemen
 
 ## Tokens
 
-Every colour, font and radius is a custom property. Set them on `.llx-markdown`, or on any
+Every colour, font and radius is a custom property. Set them on `.flowdown`, or on any
 ancestor, to match your design system:
 
 ```css
-.llx-markdown {
-  --llx-fg: var(--foreground);
-  --llx-bg: var(--background);
-  --llx-border: var(--border);
-  --llx-link: var(--primary);
-  --llx-radius: var(--radius);
+.flowdown {
+  --fd-fg: var(--foreground);
+  --fd-bg: var(--background);
+  --fd-border: var(--border);
+  --fd-link: var(--primary);
+  --fd-radius: var(--radius);
 }
 ```
 
@@ -62,54 +62,54 @@ holds in both themes; to give each theme its own value, use `light-dark()` as we
 #### Text and surfaces
 | Token | Used for |
 | --- | --- |
-| `--llx-fg` | Body text; panels are mixed from it. |
-| `--llx-fg-soft` | Secondary text: a step's body, a quote. |
-| `--llx-fg-faint` | Annotations: a step's "when", a tree comment, a code language. |
-| `--llx-bg` | The ground the Markdown sits on; diagrams mix their fills over it. |
-| `--llx-bg-solid` | What shows through a translucent `--llx-bg` (a glass panel); white when unset. Set it when your ground has alpha, or a dark glass panel draws light diagrams. |
-| `--llx-border`, `--llx-border-subtle`, `--llx-border-strong` | Table rules, tab underlines, tree guides. |
-| `--llx-veil`, `--llx-veil-strong` | Panels: callouts, stats, code blocks. Mixed from `--llx-fg`. |
-| `--llx-link` | Links. |
-| `--llx-focus` | Focus rings on tabs, tree rows, the copy button. |
+| `--fd-fg` | Body text; panels are mixed from it. |
+| `--fd-fg-soft` | Secondary text: a step's body, a quote. |
+| `--fd-fg-faint` | Annotations: a step's "when", a tree comment, a code language. |
+| `--fd-bg` | The ground the Markdown sits on; diagrams mix their fills over it. |
+| `--fd-bg-solid` | What shows through a translucent `--fd-bg` (a glass panel); white when unset. Set it when your ground has alpha, or a dark glass panel draws light diagrams. |
+| `--fd-border`, `--fd-border-subtle`, `--fd-border-strong` | Table rules, tab underlines, tree guides. |
+| `--fd-veil`, `--fd-veil-strong` | Panels: callouts, stats, code blocks. Mixed from `--fd-fg`. |
+| `--fd-link` | Links. |
+| `--fd-focus` | Focus rings on tabs, tree rows, the copy button. |
 
 #### Status
 | Token | Used for |
 | --- | --- |
-| `--llx-info` | `NOTE` callouts. |
-| `--llx-success` | `TIP` callouts, the pros' marks. |
-| `--llx-important` | `IMPORTANT` callouts. |
-| `--llx-warning` | `WARNING` callouts. |
-| `--llx-danger` | `CAUTION` callouts, the cons' marks. |
+| `--fd-info` | `NOTE` callouts. |
+| `--fd-success` | `TIP` callouts, the pros' marks. |
+| `--fd-important` | `IMPORTANT` callouts. |
+| `--fd-warning` | `WARNING` callouts. |
+| `--fd-danger` | `CAUTION` callouts, the cons' marks. |
 
 These colour glyphs and marks only, never a fill.
 
 #### Code
 | Token | Used for |
 | --- | --- |
-| `--llx-code-bg`, `--llx-code-fg` | Code blocks. |
-| `--llx-code-comment` | Comments. |
-| `--llx-code-keyword` | Keywords. |
-| `--llx-code-string` | Strings. |
-| `--llx-code-number` | Numbers and literals. |
-| `--llx-code-function` | Function and class names. |
-| `--llx-code-type` | Types and built-ins. |
-| `--llx-code-tag` | Markup tags. |
+| `--fd-code-bg`, `--fd-code-fg` | Code blocks. |
+| `--fd-code-comment` | Comments. |
+| `--fd-code-keyword` | Keywords. |
+| `--fd-code-string` | Strings. |
+| `--fd-code-number` | Numbers and literals. |
+| `--fd-code-function` | Function and class names. |
+| `--fd-code-type` | Types and built-ins. |
+| `--fd-code-tag` | Markup tags. |
 
 #### Diagrams
 | Token | Used for |
 | --- | --- |
-| `--llx-chart-1` … `--llx-chart-8` | Diagram series, in order: pie slices, chart lines, git branches. |
+| `--fd-chart-1` … `--fd-chart-8` | Diagram series, in order: pie slices, chart lines, git branches. |
 
 Diagrams read these tokens when they are drawn, so a diagram matches the page it sits on.
 
 #### Shape and type
 | Token | Used for |
 | --- | --- |
-| `--llx-font-heading` | Headings. Inherits the page's font by default. |
-| `--llx-font-mono` | Code, trees. |
-| `--llx-radius`, `--llx-radius-small` | Panels; buttons and inline code. |
-| `--llx-duration` | Hover and focus transitions. |
-| `--llx-caret-color` | The streaming caret. The text colour by default. |
+| `--fd-font-heading` | Headings. Inherits the page's font by default. |
+| `--fd-font-mono` | Code, trees. |
+| `--fd-radius`, `--fd-radius-small` | Panels; buttons and inline code. |
+| `--fd-duration` | Hover and focus transitions. |
+| `--fd-caret-color` | The streaming caret. The text colour by default. |
 
 ---
 
@@ -118,26 +118,26 @@ Body text uses the font of the page around it.
 ## Restyling an element
 
 Every element the dialect adds has a class. Restyle one with a selector that starts at
-`.llx-markdown`, as the package's own rules do:
+`.flowdown`, as the package's own rules do:
 
 ```css
-.llx-markdown .llx-step-title { font-size: 1.05rem; }
-.llx-markdown .llx-tab[aria-selected='true'] { color: var(--brand); }
+.flowdown .fd-step-title { font-size: 1.05rem; }
+.flowdown .fd-tab[aria-selected='true'] { color: var(--brand); }
 ```
 
 | Form | Classes |
 | --- | --- |
-| Every form | `.llx-form`; a titled form has `.llx-steps-title`, `.llx-tabs-title`, `.llx-stats-title` or `.llx-sources-title` above it |
-| Callout | `.llx-callout[data-callout="warning"]`, `.llx-callout-icon`, `.llx-callout-title`, `.llx-callout-body` |
-| Steps | `.llx-steps`, `.llx-step-head`, `.llx-step-title`, `.llx-step-meta`, `.llx-step-body` |
-| Tabs | `.llx-tabs`, `.llx-tab-list`, `.llx-tab`, `.llx-tab-panel` |
-| Stats | `.llx-stats`, `.llx-stat`, `.llx-stat-value`, `.llx-stat-label` |
-| Pros and cons | `.llx-verdicts`, `.llx-verdict[data-verdict="pros"]`, `.llx-verdict-title`, `.llx-verdict-list` |
-| Folded section | `.llx-details` and its `summary` (a `<details>` written as HTML takes the same rules) |
-| Sources | `.llx-sources`, `.llx-source`, `.llx-source-title`, `.llx-source-host`, `.llx-source-note` |
-| File tree | `.llx-tree`, `.llx-tree-row`, `.llx-tree-name`, `.llx-tree-comment` |
-| Diagram | `.llx-diagram`, `.llx-diagram-canvas`; its toolbar `.llx-diagram-actions` of `.llx-diagram-action` buttons; the viewer `dialog.llx-diagram-viewer`, `.llx-diagram-viewer-bar`, `.llx-diagram-stage`, `.llx-diagram-viewer-canvas` |
-| Code block | `.llx-code`, `.llx-code-bar`, `.llx-code-title`, `.llx-code-language` (absent when the fence names none), `.llx-code-download`, `.llx-code-copy` |
+| Every form | `.fd-form`; a titled form has `.fd-steps-title`, `.fd-tabs-title`, `.fd-stats-title` or `.fd-sources-title` above it |
+| Callout | `.fd-callout[data-callout="warning"]`, `.fd-callout-icon`, `.fd-callout-title`, `.fd-callout-body` |
+| Steps | `.fd-steps`, `.fd-step-head`, `.fd-step-title`, `.fd-step-meta`, `.fd-step-body` |
+| Tabs | `.fd-tabs`, `.fd-tab-list`, `.fd-tab`, `.fd-tab-panel` |
+| Stats | `.fd-stats`, `.fd-stat`, `.fd-stat-value`, `.fd-stat-label` |
+| Pros and cons | `.fd-verdicts`, `.fd-verdict[data-verdict="pros"]`, `.fd-verdict-title`, `.fd-verdict-list` |
+| Folded section | `.fd-details` and its `summary` (a `<details>` written as HTML takes the same rules) |
+| Sources | `.fd-sources`, `.fd-source`, `.fd-source-title`, `.fd-source-host`, `.fd-source-note` |
+| File tree | `.fd-tree`, `.fd-tree-row`, `.fd-tree-name`, `.fd-tree-comment` |
+| Diagram | `.fd-diagram`, `.fd-diagram-canvas`; its toolbar `.fd-diagram-actions` of `.fd-diagram-action` buttons; the viewer `dialog.fd-diagram-viewer`, `.fd-diagram-viewer-bar`, `.fd-diagram-stage`, `.fd-diagram-viewer-canvas` |
+| Code block | `.fd-code`, `.fd-code-bar`, `.fd-code-title`, `.fd-code-language` (absent when the fence names none), `.fd-code-download`, `.fd-code-copy` |
 
 The root carries `data-streaming` while a reply streams, and `data-caret` while its caret shows.
 

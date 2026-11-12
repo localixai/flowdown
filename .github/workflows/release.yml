@@ -1,7 +1,7 @@
 name: Release
 
-# Push a tag `v<version>`, the version in packages/llx-markdown/package.json, to publish it to npm
-# as `llx-markdown`. The token is the repository secret `NPM_TOKEN`.
+# Push a tag `v<version>`, the version in packages/flowdown/package.json, to publish it to npm
+# as `flowdown`. The token is the repository secret `NPM_TOKEN`.
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - name: The tag names the package's version
-        working-directory: packages/llx-markdown
+        working-directory: packages/flowdown
         env:
           TAG: ${{ github.ref_name }}
           EVENT: ${{ github.event_name }}
@@ -41,11 +41,11 @@ jobs:
           if [ "$EVENT" = workflow_dispatch ]; then
             git fetch --quiet --tags origin
             if ! git rev-parse --quiet --verify "refs/tags/v$version" > /dev/null; then
-              echo "::error::no tag v$version for packages/llx-markdown/package.json"
+              echo "::error::no tag v$version for packages/flowdown/package.json"
               exit 1
             fi
           elif [ "$TAG" != "v$version" ]; then
-            echo "::error::tag $TAG, but packages/llx-markdown/package.json is $version"
+            echo "::error::tag $TAG, but packages/flowdown/package.json is $version"
             exit 1
           fi
 
@@ -53,12 +53,12 @@ jobs:
       # The sweeps over every prefix of the seeded replies run locally; see test/heavy.ts.
       - run: bun run test
         env:
-          LLX_SKIP_HEAVY: '1'
+          FLOWDOWN_SKIP_HEAVY: '1'
       - run: bun run build
       - run: bun run check
 
       - name: Publish
-        working-directory: packages/llx-markdown
+        working-directory: packages/flowdown
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |

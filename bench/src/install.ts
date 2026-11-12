@@ -43,7 +43,7 @@ function installed(name: string, start: Entry): number {
 
 /** Each renderer's package, and the stylesheet its README tells a page to load. */
 const RENDERERS = [
-  { name: 'llx-markdown', styles: 'Own stylesheet, light and dark (`llx-markdown/styles.css`)' },
+  { name: 'flowdown', styles: 'Own stylesheet, light and dark (`flowdown/styles.css`)' },
   { name: 'streamdown', styles: 'Tailwind utility classes: needs Tailwind in the page' },
   { name: 'react-markdown', styles: 'None: plain HTML elements' },
   { name: 'markdown-to-jsx', styles: 'None: plain HTML elements' },
@@ -56,9 +56,9 @@ for (const { name, styles } of RENDERERS) {
   const manifest = JSON.parse(
     readFileSync(join(import.meta.dir, `../node_modules/${name}/package.json`), 'utf8'),
   )
-  // llx-markdown is this workspace; its entry is under `workspaces`.
+  // flowdown is this workspace; its entry is under `workspaces`.
   const entry: Entry =
-    name === 'llx-markdown' ? lock.workspaces['packages/llx-markdown'] : packages[name]![2]!
+    name === 'flowdown' ? lock.workspaces['packages/flowdown'] : packages[name]![2]!
   figures[name] = { packages: installed(name, entry), license: manifest.license, styles }
   console.log(
     `${name.padEnd(18)} ${String(figures[name]!.packages).padStart(4)} packages  ${manifest.license}`,

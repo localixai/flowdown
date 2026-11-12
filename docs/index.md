@@ -6,7 +6,7 @@ description:
   streams.
 ---
 
-# llx-markdown
+# flowdown
 
 Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, no
 dependencies, 31.7 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
@@ -15,8 +15,8 @@ against, callouts, folded sections, sources, file trees, diagrams and math. It r
 without flicker or raw syntax showing.
 
 ```tsx
-import { Markdown } from 'llx-markdown'
-import 'llx-markdown/styles.css'
+import { Markdown } from 'flowdown'
+import 'flowdown/styles.css'
 
 export function Reply({ text, done }: { text: string; done: boolean }) {
   return <Markdown streaming={!done}>{text}</Markdown>
@@ -92,7 +92,7 @@ What sets it apart:
 - **Heavy parts load when needed.** The HTML parser is fetched the first time a document holds HTML;
   KaTeX, Mermaid and highlight.js are optional and yours to load. See [Math](math.md),
   [Diagrams](diagrams.md) and [Highlighting](highlighting.md).
-- **Plain CSS.** One stylesheet on `--llx-*` custom properties, light and dark built in, no Tailwind
+- **Plain CSS.** One stylesheet on `--fd-*` custom properties, light and dark built in, no Tailwind
   required. See [Styling](styling.md).
 - **Safe by default.** Raw HTML is sanitized, unsafe URLs are dropped and diagrams run in Mermaid's
   strict mode. See [Security](security.md).

@@ -1,0 +1,150 @@
+/* ─── A drawn diagram's toolbar and its enlarged viewer (`mermaid/diagram.tsx`, `viewer.tsx`) ───
+   The toolbar sits over the diagram's top right corner and shows when the pointer is over the
+   figure or the focus is in it; under a finger, where there is no hover, it always shows. */
+.flowdown .fd-diagram {
+  position: relative;
+}
+.flowdown .fd-diagram-actions {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 1;
+  display: flex;
+  gap: 0.125rem;
+  border: 1px solid var(--fd-border-subtle);
+  border-radius: var(--fd-radius-small);
+  background: color-mix(in oklab, var(--fd-bg) 88%, transparent);
+  padding: 0.125rem;
+  opacity: 0;
+  transition: opacity var(--fd-duration) ease;
+}
+.flowdown .fd-diagram:is(:hover, :focus-within) .fd-diagram-actions {
+  opacity: 1;
+}
+.flowdown .fd-diagram-action {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--fd-radius-small);
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--fd-fg-faint);
+  cursor: pointer;
+  transition:
+    color var(--fd-duration) ease,
+    background-color var(--fd-duration) ease;
+}
+.flowdown .fd-diagram-action:hover {
+  background: var(--fd-veil-strong);
+  color: var(--fd-fg);
+}
+.flowdown .fd-diagram-action[data-copied] {
+  color: var(--fd-success);
+}
+.flowdown .fd-diagram-action svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+/* The viewer: a modal dialog over most of the window, the controls in a bar above the stage. */
+.flowdown .fd-diagram-viewer {
+  box-sizing: border-box;
+  width: min(80rem, calc(100vw - 2rem));
+  max-width: none;
+  height: min(60rem, calc(100dvh - 2rem));
+  max-height: none;
+  margin: auto;
+  border: 1px solid var(--fd-border);
+  border-radius: var(--fd-radius);
+  background: var(--fd-bg);
+  padding: 0;
+  color: var(--fd-fg);
+  overflow: hidden;
+}
+.flowdown .fd-diagram-viewer[open] {
+  display: flex;
+  flex-direction: column;
+}
+.flowdown .fd-diagram-viewer::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+.flowdown .fd-diagram-viewer-bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.125rem;
+  border-bottom: 1px solid var(--fd-border-subtle);
+  padding: 0.35rem;
+}
+.flowdown .fd-diagram-zoom {
+  min-width: 3.5rem;
+  font-size: 0.8em;
+  font-variant-numeric: tabular-nums;
+}
+.flowdown .fd-diagram-close {
+  margin-left: auto;
+}
+/* The stage takes every gesture itself: no browser pan or pinch-zoom of the page under it. */
+.flowdown .fd-diagram-stage {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.flowdown .fd-diagram-stage[data-moving] {
+  cursor: grabbing;
+}
+.flowdown .fd-diagram-stage:focus-visible {
+  outline-offset: -2px;
+}
+.flowdown .fd-diagram-viewer-canvas {
+  flex: none;
+  transform-origin: center;
+  transition: transform var(--fd-duration-slow) var(--fd-ease);
+}
+/* A drag, a pinch or the wheel follows the hand; only a button or a key glides. */
+.flowdown .fd-diagram-stage[data-moving] .fd-diagram-viewer-canvas {
+  transition: none;
+}
+.flowdown .fd-diagram-viewer-canvas svg {
+  display: block;
+  width: 100%;
+  /* Mermaid caps the picture's width in its own style attribute; here the canvas sizes it. */
+  max-width: none !important;
+  height: 100%;
+}
+
+/* Under a finger, where there is no hover, the toolbar always shows and every control is a 44 px
+   target. A phone's viewer is the whole screen. */
+@media (hover: none), (pointer: coarse) {
+  .flowdown .fd-diagram-actions {
+    opacity: 1;
+  }
+}
+@media (pointer: coarse) {
+  .flowdown .fd-diagram-action {
+    min-width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+@media (max-width: 40rem) {
+  .flowdown .fd-diagram-viewer {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flowdown :is(.fd-diagram-actions, .fd-diagram-viewer-canvas) {
+    transition: none;
+  }
+}

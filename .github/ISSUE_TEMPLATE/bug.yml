@@ -1,5 +1,5 @@
 name: Something is drawn wrong
-description: A reply or a document that llx-markdown renders incorrectly, flickers or shows raw syntax
+description: A reply or a document that flowdown renders incorrectly, flickers or shows raw syntax
 labels: [bug]
 body:
   - type: textarea
@@ -19,8 +19,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: llx-markdown and React versions
-      placeholder: llx-markdown 0.1.0, React 19.2
+      label: flowdown and React versions
+      placeholder: flowdown 0.1.0, React 19.2
     validations:
       required: true
   - type: dropdown

@@ -181,8 +181,8 @@ async function draw(Render: (typeof RENDERERS)[number]['Render'], check: Check) 
   }
 }
 
-// `llx+highlight` draws what `llx` draws, with colours.
-const renderers = RENDERERS.filter((r) => r.name !== 'llx+highlight')
+// `flowdown+highlight` draws what `flowdown` draws, with colours.
+const renderers = RENDERERS.filter((r) => r.name !== 'flowdown+highlight')
 const results: Record<string, Record<string, { pass: boolean; html: string }>> = {}
 for (const check of CHECKS) {
   results[check.label] = {}

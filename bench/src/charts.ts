@@ -36,10 +36,10 @@ const speed: {
 /** Every chart lists the libraries in this order, so a row means the same library everywhere. */
 const LIBRARIES = [
   {
-    label: 'llx-markdown',
-    size: 'llx-markdown',
-    install: 'llx-markdown',
-    speed: 'llx',
+    label: 'flowdown',
+    size: 'flowdown',
+    install: 'flowdown',
+    speed: 'flowdown',
     ours: true,
   },
   { label: 'Streamdown', size: 'streamdown', install: 'streamdown', speed: 'streamdown' },

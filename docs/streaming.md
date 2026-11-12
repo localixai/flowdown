@@ -1,7 +1,7 @@
 ---
 title: Streaming
 description:
-  How llx-markdown renders a reply that is still arriving — block memoization, completing the
+  How flowdown renders a reply that is still arriving — block memoization, completing the
   unfinished end, the caret, and using the same tools outside React.
 ---
 
@@ -92,8 +92,8 @@ A caret follows the text while it streams. It is drawn in CSS, after the last li
 ends in text — not inside a code block or a table. Turn it off with `caret={false}`, or restyle it:
 
 ```css
-.llx-markdown[data-caret] {
-  --llx-caret-color: var(--brand);
+.flowdown[data-caret] {
+  --fd-caret-color: var(--brand);
 }
 ```
 
@@ -134,11 +134,11 @@ tool's output, a title): it returns `[shown, behind]`.
 
 ## Without React
 
-The same tools are in `llx-markdown/stream`, with no React, for a renderer of your own or a server
+The same tools are in `flowdown/stream`, with no React, for a renderer of your own or a server
 that sends partial HTML:
 
 ```ts
-import { closePartialMarkdown, splitBlocks } from 'llx-markdown/stream'
+import { closePartialMarkdown, splitBlocks } from 'flowdown/stream'
 
 // Complete the end of a reply that is still arriving. Never apply it to the final text.
 const stable = closePartialMarkdown(partialText)

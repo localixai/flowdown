@@ -1,6 +1,6 @@
 /** Medians across runs, and the Markdown tables `results/latest.md` and the README quote. */
-import type { Pattern } from '../../packages/llx-markdown/test/chunks'
-import type { Scenario } from '../../packages/llx-markdown/test/replies'
+import type { Pattern } from '../../packages/flowdown/test/chunks'
+import type { Scenario } from '../../packages/flowdown/test/replies'
 import type { RunResult } from './measure'
 import type { Renderer } from './renderers'
 

@@ -4,9 +4,9 @@
  * With `&black`, the page is black, as a terminal beside it is.
  */
 import 'katex/dist/katex.min.css'
-import 'llx-markdown/styles.css'
-import { Markdown } from 'llx-markdown'
-import { highlight } from 'llx-markdown/highlight'
+import 'flowdown/styles.css'
+import { Markdown } from 'flowdown'
+import { highlight } from 'flowdown/highlight'
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { reviewScenes, scenes } from './scenes'
@@ -24,8 +24,8 @@ document.documentElement.dataset.theme = params.get('theme') === 'dark' ? 'dark'
 if (params.has('black')) document.documentElement.dataset.backdrop = 'black'
 const streamed = params.has('stream')
 
-const math = () => import('llx-markdown/math')
-const html = () => import('llx-markdown/html')
+const math = () => import('flowdown/math')
+const html = () => import('flowdown/html')
 const mermaid = () => import('mermaid')
 
 function Scene() {

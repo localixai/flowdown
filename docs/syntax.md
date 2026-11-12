@@ -1,7 +1,7 @@
 ---
 title: Syntax
 description:
-  Every form of the llx dialect — callouts, steps, tabs, stats, pros and cons, folded sections,
+  Every form of the flowdown dialect — callouts, steps, tabs, stats, pros and cons, folded sections,
   sources, quotes, figures, section numbers, file trees, diagrams and math — with its source and
   its rules.
 ---

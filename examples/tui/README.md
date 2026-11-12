@@ -1,10 +1,10 @@
 # A reply streamed into a terminal
 
-`reply.md` holds every form `llx-markdown` knows: headings, lists, tasks, callouts, steps, tabs, a
+`reply.md` holds every form `flowdown` knows: headings, lists, tasks, callouts, steps, tabs, a
 file tree, code, a diff, stats, a table, the case for and against, a diagram, math, a figure, a
 folded section, sources and a footnote. `stream.ts` feeds it to
-[`llx-markdown/tui`](../../docs/targets.md) a few characters at a time, the way a model sends it,
-and redraws the terminal as the text grows. Code is coloured by `llx-markdown/highlight`,
+[`flowdown/tui`](../../docs/targets.md) a few characters at a time, the way a model sends it,
+and redraws the terminal as the text grows. Code is coloured by `flowdown/highlight`,
 and formulas are written in Unicode.
 
 <p align="center">
@@ -34,8 +34,8 @@ cursor up to the first one that differs, clears from there down and writes the r
 block grows, that is a few rows per token.
 
 ```ts
-import { highlight } from 'llx-markdown/highlight'
-import { createTerminalView, toAnsi } from 'llx-markdown/tui'
+import { highlight } from 'flowdown/highlight'
+import { createTerminalView, toAnsi } from 'flowdown/tui'
 
 const view = createTerminalView({ width: process.stdout.columns, highlight })
 let text = ''

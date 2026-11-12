@@ -42,7 +42,7 @@ body {
   font-size: 15px;
   line-height: 1.6;
 }
-.reply .llx-markdown > :first-child {
+.reply .flowdown > :first-child {
   margin-top: 0;
 }
 

@@ -20,7 +20,7 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 wanted=${1:-all}
 
-bun run --cwd "$here/../../packages/llx-markdown" build > /dev/null
+bun run --cwd "$here/../../packages/flowdown" build > /dev/null
 
 # Black, with the sixteen colours of a dark terminal: background, foreground, then 0 to 15.
 theme=000000,e6e6e6,2b2b2b,ff6b6b,7ee787,e3b341,6cb6ff,d2a8ff,56d4dd,d1d7e0,7d8590,ff938a,a5f3b0,f4d06f,96d0ff,e2c5ff,a5f3fc,ffffff
@@ -42,7 +42,7 @@ if [ "$wanted" = all ] || [ "$wanted" = tui ]; then
   # The prompt and the typing are staged; what follows them is the example's own run.
   cat > "$work/tui.sh" <<SESSION
 cd "$here"
-prompt() { printf '\033[90m~/llx-markdown/examples/tui\033[39m \$ '; }
+prompt() { printf '\033[90m~/flowdown/examples/tui\033[39m \$ '; }
 prompt
 sleep 0.9
 for c in b u n ' ' s t r e a m . t s; do printf '%s' "\$c"; sleep 0.055; done

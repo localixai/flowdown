@@ -11,7 +11,7 @@ A ` ```mermaid ` fence is a diagram. Without a Mermaid loader it is shown as its
 draw it:
 
 ```tsx
-import { Markdown } from 'llx-markdown'
+import { Markdown } from 'flowdown'
 
 const loadMermaid = () => import('mermaid')
 
@@ -20,7 +20,7 @@ export function Reply({ text }: { text: string }) {
 }
 ```
 
-Install `mermaid`. It is not a dependency of llx-markdown: the page imports it through the loader,
+Install `mermaid`. It is not a dependency of flowdown: the page imports it through the loader,
 so a page without diagrams never bundles it, and you choose its version. The loader is called the
 first time a document holds a diagram.
 
@@ -47,7 +47,7 @@ flowchart LR
 | No `mermaid` loader               | The source, as code.                                                    |
 | The fence is still being written  | The source, as code. A diagram is drawn only once its fence is closed.  |
 | Mermaid is loading or laying out  | The source, with "Drawing diagram…" under it.                           |
-| Drawn                             | The diagram, `figure.llx-diagram` labelled "Diagram" for screen readers, with its [toolbar](#toolbar-and-viewer). |
+| Drawn                             | The diagram, `figure.fd-diagram` labelled "Diagram" for screen readers, with its [toolbar](#toolbar-and-viewer). |
 | The source does not parse         | The source, with "Diagram could not be drawn:" and Mermaid's first error line. |
 
 Waiting for the closed fence keeps a streaming reply calm: a half-written diagram would otherwise
@@ -93,14 +93,14 @@ the classes are in [Styling](styling.md#restyling-an-element).
 ## Colours and themes
 
 A diagram is drawn in the colours of the Markdown around it, not in Mermaid's default palette.
-llx-markdown reads the resolved tokens and passes them to Mermaid's `base` theme:
+flowdown reads the resolved tokens and passes them to Mermaid's `base` theme:
 
 | Token                                   | Used for                          |
 | --------------------------------------- | --------------------------------- |
-| `--llx-bg`, `--llx-fg`                  | The background and text.          |
-| `--llx-fg-soft`, `--llx-fg-faint`       | Secondary text and lines.         |
-| `--llx-border`, `--llx-border-strong`   | Node borders and edges.           |
-| `--llx-chart-1` … `--llx-chart-8`       | Series and categories: pie slices, chart lines, sections. |
+| `--fd-bg`, `--fd-fg`                  | The background and text.          |
+| `--fd-fg-soft`, `--fd-fg-faint`       | Secondary text and lines.         |
+| `--fd-border`, `--fd-border-strong`   | Node borders and edges.           |
+| `--fd-chart-1` … `--fd-chart-8`       | Series and categories: pie slices, chart lines, sections. |
 
 When the colours change, the diagram is drawn again: the system's light or dark scheme, or the
 `class`, `data-theme` or `style` attribute of `<html>` (where theme switchers put it). A look that
@@ -115,7 +115,7 @@ and useful in a reply: `flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `erDia
 together:
 
 ```ts
-import { answerFormatPrompt } from 'llx-markdown/prompt'
+import { answerFormatPrompt } from 'flowdown/prompt'
 
 const system = answerFormatPrompt({ diagrams: true })
 ```
@@ -139,8 +139,8 @@ queue and one cache:
 
 ```tsx
 import { useEffect, useRef, useState } from 'react'
-import type { MarkdownComponents } from 'llx-markdown'
-import { mermaidRendererFor, resolveMermaidLook } from 'llx-markdown/mermaid'
+import type { MarkdownComponents } from 'flowdown'
+import { mermaidRendererFor, resolveMermaidLook } from 'flowdown/mermaid'
 
 const renderer = mermaidRendererFor(() => import('mermaid'))
 

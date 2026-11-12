@@ -1,7 +1,7 @@
 ---
 title: Vercel AI SDK
 description:
-  Stream a chat reply from the Vercel AI SDK 7 into llx-markdown, with the dialect taught to the
+  Stream a chat reply from the Vercel AI SDK 7 into flowdown, with the dialect taught to the
   model and the text paced by words.
 ---
 
@@ -26,7 +26,7 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from 'ai'
-import { answerFormatPrompt } from 'llx-markdown/prompt'
+import { answerFormatPrompt } from 'flowdown/prompt'
 
 export async function POST(request: Request) {
   const { messages }: { messages: UIMessage[] } = await request.json()
@@ -52,9 +52,9 @@ is exactly what `streaming` wants:
 // app/page.tsx
 'use client'
 import { useChat } from '@ai-sdk/react'
-import { Markdown } from 'llx-markdown'
-import { highlight } from 'llx-markdown/highlight'
-import 'llx-markdown/styles.css'
+import { Markdown } from 'flowdown'
+import { highlight } from 'flowdown/highlight'
+import 'flowdown/styles.css'
 import { useState } from 'react'
 
 export default function Chat() {
@@ -112,4 +112,4 @@ A person's own message is usually shown as typed, not as Markdown. If you do ren
   as finished when the chat's `status` is no longer `'streaming'`:
   `streaming={part.state === 'streaming' && status === 'streaming'}`.
 - **Math.** Turn it on in both places: `answerFormatPrompt({ math: true })` on the server,
-  `math={() => import('llx-markdown/math')}` and the KaTeX stylesheet on the page.
+  `math={() => import('flowdown/math')}` and the KaTeX stylesheet on the page.

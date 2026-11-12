@@ -7,11 +7,11 @@ description:
 
 # Prompting
 
-A model writes the forms it was told about and no others. `llx-markdown/prompt` holds the
+A model writes the forms it was told about and no others. `flowdown/prompt` holds the
 instructions that teach it the dialect, ready to place in a system prompt:
 
 ```ts
-import { answerFormatPrompt } from 'llx-markdown/prompt'
+import { answerFormatPrompt } from 'flowdown/prompt'
 
 const system = ['You are a helpful assistant.', answerFormatPrompt()].join('\n\n')
 ```
@@ -122,7 +122,7 @@ with a numbered list. `answerFormsPrinciple()` is the first line of the section 
 among your leading rules as well:
 
 ```ts
-import { answerFormatPrompt, answerFormsPrinciple } from 'llx-markdown/prompt'
+import { answerFormatPrompt, answerFormsPrinciple } from 'flowdown/prompt'
 
 const system = [
   'You are a helpful assistant.',

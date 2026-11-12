@@ -1,14 +1,14 @@
 ---
 title: A documentation site
 description:
-  Render Markdown pages with llx-markdown in a prerendered site — headings with ids, a table of
+  Render Markdown pages with flowdown in a prerendered site — headings with ids, a table of
   contents, links between pages, and pages that hydrate without a mismatch.
 ---
 
 # A documentation site
 
 A site of Markdown pages, rendered with React and prerendered to HTML, the pages kept as Markdown
-files beside the code. This recipe shows the parts that are about llx-markdown.
+files beside the code. This recipe shows the parts that are about flowdown.
 
 ## One wrapper for every page
 
@@ -16,13 +16,13 @@ Set the renderer up once, with the stages the site uses, and render every page t
 
 ```tsx
 // markdown.tsx
-import { Markdown, type MarkdownProps } from 'llx-markdown'
-import { highlight } from 'llx-markdown/highlight'
-import { html } from 'llx-markdown/html'
-import 'llx-markdown/styles.css'
+import { Markdown, type MarkdownProps } from 'flowdown'
+import { highlight } from 'flowdown/highlight'
+import { html } from 'flowdown/html'
+import 'flowdown/styles.css'
 import 'katex/dist/katex.min.css'
 
-const loadMath = () => import('llx-markdown/math')
+const loadMath = () => import('flowdown/math')
 const loadMermaid = () => import('mermaid')
 
 export function DocMarkdown(props: Omit<MarkdownProps, 'html' | 'math' | 'mermaid' | 'highlight'>) {
@@ -45,7 +45,7 @@ export function DocMarkdown(props: Omit<MarkdownProps, 'html' | 'math' | 'mermai
 
 ```tsx
 import { useMemo } from 'react'
-import { extractHeadings } from 'llx-markdown'
+import { extractHeadings } from 'flowdown'
 
 export function DocPage({ body }: { body: string }) {
   const headings = useMemo(() => extractHeadings(body), [body])
@@ -77,7 +77,7 @@ Docs link to each other by file (`[Math](math.md)`), which also works on GitHub.
 those into the site's routes, and to open other sites in a new tab:
 
 ```tsx
-import type { Components } from 'llx-markdown'
+import type { Components } from 'flowdown'
 
 function linkFor(pagePath: string): Components['a'] {
   return ({ node, href, ...props }) => {
@@ -99,7 +99,7 @@ The components object is created once per page: a new one on every render would 
 
 ## Front matter
 
-llx-markdown renders Markdown, not front matter. Read the `title` and `description` from the file
+flowdown renders Markdown, not front matter. Read the `title` and `description` from the file
 and pass only the body:
 
 ```ts

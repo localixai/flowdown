@@ -1,5 +1,5 @@
 ---
-'llx-markdown': patch
+'flowdown': patch
 ---
 
 A tidier look for a reply on a page. A step is marked by its number in a round badge, with the
@@ -9,4 +9,4 @@ reference is a quiet raised number with no underline, and the notes close the re
 smaller than the text. A tab that holds one code block shows it edge to edge. A diagram's nodes no
 longer cast Mermaid's grey shadow, which glowed on a dark page.
 
-If you set `--llx-step-dot`, set `--llx-mark` on `.llx-steps > li` instead.
+If you set `--fd-step-dot`, set `--fd-mark` on `.fd-steps > li` instead.

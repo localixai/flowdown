@@ -1,15 +1,15 @@
 {
-  "name": "llx-markdown-example-tui",
+  "name": "flowdown-example-tui",
   "private": true,
   "type": "module",
   "scripts": {
-    "prestart": "bun run --cwd ../../packages/llx-markdown build > /dev/null",
+    "prestart": "bun run --cwd ../../packages/flowdown build > /dev/null",
     "start": "bun stream.ts",
     "record": "sh record.sh"
   },
   "dependencies": {
-    "highlight.js": "11.12.0",
-    "llx-markdown": "workspace:*"
+    "flowdown": "workspace:*",
+    "highlight.js": "11.12.0"
   },
   "devDependencies": {
     "@types/bun": "1.4.3"

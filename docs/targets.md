@@ -13,11 +13,11 @@ and a page ships only the one it imports.
 
 | Import                 | Draws                                              | Needs        |
 | ---------------------- | -------------------------------------------------- | ------------ |
-| `llx-markdown`         | React elements.                                    | `react`      |
-| `llx-markdown/static`  | HTML text: a server, an email, a static site.      |              |
-| `llx-markdown/dom`     | A page with no framework, kept up to date in place. | a browser    |
-| `llx-markdown/element` | A custom element, `<llx-markdown>`.                | a browser    |
-| `llx-markdown/tui`     | The rows of a terminal.                            |              |
+| `flowdown`         | React elements.                                    | `react`      |
+| `flowdown/static`  | HTML text: a server, an email, a static site.      |              |
+| `flowdown/dom`     | A page with no framework, kept up to date in place. | a browser    |
+| `flowdown/element` | A custom element, `<flow-down>`.                | a browser    |
+| `flowdown/tui`     | The rows of a terminal.                            |              |
 
 None but the first imports React, and none imports any package. `/static` and `/tui` touch no page
 either: they run on a server, in a worker and in a CLI.
@@ -25,12 +25,12 @@ either: they run on a server, in a worker and in a CLI.
 ## HTML text
 
 ```ts
-import { renderToHtml } from 'llx-markdown/static'
+import { renderToHtml } from 'flowdown/static'
 
 const html = renderToHtml(reply, { headingIds: true })
 ```
 
-The HTML is what `<Markdown>` draws, root element and all, so `llx-markdown/styles.css` styles it.
+The HTML is what `<Markdown>` draws, root element and all, so `flowdown/styles.css` styles it.
 Nothing in it runs: tabs show their first variant, and a code block's buttons are drawn but do
 nothing until something on the page wires them. Pass `streaming: true` for a reply that is still
 arriving.
@@ -38,9 +38,9 @@ arriving.
 Math, raw HTML and highlighting are passed in, the same engines `<Markdown>` takes:
 
 ```ts
-import { html } from 'llx-markdown/html'
-import { highlight } from 'llx-markdown/highlight'
-import { math } from 'llx-markdown/math'
+import { html } from 'flowdown/html'
+import { highlight } from 'flowdown/highlight'
+import { math } from 'flowdown/math'
 
 renderToHtml(reply, { html, math, highlight })
 ```
@@ -50,8 +50,8 @@ Without `html`, tags in the text are left out. With it they are parsed and sanit
 ## A page with no framework
 
 ```ts
-import { mount } from 'llx-markdown/dom'
-import 'llx-markdown/styles.css'
+import { mount } from 'flowdown/dom'
+import 'flowdown/styles.css'
 
 const reply = mount(document.querySelector('#reply')!)
 for await (const text of stream) reply.update(text, { streaming: true })
@@ -70,14 +70,14 @@ you, call `update` when the text changes, and `destroy` when the element goes.
 ## A custom element
 
 ```ts
-import { defineMarkdownElement } from 'llx-markdown/element'
-import 'llx-markdown/styles.css'
+import { defineMarkdownElement } from 'flowdown/element'
+import 'flowdown/styles.css'
 
 defineMarkdownElement()
 ```
 
 ```html
-<llx-markdown streaming></llx-markdown>
+<flow-down streaming></flow-down>
 ```
 
 ```ts
@@ -93,7 +93,7 @@ drawn with.
 ## A terminal
 
 ```ts
-import { renderToAnsi } from 'llx-markdown/tui'
+import { renderToAnsi } from 'flowdown/tui'
 
 process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns }) + '\n')
 ```
@@ -123,8 +123,8 @@ Other fenced code is one colour until the terminal is given a highlighter, the s
 takes:
 
 ```ts
-import { highlight } from 'llx-markdown/highlight'
-import { renderToAnsi } from 'llx-markdown/tui'
+import { highlight } from 'flowdown/highlight'
+import { renderToAnsi } from 'flowdown/tui'
 
 process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns, highlight }) + '\n')
 ```
@@ -146,7 +146,7 @@ leaves formulas as the text they were written as.
 For a reply that is still arriving, keep a view:
 
 ```ts
-import { createTerminalView, toAnsi } from 'llx-markdown/tui'
+import { createTerminalView, toAnsi } from 'flowdown/tui'
 
 const view = createTerminalView({ width: 80 })
 for await (const text of stream) draw(view.render(text, { streaming: true }))
@@ -158,7 +158,7 @@ did not change are the same objects as at the last render, so a screen that comp
 repaints only what is new. `toAnsi(lines)` writes them for a terminal; a TUI library with a screen
 of its own reads them as they are.
 
-[`examples/tui`](https://github.com/rsaryev/llx-markdown/tree/main/examples/tui) is that loop in one short
+[`examples/tui`](https://github.com/rsaryev/flowdown/tree/main/examples/tui) is that loop in one short
 script: a reply with every form, streamed into the terminal and redrawn from the first row that
 changed.
 
@@ -166,10 +166,10 @@ changed.
 
 Two lower entries are what the targets above are built on:
 
-- `llx-markdown/document` turns a growing text into blocks. `createDocument().update(text, {
+- `flowdown/document` turns a growing text into blocks. `createDocument().update(text, {
   streaming })` gives `blocks`, and a block that reads the same as at the last update is the same
   object.
-- `llx-markdown/engine` is the parser: `parse(markdown)` gives the tree, `toHtml(tree)` writes it.
+- `flowdown/engine` is the parser: `parse(markdown)` gives the tree, `toHtml(tree)` writes it.
 
 The dialect marks what a node is, apart from how it is drawn: a quote is
 `{ form: 'callout', kind: 'warning' }`, a list `{ form: 'steps' }`. A target switches on the form
@@ -177,8 +177,8 @@ and draws it its own way; a form it does not know is still the Markdown it was w
 or a list.
 
 ```ts
-import { createDocument, formOf, llxDialect } from 'llx-markdown/document'
-import { parse } from 'llx-markdown/engine'
+import { createDocument, formOf, flowdownDialect } from 'flowdown/document'
+import { parse } from 'flowdown/engine'
 
 const doc = createDocument()
 
@@ -187,7 +187,7 @@ function draw(text: string, streaming: boolean) {
   blocks.forEach((block, index) => {
     // Keep what you drew for a block: the same object means the same block.
     const source = index === blocks.length - 1 ? block.source + closer : block.source
-    for (const node of parse(source, { extensions: [llxDialect] }).children ?? []) {
+    for (const node of parse(source, { extensions: [flowdownDialect] }).children ?? []) {
       if (formOf(node)?.form === 'callout') {
         // …
       }

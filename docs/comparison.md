@@ -1,6 +1,6 @@
 # Compared with similar libraries
 
-llx-markdown next to five other React Markdown renderers: Streamdown 2.7, react-markdown 10,
+flowdown next to five other React Markdown renderers: Streamdown 2.7, react-markdown 10,
 markdown-to-jsx 9.10, markstream-react 2.0 and marked-react 4. Each one is set up the way its own
 README sets up a chat, without plugins, and gets the same replies.
 
@@ -15,7 +15,7 @@ What the reader sees in a frame where the reply stops mid-syntax.
 
 | | Unfinished `**bold` | Half-typed link | Open code fence | Half a table row |
 | :--- | :---: | :---: | :---: | :---: |
-| **llx-markdown** | ✅ bold | ✅ its text | ✅ | ✅ |
+| **flowdown** | ✅ bold | ✅ its text | ✅ | ✅ |
 | Streamdown | ✅ bold | ✅ its text | ✅ | ✅ |
 | react-markdown | ❌ `**` shows | ❌ `[`, `(` show | ✅ | ✅ |
 | markdown-to-jsx | ➖ held back¹ | ✅ its text | ✅ | ✅ |
@@ -30,7 +30,7 @@ All six draw tables, task lists, strikethrough and bare links.
 
 | | Footnotes | GitHub alerts | Raw HTML, no setup |
 | :--- | :---: | :---: | :---: |
-| **llx-markdown** | ✅ | ✅ | ✅ |
+| **flowdown** | ✅ | ✅ | ✅ |
 | Streamdown | ✅ | ❌ | ✅ |
 | react-markdown | ✅ | ❌ | ❌ needs rehype-raw |
 | markdown-to-jsx | ✅ | ✅ | ✅ |
@@ -49,7 +49,7 @@ in [bench/results/features.json](../bench/results/features.json).
 
 | | Download, gzip | Packages installed | Styles | Licence |
 | :--- | ---: | ---: | :--- | :--- |
-| **llx-markdown** | 31.7 KB | 1 | Own CSS, light and dark | MIT |
+| **flowdown** | 31.7 KB | 1 | Own CSS, light and dark | MIT |
 | Streamdown | 155.5 KB | 118 | Tailwind classes; the page needs Tailwind | Apache-2.0 |
 | react-markdown | 50.0 KB | 82 | None | MIT |
 | markdown-to-jsx | 31.0 KB | 1 | None | MIT |
@@ -59,11 +59,11 @@ in [bench/results/features.json](../bench/results/features.json).
 - **Download** is what loads with the component. Each library is bundled as a page's bundler would
   do it: a production build, minified and gzipped, without React; react-markdown with remark-gfm
   ([bench/src/size.ts](../bench/src/size.ts)).
-- **Loaded on demand.** llx-markdown fetches its HTML reader and the full table of HTML5 character
+- **Loaded on demand.** flowdown fetches its HTML reader and the full table of HTML5 character
   references (14 KB together) only for a reply that needs them. Streamdown loads its HTML parser up
   front. Packages a renderer loads only when a reply needs them (KaTeX, Mermaid, D2) are not counted
   for any library.
-- **Highlighting.** llx-markdown with code highlighting for 23 languages is 68 KB.
+- **Highlighting.** flowdown with code highlighting for 23 languages is 68 KB.
 - **Packages installed** counts dependencies all the way down, read from the lockfile, without
   React ([bench/src/install.ts](../bench/src/install.ts)).
 
@@ -73,7 +73,7 @@ From each library's documentation, not measured.
 
 | | Code highlighting | Math | Diagrams |
 | :--- | :--- | :--- | :--- |
-| **llx-markdown** | highlight.js, `llx-markdown/highlight` | KaTeX | Mermaid |
+| **flowdown** | highlight.js, `flowdown/highlight` | KaTeX | Mermaid |
 | Streamdown | Shiki plugin | KaTeX plugin | Mermaid plugin |
 | react-markdown | rehype plugin | remark and rehype plugins | Your component |
 | markdown-to-jsx | Your component | — | Your component |
@@ -87,14 +87,14 @@ better.
 
 | | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **llx-markdown** | **10** | **27** | **35** | **20** | **132** | **42** |
+| **flowdown** | **10** | **27** | **35** | **20** | **132** | **42** |
 | Streamdown | 51 | 285 | 4,960 | 4,058 | 6,265 | 129 |
 | react-markdown | 204 | 2,869 | 2,871 | 3,401 | stopped at 67% | 16,010 |
 | markdown-to-jsx | 14 | 129 | 56 | 167 | 2,293 | 603 |
 | markstream | 40 | 361 | 944 | 892 | 5,522 | 132 |
 | marked-react | 36 | 290 | 78 | 269 | 7,371 | 1,792 |
 
-- **Where llx-markdown wins: everywhere here, and most on length.** It parses again only the block
+- **Where flowdown wins: everywhere here, and most on length.** It parses again only the block
   still being written, and reads only the new lines of a growing code block, so a 100k reply and a
   30-reply thread cost about as much per update as the first lines.
 - **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
@@ -115,19 +115,19 @@ the benchmark parsed whole. Higher is better.
 
 | | Writes | Bun (JavaScriptCore) | Node (V8) |
 | :--- | :--- | ---: | ---: |
-| **llx-markdown** | a tree | **187** | **187** |
+| **flowdown** | a tree | **187** | **187** |
 | markdown-it | HTML | 51 | 43 |
 | marked | HTML | 33 | 48 |
 | micromark | HTML | 4 | 4 |
 | mdast-util-from-markdown | a tree | 4 | 3 |
 
-- **What is compared.** llx-markdown's parser is the one `<Markdown>` runs.
+- **What is compared.** flowdown's parser is the one `<Markdown>` runs.
   mdast-util-from-markdown is remark's, the one react-markdown and Streamdown run; micromark is the
   tokenizer under it. All read GitHub's extensions: tables, task lists, strikethrough, autolinks
   and, except marked, footnotes.
-- **A tree against HTML.** marked and markdown-it write HTML and build no tree. llx-markdown
+- **A tree against HTML.** marked and markdown-it write HTML and build no tree. flowdown
   writing HTML from its tree reads 131 and 139 MB in a second.
-- **Where the trees differ.** mdast gives every node its position in the source; llx-markdown's
+- **Where the trees differ.** mdast gives every node its position in the source; flowdown's
   tree gives positions to blocks only, which is part of the gap.
 - **In a reply's terms.** A 100k-character reply is parsed whole in under 0.6 ms, so the parser is
   a small share of what streaming one costs: the rest is React and the DOM.
@@ -138,7 +138,7 @@ in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
 
 ## Which one to pick
 
-- **llx-markdown.** For an AI chat or assistant whose replies run long, threads that grow, and
+- **flowdown.** For an AI chat or assistant whose replies run long, threads that grow, and
   documentation. It repairs unfinished syntax, comes styled, and is one package of 31.7 KB with its
   own parser. It does not take remark or rehype plugins.
 - **markdown-to-jsx.** When a small, unstyled renderer for short replies is enough. It is one
@@ -162,6 +162,6 @@ bun run bench     # streaming speed, about half an hour
 bun run charts    # redraw the README chart from the results
 ```
 
-llx-markdown's answer forms (steps, tabs, stats, pros and cons, folded sections, sources) are its
+flowdown's answer forms (steps, tabs, stats, pros and cons, folded sections, sources) are its
 own dialect, so they are not
 compared here.

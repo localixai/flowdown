@@ -12,8 +12,8 @@
     "quick": false,
     "budgetMs": 30000,
     "renderers": {
-      "llx": "0.1.0",
-      "llx+highlight": "0.1.0",
+      "flowdown": "0.1.0",
+      "flowdown+highlight": "0.1.0",
       "streamdown": "2.7.1",
       "react-markdown": "10.1.0",
       "markdown-to-jsx": "9.10.6",
@@ -39,7 +39,7 @@
     {
       "scenario": "chat-5k",
       "pattern": "token",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 5158,
       "updates": 1148,
@@ -64,7 +64,7 @@
     {
       "scenario": "chat-5k",
       "pattern": "token",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 5158,
       "updates": 1148,
@@ -214,7 +214,7 @@
     {
       "scenario": "chat-5k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 5158,
       "updates": 258,
@@ -239,7 +239,7 @@
     {
       "scenario": "chat-5k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 5158,
       "updates": 258,
@@ -389,7 +389,7 @@
     {
       "scenario": "answer-20k",
       "pattern": "token",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 20008,
       "updates": 4412,
@@ -414,7 +414,7 @@
     {
       "scenario": "answer-20k",
       "pattern": "token",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 20008,
       "updates": 4412,
@@ -564,7 +564,7 @@
     {
       "scenario": "answer-20k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 20008,
       "updates": 1001,
@@ -589,7 +589,7 @@
     {
       "scenario": "answer-20k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 20008,
       "updates": 1001,
@@ -739,7 +739,7 @@
     {
       "scenario": "answer-20k",
       "pattern": "line",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 20008,
       "updates": 343,
@@ -764,7 +764,7 @@
     {
       "scenario": "answer-20k",
       "pattern": "line",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 20008,
       "updates": 343,
@@ -914,7 +914,7 @@
     {
       "scenario": "forms-20k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 20588,
       "updates": 1030,
@@ -939,7 +939,7 @@
     {
       "scenario": "forms-20k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 20588,
       "updates": 1030,
@@ -1089,7 +1089,7 @@
     {
       "scenario": "math-20k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 20136,
       "updates": 1007,
@@ -1114,7 +1114,7 @@
     {
       "scenario": "math-20k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 20136,
       "updates": 1007,
@@ -1264,7 +1264,7 @@
     {
       "scenario": "code-50k",
       "pattern": "token",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 48837,
       "updates": 10763,
@@ -1289,7 +1289,7 @@
     {
       "scenario": "code-50k",
       "pattern": "token",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 48837,
       "updates": 10763,
@@ -1439,7 +1439,7 @@
     {
       "scenario": "code-50k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 48837,
       "updates": 2442,
@@ -1464,7 +1464,7 @@
     {
       "scenario": "code-50k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 48837,
       "updates": 2442,
@@ -1614,7 +1614,7 @@
     {
       "scenario": "table-20k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 17839,
       "updates": 892,
@@ -1639,7 +1639,7 @@
     {
       "scenario": "table-20k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 17839,
       "updates": 892,
@@ -1789,7 +1789,7 @@
     {
       "scenario": "long-100k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 100643,
       "updates": 5033,
@@ -1814,7 +1814,7 @@
     {
       "scenario": "long-100k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 100643,
       "updates": 5033,
@@ -1964,7 +1964,7 @@
     {
       "scenario": "crlf-20k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 20409,
       "updates": 1021,
@@ -1989,7 +1989,7 @@
     {
       "scenario": "crlf-20k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 20409,
       "updates": 1021,
@@ -2139,7 +2139,7 @@
     {
       "scenario": "footnotes-20k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 21038,
       "updates": 1052,
@@ -2164,7 +2164,7 @@
     {
       "scenario": "footnotes-20k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 21038,
       "updates": 1052,
@@ -2314,7 +2314,7 @@
     {
       "scenario": "thread-30",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 10283,
       "updates": 515,
@@ -2339,7 +2339,7 @@
     {
       "scenario": "thread-30",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 10283,
       "updates": 515,
@@ -2489,7 +2489,7 @@
     {
       "scenario": "answer-10k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 10166,
       "updates": 509,
@@ -2514,7 +2514,7 @@
     {
       "scenario": "answer-10k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 10166,
       "updates": 509,
@@ -2664,7 +2664,7 @@
     {
       "scenario": "answer-40k",
       "pattern": "frame",
-      "renderer": "llx",
+      "renderer": "flowdown",
       "version": "0.1.0",
       "chars": 40126,
       "updates": 2007,
@@ -2689,7 +2689,7 @@
     {
       "scenario": "answer-40k",
       "pattern": "frame",
-      "renderer": "llx+highlight",
+      "renderer": "flowdown+highlight",
       "version": "0.1.0",
       "chars": 40126,
       "updates": 2007,

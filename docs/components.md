@@ -11,7 +11,7 @@ description:
 familiar:
 
 ```tsx
-import { Markdown, type Components } from 'llx-markdown'
+import { Markdown, type Components } from 'flowdown'
 import { Link } from './router'
 
 const components: Components = {
@@ -38,11 +38,11 @@ the parsed tree it was made from. Leave `node` out of what you spread onto the D
 
 | Element         | Drawn by    | What it adds                                                                     |
 | --------------- | ----------- | -------------------------------------------------------------------------------- |
-| `blockquote`    | `Callout`   | A `> [!NOTE]`-style quote becomes `aside.llx-callout` with `role="note"`. Other quotes stay quotes. |
-| `table`         | `Table`     | A `div.llx-table` around it that scrolls sideways.                                |
+| `blockquote`    | `Callout`   | A `> [!NOTE]`-style quote becomes `aside.fd-callout` with `role="note"`. Other quotes stay quotes. |
+| `table`         | `Table`     | A `div.fd-table` around it that scrolls sideways.                                |
 | `answer-tabs`   | `Tabs`      | The `[!TABS]` form: a tab list with the WAI-ARIA tabs keys.                       |
 | `answer-tab`    | `Tab`       | One tab's panel; its label is in `data-label`.                                    |
-| `pre`           | `CodeBlock` | `figure.llx-code` with the language, a download and a copy button.                |
+| `pre`           | `CodeBlock` | `figure.fd-code` with the language, a download and a copy button.                |
 | `code`          | `Code`      | Highlighting, when a [highlighter](highlighting.md) is set.                       |
 | ` ```mermaid `  | `Diagram`   | The [diagram](diagrams.md).                                                       |
 | ` ```tree `     | `FileTree`  | A directory tree with folders that open and close.                                |
@@ -54,7 +54,7 @@ reach your `code` or `pre`. A `pre` you pass draws every other fenced block, and
 draws every other piece of code. To draw the two fences yourself, pass `diagram` and `tree`:
 
 ```tsx
-import { Markdown, type MarkdownComponents } from 'llx-markdown'
+import { Markdown, type MarkdownComponents } from 'flowdown'
 
 const components: MarkdownComponents = {
   // `growing`: this is the fence still being written. Every diagram above it is complete.
@@ -71,7 +71,7 @@ The built-in components are exported, so you can add to them instead of starting
 with a "Run" button, keeping the language bar, the copy button and highlighting:
 
 ```tsx
-import { CodeBlock, childrenToText, getLanguage, type Components } from 'llx-markdown'
+import { CodeBlock, childrenToText, getLanguage, type Components } from 'flowdown'
 
 const components: Components = {
   pre: (props) => {
@@ -94,30 +94,30 @@ it too.
 
 ## Style the dialect's elements
 
-The forms are plain HTML elements with `llx-` classes and data attributes, so most changes are CSS;
+The forms are plain HTML elements with `fd-` classes and data attributes, so most changes are CSS;
 see [Styling](styling.md). To change their markup, override the HTML element and check the class:
 
 | Form          | Element                                                  |
 | ------------- | -------------------------------------------------------- |
 | Callout       | `blockquote` with `data-callout` and `data-callout-title` |
-| Steps         | `ol.llx-steps`, each item a `div.llx-step-head` (title, meta) and `div.llx-step-body` |
-| Stats         | `ul.llx-stats`, each item a `div.llx-stat`               |
-| Pros and cons | `div.llx-verdicts`, each side an `aside.llx-verdict` with `data-verdict="pros"` or `"cons"` |
+| Steps         | `ol.fd-steps`, each item a `div.fd-step-head` (title, meta) and `div.fd-step-body` |
+| Stats         | `ul.fd-stats`, each item a `div.fd-stat`               |
+| Pros and cons | `div.fd-verdicts`, each side an `aside.fd-verdict` with `data-verdict="pros"` or `"cons"` |
 | Tabs          | `answer-tabs` with `answer-tab` children                 |
-| Folded section | `details.llx-details` with its `summary`                |
-| Sources       | `ul.llx-sources`, each item a `div.llx-source` holding the link |
+| Folded section | `details.fd-details` with its `summary`                |
+| Sources       | `ul.fd-sources`, each item a `div.fd-source` holding the link |
 | Code file name | `data-title` on the fence's `code`                      |
-| Quote source  | `footer.llx-quote-source`                                |
-| Figure        | `figure.llx-figure` with a `figcaption`                  |
-| Section number | `span.llx-section-number` at the start of a heading      |
+| Quote source  | `footer.fd-quote-source`                                |
+| Figure        | `figure.fd-figure` with a `figcaption`                  |
+| Section number | `span.fd-section-number` at the start of a heading      |
 
-A form with a title (`> [!STEPS] Plan`) is wrapped in `div.llx-form`, the title a `p.llx-steps-title`
-(`llx-tabs-title`, `llx-stats-title`, …) before the form.
+A form with a title (`> [!STEPS] Plan`) is wrapped in `div.fd-form`, the title a `p.fd-steps-title`
+(`fd-tabs-title`, `fd-stats-title`, …) before the form.
 
 ```tsx
 const components: Components = {
   ol: ({ node, className, ...props }) =>
-    className === 'llx-steps' ? (
+    className === 'fd-steps' ? (
       <ol className={`${className} my-timeline`} {...props} />
     ) : (
       <ol className={className} {...props} />
@@ -129,7 +129,7 @@ A callout's component receives the kind in `data-callout` (`note`, `tip`, `impor
 `caution`) and the author's title, if any, in `data-callout-title`:
 
 ```tsx
-import { Callout, type Components } from 'llx-markdown'
+import { Callout, type Components } from 'flowdown'
 
 const components: Components = {
   blockquote: (props) =>
@@ -142,7 +142,7 @@ const components: Components = {
 `FileTree` draws a tree from the body of a ` ```tree ` fence anywhere in your page:
 
 ```tsx
-import { FileTree } from 'llx-markdown'
+import { FileTree } from 'flowdown'
 
 ;<FileTree source={'src/\n├── index.ts\n└── app/\n    └── App.tsx'} />
 ```
