@@ -2,13 +2,9 @@
 import { createContext, useContext, type ComponentType } from 'react'
 import type { Components } from './render'
 import type { MermaidRenderer } from '../mermaid/renderer'
+import type { Highlighter } from '../render/views'
 
-/**
- * Turns a fence's code into highlighted HTML, or returns null to leave it plain. The HTML goes into
- * the page as is, so a highlighter must escape the code it was given (highlight.js and Shiki do);
- * `llx-markdown/highlight` is one.
- */
-export type Highlighter = (code: string, language: string) => string | null
+export type { Highlighter } from '../render/views'
 
 /**
  * What `<Markdown components>` takes: an element for any tag, and a page's own drawing of the two

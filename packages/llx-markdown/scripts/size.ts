@@ -17,8 +17,20 @@ const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as
 
 /** Budgets for what each entry loads at once, minified and gzipped, in KB: today's size and a margin. */
 const BUDGET: Record<string, number> = {
-  // The parser is the package's own now (it was react-markdown's, 52 KB of dependencies).
-  '.': 30,
+  // The parser is the package's own now (it was react-markdown's, 52 KB of dependencies). Counted
+  // with the chunk the entry shares with what it loads on demand: 4.5 KB that this script used to
+  // leave out, which is why the figure is past the 30 it was held to.
+  '.': 32.5,
+  // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
+  './static': 29,
+  './dom': 30.5,
+  './element': 30.5,
+  // The renderer for a terminal: the parser, the dialect, and rows wrapped by their columns.
+  './tui': 31,
+  // A growing text as blocks with the dialect to parse them by (2.6 KB of the figure, and a page
+  // that imports only `createDocument` does not ship it), and the parser alone.
+  './document': 20.5,
+  './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
   './remark': 19.5,
   './stream': 4.5,
@@ -46,13 +58,26 @@ async function minified(target: string) {
   // A stylesheet is an asset, not an entry point: it is the one output there is.
   const entry = result.outputs.find((output) => output.kind === 'entry-point') ?? result.outputs[0]
   if (!entry) throw new Error(`no entry in the bundle of ${target}`)
-  const lazy = result.outputs.filter((output) => output !== entry)
+  const name = (path: string) => `./${path.split('/').pop()!}`
+  const texts = new Map<string, string>()
+  for (const output of result.outputs) texts.set(name(output.path), await output.text())
+  // What loads at once is the entry and every chunk it imports statically, through any number of
+  // chunks: code two entries share is split into a chunk of its own, and it is still loaded with
+  // the page. Only what is behind an `import()` waits.
+  const atOnce = new Set<string>()
+  const follow = (chunk: string) => {
+    if (atOnce.has(chunk)) return
+    atOnce.add(chunk)
+    for (const hit of (texts.get(chunk) ?? '').matchAll(/(?:\bfrom|\bimport)\s*"(\.\/[^"]+)"/g))
+      if (texts.has(hit[1]!)) follow(hit[1]!)
+  }
+  follow(name(entry.path))
+  const text = (chunks: string[]) => chunks.map((chunk) => texts.get(chunk)!).join('\n')
   return {
-    atOnce: await entry.text(),
-    onDemand: (await Promise.all(lazy.map((output) => output.text()))).join('\n'),
+    atOnce: text([...atOnce]),
+    onDemand: text([...texts.keys()].filter((chunk) => !atOnce.has(chunk))),
   }
 }
-
 const kb = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`
 let over = false
 for (const [path, target] of Object.entries(manifest.exports)) {

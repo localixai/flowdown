@@ -49,7 +49,7 @@ in [bench/results/features.json](../bench/results/features.json).
 
 | | Download, gzip | Packages installed | Styles | Licence |
 | :--- | ---: | ---: | :--- | :--- |
-| **llx-markdown** | 30.5 KB | 1 | Own CSS, light and dark | MIT |
+| **llx-markdown** | 31.7 KB | 1 | Own CSS, light and dark | MIT |
 | Streamdown | 155.5 KB | 118 | Tailwind classes; the page needs Tailwind | Apache-2.0 |
 | react-markdown | 50.0 KB | 82 | None | MIT |
 | markdown-to-jsx | 31.0 KB | 1 | None | MIT |
@@ -139,7 +139,7 @@ in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
 ## Which one to pick
 
 - **llx-markdown.** For an AI chat or assistant whose replies run long, threads that grow, and
-  documentation. It repairs unfinished syntax, comes styled, and is one package of 30.5 KB with its
+  documentation. It repairs unfinished syntax, comes styled, and is one package of 31.7 KB with its
   own parser. It does not take remark or rehype plugins.
 - **markdown-to-jsx.** When a small, unstyled renderer for short replies is enough. It is one
   package and 31 KB. It slows down on very long replies and threads, and ships no styles.

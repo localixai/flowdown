@@ -15,6 +15,13 @@ bun run build && bun run check && bun run size
 - **Linear streaming.** An update costs the end of the reply, not the reply. The budgets are in
   [bench/budgets.json](bench/budgets.json), and `bun run bench` followed by `bun run bench:check`
   holds a run to them.
+- **Layers.** `engine`, `core`, `document` and `render` know no framework and no page; `static`,
+  `dom`, `element`, `react` and `tui` are targets that name only what is under them.
+  `layers.test.ts` holds the table of what each folder may import.
+- **What is drawn.** `golden.test.tsx` holds a digest of what the seeded corpus draws on every
+  target. A change meant to alter output updates it with `GOLDEN_UPDATE=1 bun test src/golden`, and
+  the pull request says what moved; a refactor leaves it as it is. The targets are also held to
+  each other: `static.test.tsx` and `dom.test.ts` compare them with React's HTML.
 - **Size.** `bun run size` fails when an entry's own code or the page's download passes its budget.
   Raise a budget only with the reason in the pull request.
 - **The dialect reads as plain Markdown.** A form a model writes must degrade to something sensible

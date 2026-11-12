@@ -1,15 +1,8 @@
 'use client'
-import {
-  Children,
-  isValidElement,
-  useId,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type ReactElement,
-  type ReactNode,
-} from 'react'
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { readTabs, tabs } from '../render/views'
 import { useLabels } from './labels'
+import { react } from './render'
 
 type TabProps = { children?: ReactNode; node?: unknown; 'data-label'?: string }
 
@@ -35,17 +28,13 @@ export function Tabs({ children }: { children?: ReactNode; node?: unknown }) {
   const base = useId()
   const [active, setActive] = useState(0)
   const buttons = useRef<Array<HTMLButtonElement | null>>([])
-  const tabs = Children.toArray(children).filter((child): child is ReactElement<TabProps> =>
-    isValidElement(child),
-  )
-  if (tabs.length === 0) return null
+  const list = readTabs(react, children === undefined ? [] : [children])
+  if (list.length === 0) return null
   // A streamed form can lose a tab between renders only by being re-parsed; never point past it.
-  const current = active < tabs.length ? active : 0
-  const tabId = (index: number) => `${base}-tab-${index}`
-  const panelId = (index: number) => `${base}-panel-${index}`
+  const current = active < list.length ? active : 0
 
   const select = (index: number) => {
-    const next = (index + tabs.length) % tabs.length
+    const next = (index + list.length) % list.length
     setActive(next)
     buttons.current[next]?.focus()
   }
@@ -54,7 +43,7 @@ export function Tabs({ children }: { children?: ReactNode; node?: unknown }) {
       ArrowRight: index + 1,
       ArrowLeft: index - 1,
       Home: 0,
-      End: tabs.length - 1,
+      End: list.length - 1,
     }
     const target = moves[event.key]
     if (target === undefined) return
@@ -62,41 +51,11 @@ export function Tabs({ children }: { children?: ReactNode; node?: unknown }) {
     select(target)
   }
 
-  return (
-    <div className="llx-tabs">
-      <div className="llx-tab-list" role="tablist" aria-label={labels.variants}>
-        {tabs.map((tab, index) => (
-          <button
-            key={index}
-            ref={(element) => {
-              buttons.current[index] = element
-            }}
-            type="button"
-            role="tab"
-            id={tabId(index)}
-            className="llx-tab"
-            aria-selected={index === current}
-            aria-controls={panelId(index)}
-            tabIndex={index === current ? 0 : -1}
-            onClick={() => setActive(index)}
-            onKeyDown={(event) => onKeyDown(event, index)}
-          >
-            {tab.props['data-label'] || String(index + 1)}
-          </button>
-        ))}
-      </div>
-      {tabs.map((tab, index) => (
-        <div
-          key={index}
-          role="tabpanel"
-          id={panelId(index)}
-          aria-labelledby={tabId(index)}
-          className="llx-tab-panel"
-          hidden={index !== current}
-        >
-          {tab.props.children}
-        </div>
-      ))}
-    </div>
-  )
+  return tabs(react, list, current, base, labels, (index) => ({
+    ref: (element: HTMLButtonElement | null) => {
+      buttons.current[index] = element
+    },
+    onClick: () => setActive(index),
+    onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => onKeyDown(event, index),
+  }))
 }

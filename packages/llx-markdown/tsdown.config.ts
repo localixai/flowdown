@@ -8,6 +8,12 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    'static/index': 'src/static/index.ts',
+    'dom/index': 'src/dom/index.ts',
+    'element/index': 'src/element/index.ts',
+    'tui/index': 'src/tui/index.ts',
+    'document/index': 'src/document/index.ts',
+    'engine/index': 'src/engine/index.ts',
     remark: 'src/remark.ts',
     stream: 'src/stream.ts',
     'prompt/index': 'src/prompt/index.ts',

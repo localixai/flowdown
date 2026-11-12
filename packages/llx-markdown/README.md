@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Ultrafast, lightweight streaming Markdown for React and AI replies</strong><br>
-  Its own parser · 0 dependencies · 30.5 KB gzipped · 17× faster on a long stream
+  Its own parser · 0 dependencies · 31.7 KB gzipped · 17× faster on a long stream
 </p>
 
 <p align="center">
@@ -54,7 +54,7 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
   show their raw syntax.
 - **Complete.** Its parser passes every example of CommonMark and of GitHub's extensions
   ([conformance](https://github.com/rsaryev/llx-markdown/blob/main/docs/conformance.md)).
-- **Light.** No dependencies, and 30.5 KB gzipped loads with `<Markdown>`. The HTML reader loads
+- **Light.** No dependencies, and 31.7 KB gzipped loads with `<Markdown>`. The HTML reader loads
   only for a reply with raw HTML, KaTeX and Mermaid only for math and diagrams. It comes styled,
   without Tailwind.
 - **Safe.** Raw HTML from a reply is parsed and sanitized, and links are held to safe protocols
@@ -64,8 +64,9 @@ any bundler that resolves the `exports` field, and in Node 20 or later.
   <img alt="llx-markdown compared with Streamdown, react-markdown, markdown-to-jsx, markstream and marked-react: streaming time in milliseconds, download size, packages installed and how the cost grows with a longer reply" src="https://raw.githubusercontent.com/rsaryev/llx-markdown/main/bench/results/charts/compare.png">
 </p>
 
-Where it is not the best choice: marked-react is a little smaller (27 KB), and react-markdown has
-the remark and rehype plugin ecosystem. Every figure, and which renderer suits which project, is in
+Where it is not the best choice: marked-react is a little smaller (27 KB), markdown-to-jsx is about
+the same size (31 KB), and react-markdown has the remark and rehype plugin ecosystem. Every figure,
+and which renderer suits which project, is in
 [the comparison](https://github.com/rsaryev/llx-markdown/blob/main/docs/comparison.md).
 
 ## Use
@@ -80,6 +81,9 @@ the remark and rehype plugin ecosystem. Every figure, and which renderer suits w
   them: `math={() => import('llx-markdown/math')}`, `mermaid={() => import('mermaid')}`,
   `highlight={highlight}` from `llx-markdown/highlight`. Install `katex`, `mermaid` or
   `highlight.js` for the ones you use.
+- **Without React.** The same reply as HTML text (`llx-markdown/static`), on a page with no
+  framework (`/dom`), as a custom element for Vue, Svelte or Solid (`/element`) and in a terminal
+  (`/tui`): [other targets](https://github.com/rsaryev/llx-markdown/blob/main/docs/targets.md).
 - **Your own syntax.** `extensions` adds inline rules, fences and passes over the tree to the
   parser. In a unified pipeline of your own, `remarkLlx` from `llx-markdown/remark` gives the
   dialect as a remark plugin.
@@ -99,6 +103,26 @@ Each picture is one reply drawn by `<Markdown>`.
 <p align="center">
   <img alt="A Mermaid flowchart in the page colours and a KaTeX formula" src="https://raw.githubusercontent.com/rsaryev/llx-markdown/main/docs/assets/readme/diagram-light.png" width="760">
 </p>
+
+## In a terminal
+
+`llx-markdown/tui` draws the same reply as rows of styled text: steps as a chain, figures as tiles,
+a file tree with its branches, code in the highlighter's colours and formulas in Unicode. It needs
+no React and no page.
+
+<p align="center">
+  <img alt="A terminal where bun stream.ts streams one reply token by token: nested lists, tasks ticked off, callouts, numbered steps with a rail, tabs, a file tree, highlighted code and a diff, headline figures, a table, a formula and numbered sources" src="https://raw.githubusercontent.com/rsaryev/llx-markdown/main/docs/assets/readme/tui.gif" width="760">
+</p>
+
+```ts
+import { highlight } from 'llx-markdown/highlight'
+import { renderToAnsi } from 'llx-markdown/tui'
+
+process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns, highlight }) + '\n')
+```
+
+The recording is
+[`examples/tui`](https://github.com/rsaryev/llx-markdown/tree/main/examples/tui) as it runs.
 
 ## Documentation
 

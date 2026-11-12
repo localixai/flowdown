@@ -5,7 +5,7 @@
  * page whose replies hold none never loads it.
  */
 import { lazy, Suspense, useEffect, useRef, useState, type Ref } from 'react'
-import { copyText, downloadFile } from '../react/file-actions'
+import { copyText, downloadFile } from '../browser/file-actions'
 import { CheckIcon, CopyIcon, DownloadIcon } from '../react/icons'
 import { useLabels } from '../react/labels'
 import { DiagramIcon, EnlargeIcon, SourceIcon } from './icons'

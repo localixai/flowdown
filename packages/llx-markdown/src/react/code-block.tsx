@@ -1,19 +1,25 @@
 'use client'
 import {
-  isValidElement,
   memo,
   useEffect,
   useRef,
   useState,
   type ComponentPropsWithoutRef,
-  type ReactElement,
   type ReactNode,
 } from 'react'
+import { codeFileName, copyText, downloadFile } from '../browser/file-actions'
+import type { Props } from '../render/factory'
+import {
+  code,
+  codeBar,
+  codeFrame,
+  copyButton,
+  downloadButton,
+  readCodeBlock,
+} from '../render/views'
 import { useRenderContext } from './context'
-import { childrenToText, getLanguage } from './helpers'
-import { codeFileName, copyText, downloadFile } from './file-actions'
-import { CheckIcon, CopyIcon, DownloadIcon } from './icons'
 import { useLabels } from './labels'
+import { react } from './render'
 
 type CodeProps = ComponentPropsWithoutRef<'code'> & { node?: unknown }
 type PreProps = ComponentPropsWithoutRef<'pre'> & { node?: unknown }
@@ -25,74 +31,37 @@ const COPIED_MS = 1_600
  * Code, inline or in a fence. A fenced block is highlighted when the page gave `<Markdown>` a
  * highlighter and the fence names a language it knows; otherwise its text is printed as is.
  */
-export function Code({ node: _node, className, children, ...props }: CodeProps) {
+export function Code({ children, ...props }: CodeProps) {
   const { highlight } = useRenderContext()
-  const language = getLanguage(className)
-  const html =
-    language && highlight ? highlight(childrenToText(children).replace(/\n$/, ''), language) : null
-  if (html === null) {
-    return (
-      <code className={className} {...props}>
-        {children}
-      </code>
-    )
-  }
-  return (
-    <code
-      className={[className, 'llx-highlighted'].filter(Boolean).join(' ')}
-      {...props}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  )
+  return code(react, props as Props, children === undefined ? [] : [children], highlight)
 }
 
 /** The code of a block as last drawn: read when a button is pressed, not when it is drawn. */
 type CodeText = { readonly current: string }
 
-function CopyButton({ code }: { code: CodeText }) {
+function CopyButton({ code: text }: { code: CodeText }) {
   const labels = useLabels()
-  const [copied, setCopied] = useState(false)
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => () => clearTimeout(timer.current), [])
+  // How many times the code was copied since the button last read "Copy": each copy starts the
+  // wait over, and the effect's cleanup ends it when the block leaves the page.
+  const [copies, setCopies] = useState(0)
+  useEffect(() => {
+    if (copies === 0) return
+    const timer = setTimeout(() => setCopies(0), COPIED_MS)
+    return () => clearTimeout(timer)
+  }, [copies])
   const copy = () => {
     // The Clipboard API, or the old copy command where the page has none (an insecure origin).
     // When both refuse there is nothing to say: the code is still selectable.
-    void copyText(code.current).then((done) => {
-      if (!done) return
-      setCopied(true)
-      clearTimeout(timer.current)
-      timer.current = setTimeout(() => setCopied(false), COPIED_MS)
+    void copyText(text.current).then((done) => {
+      if (done) setCopies((count) => count + 1)
     })
   }
-  const Glyph = copied ? CheckIcon : CopyIcon
-  return (
-    <button
-      type="button"
-      className="llx-code-copy"
-      onClick={copy}
-      aria-label={copied ? labels.copied : labels.copy}
-      title={copied ? labels.copied : labels.copy}
-      data-copied={copied || undefined}
-    >
-      <Glyph />
-    </button>
-  )
+  return copyButton(react, labels, copies > 0, copy)
 }
 
 /** Saves the code as a file: named as its fence's title, or `code.<ext>` from its language. */
-function DownloadButton({ code, name }: { code: CodeText; name: string }) {
-  const labels = useLabels()
-  return (
-    <button
-      type="button"
-      className="llx-code-download"
-      onClick={() => downloadFile(code.current, name)}
-      aria-label={labels.download}
-      title={labels.download}
-    >
-      <DownloadIcon />
-    </button>
-  )
+function DownloadButton({ code: text, name }: { code: CodeText; name: string }) {
+  return downloadButton(react, useLabels(), () => downloadFile(text.current, name))
 }
 
 /**
@@ -100,17 +69,9 @@ function DownloadButton({ code, name }: { code: CodeText; name: string }) {
  * your own through `components.pre`; the `Code` inside still highlights.
  */
 export function CodeBlock({ node: _node, children, ...props }: PreProps) {
-  const code = isValidElement(children)
-    ? (children as ReactElement<{
-        className?: string
-        children?: unknown
-        'data-title'?: string
-      }>)
-    : null
-  const language = getLanguage(code?.props.className)
-  const text = childrenToText(code?.props.children as never).replace(/\n$/, '')
+  const { language, title, text } = readCodeBlock(react, children === undefined ? [] : [children])
   return (
-    <CodeFrame language={language} title={code?.props['data-title']} text={text} preProps={props}>
+    <CodeFrame language={language} title={title} text={text} preProps={props}>
       {children}
     </CodeFrame>
   )
@@ -123,20 +84,16 @@ export function CodeBlock({ node: _node, children, ...props }: PreProps) {
 const CodeBar = memo(function CodeBar({
   language,
   title,
-  code,
+  code: text,
 }: {
   language: string | undefined
   title: string | undefined
   code: CodeText
 }) {
-  return (
-    <figcaption className="llx-code-bar">
-      {title ? <span className="llx-code-title">{title}</span> : null}
-      {language ? <span className="llx-code-language">{language}</span> : null}
-      <DownloadButton code={code} name={codeFileName(title, language)} />
-      <CopyButton code={code} />
-    </figcaption>
-  )
+  return codeBar(react, language, title, [
+    <DownloadButton key="download" code={text} name={codeFileName(title, language)} />,
+    <CopyButton key="copy" code={text} />,
+  ])
 })
 
 /**
@@ -157,14 +114,15 @@ export function CodeFrame({
   preProps?: ComponentPropsWithoutRef<'pre'>
   children: ReactNode
 }) {
-  const code = useRef(text)
+  const current = useRef(text)
   useEffect(() => {
-    code.current = text
+    current.current = text
   }, [text])
-  return (
-    <figure className="llx-code" data-language={language}>
-      <CodeBar language={language} title={title} code={code} />
-      <pre {...preProps}>{children}</pre>
-    </figure>
+  return codeFrame(
+    react,
+    language,
+    <CodeBar language={language} title={title} code={current} />,
+    preProps as Props | undefined,
+    [children],
   )
 }

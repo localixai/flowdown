@@ -22,7 +22,7 @@
     },
     {
       "title": "Beyond React",
-      "pages": ["remark.md"]
+      "pages": ["targets.md", "remark.md"]
     },
     {
       "title": "Recipes",

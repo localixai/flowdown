@@ -2,6 +2,8 @@
 import { useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { GrowingFence, useRenderContext } from '../react/context'
 import { useLabels } from '../react/labels'
+import { react } from '../react/render'
+import { diagramSource } from '../render/views'
 import type * as DrawingModule from './drawing'
 import { loadMermaid } from './loader'
 
@@ -108,16 +110,5 @@ export function Diagram({ source }: { source: string }) {
     : mermaid
       ? labels.drawingDiagram
       : null
-  return (
-    <figure ref={figure} className="llx-diagram" data-state={drawn?.error ? 'error' : 'source'}>
-      <pre>
-        <code className="language-mermaid">{source}</code>
-      </pre>
-      {note && (
-        <figcaption className="llx-diagram-note" role="status">
-          {note}
-        </figcaption>
-      )}
-    </figure>
-  )
+  return diagramSource(react, source, note, Boolean(drawn?.error), { ref: figure })
 }

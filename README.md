@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Ultrafast, lightweight streaming Markdown for React and AI replies</strong><br>
-  Its own parser · 0 dependencies · 30.5 KB gzipped · 17× faster on a long stream
+  Its own parser · 0 dependencies · 31.7 KB gzipped · 17× faster on a long stream
 </p>
 
 <p align="center">
@@ -48,6 +48,9 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 }
 ```
 
+Outside React the same package draws a reply as HTML text, on a page with no framework, as a
+custom element and in a terminal: [other targets](docs/targets.md).
+
 The rest is in [the package's README](packages/llx-markdown/README.md) and
 [the documentation](docs/getting-started.md).
 
@@ -61,7 +64,7 @@ The rest is in [the package's README](packages/llx-markdown/README.md) and
   show their raw syntax.
 - **Complete.** Its parser passes every example of CommonMark and of GitHub's extensions
   ([conformance](docs/conformance.md)). Alerts, footnotes and raw HTML need no setup.
-- **Light.** One package with no dependencies: 30.5 KB gzipped, against 156 KB for Streamdown. It
+- **Light.** One package with no dependencies: 31.7 KB gzipped, against 156 KB for Streamdown. It
   comes styled, without Tailwind.
 - **Safe.** Raw HTML from a reply is parsed and sanitized, and links are held to safe protocols
   ([security](docs/security.md)).
@@ -71,8 +74,9 @@ The rest is in [the package's README](packages/llx-markdown/README.md) and
 </p>
 
 Where it is not the best choice: marked-react is a little smaller (27 KB), though it does not repair
-a streaming reply and draws less Markdown. react-markdown has the remark and rehype plugin
-ecosystem; here your own syntax is an [extension](docs/remark.md).
+a streaming reply and draws less Markdown, and markdown-to-jsx is about the same size (31 KB).
+react-markdown has the remark and rehype plugin ecosystem; here your own syntax is an
+[extension](docs/remark.md).
 
 [The full comparison](docs/comparison.md) has every check, figure and source, and says which
 renderer suits which project. Every number comes from a script in [bench](bench) that you can
@@ -135,6 +139,26 @@ model writes these forms once its system prompt has the dialect: `answerFormatPr
 
 </details>
 
+## In a terminal
+
+`llx-markdown/tui` draws the same reply as rows of styled text: steps as a chain, figures as tiles,
+a file tree with its branches, code in the highlighter's colours and formulas in Unicode. It needs
+no React and no page.
+
+<p align="center">
+  <img alt="A terminal where bun stream.ts streams one reply token by token: nested lists, tasks ticked off, callouts, numbered steps with a rail, tabs, a file tree, highlighted code and a diff, headline figures, a table, a formula and numbered sources" src="docs/assets/readme/tui.gif" width="760">
+</p>
+
+```ts
+import { highlight } from 'llx-markdown/highlight'
+import { renderToAnsi } from 'llx-markdown/tui'
+
+process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns, highlight }) + '\n')
+```
+
+The recording is [`examples/tui`](examples/tui) as it runs, and [other targets](docs/targets.md)
+has the options.
+
 ## Development
 
 | Path                    | What it holds                                        |
@@ -142,6 +166,7 @@ model writes these forms once its system prompt has the dialect: `answerFormatPr
 | `packages/llx-markdown` | the library                                          |
 | `docs/`                 | the documentation, as Markdown; `nav.json` orders it |
 | `demo/`                 | the scenes above and the script that captures them   |
+| `examples/tui`          | a reply streamed into a terminal: `bun start`        |
 | `bench/`                | rendering benchmarks against other renderers         |
 
 ```sh

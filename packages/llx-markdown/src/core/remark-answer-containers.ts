@@ -25,6 +25,7 @@ import type {
   PhrasingContent,
 } from 'mdast'
 import { parseContainerMarker, type ContainerKind } from '../dialect'
+import { formOf, marked, type FormName } from './forms'
 
 /** A phrasing run without its whitespace-only text nodes. */
 export const meaningful = (children: PhrasingContent[]) =>
@@ -51,22 +52,20 @@ function trimLead(nodes: PhrasingContent[]): PhrasingContent[] {
   return rest
 }
 
-const classed = (className: string) => ({ hProperties: { className: [className] } })
-
 /** A paragraph rendered as a `div`: in a TIGHT list remark-rehype unwraps a `p` into bare text. */
-const block = (className: string, children: PhrasingContent[]): Paragraph => ({
+const block = (form: FormName, children: PhrasingContent[]): Paragraph => ({
   type: 'paragraph',
-  data: { hName: 'div', ...classed(className) },
+  data: marked({ form }),
   children,
 })
 
 /** The container's title line, when the author wrote one after the marker. */
-const titleLine = (className: string, title: string): Paragraph[] =>
+const titleLine = (form: FormName, title: string): Paragraph[] =>
   title
     ? [
         {
           type: 'paragraph',
-          data: classed(className),
+          data: marked({ form }),
           children: [{ type: 'text', value: title }],
         },
       ]
@@ -96,10 +95,10 @@ function splitLead(
 function shapeStep(item: ListItem): void {
   const split = splitLead(item)
   if (!split) return
-  split.lead.data = { hName: 'span', ...classed('llx-step-title') }
-  if (split.meta) split.meta.data = { hName: 'span', ...classed('llx-step-meta') }
-  const head = block('llx-step-head', split.meta ? [split.lead, split.meta] : [split.lead])
-  const body = meaningful(split.rest).length > 0 ? [block('llx-step-body', split.rest)] : []
+  split.lead.data = marked({ form: 'step-title' })
+  if (split.meta) split.meta.data = marked({ form: 'step-meta' })
+  const head = block('step-head', split.meta ? [split.lead, split.meta] : [split.lead])
+  const body = meaningful(split.rest).length > 0 ? [block('step-body', split.rest)] : []
   item.children.splice(0, 1, head, ...body)
 }
 
@@ -107,14 +106,14 @@ function shapeStep(item: ListItem): void {
 function shapeStat(item: ListItem): void {
   const split = splitLead(item)
   if (!split) return
-  split.lead.data = { hName: 'span', ...classed('llx-stat-value') }
+  split.lead.data = marked({ form: 'stat-value' })
   const label: PhrasingContent = {
     // `emphasis` only as a phrasing carrier: hName makes it the label's span.
     type: 'emphasis',
-    data: { hName: 'span', ...classed('llx-stat-label') },
+    data: marked({ form: 'stat-label' }),
     children: split.meta ? [split.meta, ...split.rest] : split.rest,
   }
-  item.children.splice(0, 1, block('llx-stat', [split.lead, label]))
+  item.children.splice(0, 1, block('stat', [split.lead, label]))
 }
 
 /** The site a reference points at, as a reader names it: `docs.example.com`. '' for a relative link. */
@@ -123,10 +122,10 @@ function hostOf(url: string): string {
   return host.replace(/^www\./, '')
 }
 
-const span = (className: string, children: PhrasingContent[]): PhrasingContent => ({
-  // `emphasis` only as a phrasing carrier: hName makes it the span.
+const span = (form: FormName, children: PhrasingContent[]): PhrasingContent => ({
+  // `emphasis` only as a phrasing carrier: the form says what it is.
   type: 'emphasis',
-  data: { hName: 'span', ...classed(className) },
+  data: marked({ form }),
   children,
 })
 
@@ -144,17 +143,14 @@ function shapeSource(item: ListItem): void {
   // A bare URL is its own text: the site names it, and the address is not printed twice.
   const bare = link.children.length === 1 && labelText(link.children) === link.url
   ;(link as Link).children = [
-    span('llx-source-title', bare && host ? [{ type: 'text', value: host }] : link.children),
-    ...(host && !bare ? [span('llx-source-host', [{ type: 'text', value: host }])] : []),
+    span('source-title', bare && host ? [{ type: 'text', value: host }] : link.children),
+    ...(host && !bare ? [span('source-host', [{ type: 'text', value: host }])] : []),
   ]
   const note = trimLead(after)
   item.children.splice(
     0,
     1,
-    block('llx-source', [
-      link,
-      ...(meaningful(note).length > 0 ? [span('llx-source-note', note)] : []),
-    ]),
+    block('source', [link, ...(meaningful(note).length > 0 ? [span('source-note', note)] : [])]),
   )
 }
 
@@ -172,7 +168,7 @@ function tabsOf(content: QuoteContent): Blockquote[] | null {
       const label = labelText(node.children).trim()
       tabs.push({
         type: 'blockquote',
-        data: { hName: 'answer-tab', hProperties: { dataLabel: label || `${tabs.length + 1}` } },
+        data: marked({ form: 'tab', label: label || `${tabs.length + 1}` }),
         children: [],
       })
     } else tabs.at(-1)!.children.push(node as BlockContent | DefinitionContent)
@@ -193,17 +189,18 @@ function labelText(nodes: PhrasingContent[]): string {
 }
 
 function verdict(kind: 'pros' | 'cons', title: string, list: QuoteContent[number]): Blockquote {
-  if (list.type === 'list') list.data = { ...list.data, ...classed('llx-verdict-list') }
+  if (list.type === 'list') list.data = marked({ form: 'verdict-list' }, list.data)
   return {
     type: 'blockquote',
-    data: { hName: 'aside', hProperties: { className: ['llx-verdict'], dataVerdict: kind } },
-    children: [...titleLine('llx-verdict-title', title), list as BlockContent],
+    data: marked({ form: 'verdict', kind }),
+    children: [...titleLine('verdict-title', title), list as BlockContent],
   }
 }
 
-const isVerdict = (node: Parents['children'][number] | undefined, kind: 'pros' | 'cons') =>
-  node?.type === 'blockquote' &&
-  (node.data?.hProperties as { dataVerdict?: string } | undefined)?.dataVerdict === kind
+const isVerdict = (node: Parents['children'][number] | undefined, kind: 'pros' | 'cons') => {
+  const form = node?.type === 'blockquote' ? formOf(node) : undefined
+  return form?.form === 'verdict' && form.kind === kind
+}
 
 /** Each form's replacement nodes, or null when the content does not fit it (it stays a quote). */
 function shape(kind: ContainerKind, title: string, content: QuoteContent): QuoteContent | null {
@@ -211,22 +208,22 @@ function shape(kind: ContainerKind, title: string, content: QuoteContent): Quote
   switch (kind) {
     case 'steps':
       if (list?.type !== 'list') return null
-      list.data = { ...list.data, ...classed('llx-steps') }
+      list.data = marked({ form: 'steps' }, list.data)
       for (const item of list.children) shapeStep(item)
-      return [...titleLine('llx-steps-title', title), list, ...content.slice(1)]
+      return [...titleLine('steps-title', title), list, ...content.slice(1)]
     case 'stats':
       if (list?.type !== 'list') return null
-      list.data = { ...list.data, ...classed('llx-stats') }
+      list.data = marked({ form: 'stats' }, list.data)
       for (const item of list.children) shapeStat(item)
-      return [...titleLine('llx-stats-title', title), list, ...content.slice(1)]
+      return [...titleLine('stats-title', title), list, ...content.slice(1)]
     case 'tabs': {
       const tabs = tabsOf(content)
       if (!tabs) return null
       return [
-        ...titleLine('llx-tabs-title', title),
+        ...titleLine('tabs-title', title),
         {
           type: 'blockquote',
-          data: { hName: 'answer-tabs' },
+          data: marked({ form: 'tabs' }),
           children: tabs,
         },
       ]
@@ -237,21 +234,21 @@ function shape(kind: ContainerKind, title: string, content: QuoteContent): Quote
       return [verdict(kind, title, list), ...content.slice(1)]
     case 'sources':
       if (list?.type !== 'list') return null
-      list.data = { ...list.data, ...classed('llx-sources') }
+      list.data = marked({ form: 'sources' }, list.data)
       for (const item of list.children) shapeSource(item)
-      return [...titleLine('llx-sources-title', title), list, ...content.slice(1)]
+      return [...titleLine('sources-title', title), list, ...content.slice(1)]
     case 'details':
       // Without a title there is no summary, and the browser prints its own, in its language.
       return [
         {
           type: 'blockquote',
-          data: { hName: 'details', ...classed('llx-details') },
+          data: marked({ form: 'details' }),
           children: [
             ...(title
               ? [
                   {
                     type: 'paragraph',
-                    data: { hName: 'summary' },
+                    data: marked({ form: 'summary' }),
                     children: [{ type: 'text', value: title }],
                   } satisfies Paragraph,
                 ]
@@ -323,7 +320,7 @@ export function applyContainer(quote: Blockquote, index: number, parent: Parents
   const form: QuoteContent[number] =
     nodes.length === 1
       ? nodes[0]!
-      : { type: 'blockquote', data: { hName: 'div', ...classed('llx-form') }, children: nodes }
+      : { type: 'blockquote', data: marked({ form: 'form' }), children: nodes }
   if (position) form.position = position
   parent.children.splice(index, 1 + after.length, form as Parents['children'][number])
   // A `pros` and a `cons` written one after the other are one decision: set them side by side.
@@ -333,7 +330,7 @@ export function applyContainer(quote: Blockquote, index: number, parent: Parents
     const start = before?.position?.start
     const pair: Blockquote = {
       type: 'blockquote',
-      data: { hName: 'div', ...classed('llx-verdicts') },
+      data: marked({ form: 'verdicts' }),
       children: [before as Blockquote, form as Blockquote],
       ...(start && position ? { position: { start, end: position.end } } : {}),
     }
@@ -343,4 +340,7 @@ export function applyContainer(quote: Blockquote, index: number, parent: Parents
 }
 
 /** A node this module already shaped: the block visitor must not read it again. */
-export const isShapedContainer = (quote: Blockquote) => Boolean(quote.data?.hName)
+export const isShapedContainer = (quote: Blockquote) => {
+  const form = formOf(quote)
+  return form !== undefined && form.form !== 'callout'
+}

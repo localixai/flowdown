@@ -55,6 +55,16 @@
         "playwright-core": "1.64.1",
       },
     },
+    "examples/tui": {
+      "name": "llx-markdown-example-tui",
+      "dependencies": {
+        "highlight.js": "11.12.0",
+        "llx-markdown": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "1.4.3",
+      },
+    },
     "packages/llx-markdown": {
       "name": "llx-markdown",
       "version": "0.4.3",
@@ -90,6 +100,7 @@
       "optionalPeers": [
         "highlight.js",
         "katex",
+        "react",
       ],
     },
   },
@@ -713,6 +724,8 @@
     "llx-markdown-bench": ["llx-markdown-bench@workspace:bench"],
 
     "llx-markdown-demo": ["llx-markdown-demo@workspace:demo"],
+
+    "llx-markdown-example-tui": ["llx-markdown-example-tui@workspace:examples/tui"],
 
     "lodash-es": ["lodash-es@4.18.1", "", {}, "sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A=="],
 

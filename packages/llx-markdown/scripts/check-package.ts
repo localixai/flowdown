@@ -1,8 +1,10 @@
 /**
  * What publint and attw do not check about the published files:
  *   - every `exports` target exists;
- *   - `llx-markdown/stream`, `/remark` and `/prompt` never import React, and `/prompt` imports
- *     nothing at all, so a server or a worker can use them;
+ *   - `llx-markdown/stream`, `/remark`, `/prompt`, `/engine`, `/document`, `/static`, `/dom`,
+ *     `/element` and `/tui` never import React, and all of them but `/stream` and `/remark`
+ *     import no package at all, so a server, a worker, a terminal or a page of another framework
+ *     can use them;
  *   - every React module that uses hooks keeps its `'use client'`;
  *   - nothing imports KaTeX, highlight.js or Mermaid except the entry that is about it.
  * Run after `build`.
@@ -26,14 +28,34 @@ const reach = (target: string, options?: { dynamic?: boolean }) => {
   return { files: graph.files, packages: new Set([...graph.packages].map(packageOf)) }
 }
 
-const reactFree = { './stream': [], './remark': [], './prompt': [] } as Record<string, string[]>
-for (const path of Object.keys(reactFree)) {
+const reactFree = [
+  './stream',
+  './remark',
+  './prompt',
+  './engine',
+  './document',
+  './static',
+  './dom',
+  './element',
+  './tui',
+]
+for (const path of reactFree) {
   const { packages } = reach(manifest.exports[path]!)
   for (const name of ['react', 'react-dom', 'react-markdown'])
     if (packages.has(name)) failures.push(`${path} imports ${name}`)
 }
-const prompt = reach(manifest.exports['./prompt']!)
-if (prompt.packages.size > 0) failures.push(`./prompt imports ${[...prompt.packages].join(', ')}`)
+for (const path of [
+  './prompt',
+  './engine',
+  './document',
+  './static',
+  './dom',
+  './element',
+  './tui',
+]) {
+  const { packages } = reach(manifest.exports[path]!)
+  if (packages.size > 0) failures.push(`${path} imports ${[...packages].join(', ')}`)
+}
 
 const owners: Record<string, string> = {
   katex: './math',

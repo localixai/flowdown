@@ -1,23 +1,24 @@
 'use client'
 import {
+  createElement,
   useMemo,
   useRef,
   useState,
   type ComponentType,
   type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
   type SVGProps,
 } from 'react'
 import { parseFileTree, type TreeRow } from '../core/file-tree-parse'
-import { ChevronIcon, FileIcon, FolderIcon, FolderOpenIcon } from './icons'
+import { fileTree } from '../render/views'
 import { useLabels } from './labels'
+import { react } from './render'
 
 export type { TreeRow } from '../core/file-tree-parse'
 
 /** The glyph drawn before a row; a host can colour files by type (`getIcon`). */
 export type TreeIcon = ComponentType<SVGProps<SVGSVGElement>>
-
-const defaultIcon = (row: TreeRow, open: boolean): TreeIcon =>
-  row.folder ? (open ? FolderOpenIcon : FolderIcon) : FileIcon
 
 export interface FileTreeProps {
   /** The fence's body: `├──` / `└──` lines. */
@@ -30,22 +31,13 @@ export interface FileTreeProps {
  * folder folds and unfolds on click, and the tree is one Tab stop walked with the arrow keys (the
  * WAI-ARIA tree pattern), so a long layout can be read one branch at a time.
  */
-export function FileTree({ source, getIcon = defaultIcon }: FileTreeProps) {
+export function FileTree({ source, getIcon }: FileTreeProps) {
   const labels = useLabels()
   const rows = useMemo(() => parseFileTree(source), [source])
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set())
   const [focused, setFocused] = useState<string | null>(null)
   const elements = useRef(new Map<string, HTMLElement>())
   if (rows.length === 0) return null
-
-  const hidden = (row: TreeRow): boolean => {
-    for (let parent = row.parent; parent !== null; parent = rows[parent]!.parent)
-      if (collapsed.has(rows[parent]!.path)) return true
-    return false
-  }
-  const visible = rows.filter((row) => !hidden(row))
-  // One Tab stop: the row last focused, or the first while it is still shown.
-  const rover = visible.some((row) => row.path === focused) ? focused : visible[0]!.path
 
   const toggle = (path: string) =>
     setCollapsed((current) => {
@@ -58,7 +50,7 @@ export function FileTree({ source, getIcon = defaultIcon }: FileTreeProps) {
     if (row) elements.current.get(row.path)?.focus()
   }
 
-  const onKeyDown = (event: KeyboardEvent<HTMLElement>, row: TreeRow) => {
+  const onKeyDown = (event: KeyboardEvent<HTMLElement>, row: TreeRow, visible: TreeRow[]) => {
     const index = visible.indexOf(row)
     const open = row.folder && !collapsed.has(row.path)
     const parent = row.parent === null ? undefined : rows[row.parent]
@@ -82,49 +74,32 @@ export function FileTree({ source, getIcon = defaultIcon }: FileTreeProps) {
     action()
   }
 
-  return (
-    <div role="tree" aria-label={labels.fileTree} className="llx-tree">
-      {visible.map((row) => {
-        const open = !collapsed.has(row.path)
-        const Glyph = getIcon(row, open)
-        return (
-          <div
-            key={row.path}
-            ref={(element) => {
-              if (element) elements.current.set(row.path, element)
-              else elements.current.delete(row.path)
-            }}
-            role="treeitem"
-            aria-level={row.depth + 1}
-            aria-selected={false}
-            {...(row.folder ? { 'aria-expanded': open } : {})}
-            tabIndex={row.path === rover ? 0 : -1}
-            className="llx-tree-row"
-            data-folder={row.folder || undefined}
-            style={{ '--llx-tree-depth': row.depth } as Record<string, number>}
-            onFocus={() => setFocused(row.path)}
-            onClick={(event) => {
-              // Safari leaves a clicked row unfocused; the keys must carry on from it.
-              event.currentTarget.focus()
-              if (row.folder) toggle(row.path)
-            }}
-            onKeyDown={(event) => onKeyDown(event, row)}
-          >
-            {row.folder && (
-              <ChevronIcon className="llx-tree-chevron" data-open={open || undefined} />
-            )}
-            <Glyph className="llx-tree-icon" />
-            <span className="llx-tree-name" title={row.name}>
-              {row.name.replace(/\/$/, '')}
-            </span>
-            {row.comment && (
-              <span className="llx-tree-comment" title={row.comment}>
-                {row.comment}
-              </span>
-            )}
-          </div>
-        )
-      })}
-    </div>
+  return fileTree<ReactNode, never>(
+    react as never,
+    {
+      rows,
+      collapsed,
+      focused,
+      ...(getIcon
+        ? {
+            icon: (row: TreeRow, open: boolean) =>
+              createElement(getIcon(row, open), { className: 'llx-tree-icon' }),
+          }
+        : null),
+      on: (row, visible) => ({
+        ref: (element: HTMLElement | null) => {
+          if (element) elements.current.set(row.path, element)
+          else elements.current.delete(row.path)
+        },
+        onFocus: () => setFocused(row.path),
+        onClick: (event: MouseEvent<HTMLElement>) => {
+          // Safari leaves a clicked row unfocused; the keys must carry on from it.
+          event.currentTarget.focus()
+          if (row.folder) toggle(row.path)
+        },
+        onKeyDown: (event: KeyboardEvent<HTMLElement>) => onKeyDown(event, row, visible),
+      }),
+    },
+    labels,
   )
 }

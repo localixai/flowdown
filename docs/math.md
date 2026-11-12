@@ -119,6 +119,13 @@ const system = answerFormatPrompt({ math: true })
 
 See [Prompting](prompting.md).
 
+## In a terminal
+
+`llx-markdown/tui` reads the same three ways to write a formula and needs no KaTeX: it writes the
+formula in Unicode, `x^2` as `x²` and `\frac{a}{b}` as `a/b`. It is on by default there
+(`renderToAnsi(reply, { math: false })` turns it off). See
+[targets](targets.md#a-terminal).
+
 ## Without React
 
 `llx-markdown/math` is an [extension](remark.md#your-own-syntax-in-markdown) of `<Markdown>`'s own

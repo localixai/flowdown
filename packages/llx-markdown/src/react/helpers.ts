@@ -1,8 +1,7 @@
 import { isValidElement, type ReactNode } from 'react'
+import { getLanguage } from '../render/views'
 
-export function getLanguage(className?: string): string | undefined {
-  return /language-([^\s]+)/.exec(className ?? '')?.[1]
-}
+export { getLanguage }
 
 /** Flatten a markdown node's children to their plain text (elements → their own children). */
 export function childrenToText(node: ReactNode): string {

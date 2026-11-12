@@ -1,16 +1,8 @@
 'use client'
 import { DEFAULT_CATCH_UP_MS, useSmoothText } from './use-smooth-text'
 import { useContext, Fragment, memo, useMemo, useState, type ReactNode } from 'react'
-import {
-  blockHasHtml,
-  blockHasMath,
-  blockHasRareEntity,
-  escapedBlock,
-  headingIdsOfBlocks,
-} from '../core/block-facts'
-import { createBlockSplitter, normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
-import { createFenceScanner } from '../core/fence-scan'
-import { closePartialProse } from '../core/heal'
+import { normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
+import { createDocument, usesHtml, usesMath, usesRareEntity } from '../document'
 import { llxDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
@@ -324,31 +316,26 @@ export function Markdown({
   )
   const streaming = arriving || behind
   const caret = caretOption ?? streaming
-  // The scan is this document's own: another reply streaming beside it does not make it start over.
-  const [openFence] = useState(createFenceScanner)
-  // Inside a fence left open, the reply is read as it is and the line that closes the fence goes
-  // to the last block beside its text: joined here, every token would copy the whole reply.
-  const fence = streaming ? openFence(text) : null
-  const closer = fence ? `${text.endsWith('\n') ? '' : '\n'}${fence.marker}` : ''
-  const healed = streaming && !fence ? closePartialProse(text) : text
-  // One splitter per rendered document: it remembers the blocks it cut, and on the next token
-  // scans only the end of the reply. Blocks that did not change come back as the same objects,
-  // and everything worked out from a block below is kept beside it.
-  const [splitter] = useState(createBlockSplitter)
-  const cut = useMemo(() => splitter.split(healed), [splitter, healed])
-  // Literal dollars are escaped only where `$` can mean math: elsewhere positions stay exact.
-  const blocks = useMemo(() => (mathOption ? cut.map(escapedBlock) : cut), [cut, mathOption])
+  // One document per `<Markdown>`: it completes the unfinished end of a streaming reply, cuts the
+  // text into blocks and remembers them, so on the next token only the end of the reply is read.
+  // Blocks that did not change come back as the same objects.
+  const [doc] = useState(createDocument)
+  const {
+    blocks,
+    closer,
+    growing: endsInFence,
+    headingIds: ids,
+  } = doc.update(text, { streaming, math: Boolean(mathOption), headingIds })
 
-  const math = useStage(mathOption, mathOption !== null && blocks.some(blockHasMath))
+  const math = useStage(mathOption, mathOption !== null && usesMath(blocks))
   // Whether the document has HTML is decided for the whole of it, not per block: a tag still
   // being typed (`<div`) is its own block, and only the whole document says it is HTML.
   const htmlStage = useStage(
     html === true ? loadHtml : html === false ? null : html,
-    html !== false && blocks.some(blockHasHtml),
+    html !== false && usesHtml(blocks),
   )
   // A name outside the common ones shows as written until the whole table is there.
-  const entities = useStage(loadEntities, !hasAllEntities() && blocks.some(blockHasRareEntity))
-  const ids = useMemo(() => (headingIds ? headingIdsOfBlocks(blocks) : null), [headingIds, blocks])
+  const entities = useStage(loadEntities, !hasAllEntities() && usesRareEntity(blocks))
   const options = useMemo<BlockOptions>(
     () => ({
       ...buildComponents(components),
@@ -374,7 +361,6 @@ export function Markdown({
     return { highlight, mermaid: mermaid ? 'page' : null }
   }, [highlight, mermaid])
   const labelValue = useMemo(() => mergeLabels(labels), [labels])
-  const endsInFence = fence !== null
   const groups: ReactNode[] = []
   for (let from = 0; from < blocks.length; from += GROUP) {
     const to = Math.min(from + GROUP, blocks.length)

@@ -121,6 +121,21 @@ whole. Blocks above it are not highlighted again. A page that draws code itself 
 or `components.code`) receives the growing fence whole, as before. Keep the highlighter's reference stable (a module-level
 function, as above): a new function on every render makes every code block highlight again.
 
+## In a terminal
+
+`llx-markdown/tui` takes the same function: `renderToAnsi(reply, { highlight })`, or
+`createTerminalView({ highlight })` for a reply that streams. It reads the kind of each token from
+highlight.js's class names and draws it in one of the terminal theme's colours; the `--llx-code-*`
+tokens are a page's and do not apply. A highlighter that names its colours another way (Shiki's
+inline styles) leaves code in its one colour. The tokens are drawn only when together they are the
+code that was given, so a highlighter can change a row's colours and never its text.
+
+A view streams code as a page does: the fence being written is highlighted in pieces of 40 lines,
+only the last of them again on each token, and whole once it closes. A fence that is finished is
+highlighted once, however long the reply goes on.
+
+While a reply streams, the fence being written is highlighted whole on each update.
+
 ## Without the renderer
 
 `highlightCode(code, language)` from `llx-markdown/highlight` is the same highlighter for code

@@ -12,6 +12,12 @@ description:
 | ------------------------- | ------------------------------------------------------------- | --------------------------- |
 | `llx-markdown`            | `<Markdown>`, its components, types and labels. No dependencies. | `react` 18.2 or 19        |
 | `llx-markdown/styles.css` | The stylesheet and its `--llx-*` tokens.                      |                             |
+| `llx-markdown/static`     | `renderToHtml`: the same HTML as text. No React.              |                             |
+| `llx-markdown/dom`        | `mount`: a page with no framework. No React.                  | a browser                   |
+| `llx-markdown/element`    | `defineMarkdownElement`: a custom element. No React.          | a browser                   |
+| `llx-markdown/tui`        | `renderToAnsi`: the rows of a terminal. No React.             |                             |
+| `llx-markdown/document`   | A growing text as blocks, for a target of your own.           |                             |
+| `llx-markdown/engine`     | The parser alone: `parse` and `toHtml`.                       |                             |
 | `llx-markdown/remark`     | The dialect as a remark plugin, blocks, headings, helpers. No React. |                    |
 | `llx-markdown/stream`     | Completing a partial reply, without React.                    |                             |
 | `llx-markdown/prompt`     | The instructions that teach a model the dialect. Plain text.  |                             |
@@ -20,7 +26,9 @@ description:
 | `llx-markdown/highlight`  | A highlighter for fenced code.                                | `highlight.js` 11           |
 
 The package is ESM only. Every module that uses React hooks starts with `'use client'`.
-`llx-markdown/remark`, `/stream` and `/prompt` import no React and run anywhere.
+Only `llx-markdown` itself imports React. `/static`, `/tui`, `/document`, `/engine`, `/remark`,
+`/stream` and `/prompt` touch no page either and run anywhere; `/dom` and `/element` need a browser.
+`llx-markdown/react` is the same entry as `llx-markdown`.
 
 ## `<Markdown>`
 
@@ -101,6 +109,39 @@ every block render again.
 
 A stage loader is called once per `<Markdown>`, the first time its document needs the stage. A
 load that fails leaves the document readable without it.
+
+## `llx-markdown/static`, `/dom`, `/element`, `/tui`
+
+See [Other targets](targets.md).
+
+| Export                                   | What it does                                                                |
+| ---------------------------------------- | --------------------------------------------------------------------------- |
+| `renderToHtml(markdown, options?)`       | `/static`. The HTML `<Markdown>` draws, as text. `options.streaming` completes an unfinished end. |
+| `mount(target, options?)`                | `/dom`. A `Mounted`: `update(markdown, { streaming })`, `destroy()`, `element`. |
+| `defineMarkdownElement(name?, options?)` | `/element`. Registers `<llx-markdown>`: a `markdown` property and a `streaming` attribute. |
+| `renderToAnsi(markdown, options?)`       | `/tui`. Text for a terminal; `width`, `color`, `streaming`, `highlight`, `math`, `labels`, `extensions`. |
+| `renderToLines(markdown, options?)`      | `/tui`. The same as rows: `Line[]`, each a list of `{ text, style }`.       |
+| `createTerminalView(options?)`           | `/tui`. A view for a reply that streams: `render(text, { streaming, width })`. |
+| `toAnsi(lines, color?)`                  | `/tui`. Rows as text with escape sequences, or without.                     |
+| `textWidth(text)`, `lineWidth(line)`     | `/tui`. The columns a text or a row takes.                                  |
+| `printable(text)`                        | `/tui`. The text with what a terminal would act on written out as text.     |
+
+The options of `/static`, `/dom` and `/element` are the props of `<Markdown>` that are not React's:
+`extensions`, `headingIds`, `html`, `math`, `highlight`, `labels`, `urlTransform`, `className`,
+`unstyled`, `caret`, and `components`, `diagram` and `tree` for drawing of your own. `html` and
+`math` take the extension itself (`import { html } from 'llx-markdown/html'`), not a loader.
+
+## `llx-markdown/document`, `/engine`
+
+| Export                          | What it is                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------- |
+| `createDocument()`              | `/document`. `update(text, { streaming, math, headingIds })` gives a `DocumentState`: `blocks`, `closer`, `growing`, `headingIds`. An unchanged block is the same object. |
+| `usesMath(blocks)`, `usesHtml(blocks)`, `usesRareEntity(blocks)` | `/document`. Whether the document needs a stage a renderer loads on demand. |
+| `splitBlocks(markdown)`         | `/document`. The top-level blocks.                                                  |
+| `llxDialect`, `formOf(node)`    | `/document`. The dialect as an extension for `parse`, and the `Form` it marked a node as: `{ form, kind?, title?, label? }`. |
+| `parse(markdown, options?)`     | `/engine`. The tree of a text.                                                      |
+| `toHtml(tree, options?)`        | `/engine`. The tree as HTML text.                                                   |
+| `visit(tree, visitor)`, `toText(node)` | `/engine`. A walk over a tree, and a node's plain text.                      |
 
 ## `llx-markdown/remark`
 

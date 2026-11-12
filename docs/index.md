@@ -9,7 +9,7 @@ description:
 # llx-markdown
 
 Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, no
-dependencies, 30.5 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
+dependencies, 31.7 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
 of forms a model can write and a reader can scan: steps, tabs, headline figures, the case for and
 against, callouts, folded sections, sources, file trees, diagrams and math. It renders while the text is still arriving,
 without flicker or raw syntax showing.
@@ -96,8 +96,9 @@ What sets it apart:
   required. See [Styling](styling.md).
 - **Safe by default.** Raw HTML is sanitized, unsafe URLs are dropped and diagrams run in Mermaid's
   strict mode. See [Security](security.md).
-- **Not only React.** The dialect is a set of remark plugins you can use with your own renderer or
-  on a server. See [Without React](remark.md).
+- **Not only React.** The same package draws a reply as HTML text on a server, on a page with no
+  framework, as a custom element and in a terminal. See [Other targets](targets.md). The dialect is
+  also a remark plugin for a pipeline of your own: [Extensions and remark](remark.md).
 
 ## Next
 

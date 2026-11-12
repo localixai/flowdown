@@ -30,6 +30,8 @@ import type {
 import { ATTRIBUTION_PREFIX, fenceTitle, parseCalloutMarker } from '../dialect'
 import { applyContainer, isShapedContainer, meaningful } from './remark-answer-containers'
 import type { Extension, Tree } from '../engine/types'
+import { lowered, marked, type Lowering } from './forms'
+import { lowerToHtml } from './forms-html'
 
 /** The engine's tree walker, read with mdast's types: the engine's tree is mdast's. */
 const visit = walk as unknown as (
@@ -61,13 +63,10 @@ function applyCallout(quote: Blockquote): boolean {
   if (lead.value === '') first.children.shift()
   if (first.children.length === 0) quote.children.shift()
 
-  quote.data = {
-    ...quote.data,
-    hProperties: {
-      dataCallout: marker.kind,
-      ...(title ? { dataCalloutTitle: title } : {}),
-    },
-  }
+  quote.data = marked(
+    { form: 'callout', kind: marker.kind, ...(title ? { title } : {}) },
+    quote.data,
+  )
   return true
 }
 
@@ -113,7 +112,7 @@ function applyAttribution(quote: Blockquote): void {
   ]
   const footer: Paragraph = {
     type: 'paragraph',
-    data: { hName: 'footer', hProperties: { className: ['llx-quote-source'] } },
+    data: marked({ form: 'quote-source' }),
     children: source,
   }
   if (lead.length === 0) quote.children.splice(-1, 1, footer)
@@ -157,16 +156,18 @@ function applyFigure(paragraph: Paragraph, index: number, parent: Parents): void
   }
   const caption: PhrasingContent[] | null = title ? [{ type: 'text', value: title }] : underneath
   // A class of its own: code blocks and diagrams are <figure>s with a <figcaption> toolbar too.
-  paragraph.data = {
-    ...paragraph.data,
-    hName: 'figure',
-    hProperties: { className: ['llx-figure'] },
-  }
+  paragraph.data = marked({ form: 'figure' }, paragraph.data)
   paragraph.children = [
     image,
     // `emphasis` is only a phrasing carrier here: hName turns the element into the caption.
     ...(caption
-      ? [{ type: 'emphasis', data: { hName: 'figcaption' }, children: caption } as PhrasingContent]
+      ? [
+          {
+            type: 'emphasis',
+            data: marked({ form: 'caption' }),
+            children: caption,
+          } as PhrasingContent,
+        ]
       : []),
   ]
 }
@@ -186,13 +187,17 @@ function applySectionNumber(heading: Heading): void {
   lead.value = lead.value.slice(match[0].length)
   heading.children.unshift({
     type: 'emphasis',
-    data: { hName: 'span', hProperties: { className: ['llx-section-number'] } },
+    data: marked({ form: 'section-number' }),
     children: [{ type: 'text', value: match[1]! }],
   })
 }
 
-export function remarkAnswerBlocks() {
-  return (tree: Tree): void => {
+/**
+ * The dialect's pass over a tree. `lower` says what each form it marks is in the target's terms;
+ * without one the nodes carry their marks alone.
+ */
+export function dialectPass(lower: Lowering | null) {
+  const read = (tree: Tree): void =>
     visit(tree as Root, (node, index, parent): number | undefined => {
       if (node.type === 'blockquote') {
         // A container this pass already shaped (a tab, a pros/cons aside) is not a quote.
@@ -207,18 +212,30 @@ export function remarkAnswerBlocks() {
       } else if (node.type === 'code' && node.meta) {
         // The file a fence names rides on its <code>: a node's `meta` does not survive a sanitizer.
         const title = fenceTitle(node.meta)
-        if (title)
-          node.data = { ...node.data, hProperties: { ...node.data?.hProperties, dataTitle: title } }
+        if (title) node.data = marked({ form: 'code', title }, node.data)
       }
       return undefined
     })
-  }
+  return (tree: Tree): void => lowered(lower, () => read(tree))
 }
 
+/** The dialect as a remark plugin: its forms as the elements and classes `styles.css` draws. */
+export const remarkAnswerBlocks = () => dialectPass(lowerToHtml)
+
 const transform = remarkAnswerBlocks()
+const mark = dialectPass(null)
 
 /** The dialect as an extension of the engine: what `<Markdown>` reads every document with. */
 export const llxDialect: Extension = {
   name: 'llx',
   transform: (root) => transform(root),
+}
+
+/**
+ * The dialect with its forms marked and nothing said about HTML: what a target that is not HTML
+ * (a terminal) reads a document with.
+ */
+export const llxForms: Extension = {
+  name: 'llx',
+  transform: (root) => mark(root),
 }

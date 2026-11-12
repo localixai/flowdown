@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState, type ComponentPropsWithoutRef } from 'react'
+import { useEffect, useState, type ComponentPropsWithoutRef } from 'react'
+import type { Props } from '../render/factory'
+import { table } from '../render/views'
 import { useLabels } from './labels'
+import { react } from './render'
 
 /**
  * A table in a box of its own that scrolls sideways: a wide comparison then scrolls inside the
@@ -13,14 +16,15 @@ import { useLabels } from './labels'
  * size: a reply that streams a row in, or a window made narrower.
  */
 export function Table({
-  node: _node,
+  children,
   ...props
 }: ComponentPropsWithoutRef<'table'> & { node?: unknown }) {
   const labels = useLabels()
-  const box = useRef<HTMLDivElement>(null)
+  // The box, once React has attached it: the measuring starts then.
+  const [box, setBox] = useState<HTMLDivElement | null>(null)
   const [scrolls, setScrolls] = useState(false)
   useEffect(() => {
-    const element = box.current
+    const element = box
     if (!element) return
     // One pixel of slack: a subpixel table width rounds up past the box it fits in.
     const measure = () => setScrolls(element.scrollWidth > element.clientWidth + 1)
@@ -28,19 +32,11 @@ export function Table({
     if (typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(measure)
     observer.observe(element)
-    const table = element.querySelector('table')
-    if (table) observer.observe(table)
+    const inner = element.querySelector('table')
+    if (inner) observer.observe(inner)
     return () => observer.disconnect()
-  }, [])
-  return (
-    <div
-      ref={box}
-      className="llx-table"
-      role={scrolls ? 'region' : undefined}
-      aria-label={scrolls ? labels.scrollableTable : undefined}
-      tabIndex={scrolls ? 0 : undefined}
-    >
-      <table {...props} />
-    </div>
-  )
+  }, [box])
+  return table(react, props as Props, children === undefined ? [] : [children], scrolls, labels, {
+    ref: setBox,
+  })
 }

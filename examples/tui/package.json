@@ -1,0 +1,17 @@
+{
+  "name": "llx-markdown-example-tui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "bun run --cwd ../../packages/llx-markdown build > /dev/null",
+    "start": "bun stream.ts",
+    "record": "sh record.sh"
+  },
+  "dependencies": {
+    "highlight.js": "11.12.0",
+    "llx-markdown": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.3"
+  }
+}

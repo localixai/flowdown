@@ -2,6 +2,8 @@
 import { createElement, memo, type ReactNode } from 'react'
 import { draw, type BlockOptions } from './draw'
 
+export { tableRows } from '../document/table'
+
 /**
  * A table is one block, and a model that prints results row by row grows it to hundreds of rows:
  * drawn through one parse, every token read and drew the whole table again. A row depends only on
@@ -12,34 +14,6 @@ import { draw, type BlockOptions } from './draw'
  * parse of the whole table makes: the same elements, in the same table.
  */
 const ROWS = 16
-
-const ROW = /^ {0,3}\|/
-const DELIMITER_CELL = /^[ \t]*:?-+:?[ \t]*$/
-
-/** The cells of a row written with its outer pipes. Null when a pipe could be an escaped one. */
-function cells(line: string): string[] | null {
-  if (line.includes('\\')) return null
-  const inner = line.trim().replace(/^\|/, '').replace(/\|$/, '')
-  return inner.split('|')
-}
-
-/**
- * The header (its two lines) and the body rows of a block that is one table and nothing else:
- * every line opens with a pipe, so none of them can be anything but a row. Null for any other
- * block, and for a table this cannot read with certainty; those are drawn by one parse, as ever.
- */
-export function tableRows(source: string): { head: string; rows: string[] } | null {
-  const text = source.replace(/^\n+/, '').trimEnd()
-  if (text.charCodeAt(0) !== 124 && !ROW.test(text)) return null
-  const lines = text.split('\n')
-  if (lines.length < 3 || !lines.every((line) => ROW.test(line))) return null
-  const header = cells(lines[0]!)
-  const delimiter = cells(lines[1]!)
-  if (!header || !delimiter || header.length !== delimiter.length) return null
-  if (!delimiter.every((cell) => DELIMITER_CELL.test(cell))) return null
-  if (!header.some((cell) => cell.trim())) return null
-  return { head: `${lines[0]}\n${lines[1]}\n`, rows: lines.slice(2) }
-}
 
 const Children = ({ children }: { children?: ReactNode }) => <>{children}</>
 const Nothing = () => null
