@@ -24,7 +24,7 @@ bun start
 | `DELAY=0 bun stream.ts`    | as fast as the terminal takes it; 12 ms a token otherwise |
 | `NO_COLOR=1 bun stream.ts` | the same rows without colours                             |
 | `bun stream.ts \| cat`     | not a terminal: the finished reply, once, without colours |
-| `bun run record`           | records the run into `docs/assets/readme/tui.gif`         |
+| `bun run record`           | records the README's terminal demos                       |
 
 ## How it draws
 
@@ -53,7 +53,19 @@ application that owns the whole screen, with its own scrolling, has no such limi
 
 ## The recording
 
-`bun run record` runs `record.sh`: asciinema records the example headless in a window of 90 by 26,
-agg draws the frames on black at 20 a second and twice the width the README shows them, and
-gifsicle fits them to 48 colours, about half the size. It needs
-`brew install asciinema agg gifsicle`.
+`bun run record` runs `record.sh`: asciinema records the example headless, agg draws the frames on
+black at 20 a second and twice the width the README shows them, and gifsicle fits them to 48
+colours, about half the size. It needs `brew install asciinema agg gifsicle`.
+
+It makes two recordings of the same run, into `docs/assets/readme`; `bun run record tui` or
+`bun run record pair` makes one of them.
+
+| Recording           | Window   | Where it is shown                                            |
+| :------------------ | :------- | :----------------------------------------------------------- |
+| `tui.gif`           | 90 by 26 | above, and in the README's terminal section                  |
+| `pair-terminal.gif` | 50 by 28 | the right half of the README's first picture; not committed  |
+
+The first picture, `pair.gif`, is one animation of two halves: the reply streaming on a page, and
+`pair-terminal.gif` beside it. After recording `pair`, `bun run shots pair` in [`demo`](../../demo)
+captures the page to the recording's size, length and pace and joins the two, so the halves stay
+in step.

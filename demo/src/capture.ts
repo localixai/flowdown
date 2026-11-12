@@ -1,12 +1,19 @@
 /**
  * The README's pictures, into docs/assets/readme: the scenes in light and dark
  * (`<scene>-<theme>.png`), the hero reply streaming (`stream-<theme>.png`, animated) and a diagram
- * enlarged, zoomed and panned in its viewer (`viewer-<theme>.png`, animated). Each animation also
- * gets an `.mp4` and a `.gif` beside it, for sites that do not play APNG. Needs Playwright's Chromium
- * (`bunx playwright-core install chromium-headless-shell`) and ffmpeg for the animation.
+ * enlarged, zoomed and panned in its viewer (`viewer-<theme>.png`, animated). Each of those
+ * animations also gets an `.mp4` and a `.gif` beside it, for sites that do not play APNG.
+ *
+ * `pair.gif` is the README's first picture: the reply of `examples/tui` streaming on a black page,
+ * and beside it the same reply streaming in a terminal (`pair-terminal.gif`, recorded by that
+ * example). The page is captured to the recording's size, length and pace, and the two are joined
+ * into one animation, so the halves cannot drift apart.
+ *
+ * Needs Playwright's Chromium (`bunx playwright-core install chromium-headless-shell`), ffmpeg for
+ * the animations and gifsicle for the pair.
  *
  *   bun run shots              everything
- *   bun run shots steps viewer   those pictures only (`stream` and `viewer` are the animations)
+ *   bun run shots steps viewer   those pictures only (`stream`, `viewer` and `pair` are the animations)
  */
 import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -18,6 +25,9 @@ import { serve } from './serve'
 const OUT = join(import.meta.dir, '../../docs/assets/readme')
 const THEMES = ['light', 'dark'] as const
 const SCALE = 2
+
+/** The scenes that are animations, each with its own capture, not stills. */
+const ANIMATED = ['hero', 'viewer', 'pair']
 
 const asked = process.argv.slice(2)
 const wanted = (name: string) => asked.length === 0 || asked.includes(name)
@@ -84,11 +94,158 @@ async function stream(page: Page, base: string, theme: string) {
 }
 
 /**
+ * The terminal half of the pair, as `examples/tui` recorded it: its size in the page's pixels, how
+ * long one loop of it takes, and when its reply starts and ends arriving, in seconds. The recording
+ * has a frame for each change of the screen: an empty one, the reply growing, the reply finished.
+ */
+function terminalHalf() {
+  const path = join(OUT, 'pair-terminal.gif')
+  const probe = Bun.spawnSync([
+    'ffprobe',
+    '-v',
+    'error',
+    '-select_streams',
+    'v:0',
+    '-show_entries',
+    'stream=width,height:format=duration:frame=pts_time',
+    '-of',
+    'json',
+    path,
+  ])
+  if (probe.exitCode !== 0)
+    throw new Error(
+      `${path} is not there: record it first, with \`bun run record pair\` in examples/tui`,
+    )
+  const read = JSON.parse(probe.stdout.toString()) as {
+    frames: { pts_time: string }[]
+    streams: { width: number; height: number }[]
+    format: { duration: string }
+  }
+  const times = read.frames.map((frame) => Number(frame.pts_time))
+  const { width, height } = read.streams[0]!
+  // Rounded up: the page is never the smaller half, and the recording is padded to it.
+  return {
+    path,
+    width: Math.ceil(width / SCALE),
+    height: Math.ceil(height / SCALE),
+    seconds: Number(read.format.duration),
+    from: times[1]!,
+    to: times.at(-1)!,
+  }
+}
+
+/** The picture the terminal example's reply names, on a site that does not have it. */
+const FIGURE = 'https://example.com/latency.png'
+
+/**
+ * The README's first picture: the reply of `examples/tui` streaming on a black page, and beside it
+ * the recording of the same reply streaming in a terminal. The page follows the recording: it is
+ * the terminal's size, each frame shows as much of the reply as the terminal had by then, and it
+ * stays scrolled to its end, as a chat does and as the terminal is.
+ */
+async function pair(page: Page, base: string) {
+  const terminal = terminalHalf()
+  await page.setViewportSize({ width: terminal.width, height: terminal.height })
+  await page.route(FIGURE, (route) =>
+    route.fulfill({
+      path: join(import.meta.dir, '../scenes/latency.svg'),
+      contentType: 'image/svg+xml',
+    }),
+  )
+  await page.goto(`${base}?scene=pair&theme=dark&black&stream`)
+  await page.waitForFunction(() => window.demo)
+  const reply = Array.from(await page.evaluate(() => window.demo.reply))
+
+  const show = async (end: number) => {
+    await page.evaluate(([value, live]) => window.demo.show(value, live), [
+      reply.slice(0, end).join(''),
+      end < reply.length,
+    ] as const)
+    await page.evaluate(
+      () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
+    )
+    // A diagram and a picture are drawn a moment after their text: the frame waits for them.
+    await page
+      .waitForFunction(
+        () =>
+          [...document.querySelectorAll('.llx-diagram')].every((node) =>
+            node.querySelector('.llx-diagram-canvas svg'),
+          ) && [...document.images].every((image) => image.complete),
+        undefined,
+        { timeout: 1500 },
+      )
+      .catch(() => {})
+    await page.evaluate(() => {
+      scrollTo(0, document.documentElement.scrollHeight)
+      return new Promise((done) => requestAnimationFrame(done))
+    })
+  }
+  // Drawn whole once, so what a formula, a diagram and code load is there before the first frame.
+  await show(reply.length)
+  await settled(page)
+
+  const frames = await mkdtemp(join(tmpdir(), 'llx-demo-'))
+  try {
+    const count = Math.ceil(terminal.to * 20) + 1
+    for (let index = 0; index < count; index++) {
+      const done = (index / 20 - terminal.from) / (terminal.to - terminal.from)
+      await show(Math.round(Math.min(1, Math.max(0, done)) * reply.length))
+      await page.screenshot({ path: join(frames, `${String(index).padStart(4, '0')}.png`) })
+    }
+    const half = join(frames, 'page.png')
+    encode(frames, count, half, Math.max(0.5, terminal.seconds - count / 20), false)
+    sideBySide(
+      half,
+      terminal.path,
+      join(OUT, 'pair.gif'),
+      terminal.width * SCALE,
+      terminal.height * SCALE,
+    )
+    console.log(`  pair.gif (${count} frames of the page)`)
+  } finally {
+    await rm(frames, { recursive: true, force: true })
+  }
+}
+
+/**
+ * Two animations as one GIF, `left` beside `right` with a line between them, as long as `left`,
+ * which is `width` by `height` pixels. `right` is redrawn at 20 frames a second, padded with black
+ * to that size and held on its last frame.
+ *
+ * A GIF, where the other animations are animated PNGs: both halves scroll, so most frames are new
+ * from edge to edge, and that costs a lossless PNG four times the bytes. On black, with a
+ * terminal's few colours beside the page's, 96 colours keep the letters' edges smooth.
+ */
+function sideBySide(left: string, right: string, path: string, width: number, height: number) {
+  const drawn = `${left}.gif`
+  const ffmpeg = Bun.spawnSync([
+    'ffmpeg',
+    '-y',
+    '-loglevel',
+    'error',
+    '-i',
+    left,
+    '-i',
+    right,
+    '-filter_complex',
+    `[1:v]fps=20,pad=${width}:${height}:0:0:black,tpad=stop_mode=clone:stop=-1[r];` +
+      `[0:v][r]hstack=shortest=1,drawbox=x=${width - 1}:y=0:w=2:h=ih:color=0x30363d:t=fill,` +
+      'split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=none',
+    '-loop',
+    '0',
+    drawn,
+  ])
+  if (ffmpeg.exitCode !== 0) throw new Error(ffmpeg.stderr.toString())
+  const gifsicle = Bun.spawnSync(['gifsicle', '-O3', drawn, '-o', path])
+  if (gifsicle.exitCode !== 0) throw new Error(gifsicle.stderr.toString())
+}
+
+/**
  * The numbered frames of `frames` as an animated PNG, not a GIF: lossless and in full colour at the
  * captured 2× size, where a GIF's 256 colours smear the anti-aliased text and lose the small
  * coloured marks. 20 frames a second, then the last frame held for `hold` seconds.
  */
-function encode(frames: string, count: number, path: string, hold: number) {
+function encode(frames: string, count: number, path: string, hold: number, share = true) {
   const last = join(frames, `${String(count - 1).padStart(4, '0')}.png`)
   const ffmpeg = Bun.spawnSync([
     'ffmpeg',
@@ -116,7 +273,7 @@ function encode(frames: string, count: number, path: string, hold: number) {
     path,
   ])
   if (ffmpeg.exitCode !== 0) throw new Error(ffmpeg.stderr.toString())
-  shareable(path)
+  if (share) shareable(path)
 }
 
 /**
@@ -252,11 +409,15 @@ try {
       deviceScaleFactor: SCALE,
       colorScheme: theme,
     })
-    // The hero and the viewer are animations, not stills.
-    for (const scene of Object.keys(scenes).filter((name) => name !== 'hero' && name !== 'viewer'))
+    for (const scene of Object.keys(scenes).filter((name) => !ANIMATED.includes(name)))
       if (wanted(scene)) await still(page, server.url.href, scene, theme)
     if (wanted('stream')) await stream(page, server.url.href, theme)
     if (wanted('viewer')) await viewer(page, server.url.href, theme)
+    await page.close()
+  }
+  if (wanted('pair')) {
+    const page = await browser.newPage({ deviceScaleFactor: SCALE, colorScheme: 'dark' })
+    await pair(page, server.url.href)
     await page.close()
   }
 } finally {

@@ -1,6 +1,7 @@
 /**
  * One scene of the demo: `?scene=hero&theme=dark`. With `&stream`, the reply starts empty and
  * `window.demo.show(text, streaming)` sets it, so the capture script can stream it frame by frame.
+ * With `&black`, the page is black, as a terminal beside it is.
  */
 import 'katex/dist/katex.min.css'
 import 'llx-markdown/styles.css'
@@ -20,6 +21,7 @@ const params = new URLSearchParams(location.search)
 const scene =
   reviewScenes[params.get('review') ?? ''] ?? scenes[params.get('scene') ?? 'hero'] ?? scenes.hero!
 document.documentElement.dataset.theme = params.get('theme') === 'dark' ? 'dark' : 'light'
+if (params.has('black')) document.documentElement.dataset.backdrop = 'black'
 const streamed = params.has('stream')
 
 const math = () => import('llx-markdown/math')
@@ -33,7 +35,7 @@ function Scene() {
   }, [])
   return (
     <main className="chat" data-scene>
-      <div className="question">{scene.question}</div>
+      {scene.question && <div className="question">{scene.question}</div>}
       <div className="reply">
         <Markdown
           streaming={reply.streaming}

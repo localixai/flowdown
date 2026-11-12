@@ -12,12 +12,18 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 }
+/* Beside a terminal: its black, and no scrollbar while the reply scrolls as it grows. */
+:root[data-backdrop='black'] {
+  background: #000000;
+  scrollbar-width: none;
+}
 body {
   margin: 0;
 }
 .chat {
   box-sizing: border-box;
-  width: 760px;
+  /* 760 pixels in the README's pictures; the width of the window in the narrow pair. */
+  width: min(760px, 100vw);
   padding: 28px 32px 32px;
   display: flex;
   flex-direction: column;
@@ -34,7 +40,14 @@ body {
 }
 .reply {
   font-size: 15px;
+  line-height: 1.6;
 }
 .reply .llx-markdown > :first-child {
   margin-top: 0;
+}
+
+@media (max-width: 520px) {
+  .chat {
+    padding: 22px 20px 24px;
+  }
 }

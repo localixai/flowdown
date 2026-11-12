@@ -1,3 +1,4 @@
+import terminalReply from '../../examples/tui/reply.md' with { type: 'text' }
 import basics from '../review/basics.md' with { type: 'text' }
 import folded from '../review/folded.md' with { type: 'text' }
 import forms from '../review/forms.md' with { type: 'text' }
@@ -21,6 +22,8 @@ export const scenes: Record<string, { question: string; reply: string }> = {
   diagram: scene(diagram),
   sources: scene(sources),
   viewer: scene(viewer),
+  // The reply `examples/tui` streams into a terminal, shown beside that recording; no question.
+  pair: { question: '', reply: terminalReply.trim() },
 }
 
 /** Every form at once, for looking at (`bun run review`); not in the README. */

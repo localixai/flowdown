@@ -76,10 +76,12 @@ api/
 ```ts title="src/routes/users.ts"
 import { route } from './router'
 
-export const users = route('/users/:id', async ({ params }) => {
-	const user = await db.users.find(params.id)
-	return user ? Response.json(user) : new Response('Not found', { status: 404 })
-})
+export const users = route('/users/:id', find)
+
+async function find(id: string) {
+	const user = await db.users.find(id)
+	return user ? json(user) : notFound()
+}
 ```
 
 ```diff title="package.json"
@@ -94,14 +96,14 @@ export const users = route('/users/:id', async ({ params }) => {
 - **−62%** memory
 - **0** build steps
 
-| Check           | Node 22 |   Bun 1.4 | Verdict              |
-| :-------------- | ------: | --------: | :------------------- |
-| Cold start      | 1,400 ms |     80 ms | **much faster**      |
-| Requests / s    |  41,000 |    96,000 | faster               |
-| Memory at rest  |  118 MB |     45 MB | lighter              |
-| Native modules  |     all |      most | check `sharp` first  |
+| Check       |  Node 22 | Bun 1.4 | Verdict        |
+| :---------- | -------: | ------: | :------------- |
+| Cold start  | 1,400 ms |   80 ms | **17× faster** |
+| Requests/s  |   41,000 |  96,000 | faster         |
+| Memory      |   118 MB |   45 MB | lighter        |
+| Native deps |      all |    most | check `sharp`  |
 
-> [!PROS]
+> [!PROS] Gains
 - one tool for running, testing and bundling
 - TypeScript without a build
 

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 132" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <style>
+    .panel { fill: #f3f5f6 }
+    .label { fill: #57606a }
+    .value { fill: #1f2328 }
+    .before { fill: #afb8c1 }
+    .after { fill: #1a7f37 }
+    @media (prefers-color-scheme: dark) {
+      .panel { fill: #161b22 }
+      .label { fill: #9198a1 }
+      .value { fill: #e6edf3 }
+      .before { fill: #6e7681 }
+      .after { fill: #3fb950 }
+    }
+  </style>
+  <rect class="panel" width="400" height="132" rx="10"/>
+  <g class="label" font-size="13">
+    <text x="20" y="46">Node 22</text>
+    <text x="20" y="94">Bun 1.4</text>
+  </g>
+  <rect class="before" x="86" y="30" width="250" height="24" rx="5"/>
+  <rect class="after" x="86" y="78" width="138" height="24" rx="5"/>
+  <g class="value" font-size="13" font-weight="600">
+    <text x="346" y="47">38 ms</text>
+    <text x="234" y="95">21 ms</text>
+  </g>
+</svg>
