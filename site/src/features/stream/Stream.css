@@ -8,7 +8,6 @@
   max-height: calc(100svh - 13.5rem);
   min-height: 18rem;
   overflow-y: auto;
-  overscroll-behavior: contain;
   padding: clamp(1rem, 2.4vw, 1.5rem) clamp(1rem, 2.6vw, 1.75rem);
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -56,4 +55,58 @@
 }
 .stream-caption button:hover {
   color: var(--white);
+}
+
+/* In a card: the card sets the frame's shape, not the window. */
+.loop-media .stream {
+  aspect-ratio: auto;
+  height: clamp(20rem, 46vh, 30rem);
+  max-height: none;
+}
+
+/* A terminal: rows of one height in the page's monospace, in the terminal theme's own colours. */
+.stream-terminal {
+  overflow-x: hidden;
+}
+.tty {
+  margin: 0;
+  color: var(--ansi-7);
+  font: 400 0.8125rem / 1.5 var(--mono);
+  font-variant-ligatures: none;
+  white-space: pre;
+}
+.tty-b {
+  color: var(--ansi-15);
+  font-weight: 700;
+}
+.tty-d {
+  color: var(--ansi-8);
+}
+.tty-i {
+  font-style: italic;
+}
+.tty-u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.tty-s {
+  text-decoration: line-through;
+}
+.tty-u.tty-s {
+  text-decoration: underline line-through;
+}
+.tty-red {
+  color: var(--ansi-1);
+}
+.tty-green {
+  color: var(--ansi-2);
+}
+.tty-yellow {
+  color: var(--ansi-3);
+}
+.tty-cyan {
+  color: var(--ansi-6);
+}
+.tty-magenta {
+  color: var(--ansi-5);
 }

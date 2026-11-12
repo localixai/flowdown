@@ -43,7 +43,7 @@ llx-sitekit and is now this repository's own: there is no template to merge from
 | Task | Where |
 | --- | --- |
 | Change what the site says | `content/site.ts`, `content/landing.ts`; the types in `src/shared/config/types.ts` say every field. |
-| Change the reply the hero streams | `content/reply.md`. |
+| Change a reply the page streams | `content/reply.md` (the hero), `content/dialect.md`, `content/terminal.md` and `content/diagram.md` (the cards). |
 | Add a docs page | A file in `../docs/`, its name in `content/docs/nav.ts`. |
 | Change a colour or a shape | `content/theme.css`, then `src/shared/styles/global.css`. |
 | Add a section to the landing | A field of `LandingContent`, a widget in `src/widgets/`, a line in `LandingPage.tsx`, a specimen on the kit page. |

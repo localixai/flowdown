@@ -50,12 +50,16 @@ export type DocsConfig = {
  *  - `terminal`: what a program printed, drawn from blocks (shared/ui's Panel);
  *  - `image`: a screenshot or a diagram, itself the link to the picture whole;
  *  - `video`: a short silent clip, played while it is in view;
- *  - `film`: a terminal session recorded with asciinema, played in a real terminal. */
+ *  - `film`: a terminal session recorded with asciinema, played in a real terminal.
+ *  - `reply`: markdown streamed into the card and drawn by flowdown itself. */
 export type Media =
   | { kind: 'terminal'; blocks: Block[]; label?: string }
   | { kind: 'image'; src: string; alt: string; width: number; height: number }
   | { kind: 'video'; src: string; label: string; width: number; height: number; poster?: string }
-  | { kind: 'film'; src: string; label: string };
+  | { kind: 'film'; src: string; label: string }
+  /** A reply as markdown, streamed and drawn live by flowdown: on a `page`, or as a `terminal`
+   *  draws it. `rich` loads Mermaid and KaTeX for a reply with a diagram or a formula. */
+  | { kind: 'reply'; text: string; label: string; target?: 'page' | 'terminal'; rich?: boolean };
 
 /** A card of the landing: a claim, and beside it what shows it. `tag` is a small label over the
  *  title; `text` marks code with backticks; `links` say where to read more. With no `media` the

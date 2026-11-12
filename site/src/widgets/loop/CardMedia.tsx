@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { Film } from '@/features/film';
+import { Stream } from '@/features/stream';
 import type { Media } from '@/shared/config';
 import { Panel } from '@/shared/ui';
 
-/** What a card shows beside its words: a drawn terminal, a picture, a clip or a recording.
+/** What a card shows beside its words: a drawn terminal, a picture, a clip, a recording, or a
+ *  reply streamed live.
  *  `title` is the card's, for a terminal that names nothing itself. */
 export function CardMedia({ media, title }: { media: Media; title: string }) {
   switch (media.kind) {
@@ -20,6 +22,8 @@ export function CardMedia({ media, title }: { media: Media; title: string }) {
       return <Clip media={media} />;
     case 'film':
       return <Film src={media.src} label={media.label} />;
+    case 'reply':
+      return <Stream text={media.text} label={media.label} target={media.target ?? 'page'} rich={media.rich ?? false} />;
   }
 }
 

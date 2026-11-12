@@ -25,7 +25,7 @@ bun run dev            # http://localhost:5173
 
 | Path | |
 | --- | --- |
-| `content/` | What the site says: `site.ts`, `landing.ts`, the hero's `reply.md`, `theme.css`. |
+| `content/` | What the site says: `site.ts`, `landing.ts`, the replies it streams (`reply.md`, `dialect.md`, `terminal.md`, `diagram.md`), `theme.css`. |
 | `public/` | The icons, the link preview and its source, the landing's clips, `llms.txt`, `robots.txt`. |
 | `../docs/` | The documentation; its menu is `content/docs/nav.ts`. |
 | `src/`, `scripts/` | Components, styles, the docs engine and the build, in Feature-Sliced layers (`bun run lint` enforces them). |

@@ -1,5 +1,8 @@
 import type { Block, Card, LandingContent, Media, Tone } from '@/shared/config';
+import diagram from './diagram.md?raw';
+import dialect from './dialect.md?raw';
 import reply from './reply.md?raw';
+import terminalReply from './terminal.md?raw';
 
 // The landing's words. Every figure is one of the repository's: bench/results and docs/comparison.md.
 const DOCS = '/docs';
@@ -40,11 +43,9 @@ const CARDS: Card[] = [
       { href: `${DOCS}/prompting`, label: 'The prompt that teaches it' },
     ],
     media: {
-      kind: 'image',
-      src: '/media/steps.png',
-      alt: 'A reply drawn as numbered steps on one line, with code under a step and tabs after them',
-      width: 1520,
-      height: 994,
+      kind: 'reply',
+      text: dialect,
+      label: 'A reply streaming in the dialect: a warning, numbered steps, headline figures, a file tree, a folded section, a quote with its source, a checklist and sources',
     },
   },
   {
@@ -77,32 +78,28 @@ const CARDS: Card[] = [
   {
     tag: 'Targets',
     title: 'The same reply outside React',
-    text: 'As HTML text on a server, in a page with no framework, as a `<flow-down>` element, or as the rows of a terminal. One parser draws them all, and none of these entries imports React.',
+    text: 'As HTML text on a server, in a page with no framework, as a `<flow-down>` element, or as the rows of a terminal: this one is `flowdown/tui`, live. One parser draws them all, and none of these entries imports React.',
     links: [{ href: `${DOCS}/targets`, label: 'The targets' }],
     media: {
-      kind: 'video',
-      src: '/media/terminal.mp4',
-      poster: '/media/terminal.jpg',
-      label: 'A reply streaming in a terminal: callouts, steps, tabs, a file tree, highlighted code, a table and a formula drawn as styled text',
-      width: 1240,
-      height: 846,
+      kind: 'reply',
+      target: 'terminal',
+      text: terminalReply,
+      label: 'A reply streaming as a terminal draws it, by flowdown/tui: a warning, steps, highlighted code, a diff, a table, a checklist and a formula as styled text',
     },
   },
   {
     tag: 'Diagrams and math',
     title: 'A diagram a reader can open',
-    text: 'A `mermaid` fence is drawn once it is whole, in the page’s colours, and opens in a viewer that zooms and pans. Formulas are set by KaTeX. Both load only for a reply that has one.',
+    text: 'A `mermaid` fence is drawn once it is whole, in the page’s colours, and opens in a viewer that zooms and pans: try it. Formulas are set by KaTeX. Both load only for a reply that has one.',
     links: [
       { href: `${DOCS}/diagrams`, label: 'Diagrams' },
       { href: `${DOCS}/math`, label: 'Math' },
     ],
     media: {
-      kind: 'video',
-      src: '/media/diagram.mp4',
-      poster: '/media/diagram.jpg',
-      label: 'A diagram in a reply opened in the viewer, zoomed and panned',
-      width: 1520,
-      height: 1300,
+      kind: 'reply',
+      rich: true,
+      text: diagram,
+      label: 'A reply streaming with a sequence diagram, drawn once its source is whole, and a formula',
     },
   },
   {
