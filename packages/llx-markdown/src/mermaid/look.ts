@@ -67,6 +67,9 @@ export function resolveMermaidLook(root: HTMLElement): MermaidLook {
 
   const themeVariables = {
     darkMode: dark,
+    // Mermaid's own shadow under a node is a fixed light grey: a glow on a dark ground, and depth
+    // the flat panels around a diagram do not have on a light one.
+    dropShadow: 'none',
     background: bg,
     fontFamily,
     fontSize: '13px',

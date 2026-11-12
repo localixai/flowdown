@@ -334,6 +334,33 @@
   border-radius: var(--llx-radius);
 }
 
+/* Footnotes. The reference in the text is a raised number, quiet and not underlined: the line
+   under a superscript sat lower and wider than its digit. `line-height: 0` keeps it from pushing
+   its line apart from the others. */
+.llx-markdown sup,
+.llx-markdown sub {
+  line-height: 0;
+}
+.llx-markdown [data-footnote-ref],
+.llx-markdown [data-footnote-backref] {
+  text-decoration: none;
+  color: var(--llx-fg-soft);
+}
+/* The notes themselves close the reply under a rule, smaller and quieter than the text they
+   annotate. Their heading names the section for a screen reader and is not drawn: out of the
+   flow and clipped to nothing, which leaves it in the accessibility tree. */
+.llx-markdown [data-footnotes] {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--llx-border-subtle);
+  padding-top: 0.65rem;
+  font-size: 0.9em;
+  color: var(--llx-fg-soft);
+}
+.llx-markdown .sr-only {
+  position: absolute;
+  clip-path: inset(50%);
+}
+
 /* A key (`<kbd>⌘</kbd>`): a keycap, raised by a heavier bottom edge. */
 .llx-markdown kbd {
   display: inline-block;

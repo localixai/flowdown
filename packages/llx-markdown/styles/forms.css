@@ -5,8 +5,8 @@
    veil the callouts use (the foreground at a few percent), right in every theme and under glass. */
 
 /* ─── Steps (`> [!STEPS]` over a list) ───
-   A sequence read in order: an open dot per step on a dotted line, the step's title, its
-   "when" quieter beneath, then its text. */
+   A sequence read in order: each step's number in a round mark, a line down to the next one, the
+   step's title, its "when" quieter beneath, then its text. */
 .llx-markdown .llx-steps-title,
 .llx-markdown .llx-stats-title,
 .llx-markdown .llx-sources-title,
@@ -28,33 +28,55 @@
   padding-left: 0;
 }
 .llx-markdown .llx-steps > li {
-  --llx-step-dot: 0.875rem;
+  --llx-mark: 1.5rem;
   position: relative;
   margin: 0;
-  padding: 0 0 0.9rem 1.75rem;
+  padding: 0 0 1rem 2.25rem;
 }
 .llx-markdown .llx-steps > li:last-child {
   padding-bottom: 0;
 }
-/* The dot sits on the first line box, whatever its height. */
-.llx-markdown .llx-steps > li::before {
-  content: '';
+/* A numbered mark (a step's, a source's): a round badge on the row's first line. In `line-height`,
+   `lh` is the parent's, so the mark takes the row's line whatever its own font size and the page's
+   leading (a number, a length, `normal`), and the `1lh` in `top` centres it on that line exactly.
+   That line is taller than a small mark: the track is centred, or the number would sink. */
+.llx-markdown .llx-steps > li::before,
+.llx-markdown .llx-sources > li::before {
   position: absolute;
   left: 0;
-  top: calc((1lh - var(--llx-step-dot)) / 2);
-  width: var(--llx-step-dot);
-  height: var(--llx-step-dot);
-  border: 1.5px solid var(--llx-fg-soft);
+  top: calc((1lh - var(--llx-mark)) / 2);
+  display: grid;
+  place-content: center;
+  min-width: var(--llx-mark);
+  height: var(--llx-mark);
   border-radius: 9999px;
+  background: var(--llx-veil-strong);
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1lh;
+  color: var(--llx-fg-soft);
 }
-/* The line runs from under this dot to the next one; the last step has none to reach. */
+/* A step's mark is its place in the list, the one `start` and `value` give it; steps in no order
+   get a dot. */
+.llx-markdown .llx-steps > li::before {
+  content: counter(list-item);
+}
+.llx-markdown ul.llx-steps > li::before {
+  content: '●';
+}
+/* The line runs from this mark to the next one, the same gap at both ends; the last step has none
+   to reach. Its box starts at this mark's bottom edge and ends at the next mark's top, and the
+   gaps are its padding: a browser snaps each box to whole pixels on its own, and a line placed by
+   its own offsets landed a pixel closer to one mark than to the other. */
 .llx-markdown .llx-steps > li:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: calc(var(--llx-step-dot) / 2 - 0.75px);
-  top: calc((1lh + var(--llx-step-dot)) / 2 + 0.25rem);
-  bottom: 0.15rem;
-  border-left: 1.5px dotted color-mix(in oklab, var(--llx-fg) 28%, transparent);
+  left: calc(var(--llx-mark) / 2 - 1px);
+  top: calc((1lh + var(--llx-mark)) / 2);
+  bottom: calc((var(--llx-mark) - 1lh) / 2);
+  width: 2px;
+  padding: 0.25rem 0;
+  background: var(--llx-border) content-box;
 }
 .llx-markdown .llx-step-head {
   margin: 0;
@@ -70,10 +92,21 @@
   font-style: italic;
   color: var(--llx-fg-faint);
 }
-.llx-markdown .llx-step-body {
-  margin: 0.3rem 0 0;
+/* The step's text sits one small, fixed gap under its title whatever it starts with: a block's
+   own top margin (a code block's, a list's) would otherwise set the gap, a different one per step. */
+/* A block right under the title (a code block, a table) belongs to its step: it sits nearer its
+   own title than the next step's, whatever margin the block has elsewhere. */
+.llx-markdown .llx-step-head + :not(.llx-step-body) {
+  margin-top: 0.5rem;
 }
-.llx-markdown .llx-steps > li > :last-child {
+.llx-markdown .llx-step-body {
+  margin-top: 0.15rem;
+}
+.llx-markdown .llx-step-body > :first-child {
+  margin-top: 0;
+}
+.llx-markdown .llx-steps > li > :last-child,
+.llx-markdown .llx-step-body > :last-child {
   margin-bottom: 0;
 }
 
@@ -91,7 +124,8 @@
   gap: 0.25rem;
   overflow-x: auto;
   border-bottom: 1px solid var(--llx-border);
-  padding: 0 0.5rem;
+  /* With a tab's own 0.5rem, its label starts where a code block's text does (0.9rem). */
+  padding: 0 0.4rem;
   scrollbar-width: none;
 }
 .llx-markdown .llx-tab {
@@ -131,6 +165,14 @@
 }
 .llx-markdown .llx-tab-panel > :last-child {
   margin-bottom: 0;
+}
+/* A variant that is one code block (install commands per system) is that block, edge to edge
+   under the tab row: a rounded panel inside the bordered one was a box in a box. */
+.llx-markdown .llx-tab-panel:has(> .llx-code:only-child) {
+  padding: 0;
+}
+.llx-markdown .llx-tab-panel > .llx-code:only-child {
+  border-radius: 0;
 }
 
 /* ─── Headline figures (`> [!STATS]` over `- **value** label`) ───
@@ -315,27 +357,15 @@
   counter-reset: llx-source;
 }
 .llx-markdown .llx-sources > li {
+  --llx-mark: 1.25rem;
   position: relative;
   margin: 0.45rem 0;
   padding-left: 1.85rem;
   counter-increment: llx-source;
 }
+/* The badge itself is the numbered mark the steps draw (above). */
 .llx-markdown .llx-sources > li::before {
   content: counter(llx-source);
-  position: absolute;
-  left: 0;
-  /* `lh` is this badge's own, 0.72 of the row's: scale it back to centre on the first line. */
-  top: calc((1lh / 0.72 - 1.3rem) / 2);
-  display: grid;
-  place-items: center;
-  min-width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 9999px;
-  background: var(--llx-veil-strong);
-  font-size: 0.72em;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--llx-fg-soft);
 }
 .llx-markdown .llx-source > a {
   text-decoration: none;
