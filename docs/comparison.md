@@ -87,23 +87,25 @@ better.
 
 | Library | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **flowdown** | **13** | **32** | **50** | **25** | **140** | **40** |
-| Streamdown | 59 | 285 | 4,881 | 3,786 | 6,113 | 130 |
-| react-markdown | 208 | 2,752 | 2,803 | 3,114 | stopped at 68% | 15,125 |
-| markdown-to-jsx | 19 | 126 | 67 | 163 | 2,375 | 576 |
-| markstream | 42 | 324 | 919 | 838 | 5,442 | 129 |
-| marked-react | 39 | 289 | 81 | 259 | 7,072 | 1,720 |
+| **flowdown** | **12** | **29** | **49** | **26** | **138** | **41** |
+| Streamdown | 51 | 291 | 5,926 | 4,248 | 6,529 | 137 |
+| react-markdown | 213 | 3,002 | 3,808 | 3,473 | stopped at 65% | 16,506 |
+| markdown-to-jsx | 15 | 127 | 63 | 173 | 2,393 | 591 |
+| markstream | 41 | 331 | 1,076 | 908 | 5,714 | 133 |
+| marked-react | 37 | 298 | 80 | 280 | 7,709 | 1,765 |
 
 - **Where flowdown wins: everywhere here, and most on length.** It parses again only the block
   still being written, and reads only the new lines of a growing code block, so a 100k reply and a
   30-reply thread cost about as much per update as the first lines.
 - **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
-  6 ms on a 5k chat answer, and both it and marked-react are within 2× on 50k of code.
+  4 ms on a 5k chat answer, and both it and marked-react are within 2× on 50k of code.
   markdown-to-jsx holds unfinished syntax back instead of repairing it.
 - **Why react-markdown is slowest.** It parses the whole text again on every update.
 
-How speed is measured: the whole table three times over on an Apple M5 in Bun 1.4.4, three runs
-of each stream every time, and the median kept. Pages are drawn with
+How speed is measured: on an Apple M5 in Bun 1.4.4, three runs of each stream and the median
+kept. flowdown's row is the whole table three times over; each other row is the mean of five to
+seven such runs made over four days, because one run differs from the next by a tenth with how busy
+the machine is, and those renderers did not change in between. Pages are drawn with
 happy-dom, not a real browser, so the figures compare renderers rather than predict a real page.
 Every scenario, chunk pattern and percentile is in
 [bench/results/latest.md](../bench/results/latest.md).

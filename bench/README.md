@@ -104,18 +104,46 @@ highlighter, math or diagrams, so each parses the same Markdown:
 ```sh
 cd bench
 bun install
-bun run bench          # builds the package, runs everything, writes results/
+bun run bench          # builds the package, measures flowdown, writes results/ (2 minutes)
+bun run bench:all      # measures every renderer again (35 minutes): see below for when
 bun run bench:check    # holds results/latest.json to budgets.json
 bun run bench:quick    # one run, `frame` only, for a quick look; writes no `latest`
-bun run browser        # the same streams in Chromium: results/browser.md (45 minutes)
+bun run browser        # the same streams in Chromium: results/browser.md (3 minutes)
+bun run browser --all  # every renderer again in Chromium (45 minutes)
 ```
+
+### The other renderers are measured once
+
+`bun run bench` measures flowdown and keeps every other renderer's rows from
+`results/reference.json`. Those renderers do not change between two runs, and they are 96% of a
+full run: react-markdown alone is half of it. Do not measure them again to check a change to
+flowdown.
+
+The reference is the mean of every full run recorded in `results/` (`bun run reference`,
+[src/reference.ts](src/reference.ts)): five to seven runs over four days as of 2026-11-12. One run
+differs from the next by a tenth with how busy the machine is, so the mean is steadier than any
+one of them, and it does not move when flowdown is measured again.
+
+A row is kept only if it would come out the same measured today: the same version of that
+renderer, the same reply (by its hash), the same machine, the same Bun and the same time budget.
+If any of those differs the row is measured, so nothing has to be remembered. `latest.md` names
+the renderers kept.
+
+`bun run browser` does the same from its own last record, `results/browser.json`.
+
+Run everything again (`bench:all`, then `bun run reference`; `browser --all`) only when a
+renderer's version, a reply in `packages/flowdown/test/replies.ts`, the machine or the runtime
+changes. Those rows are measured again by themselves anyway; the full run is to give the reference
+more than one sample of them.
 
 Options for `bun src/run.ts` (with `NODE_ENV=production`):
 
+- `--all`: measure every renderer, keeping no row.
 - `--only=chat-5k,answer-20k`: some scenarios.
 - `--renderers=flowdown,streamdown`: some renderers.
 - `--runs=5`: more runs per measurement.
-- `--passes=3`: the whole table that many times over, each number the median of its passes.
+- `--passes=3`: the whole table that many times over, each number the median of its passes;
+  `bun run bench` passes it.
 - `--label=name`: the name of the results file, `results/<date>-<name>.json`.
 - `--no-write`: print only.
 
@@ -157,6 +185,7 @@ bench/
     measure.tsx     one run of one renderer
     renderers.tsx   how each renderer is set up
     report.ts       medians and the tables of latest.md
+    reference.ts    the other renderers' mean over the recorded runs: results/reference.json
     check.ts        holds a run to budgets.json
     browser.ts      the same streams in Chromium: results/browser.md
     browser-page.tsx  the page it opens: one renderer, one stream
@@ -166,6 +195,7 @@ bench/
   results/
     latest.md
     latest.json
+    reference.json
     browser.md
     browser.json
     parse.md

@@ -13,14 +13,22 @@
  * Writes results/browser.json and results/browser.md. Needs Playwright's Chromium
  * (`bunx playwright-core install chromium-headless-shell`).
  *
- * Options: `--only=chat-5k,code-50k`, `--renderers=flowdown,streamdown`, `--runs=3`, `--no-write`.
+ * Only flowdown is measured, unless `--all` is given: the other renderers' rows are kept from
+ * results/browser.json while that run was of the same version of the renderer, the same reply,
+ * machine, browser and settings (see run.ts, which does the same). A full run is 45 minutes, and
+ * all but three of them are the renderers that have not changed.
+ *
+ * Options: `--all`, `--only=chat-5k,code-50k`, `--renderers=flowdown,streamdown`, `--runs=3`,
+ * `--no-write`.
  */
 import { execSync } from 'node:child_process'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { cpus, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
+import { hash } from '../../packages/flowdown/test/random'
+import { scaling, scenarios } from '../../packages/flowdown/test/replies'
 import type { PageResult } from './browser-page'
 
 const flag = (name: string) =>
@@ -126,11 +134,47 @@ const median = (values: number[]) => [...values].sort((a, b) => a - b)[Math.floo
 const browser = await chromium.launch()
 const rows: Row[] = []
 
+// ─── What is kept from the last record ───
+
+const results = join(import.meta.dir, '../results')
+const cpu = cpus()[0]?.model ?? ''
+const engine = `Chromium ${browser.version()}`
+const replies = [...scenarios(), ...scaling()]
+const corpus = Object.fromEntries(
+  CASES.map(([name]) => [name, hash(replies.find((reply) => reply.name === name)?.text ?? '')]),
+)
+const named = NAMES.map((name) => `${name} ${versions[name] ?? ''}`.trim())
+interface Earlier {
+  meta: Record<string, unknown> & { date: string; renderers: string[]; reused?: Record<string, string> }
+  rows: Row[]
+}
+const before: Earlier | null =
+  process.argv.includes('--all') || !existsSync(join(results, 'browser.json'))
+    ? null
+    : (JSON.parse(readFileSync(join(results, 'browser.json'), 'utf8')) as Earlier)
+const sameSetup =
+  before !== null &&
+  before.meta.cpu === cpu &&
+  before.meta.browser === engine &&
+  before.meta.runs === runs &&
+  before.meta.perFrame === perFrame &&
+  before.meta.budgetMs === budgetMs
+/** The row measured before, if this renderer and this reply are the ones it was measured with. */
+const kept = (scenario: string, renderer: string) =>
+  !sameSetup ||
+  renderer.startsWith('flowdown') ||
+  !before!.meta.renderers.includes(named[NAMES.indexOf(renderer)]!) ||
+  (before!.meta.corpus as Record<string, unknown> | undefined)?.[scenario] !== corpus[scenario]
+    ? undefined
+    : before!.rows.find((row) => row.scenario === scenario && row.renderer === renderer)
+const reused: Record<string, string> = {}
+
 for (const [scenario, pattern] of CASES) {
   const samples = new Map<string, Array<PageResult & Record<'script' | 'layout' | 'style' | 'task', number>>>()
   // Round by round, so a slow minute of the machine falls on every renderer alike.
   for (let run = 0; run < runs; run++) {
     for (const renderer of NAMES) {
+      if (kept(scenario, renderer)) continue
       const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
       const session = await page.context().newCDPSession(page)
       await session.send('Performance.enable')
@@ -157,6 +201,13 @@ for (const [scenario, pattern] of CASES) {
     }
   }
   for (const renderer of NAMES) {
+    const old = kept(scenario, renderer)
+    if (old) {
+      rows.push(old)
+      reused[renderer] = before!.meta.reused?.[renderer] ?? before!.meta.date
+      console.log(`${scenario} · ${pattern}`.padEnd(22), renderer.padEnd(16), 'kept')
+      continue
+    }
     const of = samples.get(renderer)!
     const row: Row = {
       scenario,
@@ -184,7 +235,6 @@ for (const [scenario, pattern] of CASES) {
   }
 }
 
-const version = browser.version()
 await browser.close()
 void server.stop(true)
 rmSync(out, { recursive: true, force: true })
@@ -202,14 +252,16 @@ const meta = {
   date: new Date().toISOString(),
   commit: git('git rev-parse --short HEAD'),
   dirty: git('git status --porcelain') !== '',
-  cpu: cpus()[0]?.model ?? '',
+  cpu,
   cores: cpus().length,
   os: `${process.platform} ${process.arch}`,
-  browser: `Chromium ${version}`,
+  browser: engine,
   runs,
   perFrame,
   budgetMs,
-  renderers: NAMES.map((name) => `${name} ${versions[name] ?? ''}`.trim()),
+  renderers: named,
+  corpus,
+  ...(Object.keys(reused).length > 0 ? { reused } : null),
 }
 
 const ms = (value: number) =>
@@ -229,8 +281,15 @@ const or = (cell: (row: Row) => string) => (row: Row) =>
 const markdown = `# Benchmark results, in a browser
 
 ${Object.entries(meta)
-  .map(([key, value]) => `- **${key}:** ${Array.isArray(value) ? value.join(', ') : value}`)
-  .join('\n')}
+  .filter(([key]) => key !== 'corpus' && key !== 'reused')
+  .map(([key, value]) => `- **${key}:** ${Array.isArray(value) ? value.join(', ') : String(value)}`)
+  .join('\n')}${
+  Object.keys(reused).length === 0
+    ? ''
+    : `\n- **kept from an earlier run:** ${Object.entries(reused)
+        .map(([name, date]) => `${name} (${date.slice(0, 10)})`)
+        .join(', ')}: the same version, replies, machine and browser`
+}
 
 Each renderer streams the reply in Chromium, ${perFrame} updates per animation frame. The numbers are
 the browser's own counters, the median of ${runs} runs. Lower is better. "Stopped" means the renderer
@@ -256,9 +315,10 @@ The 95th percentile of one update, with the longest in brackets, in milliseconds
 ${table((row) => `${row.p95Ms.toFixed(2)} (${row.maxMs.toFixed(1)})`)}
 `
 
-if (process.argv.includes('--no-write')) console.log(`\n${markdown}`)
+// A partial run is for a look, not a record.
+if (process.argv.includes('--no-write') || flag('only') || flag('renderers')) console.log(`\n${markdown}`)
 else {
-  const dir = join(import.meta.dir, '../results')
+  const dir = results
   writeFileSync(join(dir, 'browser.json'), `${JSON.stringify({ meta, rows }, null, 2)}\n`)
   writeFileSync(join(dir, 'browser.md'), markdown)
   console.log(`\nwrote results/browser.md and results/browser.json`)

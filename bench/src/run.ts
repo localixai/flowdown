@@ -1,6 +1,6 @@
 /**
- * `bun src/run.ts [--quick] [--only=a,b] [--renderers=flowdown,streamdown] [--runs=3] [--passes=1]
- * [--label=name] [--no-write]`
+ * `bun src/run.ts [--all] [--quick] [--only=a,b] [--renderers=flowdown,streamdown] [--runs=3]
+ * [--passes=1] [--label=name] [--no-write]`
  *
  * Every scenario, under each of its chunk patterns, through every renderer, each in a process of
  * its own (cell.ts): one warm-up run, then `--runs` measured ones, of which the median is kept.
@@ -8,9 +8,16 @@
  * of its passes (report.ts, `across`): for a machine that is not quiet. Writes
  * `results/<date>-<label>.json` with every number and the machine it ran on, and
  * `results/latest.md` with the tables the README quotes.
+ *
+ * Only flowdown is measured, unless `--all` is given. The other renderers do not change between
+ * two runs, and they are 96% of a full run's time (react-markdown alone is half of it): their rows
+ * are kept from `results/reference.json`, the mean of every full run recorded (reference.ts), for
+ * as long as it is of the same version of the renderer, the same reply, the same machine, runtime
+ * and time budget. A row that cannot be kept is measured. `meta.reused` names the renderers whose
+ * rows were kept, and `meta.reference` what they are the mean of.
  */
 import { execSync } from 'node:child_process'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cpus, platform, release } from 'node:os'
 import { join } from 'node:path'
 import type { Pattern } from '../../packages/flowdown/test/chunks'
@@ -37,6 +44,47 @@ const renderers = RENDERERS.filter(
 )
 const budgetMs = Number(flag('budget') ?? (quick ? 10_000 : 30_000))
 const label = flag('label') ?? 'local'
+const everyone = process.argv.includes('--all')
+const cpu = cpus()[0]?.model ?? 'unknown'
+const runtime = `bun ${Bun.version}`
+const dir = join(import.meta.dir, '..', 'results')
+
+/** The reference: where the rows of a renderer that has not changed are kept from. */
+interface Earlier {
+  meta: {
+    date: string
+    cpu: string
+    runtime: string
+    budgetMs: number
+    renderers: Record<string, string>
+    corpus: Record<string, number | string>
+    about: string
+  }
+  rows: Row[]
+}
+const before: Earlier | null =
+  everyone || quick || !existsSync(join(dir, 'reference.json'))
+    ? null
+    : (JSON.parse(readFileSync(join(dir, 'reference.json'), 'utf8')) as Earlier)
+const sameSetup =
+  before !== null &&
+  before.meta.cpu === cpu &&
+  before.meta.runtime === runtime &&
+  before.meta.budgetMs === budgetMs
+/** The row measured before for this cell, if it would come out the same measured again. */
+const kept = (scenario: Scenario, pattern: Pattern, renderer: { name: string; version: string }) =>
+  !sameSetup ||
+  renderer.name.startsWith('flowdown') ||
+  before!.meta.renderers[renderer.name] !== renderer.version ||
+  before!.meta.corpus[scenario.name] !== fingerprint(scenario)
+    ? undefined
+    : before!.rows.find(
+        (row) =>
+          row.scenario === scenario.name && row.pattern === pattern && row.renderer === renderer.name,
+      )
+const fingerprint = (scenario: Scenario) => hash(scenario.text + (scenario.history ?? []).join(''))
+/** Each renderer with a row kept. */
+const reused = new Set<string>()
 
 /** The patterns a scenario runs under: every one gets `frame`; the hot paths also get `token`. */
 const PATTERNS: Record<string, Pattern[]> = {
@@ -66,7 +114,7 @@ const cell = (scenario: string, pattern: Pattern, renderer: string): RunResult[]
 
 const [small, large] = scaling()
 const all: Scenario[] = [...scenarios(), small, large].filter((s) => !only || only.includes(s.name))
-/** Each cell's row from every pass, in the order of the table. */
+/** Each cell's row from every pass, in the order of the table; a kept row stands alone. */
 const measured: Row[][] = []
 for (let pass = 1; pass <= passes; pass++) {
   let at = 0
@@ -74,6 +122,15 @@ for (let pass = 1; pass <= passes; pass++) {
     const patterns = quick ? (['frame'] as Pattern[]) : (PATTERNS[scenario.name] ?? ['frame'])
     for (const pattern of patterns) {
       for (const renderer of renderers) {
+        const old = kept(scenario, pattern, renderer)
+        if (old) {
+          if (pass === 1) {
+            measured[at] = [old]
+            reused.add(renderer.name)
+          }
+          at++
+          continue
+        }
         const results = cell(scenario.name, pattern, renderer.name)
         const row = summarize(scenario, pattern, renderer, results)
         ;(measured[at++] ??= []).push(row)
@@ -101,20 +158,20 @@ const meta = {
   label,
   commit: git('rev-parse --short HEAD'),
   dirty: git('status --porcelain') !== '',
-  cpu: cpus()[0]?.model ?? 'unknown',
+  cpu,
   cores: cpus().length,
   os: `${platform()} ${release()}`,
-  runtime: `bun ${Bun.version}`,
+  runtime,
   runs,
   passes,
   quick,
   budgetMs,
   renderers: Object.fromEntries(renderers.map((r) => [r.name, r.version])),
-  corpus: Object.fromEntries(all.map((s) => [s.name, hash(s.text + (s.history ?? []).join(''))])),
+  corpus: Object.fromEntries(all.map((s) => [s.name, fingerprint(s)])),
+  ...(reused.size > 0 ? { reused: [...reused], reference: before!.meta.about } : null),
 }
 
 if (!process.argv.includes('--no-write')) {
-  const dir = join(import.meta.dir, '..', 'results')
   mkdirSync(dir, { recursive: true })
   const stamp = meta.date.slice(0, 10)
   const json = `${JSON.stringify({ meta, rows }, null, 2)}\n`

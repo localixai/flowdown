@@ -58,7 +58,7 @@ process.stdout.write(renderToAnsi(reply))
 | :------------------------ | ------: |
 | **flowdown**              | **0.14 s** |
 | markdown-to-jsx           | 2.4 s   |
-| Streamdown                | 6.1 s   |
+| Streamdown                | 6.5 s   |
 
 > [!PROS] It does
 - repair unfinished `**bold`, links and code fences

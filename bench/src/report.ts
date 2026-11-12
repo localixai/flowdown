@@ -142,6 +142,12 @@ function grid(
 const total = (row: Row) =>
   row.timedOut ? `stopped at ${row.drawnShare}%` : `${ms(row.totalMs)} ms (${ms(row.p95)})`
 
+/** The renderers whose rows were not measured in this run, and what they are instead. */
+const kept = (meta: Record<string, unknown>) =>
+  Array.isArray(meta.reused)
+    ? `\n- **kept from results/reference.json:** ${meta.reused.join(', ')}: ${String(meta.reference)}`
+    : ''
+
 export function report(meta: Record<string, unknown>, rows: Row[], renderers: readonly Renderer[]) {
   const keyed = (row: Row) => `${row.scenario} · ${row.pattern}`
   const keys = [
@@ -164,10 +170,10 @@ export function report(meta: Record<string, unknown>, rows: Row[], renderers: re
   return `# Benchmark results
 
 ${Object.entries(meta)
-  .filter(([key]) => !['corpus', 'renderers'].includes(key))
+  .filter(([key]) => !['corpus', 'renderers', 'reused', 'reference'].includes(key))
   .map(([key, value]) => `- **${key}:** ${String(value)}`)
   .join('\n')}
-- **renderers:** ${renderers.map((r) => `${r.name} ${r.version}`).join(', ')}
+- **renderers:** ${renderers.map((r) => `${r.name} ${r.version}`).join(', ')}${kept(meta)}
 
 ## Whole stream
 

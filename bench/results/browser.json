@@ -17,7 +17,14 @@
       "markdown-to-jsx 9.10.6",
       "markstream 2.0.24",
       "marked-react 4.0.0"
-    ]
+    ],
+    "corpus": {
+      "chat-5k": "059d0804",
+      "answer-20k": "a3bd4a1e",
+      "table-20k": "fbc52529",
+      "code-50k": "92dc53ef",
+      "long-100k": "64ec1420"
+    }
   },
   "rows": [
     {

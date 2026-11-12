@@ -54,7 +54,7 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 ## Why
 
 - **Fast.** A 100k-character reply streams in 0.14 s. The next fastest renderer takes 2.4 s and
-  Streamdown 6.1 s.
+  Streamdown 6.5 s.
 - **Linear.** A reply four times longer costs about three times more, not sixteen, and no update
   takes more than 5 ms.
 - **Repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences never
