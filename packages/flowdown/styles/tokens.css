@@ -16,7 +16,7 @@
   /* Text, from the body copy to the quietest annotation. */
   --fd-fg: light-dark(#1f2328, #e6edf3);
   --fd-fg-soft: light-dark(#4b535d, #b1bac4);
-  --fd-fg-faint: light-dark(#6e7781, #8b949e);
+  --fd-fg-faint: light-dark(#656d76, #8b949e);
   /* The ground the Markdown sits on: diagrams mix their fills over it. Set it to your page's. */
   --fd-bg: light-dark(#ffffff, #0d1117);
   /* What shows through --fd-bg when it is translucent (a glass panel): the opaque colour under it.
