@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-
-const NOTHING = () => {}
+import { useState } from 'react'
 
 /**
  * Whether a box scrolls sideways: a table's box, or the `<pre>` of a code block.
@@ -15,37 +13,48 @@ const NOTHING = () => {}
  * A line of code getting longer resizes neither, so the caller says when its text has changed
  * (`again`): the box is then measured once in the next frame, when the page is laid out anyway. A
  * measuring per token would lay the page out per token.
+ *
+ * Two hooks and no effect: a code block is drawn again on every token of its text, and an update
+ * there is short enough that each hook a component calls shows in the stream's whole time.
  */
 export function useScrolls<T extends HTMLElement>(
   inner?: string,
 ): [attach: (element: T | null) => void, scrolls: boolean, again: () => void] {
-  // The box, once React has attached it: the measuring starts then.
-  const [box, setBox] = useState<T | null>(null)
   const [scrolls, setScrolls] = useState(false)
-  const ask = useRef(NOTHING)
-  const [again] = useState(() => () => ask.current())
-  useEffect(() => {
-    if (!box) return
-    // One pixel of slack: a subpixel content width rounds up past the box it fits in.
-    const measure = () => setScrolls(box.scrollWidth > box.clientWidth + 1)
-    measure()
-    let frame = 0
-    if (typeof requestAnimationFrame === 'function')
-      ask.current = () => {
-        frame ||= requestAnimationFrame(() => {
-          frame = 0
-          measure()
-        })
-      }
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(box)
-    const content = inner ? box.querySelector(inner) : null
-    if (content) observer?.observe(content)
-    return () => {
-      ask.current = NOTHING
+  const [box] = useState(() => watch<T>(setScrolls, inner))
+  return [box.attach, scrolls, box.again]
+}
+
+/** The watching of one box, from React attaching it (`attach(element)`) to its leaving (`attach(null)`). */
+function watch<T extends HTMLElement>(tell: (scrolls: boolean) => void, inner: string | undefined) {
+  let box: T | null = null
+  let observer: ResizeObserver | null = null
+  let frame = 0
+  // One pixel of slack: a subpixel content width rounds up past the box it fits in.
+  const measure = () => {
+    if (box) tell(box.scrollWidth > box.clientWidth + 1)
+  }
+  return {
+    attach(element: T | null): void {
       if (frame) cancelAnimationFrame(frame)
+      frame = 0
       observer?.disconnect()
-    }
-  }, [box, inner])
-  return [setBox, scrolls, again]
+      observer = null
+      box = element
+      if (!element) return
+      measure()
+      if (typeof ResizeObserver === 'undefined') return
+      observer = new ResizeObserver(measure)
+      observer.observe(element)
+      const content = inner ? element.querySelector(inner) : null
+      if (content) observer.observe(content)
+    },
+    again(): void {
+      if (!box || typeof requestAnimationFrame !== 'function') return
+      frame ||= requestAnimationFrame(() => {
+        frame = 0
+        measure()
+      })
+    },
+  }
 }

@@ -120,6 +120,8 @@ export function CodeFrame({
   const [attach, scrolls, again] = useScrolls<HTMLPreElement>()
   const current = useRef(text)
   useEffect(() => {
+    // Not on the first drawing: the box was measured as it was attached.
+    if (current.current === text) return
     current.current = text
     again()
   }, [text, again])
