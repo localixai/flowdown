@@ -103,7 +103,8 @@
   padding: 0.3rem 0.5rem 0 1.1rem;
   border-bottom: 0;
   color: var(--muted);
-  font: 400 0.8125rem/1 var(--text);
+  /* 1.4, not 1: the file's name clips what overflows it, and at 1 that was the tails of g, p and y. */
+  font: 400 0.8125rem/1.4 var(--text);
 }
 .prose .fd-code-language {
   color: var(--muted);

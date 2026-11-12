@@ -13,6 +13,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
+  padding-block: 0;
   color: var(--soft);
 }
 .nav-links > a.label[aria-current] {

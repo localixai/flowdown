@@ -48,12 +48,16 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0 1.4rem;
-  margin: 0.6rem 0 -0.75rem;
+  margin: 0.6rem 0 0.1rem;
 }
+/* The margin is the tag's (`.loop-text .label`, above), which these links are too: with it, links
+   that wrap onto a second row stood 58px apart, not 44. */
 .loop-text .loop-links a {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
+  margin: 0;
+  padding-block: 0;
   color: var(--white);
 }
 @media (hover: hover) and (pointer: fine) {

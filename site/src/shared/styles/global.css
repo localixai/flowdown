@@ -190,7 +190,10 @@ pre {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+/* A link this small is 15px tall; the padding makes it 25 to press (WCAG 2.5.8 asks for 24) and,
+   on an inline box, moves nothing around it. */
 a.label {
+  padding-block: 0.3125rem;
   transition: color 160ms ease;
 }
 

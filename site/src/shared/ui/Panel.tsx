@@ -74,7 +74,8 @@ function rows(panel: Block[]): ReactNode[] {
       }
     } else {
       const cols = Math.max(...block.grid.map((cells) => cells.length));
-      const style = { gridTemplateColumns: `repeat(${cols}, max-content)` };
+      // `--rest`: the columns after the first, which a narrow panel sets under it (Panel.css).
+      const style = { gridTemplateColumns: `repeat(${cols}, max-content)`, '--rest': Math.max(cols - 1, 1) } as CSSProperties;
       out.push(
         <span key={`grid-${n}`} className="panel-grid" style={style}>
           {block.grid.map((cells) =>

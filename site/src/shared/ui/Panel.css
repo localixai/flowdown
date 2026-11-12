@@ -44,7 +44,7 @@
 }
 
 /* In a narrow panel (a phone) nothing is cut off at the edge: a line wraps, and a table's row is
-   its first cell with the rest under it. */
+   its first cell with the rest under it, still in columns, so a figure stays under its heading. */
 @container (max-width: 34rem) {
   /* A wrapped line hangs under its first, so where a line starts is still read down the edge. */
   .panel-row {
@@ -58,14 +58,17 @@
     width: auto;
   }
   .panel-cells {
-    display: block;
+    grid-template-columns: repeat(var(--rest, 1), minmax(0, 1fr));
+    column-gap: 1ch;
   }
   .panel-cells + .panel-cells {
     margin-top: 0.55rem;
   }
   .panel-cells > span {
-    display: block;
     white-space: normal;
+  }
+  .panel-cells > span:first-child {
+    grid-column: 1 / -1;
   }
   .panel-cells .r {
     text-align: left;
