@@ -63,6 +63,10 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 - **Light.** One package with no dependencies, 31.7 KB gzipped, styled without Tailwind.
 - **Safe.** Raw HTML from a reply is sanitized, and links are held to safe protocols.
 
+<p align="center">
+  <a href="https://flowdown.dev/docs/comparison"><img alt="flowdown beside five other React Markdown renderers: time to stream six kinds of reply, download size, packages installed, and the cost of a four times longer reply" src="bench/results/charts/compare.png" width="878"></a>
+</p>
+
 Every figure, its method and where another renderer suits better are in
 [the comparison](https://flowdown.dev/docs/comparison).
 
