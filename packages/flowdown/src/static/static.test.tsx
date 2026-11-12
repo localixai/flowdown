@@ -1,5 +1,5 @@
 /**
- * The HTML `@localix/flowdown/static` writes, against the HTML React writes for `<Markdown>`: the same
+ * The HTML `@localix-ai/flowdown/static` writes, against the HTML React writes for `<Markdown>`: the same
  * document through two renderers that share no serializer, compared to the byte. Every document of
  * the golden corpus, whole and cut mid-stream.
  *

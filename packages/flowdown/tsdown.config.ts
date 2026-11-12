@@ -3,7 +3,7 @@ import { defineConfig } from 'tsdown'
 /**
  * One ESM file per source module (`unbundle`), the way Starlight, Fumadocs and assistant-ui ship:
  * a page's bundler then drops what it does not import, each `'use client'` stays on the module it
- * marks, and `@localix/flowdown/stream` never reaches the React modules. Dependencies stay imports.
+ * marks, and `@localix-ai/flowdown/stream` never reaches the React modules. Dependencies stay imports.
  */
 export default defineConfig({
   entry: {

@@ -1,7 +1,7 @@
 /**
- * `@localix/flowdown/dom` held to three things, on the golden corpus:
+ * `@localix-ai/flowdown/dom` held to three things, on the golden corpus:
  *
- * 1. A document on the page is the HTML `@localix/flowdown/static` writes for it, parsed.
+ * 1. A document on the page is the HTML `@localix-ai/flowdown/static` writes for it, parsed.
  * 2. A page kept up to date token by token ends the same as one drawn at once: what the patcher
  *    leaves alone, changes and makes is right at every step.
  * 3. A block that did not change keeps its very nodes.

@@ -11,7 +11,7 @@ flowdown reads Markdown with a parser of its own: `<Markdown>` has no dependenci
 two ways to go beyond what it draws:
 
 - **An extension** adds your syntax to `<Markdown>`: an inline rule, a fence, a pass over the tree.
-- **`@localix/flowdown/remark`** is the dialect as a [unified](https://unifiedjs.com) plugin, for a
+- **`@localix-ai/flowdown/remark`** is the dialect as a [unified](https://unifiedjs.com) plugin, for a
   pipeline that is not `<Markdown>`: HTML built on a server, in an email or in a static site, or
   another renderer with components of your own.
 
@@ -22,7 +22,7 @@ block is read once and kept while the text below it grows, so an extension costs
 only its last block.
 
 ```tsx
-import { Markdown, type Extension } from '@localix/flowdown'
+import { Markdown, type Extension } from '@localix-ai/flowdown'
 
 /** `@name` as a link to the person. */
 const mentions: Extension = {
@@ -96,8 +96,8 @@ component, with every form drawn.
 
 ```tsx
 import { renderToStaticMarkup } from 'react-dom/server'
-import { Markdown } from '@localix/flowdown'
-import { html } from '@localix/flowdown/html'
+import { Markdown } from '@localix-ai/flowdown'
+import { html } from '@localix-ai/flowdown/html'
 
 const page = renderToStaticMarkup(<Markdown html={html}>{markdown}</Markdown>)
 ```
@@ -106,7 +106,7 @@ Without React, use the remark plugin in a unified pipeline of your own. The plug
 only: GitHub's syntax is `remark-gfm`'s to read, before it.
 
 ```sh
-bun add @localix/flowdown unified remark-parse remark-gfm remark-rehype rehype-stringify
+bun add @localix-ai/flowdown unified remark-parse remark-gfm remark-rehype rehype-stringify
 ```
 
 ```ts
@@ -115,7 +115,7 @@ import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
-import { remarkFlowdown } from '@localix/flowdown/remark'
+import { remarkFlowdown } from '@localix-ai/flowdown/remark'
 
 const processor = unified()
   .use(remarkParse)
@@ -127,7 +127,7 @@ const processor = unified()
 const html = String(await processor.process(markdown))
 ```
 
-`@localix/flowdown/remark` does not depend on unified; these packages are your pipeline's. Wrap the
+`@localix-ai/flowdown/remark` does not depend on unified; these packages are your pipeline's. Wrap the
 output in an element with the class `flowdown` and import the stylesheet:
 
 ```html
@@ -150,7 +150,7 @@ See [Math](math.md#dollar-signs-that-are-not-math) for the rules.
 ```tsx
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { remarkFlowdown } from '@localix/flowdown/remark'
+import { remarkFlowdown } from '@localix-ai/flowdown/remark'
 
 const remarkPlugins = [remarkGfm, remarkFlowdown]
 
@@ -213,7 +213,7 @@ classes and attributes above. `sanitizeSchemaFor` adds them to a schema:
 
 ```ts
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
-import { sanitizeSchemaFor } from '@localix/flowdown/remark'
+import { sanitizeSchemaFor } from '@localix-ai/flowdown/remark'
 
 processor.use(rehypeSanitize, sanitizeSchemaFor(defaultSchema))
 ```
@@ -232,14 +232,14 @@ elements. `<Markdown>` does not need this: it has its own sanitizer, with the sa
 
 Ids are made from the heading's text (`## Set up` is `set-up`), and a repeated heading is numbered
 (`setup`, `setup-1`), so the outline from `extractHeadings` links to the ids `<Markdown headingIds>`
-gives the page. `extractHeadings` is also exported from `@localix/flowdown` itself.
+gives the page. `extractHeadings` is also exported from `@localix-ai/flowdown` itself.
 
 ## Cutting a document into blocks
 
 `<Markdown>` parses a reply block by block. The same tools are exported:
 
 ```ts
-import { createBlockSplitter, splitBlocks } from '@localix/flowdown/remark'
+import { createBlockSplitter, splitBlocks } from '@localix-ai/flowdown/remark'
 
 splitBlocks('# A\n\nText\n')
 // [{ source: '# A\n\n', offset: 0, line: 1 }, { source: 'Text\n', offset: 5, line: 3 }]
@@ -269,5 +269,5 @@ document: a stable key for storing a tick or rewriting the text it came from.
 | `parseCalloutMarker`, `parseContainerMarker` | Read a `[!WARNING]` or `[!STEPS]` marker at the start of a quote.              |
 | `CALLOUT_KINDS`, `CONTAINER_KINDS`         | The marker kinds: `note`…`caution`, and `steps`, `tabs`, `stats`, `pros`, `cons`. |
 
-`@localix/flowdown/stream` holds the streaming helpers, also without React: see
+`@localix-ai/flowdown/stream` holds the streaming helpers, also without React: see
 [Streaming](streaming.md#without-react).

@@ -218,7 +218,7 @@ describe('colours', () => {
   })
 })
 
-/** The languages of `@localix/flowdown/highlight`, each with lines of its own to draw from. */
+/** The languages of `@localix-ai/flowdown/highlight`, each with lines of its own to draw from. */
 const LANGUAGES: Record<string, string[]> = {
   ts: [
     "import { a, type B } from './b'",

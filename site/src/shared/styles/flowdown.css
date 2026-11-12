@@ -1,6 +1,6 @@
 /* flowdown on this site: its stylesheet, then its tokens set to the site's, wherever it draws (a
    docs page, the landing's live reply). The site is dark alone, so every colour is named here. */
-@import '@localix/flowdown/styles.css';
+@import '@localix-ai/flowdown/styles.css';
 
 .flowdown {
   --fd-fg: var(--soft);

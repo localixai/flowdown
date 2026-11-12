@@ -1,8 +1,8 @@
 /**
- * `@localix/flowdown`: the React renderer.
+ * `@localix-ai/flowdown`: the React renderer.
  *
- *     import { Markdown } from '@localix/flowdown'
- *     import '@localix/flowdown/styles.css'
+ *     import { Markdown } from '@localix-ai/flowdown'
+ *     import '@localix-ai/flowdown/styles.css'
  *
  *     <Markdown streaming={!done}>{reply}</Markdown>
  */

@@ -105,7 +105,7 @@
   white-space: pre;
 }
 
-/* Highlighted code (`@localix/flowdown/highlight`, or any highlighter that emits highlight.js classes). */
+/* Highlighted code (`@localix-ai/flowdown/highlight`, or any highlighter that emits highlight.js classes). */
 .flowdown .hljs-comment,
 .flowdown .hljs-quote {
   color: var(--fd-code-comment);

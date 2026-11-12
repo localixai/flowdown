@@ -4,9 +4,9 @@
  * With `&black`, the page is black, as a terminal beside it is.
  */
 import 'katex/dist/katex.min.css'
-import '@localix/flowdown/styles.css'
-import { Markdown } from '@localix/flowdown'
-import { highlight } from '@localix/flowdown/highlight'
+import '@localix-ai/flowdown/styles.css'
+import { Markdown } from '@localix-ai/flowdown'
+import { highlight } from '@localix-ai/flowdown/highlight'
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { reviewScenes, scenes } from './scenes'
@@ -24,8 +24,8 @@ document.documentElement.dataset.theme = params.get('theme') === 'dark' ? 'dark'
 if (params.has('black')) document.documentElement.dataset.backdrop = 'black'
 const streamed = params.has('stream')
 
-const math = () => import('@localix/flowdown/math')
-const html = () => import('@localix/flowdown/html')
+const math = () => import('@localix-ai/flowdown/math')
+const html = () => import('@localix-ai/flowdown/html')
 const mermaid = () => import('mermaid')
 
 function Scene() {

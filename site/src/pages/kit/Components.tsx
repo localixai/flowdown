@@ -21,7 +21,7 @@ function Specimen({ id, title, from, children, note }: { id: string; title: stri
   );
 }
 
-const STREAM_SAMPLE = '## A reply\n\n> [!NOTE]\n> Streamed and drawn by **flowdown**.\n\n> [!STEPS]\n1. **Install**\n   `npm install @localix/flowdown`\n2. **Render**\n   Pass `streaming` while the text arrives.\n';
+const STREAM_SAMPLE = '## A reply\n\n> [!NOTE]\n> Streamed and drawn by **flowdown**.\n\n> [!STEPS]\n1. **Install**\n   `npm install @localix-ai/flowdown`\n2. **Render**\n   Pass `streaming` while the text arrives.\n';
 
 /** The install command, alive: the page's script mounts the component over this markup. */
 function Install({ tabs }: { tabs: [string, string][] }) {

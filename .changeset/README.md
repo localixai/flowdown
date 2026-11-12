@@ -1,6 +1,6 @@
 # Changesets
 
-Every change a user of `@localix/flowdown` would notice comes with a changeset: `bun run changeset`,
+Every change a user of `@localix-ai/flowdown` would notice comes with a changeset: `bun run changeset`,
 pick the bump, and write one or two sentences for the person upgrading — what they can now do, or
 what they must change. Refactors, tests and docs need none.
 

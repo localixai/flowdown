@@ -78,13 +78,13 @@ const CARDS: Card[] = [
   {
     tag: 'Targets',
     title: 'The same reply outside React',
-    text: 'As HTML text on a server, in a page with no framework, as a `<flow-down>` element, or as the rows of a terminal: this one is `@localix/flowdown/tui`, live. One parser draws them all, and none of these entries imports React.',
+    text: 'As HTML text on a server, in a page with no framework, as a `<flow-down>` element, or as the rows of a terminal: this one is `@localix-ai/flowdown/tui`, live. One parser draws them all, and none of these entries imports React.',
     links: [{ href: `${DOCS}/targets`, label: 'The targets' }],
     media: {
       kind: 'reply',
       target: 'terminal',
       text: terminalReply,
-      label: 'A reply streaming as a terminal draws it, by @localix/flowdown/tui: a warning, steps, highlighted code, a diff, a table, a checklist and a formula as styled text',
+      label: 'A reply streaming as a terminal draws it, by @localix-ai/flowdown/tui: a warning, steps, highlighted code, a diff, a table, a checklist and a formula as styled text',
     },
   },
   {
@@ -144,9 +144,9 @@ const landing: LandingContent = {
     title: 'Start in three steps',
     aside: 'Free · MIT license',
     steps: [
-      { title: 'Install', text: '`npm install @localix/flowdown`. React is its only peer, and only for `<Markdown>`.' },
-      { title: 'Render', text: 'Import `@localix/flowdown/styles.css` once, then `<Markdown streaming={!done}>{text}</Markdown>`.' },
-      { title: 'Teach the model', text: 'Add `answerFormatPrompt()` from `@localix/flowdown/prompt` to the system prompt.' },
+      { title: 'Install', text: '`npm install @localix-ai/flowdown`. React is its only peer, and only for `<Markdown>`.' },
+      { title: 'Render', text: 'Import `@localix-ai/flowdown/styles.css` once, then `<Markdown streaming={!done}>{text}</Markdown>`.' },
+      { title: 'Teach the model', text: 'Add `answerFormatPrompt()` from `@localix-ai/flowdown/prompt` to the system prompt.' },
     ],
     links: [
       { label: 'Get started', href: `${DOCS}/getting-started` },

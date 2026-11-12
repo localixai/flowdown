@@ -11,7 +11,7 @@ A ` ```mermaid ` fence is a diagram. Without a Mermaid loader it is shown as its
 draw it:
 
 ```tsx
-import { Markdown } from '@localix/flowdown'
+import { Markdown } from '@localix-ai/flowdown'
 
 const loadMermaid = () => import('mermaid')
 
@@ -115,7 +115,7 @@ and useful in a reply: `flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `erDia
 together:
 
 ```ts
-import { answerFormatPrompt } from '@localix/flowdown/prompt'
+import { answerFormatPrompt } from '@localix-ai/flowdown/prompt'
 
 const system = answerFormatPrompt({ diagrams: true })
 ```
@@ -139,8 +139,8 @@ queue and one cache:
 
 ```tsx
 import { useEffect, useRef, useState } from 'react'
-import type { MarkdownComponents } from '@localix/flowdown'
-import { mermaidRendererFor, resolveMermaidLook } from '@localix/flowdown/mermaid'
+import type { MarkdownComponents } from '@localix-ai/flowdown'
+import { mermaidRendererFor, resolveMermaidLook } from '@localix-ai/flowdown/mermaid'
 
 const renderer = mermaidRendererFor(() => import('mermaid'))
 

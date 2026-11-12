@@ -79,5 +79,5 @@ export function createFenceScanner(): FenceScanner {
   }
 }
 
-/** The scan for a caller that follows one text at a time: `@localix/flowdown/stream`'s functions. */
+/** The scan for a caller that follows one text at a time: `@localix-ai/flowdown/stream`'s functions. */
 export const openFence: FenceScanner = createFenceScanner()

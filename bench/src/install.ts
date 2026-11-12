@@ -43,7 +43,7 @@ function installed(name: string, start: Entry): number {
 
 /** Each renderer's package, and the stylesheet its README tells a page to load. */
 const RENDERERS = [
-  { name: 'flowdown', styles: 'Own stylesheet, light and dark (`@localix/flowdown/styles.css`)' },
+  { name: 'flowdown', styles: 'Own stylesheet, light and dark (`@localix-ai/flowdown/styles.css`)' },
   { name: 'streamdown', styles: 'Tailwind utility classes: needs Tailwind in the page' },
   { name: 'react-markdown', styles: 'None: plain HTML elements' },
   { name: 'markdown-to-jsx', styles: 'None: plain HTML elements' },
@@ -54,7 +54,7 @@ const RENDERERS = [
 const figures: Record<string, { packages: number; license: string; styles: string }> = {}
 for (const { name, styles } of RENDERERS) {
   const manifest = JSON.parse(
-    readFileSync(join(import.meta.dir, `../node_modules/${name === 'flowdown' ? '@localix/flowdown' : name}/package.json`), 'utf8'),
+    readFileSync(join(import.meta.dir, `../node_modules/${name === 'flowdown' ? '@localix-ai/flowdown' : name}/package.json`), 'utf8'),
   )
   // flowdown is this workspace; its entry is under `workspaces`.
   const entry: Entry =

@@ -174,7 +174,7 @@ const GITHUB_ADVANCED: Check[] = [
     name: 'Mathematical expressions: `$…$`, `$$…$$`, ` ```math `',
     markdown: '$x^2$\n\n$$\ny\n$$\n\n```math\nz\n```',
     expect: /(class="katex"[\s\S]*){3}/,
-    note: 'with `@localix/flowdown/math`',
+    note: 'with `@localix-ai/flowdown/math`',
   },
   {
     name: '`<kbd>` keys',
@@ -245,7 +245,7 @@ const DIALECT: Check[] = [
     name: 'Diff',
     markdown: '```diff\n-a\n+b\n```',
     expect: /data-language="diff"/,
-    note: 'colored with `@localix/flowdown/highlight`',
+    note: 'colored with `@localix-ai/flowdown/highlight`',
   },
   {
     name: 'Numbered sections',
@@ -262,7 +262,7 @@ const DIALECT: Check[] = [
     name: 'Math',
     markdown: 'Inline $x^2$.',
     expect: /class="katex"/,
-    note: 'with `@localix/flowdown/math`',
+    note: 'with `@localix-ai/flowdown/math`',
   },
 ]
 

@@ -1,14 +1,14 @@
 /**
- * `@localix/flowdown/static`: Markdown as HTML text, without React or a browser.
+ * `@localix-ai/flowdown/static`: Markdown as HTML text, without React or a browser.
  *
- *     import { renderToHtml } from '@localix/flowdown/static'
+ *     import { renderToHtml } from '@localix-ai/flowdown/static'
  *
  *     const html = renderToHtml(reply)
  *
- * The elements are the ones `<Markdown>` draws, class for class, so `@localix/flowdown/styles.css`
+ * The elements are the ones `<Markdown>` draws, class for class, so `@localix-ai/flowdown/styles.css`
  * draws them the same: for a server that sends a page, a static site, an e-mail, a test. Nothing
  * on it is alive: tabs show their first variant and a code block's buttons do nothing until a
- * renderer for the page takes it over (`@localix/flowdown/dom`).
+ * renderer for the page takes it over (`@localix-ai/flowdown/dom`).
  *
  * `streaming: true` completes a reply that is still arriving, for a server that sends the page as
  * the model writes it.

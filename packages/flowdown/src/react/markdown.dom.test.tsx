@@ -158,13 +158,16 @@ describe('code blocks', () => {
       configurable: true,
       value: { writeText: async (text: string) => void copied.push(text) },
     })
-    await mounted(<Markdown>{'```sh\nbun add @localix/flowdown\n```'}</Markdown>, async (host) => {
-      const button = host.querySelector<HTMLButtonElement>('.fd-code-copy')!
-      expect(button.getAttribute('aria-label')).toBe('Copy code')
-      await act(async () => button.click())
-      expect(copied).toEqual(['bun add @localix/flowdown'])
-      expect(button.getAttribute('aria-label')).toBe('Copied')
-    })
+    await mounted(
+      <Markdown>{'```sh\nbun add @localix-ai/flowdown\n```'}</Markdown>,
+      async (host) => {
+        const button = host.querySelector<HTMLButtonElement>('.fd-code-copy')!
+        expect(button.getAttribute('aria-label')).toBe('Copy code')
+        await act(async () => button.click())
+        expect(copied).toEqual(['bun add @localix-ai/flowdown'])
+        expect(button.getAttribute('aria-label')).toBe('Copied')
+      },
+    )
   })
 
   /** Runs `body` with `navigator.clipboard` and `document.execCommand` replaced, then puts them back. */

@@ -73,7 +73,7 @@ From each library's documentation, not measured.
 
 | | Code highlighting | Math | Diagrams |
 | :--- | :--- | :--- | :--- |
-| **flowdown** | highlight.js, `@localix/flowdown/highlight` | KaTeX | Mermaid |
+| **flowdown** | highlight.js, `@localix-ai/flowdown/highlight` | KaTeX | Mermaid |
 | Streamdown | Shiki plugin | KaTeX plugin | Mermaid plugin |
 | react-markdown | rehype plugin | remark and rehype plugins | Your component |
 | markdown-to-jsx | Your component | — | Your component |

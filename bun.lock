@@ -14,7 +14,7 @@
       "name": "flowdown-bench",
       "dependencies": {
         "@happy-dom/global-registrator": "21.0.4",
-        "@localix/flowdown": "workspace:*",
+        "@localix-ai/flowdown": "workspace:*",
         "commonmark-spec": "0.31.2",
         "highlight.js": "11.11.1",
         "markdown-it": "15.0.3",
@@ -41,7 +41,7 @@
     "demo": {
       "name": "flowdown-demo",
       "dependencies": {
-        "@localix/flowdown": "workspace:*",
+        "@localix-ai/flowdown": "workspace:*",
         "highlight.js": "11.12.0",
         "katex": "0.19.1",
         "mermaid": "12.3.0",
@@ -58,7 +58,7 @@
     "examples/tui": {
       "name": "flowdown-example-tui",
       "dependencies": {
-        "@localix/flowdown": "workspace:*",
+        "@localix-ai/flowdown": "workspace:*",
         "highlight.js": "11.12.0",
       },
       "devDependencies": {
@@ -66,7 +66,7 @@
       },
     },
     "packages/flowdown": {
-      "name": "@localix/flowdown",
+      "name": "@localix-ai/flowdown",
       "version": "0.5.0",
       "devDependencies": {
         "@arethetypeswrong/cli": "0.18.5",
@@ -114,7 +114,7 @@
         "react-dom": "19.3.1",
       },
       "devDependencies": {
-        "@localix/flowdown": "workspace:*",
+        "@localix-ai/flowdown": "workspace:*",
         "@types/react": "^19.2.0",
         "@types/react-dom": "^19.2.0",
         "@vitejs/plugin-react": "^6.0.0",
@@ -203,7 +203,7 @@
 
     "@loaderkit/resolve": ["@loaderkit/resolve@1.0.6", "", { "dependencies": { "@braidai/lang": "^1.0.0" } }, "sha512-G8FdIoF5CypfwmD9rl8BXod5HDn8JqB0CCNBXDTaRZ+yRYhARrrSToX1zg1zy9jX3zLqigsELwhT4gNtkdQAUg=="],
 
-    "@localix/flowdown": ["@localix/flowdown@workspace:packages/flowdown"],
+    "@localix-ai/flowdown": ["@localix-ai/flowdown@workspace:packages/flowdown"],
 
     "@manypkg/find-root": ["@manypkg/find-root@3.1.0", "", { "dependencies": { "@manypkg/tools": "^2.1.0" } }, "sha512-BcSqCyKhBVZ5YkSzOiheMCV41kqAFptW6xGqYSTjkVTl9XQpr+pqHhwgGCOHQtjDCv7Is6EFyA14Sm5GVbVABA=="],
 

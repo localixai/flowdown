@@ -1,8 +1,8 @@
 /**
- * `@localix/flowdown/dom`: Markdown on a page with no framework.
+ * `@localix-ai/flowdown/dom`: Markdown on a page with no framework.
  *
- *     import { mount } from '@localix/flowdown/dom'
- *     import '@localix/flowdown/styles.css'
+ *     import { mount } from '@localix-ai/flowdown/dom'
+ *     import '@localix-ai/flowdown/styles.css'
  *
  *     const reply = mount(document.querySelector('#reply'))
  *     for await (const text of stream) reply.update(text, { streaming: true })

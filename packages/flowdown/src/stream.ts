@@ -1,5 +1,5 @@
 /**
- * `@localix/flowdown/stream`: completing a reply that is still arriving, without React.
+ * `@localix-ai/flowdown/stream`: completing a reply that is still arriving, without React.
  *
  * `<Markdown streaming>` applies it already; it is here for a renderer of your own, or a server
  * that sends partial HTML. `closePartialMarkdown` completes the constructs a streamed text ends

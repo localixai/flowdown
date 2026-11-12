@@ -13,10 +13,10 @@ and a fence whose language is `math`. Pass the math stage to turn it
 on:
 
 ```tsx
-import { Markdown } from '@localix/flowdown'
+import { Markdown } from '@localix-ai/flowdown'
 import 'katex/dist/katex.min.css'
 
-const loadMath = () => import('@localix/flowdown/math')
+const loadMath = () => import('@localix-ai/flowdown/math')
 
 export function Reply({ text }: { text: string }) {
   return <Markdown math={loadMath}>{text}</Markdown>
@@ -32,8 +32,8 @@ it a formula renders as stacked, unstyled text.
 | `math`                              | What happens                                                                                                                   |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `null` (the default)                | `$…$` is text.                                                                                                                 |
-| `() => import('@localix/flowdown/math')` | KaTeX is fetched the first time a document holds a formula. Until it arrives, the formula reads as its source.                |
-| `math` from `@localix/flowdown/math`     | Typeset in the first render. Use this on a server, or on a prerendered page that hydrates, so both renders draw the same markup. |
+| `() => import('@localix-ai/flowdown/math')` | KaTeX is fetched the first time a document holds a formula. Until it arrives, the formula reads as its source.                |
+| `math` from `@localix-ai/flowdown/math`     | Typeset in the first render. Use this on a server, or on a prerendered page that hydrates, so both renders draw the same markup. |
 
 The loader is called once per `<Markdown>`, when its document first needs math. If the load fails
 (a chunk lost on a bad connection), it is tried again three times, a second and a half apart; the
@@ -112,7 +112,7 @@ see rendered writes `$` where it should not; a renderer that typesets math the m
 about receives none.
 
 ```ts
-import { answerFormatPrompt } from '@localix/flowdown/prompt'
+import { answerFormatPrompt } from '@localix-ai/flowdown/prompt'
 
 const system = answerFormatPrompt({ math: true })
 ```
@@ -121,14 +121,14 @@ See [Prompting](prompting.md).
 
 ## In a terminal
 
-`@localix/flowdown/tui` reads the same three ways to write a formula and needs no KaTeX: it writes the
+`@localix-ai/flowdown/tui` reads the same three ways to write a formula and needs no KaTeX: it writes the
 formula in Unicode, `x^2` as `x²` and `\frac{a}{b}` as `a/b`. It is on by default there
 (`renderToAnsi(reply, { math: false })` turns it off). See
 [targets](targets.md#a-terminal).
 
 ## Without React
 
-`@localix/flowdown/math` is an [extension](remark.md#your-own-syntax-in-markdown) of `<Markdown>`'s own
+`@localix-ai/flowdown/math` is an [extension](remark.md#your-own-syntax-in-markdown) of `<Markdown>`'s own
 parser, not a unified plugin. In a unified pipeline of your own use `remark-math` and `rehype-katex`
 with [`remarkFlowdown`](remark.md). `typesetMath(source, display)` typesets one expression with KaTeX,
 from the same cache `<Markdown>` uses.

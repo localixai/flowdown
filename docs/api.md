@@ -12,31 +12,31 @@ Every entry point and export of flowdown, and every prop of `<Markdown>`.
 
 | Import                    | Holds                                                         | Needs                       |
 | ------------------------- | ------------------------------------------------------------- | --------------------------- |
-| `@localix/flowdown` | `<Markdown>`, its components, types and labels. No dependencies. | `react` 18.2 or 19        |
-| `@localix/flowdown/styles.css` | The stylesheet and its `--fd-*` tokens.                      |                             |
-| `@localix/flowdown/static`     | `renderToHtml`: the same HTML as text. No React.              |                             |
-| `@localix/flowdown/dom`        | `mount`: a page with no framework. No React.                  | a browser                   |
-| `@localix/flowdown/element`    | `defineMarkdownElement`: a custom element. No React.          | a browser                   |
-| `@localix/flowdown/tui`        | `renderToAnsi`: the rows of a terminal. No React.             |                             |
-| `@localix/flowdown/document`   | A growing text as blocks, for a target of your own.           |                             |
-| `@localix/flowdown/engine`     | The parser alone: `parse` and `toHtml`.                       |                             |
-| `@localix/flowdown/remark`     | The dialect as a remark plugin, blocks, headings, helpers. No React. |                    |
-| `@localix/flowdown/stream`     | Completing a partial reply, without React.                    |                             |
-| `@localix/flowdown/prompt`     | The instructions that teach a model the dialect. Plain text.  |                             |
-| `@localix/flowdown/html`       | The raw HTML stage (reader and sanitizer).                    |                             |
-| `@localix/flowdown/math`       | The math stage.                                               | `katex` 0.16 or later       |
-| `@localix/flowdown/highlight`  | A highlighter for fenced code.                                | `highlight.js` 11           |
+| `@localix-ai/flowdown` | `<Markdown>`, its components, types and labels. No dependencies. | `react` 18.2 or 19        |
+| `@localix-ai/flowdown/styles.css` | The stylesheet and its `--fd-*` tokens.                      |                             |
+| `@localix-ai/flowdown/static`     | `renderToHtml`: the same HTML as text. No React.              |                             |
+| `@localix-ai/flowdown/dom`        | `mount`: a page with no framework. No React.                  | a browser                   |
+| `@localix-ai/flowdown/element`    | `defineMarkdownElement`: a custom element. No React.          | a browser                   |
+| `@localix-ai/flowdown/tui`        | `renderToAnsi`: the rows of a terminal. No React.             |                             |
+| `@localix-ai/flowdown/document`   | A growing text as blocks, for a target of your own.           |                             |
+| `@localix-ai/flowdown/engine`     | The parser alone: `parse` and `toHtml`.                       |                             |
+| `@localix-ai/flowdown/remark`     | The dialect as a remark plugin, blocks, headings, helpers. No React. |                    |
+| `@localix-ai/flowdown/stream`     | Completing a partial reply, without React.                    |                             |
+| `@localix-ai/flowdown/prompt`     | The instructions that teach a model the dialect. Plain text.  |                             |
+| `@localix-ai/flowdown/html`       | The raw HTML stage (reader and sanitizer).                    |                             |
+| `@localix-ai/flowdown/math`       | The math stage.                                               | `katex` 0.16 or later       |
+| `@localix-ai/flowdown/highlight`  | A highlighter for fenced code.                                | `highlight.js` 11           |
 
 The package is ESM only. Every module that uses React hooks starts with `'use client'`.
-Only `@localix/flowdown` itself imports React. `/static`, `/tui`, `/document`, `/engine`, `/remark`,
+Only `@localix-ai/flowdown` itself imports React. `/static`, `/tui`, `/document`, `/engine`, `/remark`,
 `/stream` and `/prompt` touch no page either and run anywhere; `/dom` and `/element` need a browser.
-`@localix/flowdown/react` is the same entry as `@localix/flowdown`.
+`@localix-ai/flowdown/react` is the same entry as `@localix-ai/flowdown`.
 
 ## `<Markdown>`
 
 ```tsx
-import { Markdown } from '@localix/flowdown'
-import '@localix/flowdown/styles.css'
+import { Markdown } from '@localix-ai/flowdown'
+import '@localix-ai/flowdown/styles.css'
 
 ;<Markdown streaming={!done}>{text}</Markdown>
 ```
@@ -50,8 +50,8 @@ import '@localix/flowdown/styles.css'
 | `components`   | `MarkdownComponents`                    |                    | Your own elements for any tag or the dialect's, and `diagram` / `tree` for the two fences that are not code. Keep the object stable. See [Components](components.md). |
 | `extensions`   | `Extension[]`                           |                    | Your own syntax: inline rules, fences, passes over the tree, on each block. Keep the list stable. See [Extensions](remark.md#your-own-syntax-in-markdown). |
 | `headingIds`   | `boolean`                               | `false`            | Give headings ids (`setup`, `setup-1`), the ids `extractHeadings` returns. |
-| `html`         | `boolean \| StageOption<Extension>`     | `true`             | Raw HTML. `true` loads the reader the first time a document holds HTML and leaves the tags out until then; `html` from `@localix/flowdown/html` reads it in the first render; `false` drops raw HTML. See [Security](security.md). |
-| `math`         | `StageOption<Extension>`                | `null`             | Typeset `$…$`, `$$…$$` and ` ```math `: `@localix/flowdown/math`, or a loader for it. See [Math](math.md). |
+| `html`         | `boolean \| StageOption<Extension>`     | `true`             | Raw HTML. `true` loads the reader the first time a document holds HTML and leaves the tags out until then; `html` from `@localix-ai/flowdown/html` reads it in the first render; `false` drops raw HTML. See [Security](security.md). |
+| `math`         | `StageOption<Extension>`                | `null`             | Typeset `$…$`, `$$…$$` and ` ```math `: `@localix-ai/flowdown/math`, or a loader for it. See [Math](math.md). |
 | `mermaid`      | `MermaidLoader \| null`                 | `null`             | Draw ` ```mermaid ` fences: `() => import('mermaid')`. See [Diagrams](diagrams.md). |
 | `highlight`    | `Highlighter \| null`                   | `null`             | Highlight fenced code. See [Highlighting](highlighting.md). |
 | `labels`       | `LabelOverrides`                        | `DEFAULT_LABELS`   | The words the renderer adds, for another language. See [Components](components.md#labels). |
@@ -66,7 +66,7 @@ Functions and objects passed as props are compared by reference. Define loaders,
 `components` and `labels` once (at module level or in `useMemo`); a new one on every render makes
 every block render again.
 
-## `@localix/flowdown`
+## `@localix-ai/flowdown`
 
 ### Components
 
@@ -112,7 +112,7 @@ every block render again.
 A stage loader is called once per `<Markdown>`, the first time its document needs the stage. A
 load that fails leaves the document readable without it.
 
-## `@localix/flowdown/static`, `/dom`, `/element`, `/tui`
+## `@localix-ai/flowdown/static`, `/dom`, `/element`, `/tui`
 
 See [Other targets](targets.md).
 
@@ -131,9 +131,9 @@ See [Other targets](targets.md).
 The options of `/static`, `/dom` and `/element` are the props of `<Markdown>` that are not React's:
 `extensions`, `headingIds`, `html`, `math`, `highlight`, `labels`, `urlTransform`, `className`,
 `unstyled`, `caret`, and `components`, `diagram` and `tree` for drawing of your own. `html` and
-`math` take the extension itself (`import { html } from '@localix/flowdown/html'`), not a loader.
+`math` take the extension itself (`import { html } from '@localix-ai/flowdown/html'`), not a loader.
 
-## `@localix/flowdown/document`, `/engine`
+## `@localix-ai/flowdown/document`, `/engine`
 
 | Export                          | What it is                                                                          |
 | ------------------------------- | ----------------------------------------------------------------------------------- |
@@ -145,7 +145,7 @@ The options of `/static`, `/dom` and `/element` are the props of `<Markdown>` th
 | `toHtml(tree, options?)`        | `/engine`. The tree as HTML text.                                                   |
 | `visit(tree, visitor)`, `toText(node)` | `/engine`. A walk over a tree, and a node's plain text.                      |
 
-## `@localix/flowdown/remark`
+## `@localix-ai/flowdown/remark`
 
 See [Extensions and remark](remark.md). The entry has no dependencies: unified is your pipeline's.
 
@@ -176,7 +176,7 @@ See [Extensions and remark](remark.md). The entry has no dependencies: unified i
 
 Types: `MarkdownHeading`, `MarkdownBlock`, `BlockSplitter`, `TreeRow`.
 
-## `@localix/flowdown/stream`
+## `@localix-ai/flowdown/stream`
 
 See [Streaming](streaming.md#without-react).
 
@@ -187,7 +187,7 @@ See [Streaming](streaming.md#without-react).
 | `isGrowingFence(growing, source)`      | Whether a block's source is that fence body: the one block still being written. |
 | `splitBlocks(markdown)`                | The top-level blocks.                                                         |
 
-## `@localix/flowdown/prompt`
+## `@localix-ai/flowdown/prompt`
 
 See [Prompting](prompting.md).
 
@@ -201,7 +201,7 @@ See [Prompting](prompting.md).
 | `DIAGRAM_FENCE_LANGUAGE`, `TREE_FENCE_LANGUAGE` | `'mermaid'` and `'tree'`.                                         |
 | `AnswerFormatOptions`                    | The options' type.                                                      |
 
-## `@localix/flowdown/html`
+## `@localix-ai/flowdown/html`
 
 | Export               | What it is                                                                 |
 | -------------------- | -------------------------------------------------------------------------- |
@@ -211,7 +211,7 @@ It is its own entry, fetched only when a document holds HTML, and it brings ever
 reference with it (`&nrarr;`); the main entry knows the 253 of HTML 4 and fetches the rest when a
 document uses one.
 
-## `@localix/flowdown/math`
+## `@localix-ai/flowdown/math`
 
 | Export                          | What it is                                                         |
 | ------------------------------- | ------------------------------------------------------------------ |
@@ -220,7 +220,7 @@ document uses one.
 
 Import `katex/dist/katex.min.css` on the page.
 
-## `@localix/flowdown/highlight`
+## `@localix-ai/flowdown/highlight`
 
 | Export                            | What it is                                                                 |
 | --------------------------------- | -------------------------------------------------------------------------- |
@@ -230,7 +230,7 @@ Import `katex/dist/katex.min.css` on the page.
 Languages: Bash, CSS, JavaScript, JSON, Markdown, SQL, TypeScript, HTML/XML and YAML; see
 [Highlighting](highlighting.md#languages).
 
-## `@localix/flowdown/mermaid`
+## `@localix-ai/flowdown/mermaid`
 
 For a page that draws ` ```mermaid ` fences itself, with `components.diagram`. See
 [Diagrams](diagrams.md#your-own-diagram).

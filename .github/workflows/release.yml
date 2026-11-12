@@ -1,7 +1,7 @@
 name: Release
 
 # Push a tag `v<version>`, the version in packages/flowdown/package.json, to publish it to npm
-# as `@localix/flowdown`. The token is the repository secret `NPM_TOKEN`.
+# as `@localix-ai/flowdown`. The token is the repository secret `NPM_TOKEN`.
 
 on:
   push:

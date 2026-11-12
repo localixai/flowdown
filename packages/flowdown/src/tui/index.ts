@@ -1,7 +1,7 @@
 /**
- * `@localix/flowdown/tui`: Markdown as the rows of a terminal.
+ * `@localix-ai/flowdown/tui`: Markdown as the rows of a terminal.
  *
- *     import { renderToAnsi } from '@localix/flowdown/tui'
+ *     import { renderToAnsi } from '@localix-ai/flowdown/tui'
  *
  *     process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns }) + '\n')
  *
@@ -50,7 +50,7 @@ export interface TerminalOptions {
   /** The words the renderer adds (callout names), for a terminal in another language. */
   labels?: TerminalLabelOverrides
   /**
-   * Colour fenced code: `@localix/flowdown/highlight`, or any function that returns highlight.js's
+   * Colour fenced code: `@localix-ai/flowdown/highlight`, or any function that returns highlight.js's
    * HTML. Off by default; a language it does not know is drawn in the one colour of code.
    */
   highlight?: Highlighter | null

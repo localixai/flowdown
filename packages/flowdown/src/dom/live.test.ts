@@ -1,4 +1,4 @@
-/** What a reader does on a page drawn by `@localix/flowdown/dom`: tabs, a file tree, a code block's buttons. */
+/** What a reader does on a page drawn by `@localix-ai/flowdown/dom`: tabs, a file tree, a code block's buttons. */
 import { afterAll, afterEach, beforeAll, describe, expect, jest, test } from 'bun:test'
 import { registerDom } from '../../test/dom'
 import { defineMarkdownElement, type MarkdownElement } from '../element'

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@localix/flowdown"><img alt="npm" src="https://img.shields.io/npm/v/@localix/flowdown?color=cb3837"></a>
+  <a href="https://www.npmjs.com/package/@localix-ai/flowdown"><img alt="npm" src="https://img.shields.io/npm/v/@localix-ai/flowdown?color=cb3837"></a>
   <a href="https://github.com/rsaryev/flowdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/flowdown/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/rsaryev/flowdown/blob/main/packages/flowdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
 </p>
@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-  <sub>One reply, streamed twice: by <code>&lt;Markdown&gt;</code> on a page and by <code>@localix/flowdown/tui</code> in a terminal.</sub>
+  <sub>One reply, streamed twice: by <code>&lt;Markdown&gt;</code> on a page and by <code>@localix-ai/flowdown/tui</code> in a terminal.</sub>
 </p>
 
 GitHub Markdown, plus the forms a model can write and a reader can scan: steps, tabs, headline
@@ -36,12 +36,12 @@ figures, pros and cons, callouts, folded sections, sources, file trees, titled c
 math. It is drawn as the text arrives, without flicker or raw syntax showing.
 
 ```sh
-npm install @localix/flowdown
+npm install @localix-ai/flowdown
 ```
 
 ```tsx
-import { Markdown } from '@localix/flowdown'
-import '@localix/flowdown/styles.css'
+import { Markdown } from '@localix-ai/flowdown'
+import '@localix-ai/flowdown/styles.css'
 
 export function Reply({ text, done }: { text: string; done: boolean }) {
   return <Markdown streaming={!done}>{text}</Markdown>
@@ -49,7 +49,7 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 ```
 
 `<Markdown>` needs React 18 or 19. A model writes the forms once its system prompt has the dialect:
-`answerFormatPrompt()` from `@localix/flowdown/prompt` is that text ([prompting](https://flowdown.dev/docs/prompting)).
+`answerFormatPrompt()` from `@localix-ai/flowdown/prompt` is that text ([prompting](https://flowdown.dev/docs/prompting)).
 
 ## Why
 
@@ -72,11 +72,11 @@ The same reply, from the same package, by import path. None but the first import
 
 | Import             | Draws                                              |
 | ------------------ | -------------------------------------------------- |
-| `@localix/flowdown` | React elements                                     |
-| `@localix/flowdown/static`  | HTML text, for a server or an email                |
-| `@localix/flowdown/dom`     | a page with no framework, kept up to date in place |
-| `@localix/flowdown/element` | `<flow-down>`, for Vue, Svelte, Solid or Angular   |
-| `@localix/flowdown/tui`     | the rows of a terminal                             |
+| `@localix-ai/flowdown` | React elements                                     |
+| `@localix-ai/flowdown/static`  | HTML text, for a server or an email                |
+| `@localix-ai/flowdown/dom`     | a page with no framework, kept up to date in place |
+| `@localix-ai/flowdown/element` | `<flow-down>`, for Vue, Svelte, Solid or Angular   |
+| `@localix-ai/flowdown/tui`     | the rows of a terminal                             |
 
 [Other targets](https://flowdown.dev/docs/targets) has each one's options.
 

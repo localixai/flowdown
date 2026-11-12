@@ -135,7 +135,7 @@ export function callout<E, C>(
 /**
  * Turns a fence's code into highlighted HTML, or returns null to leave it plain. The HTML goes into
  * the page as is, so a highlighter must escape the code it was given (highlight.js and Shiki do);
- * `@localix/flowdown/highlight` is one.
+ * `@localix-ai/flowdown/highlight` is one.
  */
 export type Highlighter = (code: string, language: string) => string | null
 

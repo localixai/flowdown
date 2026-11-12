@@ -6,7 +6,7 @@ description: Recolour flowdown with CSS tokens, follow your page's light and dar
 # Styling
 
 ```ts
-import '@localix/flowdown/styles.css'
+import '@localix-ai/flowdown/styles.css'
 ```
 
 One stylesheet, about 4 KB compressed, with no framework behind it. Every rule is scoped to the

@@ -2,7 +2,7 @@
   "flowdown": {
     "packages": 1,
     "license": "MIT",
-    "styles": "Own stylesheet, light and dark (`@localix/flowdown/styles.css`)"
+    "styles": "Own stylesheet, light and dark (`@localix-ai/flowdown/styles.css`)"
   },
   "streamdown": {
     "packages": 118,

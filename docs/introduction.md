@@ -15,8 +15,8 @@ against, callouts, folded sections, sources, file trees, diagrams and math. It r
 without flicker or raw syntax showing.
 
 ```tsx
-import { Markdown } from '@localix/flowdown'
-import '@localix/flowdown/styles.css'
+import { Markdown } from '@localix-ai/flowdown'
+import '@localix-ai/flowdown/styles.css'
 
 export function Reply({ text, done }: { text: string; done: boolean }) {
   return <Markdown streaming={!done}>{text}</Markdown>

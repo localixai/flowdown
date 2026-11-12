@@ -16,7 +16,7 @@
     "@happy-dom/global-registrator": "21.0.4",
     "commonmark-spec": "0.31.2",
     "highlight.js": "11.11.1",
-    "@localix/flowdown": "workspace:*",
+    "@localix-ai/flowdown": "workspace:*",
     "markdown-it": "15.0.3",
     "markdown-it-footnote": "4.0.0",
     "markdown-it-task-lists": "2.1.1",

@@ -11,13 +11,13 @@ Highlighting is off by default: fenced code is printed as plain text, with its l
 button above it. Pass a highlighter to colour it:
 
 ```tsx
-import { Markdown } from '@localix/flowdown'
-import { highlight } from '@localix/flowdown/highlight'
+import { Markdown } from '@localix-ai/flowdown'
+import { highlight } from '@localix-ai/flowdown/highlight'
 
 ;<Markdown highlight={highlight}>{text}</Markdown>
 ```
 
-`@localix/flowdown/highlight` is built on highlight.js, an optional peer dependency: install
+`@localix-ai/flowdown/highlight` is built on highlight.js, an optional peer dependency: install
 `highlight.js` (version 11) to use it. A page that highlights some other way, or not at all, bundles
 none of it.
 
@@ -53,7 +53,7 @@ The bundled highlighter knows the languages replies and READMEs mostly contain:
 
 In a shell fence the highlighter colours what a reader looks for in an install line: the command
 (the first word of each command, after a `$ ` prompt, a `|`, `&&` or `;`), its flags, numbers,
-strings, variables and comments. `bun add @localix/flowdown --dev` shows `bun` and `--dev`; the `test` of
+strings, variables and comments. `bun add @localix-ai/flowdown --dev` shows `bun` and `--dev`; the `test` of
 `bun test` is an argument and stays plain.
 
 Only the language the fence names is highlighted. A fence without a language, or with one the
@@ -63,7 +63,7 @@ it helps, and costs time on every update while a reply streams.
 ## Colours
 
 The bundled highlighter emits highlight.js classes (`hljs-keyword`, `hljs-string`, …), and
-`@localix/flowdown/styles.css` colours them from tokens, so code follows your theme and its dark mode:
+`@localix-ai/flowdown/styles.css` colours them from tokens, so code follows your theme and its dark mode:
 
 | Token                | Colours                                    |
 | -------------------- | ------------------------------------------ |
@@ -100,7 +100,7 @@ highlight.js with every language, for example:
 
 ```ts
 import hljs from 'highlight.js'
-import type { Highlighter } from '@localix/flowdown'
+import type { Highlighter } from '@localix-ai/flowdown'
 
 export const highlightAll: Highlighter = (code, language) =>
   hljs.getLanguage(language) ? hljs.highlight(code, { language }).value : null
@@ -123,7 +123,7 @@ function, as above): a new function on every render makes every code block highl
 
 ## In a terminal
 
-`@localix/flowdown/tui` takes the same function: `renderToAnsi(reply, { highlight })`, or
+`@localix-ai/flowdown/tui` takes the same function: `renderToAnsi(reply, { highlight })`, or
 `createTerminalView({ highlight })` for a reply that streams. It reads the kind of each token from
 highlight.js's class names and draws it in one of the terminal theme's colours; the `--fd-code-*`
 tokens are a page's and do not apply. A highlighter that names its colours another way (Shiki's
@@ -138,5 +138,5 @@ While a reply streams, the fence being written is highlighted whole on each upda
 
 ## Without the renderer
 
-`highlightCode(code, language)` from `@localix/flowdown/highlight` is the same highlighter for code
+`highlightCode(code, language)` from `@localix-ai/flowdown/highlight` is the same highlighter for code
 outside a reply. It returns escaped plain text, rather than `null`, for a language it does not know.
