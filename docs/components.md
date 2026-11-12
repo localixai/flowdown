@@ -11,7 +11,7 @@ description:
 familiar:
 
 ```tsx
-import { Markdown, type Components } from 'flowdown'
+import { Markdown, type Components } from '@localix/flowdown'
 import { Link } from './router'
 
 const components: Components = {
@@ -54,7 +54,7 @@ reach your `code` or `pre`. A `pre` you pass draws every other fenced block, and
 draws every other piece of code. To draw the two fences yourself, pass `diagram` and `tree`:
 
 ```tsx
-import { Markdown, type MarkdownComponents } from 'flowdown'
+import { Markdown, type MarkdownComponents } from '@localix/flowdown'
 
 const components: MarkdownComponents = {
   // `growing`: this is the fence still being written. Every diagram above it is complete.
@@ -71,7 +71,7 @@ The built-in components are exported, so you can add to them instead of starting
 with a "Run" button, keeping the language bar, the copy button and highlighting:
 
 ```tsx
-import { CodeBlock, childrenToText, getLanguage, type Components } from 'flowdown'
+import { CodeBlock, childrenToText, getLanguage, type Components } from '@localix/flowdown'
 
 const components: Components = {
   pre: (props) => {
@@ -129,7 +129,7 @@ A callout's component receives the kind in `data-callout` (`note`, `tip`, `impor
 `caution`) and the author's title, if any, in `data-callout-title`:
 
 ```tsx
-import { Callout, type Components } from 'flowdown'
+import { Callout, type Components } from '@localix/flowdown'
 
 const components: Components = {
   blockquote: (props) =>
@@ -142,7 +142,7 @@ const components: Components = {
 `FileTree` draws a tree from the body of a ` ```tree ` fence anywhere in your page:
 
 ```tsx
-import { FileTree } from 'flowdown'
+import { FileTree } from '@localix/flowdown'
 
 ;<FileTree source={'src/\n├── index.ts\n└── app/\n    └── App.tsx'} />
 ```

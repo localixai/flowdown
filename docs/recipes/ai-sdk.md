@@ -26,7 +26,7 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from 'ai'
-import { answerFormatPrompt } from 'flowdown/prompt'
+import { answerFormatPrompt } from '@localix/flowdown/prompt'
 
 export async function POST(request: Request) {
   const { messages }: { messages: UIMessage[] } = await request.json()
@@ -52,9 +52,9 @@ is exactly what `streaming` wants:
 // app/page.tsx
 'use client'
 import { useChat } from '@ai-sdk/react'
-import { Markdown } from 'flowdown'
-import { highlight } from 'flowdown/highlight'
-import 'flowdown/styles.css'
+import { Markdown } from '@localix/flowdown'
+import { highlight } from '@localix/flowdown/highlight'
+import '@localix/flowdown/styles.css'
 import { useState } from 'react'
 
 export default function Chat() {
@@ -112,4 +112,4 @@ A person's own message is usually shown as typed, not as Markdown. If you do ren
   as finished when the chat's `status` is no longer `'streaming'`:
   `streaming={part.state === 'streaming' && status === 'streaming'}`.
 - **Math.** Turn it on in both places: `answerFormatPrompt({ math: true })` on the server,
-  `math={() => import('flowdown/math')}` and the KaTeX stylesheet on the page.
+  `math={() => import('@localix/flowdown/math')}` and the KaTeX stylesheet on the page.

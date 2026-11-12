@@ -1,5 +1,5 @@
 /**
- * `flowdown/remark`: the dialect as a remark plugin, without React or the engine's renderer.
+ * `@localix/flowdown/remark`: the dialect as a remark plugin, without React or the engine's renderer.
  *
  * For a unified pipeline of your own: a static site build, a renderer that is not React. The
  * dialect becomes ordinary HTML with `fd-` classes and data attributes, which `styles.css` draws;

@@ -1,5 +1,5 @@
 {
-  "name": "flowdown",
+  "name": "@localix/flowdown",
   "version": "0.5.0",
   "description": "Ultrafast, lightweight streaming Markdown for React and AI replies. Its own parser, zero dependencies, 31.7 KB gzipped. GitHub Markdown plus steps, tabs, callouts, diagrams and math. Also as HTML text, on a page with no framework, as a custom element and in a terminal.",
   "keywords": [

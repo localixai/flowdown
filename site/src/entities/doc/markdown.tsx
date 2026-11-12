@@ -1,9 +1,9 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Code, Markdown, childrenToText, defaultUrlTransform, isCodeBlock, type MarkdownComponents } from 'flowdown';
-import { highlight } from 'flowdown/highlight';
-import { html as rawHtml } from 'flowdown/html';
-import { extractHeadings, splitBlocks } from 'flowdown/remark';
+import { Code, Markdown, childrenToText, defaultUrlTransform, isCodeBlock, type MarkdownComponents } from '@localix/flowdown';
+import { highlight } from '@localix/flowdown/highlight';
+import { html as rawHtml } from '@localix/flowdown/html';
+import { extractHeadings, splitBlocks } from '@localix/flowdown/remark';
 
 /** A heading of a page, for its table of contents. */
 export type Heading = { depth: number; id: string; text: string };

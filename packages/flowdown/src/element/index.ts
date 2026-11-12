@@ -1,9 +1,9 @@
 /**
- * `flowdown/element`: Markdown as an element of the page's own, for anything that writes HTML
+ * `@localix/flowdown/element`: Markdown as an element of the page's own, for anything that writes HTML
  * (Vue, Svelte, Solid, Angular, a template, a plain page).
  *
- *     import { defineMarkdownElement } from 'flowdown/element'
- *     import 'flowdown/styles.css'
+ *     import { defineMarkdownElement } from '@localix/flowdown/element'
+ *     import '@localix/flowdown/styles.css'
  *
  *     defineMarkdownElement()
  *

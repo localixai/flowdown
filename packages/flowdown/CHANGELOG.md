@@ -1,26 +1,26 @@
-# flowdown
+# @localix/flowdown
 
 ## 0.5.0
 
 ### Minor Changes
 
-- bd2abd2: The package is now `flowdown` (it was `llx-markdown`), at https://flowdown.dev. To move:
+- bd2abd2: The package is now `@localix/flowdown` (it was `llx-markdown`), at https://flowdown.dev. To move:
   
-  - Install `flowdown` and import from `flowdown`, `flowdown/static`, `flowdown/styles.css` and so on:
-    the entries and what they export are the same.
+  - Install `@localix/flowdown` and import from `@localix/flowdown`, `@localix/flowdown/static`,
+    `@localix/flowdown/styles.css` and so on: the entries and what they export are the same.
   - The root class is `.flowdown`, every other class is `.fd-…` (it was `.llx-…`), and the tokens are
     `--fd-…` (they were `--llx-…`). Rename them in the CSS that restyles a reply.
   - The custom element is `<flow-down>` (it was `<llx-markdown>`).
   - `remarkLlx` is `remarkFlowdown`, and `llxDialect` is `flowdownDialect`.
-- a69b29a: The same reply outside React, from the one package. `flowdown/static` gives the HTML
-  `<Markdown>` draws as text, for a server or an email. `flowdown/dom` mounts a reply on a page
+- a69b29a: The same reply outside React, from the one package. `@localix/flowdown/static` gives the HTML
+  `<Markdown>` draws as text, for a server or an email. `@localix/flowdown/dom` mounts a reply on a page
   with no framework and keeps it up to date token by token, with working tabs, file trees and code
-  buttons. `flowdown/element` is a custom element, `<flow-down>`, for Vue, Svelte, Solid or
-  Angular. `flowdown/tui` draws a reply as the rows of a terminal, wrapped to its width, with code
+  buttons. `@localix/flowdown/element` is a custom element, `<flow-down>`, for Vue, Svelte, Solid or
+  Angular. `@localix/flowdown/tui` draws a reply as the rows of a terminal, wrapped to its width, with code
   coloured by the highlighter a page takes and formulas written in Unicode (`x²`, `1/k ∑ᵢ₌₁ᵏ rᵢ`).
   Each form has a terminal's own look: steps are a numbered chain down a rail, figures stand side by
   side over what they count, a file tree has its branches, a source its address on a row of its own.
-  `flowdown/document` and `flowdown/engine` are the blocks and the parser, for a target of
+  `@localix/flowdown/document` and `@localix/flowdown/engine` are the blocks and the parser, for a target of
   your own. None of them imports React.
   
   `<Markdown>` draws what it drew. It now loads 31.7 KB gzipped, from 30.5: the renderer is shared
@@ -110,7 +110,7 @@
   
   A URL that `urlTransform` refuses is dropped instead of left empty: a link without `href`, an image
   without `src`, rather than `href=""` and `src=""`.
-- `flowdown/highlight` knows the popular languages too: Python, Go, Rust, Java, Kotlin, Swift, C,
+- `@localix/flowdown/highlight` knows the popular languages too: Python, Go, Rust, Java, Kotlin, Swift, C,
   C++, C#, PHP, Ruby, TOML and INI, and Dockerfile, with their usual fence names (`py`, `rs`, `kt`,
   `cs`, `c++`, `rb`, `golang`, `docker`). The entry grows from 21 KB to 38 KB gzipped; it is still its own entry, so a page that does not
   import it bundles none of it.
@@ -150,7 +150,7 @@
 
 - 6e2d464: flowdown now reads Markdown with its own parser and has no dependencies: 29 KB gzipped loads with `<Markdown>` (it was 69 KB) and one package is installed (it was 124). The parser passes every example of CommonMark 0.31.2 and of GitHub's extensions; see `docs/conformance.md`.
   
-  **Breaking:** `remarkPlugins` and `rehypePlugins` are gone. Write your own syntax as an extension and pass it in `extensions` (inline rules, fences, passes over the tree), or keep a unified pipeline of your own and add `remarkFlowdown` from `flowdown/remark`. In `components`, `node` is the package's own node, not a hast element. `html` and `math` stages are extensions (`flowdown/html`, `flowdown/math`), passed the same way as before.
+  **Breaking:** `remarkPlugins` and `rehypePlugins` are gone. Write your own syntax as an extension and pass it in `extensions` (inline rules, fences, passes over the tree), or keep a unified pipeline of your own and add `remarkFlowdown` from `@localix/flowdown/remark`. In `components`, `node` is the package's own node, not a hast element. `html` and `math` stages are extensions (`@localix/flowdown/html`, `@localix/flowdown/math`), passed the same way as before.
   
   Also new: a ` ```math ` fence is typeset as a display formula, a link from raw HTML that sets `target` always gets `rel="noopener"`, and `srcset` is held to the same URL rule as `src`.
   

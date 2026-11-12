@@ -13,10 +13,10 @@ const site: SiteConfig = {
   url: 'https://flowdown.dev',
   github: GITHUB,
   install: [
-    ['npm', 'npm install flowdown'],
-    ['pnpm', 'pnpm add flowdown'],
-    ['bun', 'bun add flowdown'],
-    ['yarn', 'yarn add flowdown'],
+    ['npm', 'npm install @localix/flowdown'],
+    ['pnpm', 'pnpm add @localix/flowdown'],
+    ['bun', 'bun add @localix/flowdown'],
+    ['yarn', 'yarn add @localix/flowdown'],
   ],
   image: { path: '/og.png', alt: 'flowdown: streaming Markdown for React and AI replies, with one reply drawn on a page and in a terminal' },
   bar: {
@@ -32,7 +32,7 @@ const site: SiteConfig = {
     note: 'flowdown is MIT-licensed and open source.',
     links: [
       { label: 'Docs', href: '/docs' },
-      { label: 'npm', href: 'https://www.npmjs.com/package/flowdown' },
+      { label: 'npm', href: 'https://www.npmjs.com/package/@localix/flowdown' },
       { label: 'GitHub', href: GITHUB },
       { label: 'Changelog', href: CHANGELOG },
     ],

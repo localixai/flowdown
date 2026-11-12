@@ -1,5 +1,5 @@
 /**
- * `flowdown/remark` in a real unified pipeline: remark reads the Markdown, the dialect's
+ * `@localix/flowdown/remark` in a real unified pipeline: remark reads the Markdown, the dialect's
  * plugin shapes the forms. Each form must come out with the classes `<Markdown>` draws it with,
  * since one stylesheet styles both.
  */

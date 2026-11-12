@@ -1,7 +1,7 @@
 /**
  * What publint and attw do not check about the published files:
  *   - every `exports` target exists;
- *   - `flowdown/stream`, `/remark`, `/prompt`, `/engine`, `/document`, `/static`, `/dom`,
+ *   - `@localix/flowdown/stream`, `/remark`, `/prompt`, `/engine`, `/document`, `/static`, `/dom`,
  *     `/element` and `/tui` never import React, and all of them but `/stream` and `/remark`
  *     import no package at all, so a server, a worker, a terminal or a page of another framework
  *     can use them;

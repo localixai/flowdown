@@ -1,5 +1,5 @@
 /**
- * `flowdown/html`: raw HTML in Markdown (`<details>`, `<kbd>`, a README's `<p align>`), made
+ * `@localix/flowdown/html`: raw HTML in Markdown (`<details>`, `<kbd>`, a README's `<p align>`), made
  * into elements.
  *
  * Nothing in the text is ever handed to the browser as HTML. The tags are read here, and an
@@ -10,7 +10,7 @@
  * `<Markdown>` fetches this entry by itself the first time a document holds HTML; pass it
  * directly where the HTML must be in the first render, as on a server:
  *
- *     import { html } from 'flowdown/html'
+ *     import { html } from '@localix/flowdown/html'
  *     <Markdown html={html}>{readme}</Markdown>
  */
 import { addEntities, decodeEntity } from '../engine/entities'

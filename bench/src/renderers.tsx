@@ -5,8 +5,8 @@
  * page. `flowdown+highlight` adds the one optional stage that runs on every token of a code fence.
  */
 import { createRequire } from 'node:module'
-import { Markdown } from 'flowdown'
-import { highlight } from 'flowdown/highlight'
+import { Markdown } from '@localix/flowdown'
+import { highlight } from '@localix/flowdown/highlight'
 import type { ReactNode } from 'react'
 import MarkdownToJsx from 'markdown-to-jsx/react'
 import MarkedReact from 'marked-react'
@@ -30,14 +30,14 @@ const gfm = [remarkGfm]
 export const RENDERERS: Renderer[] = [
   {
     name: 'flowdown',
-    version: versionOf('flowdown'),
+    version: versionOf('@localix/flowdown'),
     about: '`<Markdown streaming>`: blocks, healing, the dialect.',
     Render: ({ text, streaming }) => <Markdown streaming={streaming}>{text}</Markdown>,
   },
   {
     name: 'flowdown+highlight',
-    version: versionOf('flowdown'),
-    about: 'The same, with `flowdown/highlight` colouring code.',
+    version: versionOf('@localix/flowdown'),
+    about: 'The same, with `@localix/flowdown/highlight` colouring code.',
     Render: ({ text, streaming }) => (
       <Markdown streaming={streaming} highlight={highlight}>
         {text}

@@ -16,13 +16,13 @@ Set the renderer up once, with the stages the site uses, and render every page t
 
 ```tsx
 // markdown.tsx
-import { Markdown, type MarkdownProps } from 'flowdown'
-import { highlight } from 'flowdown/highlight'
-import { html } from 'flowdown/html'
-import 'flowdown/styles.css'
+import { Markdown, type MarkdownProps } from '@localix/flowdown'
+import { highlight } from '@localix/flowdown/highlight'
+import { html } from '@localix/flowdown/html'
+import '@localix/flowdown/styles.css'
 import 'katex/dist/katex.min.css'
 
-const loadMath = () => import('flowdown/math')
+const loadMath = () => import('@localix/flowdown/math')
 const loadMermaid = () => import('mermaid')
 
 export function DocMarkdown(props: Omit<MarkdownProps, 'html' | 'math' | 'mermaid' | 'highlight'>) {
@@ -45,7 +45,7 @@ export function DocMarkdown(props: Omit<MarkdownProps, 'html' | 'math' | 'mermai
 
 ```tsx
 import { useMemo } from 'react'
-import { extractHeadings } from 'flowdown'
+import { extractHeadings } from '@localix/flowdown'
 
 export function DocPage({ body }: { body: string }) {
   const headings = useMemo(() => extractHeadings(body), [body])
@@ -77,7 +77,7 @@ Docs link to each other by file (`[Math](math.md)`), which also works on GitHub.
 those into the site's routes, and to open other sites in a new tab:
 
 ```tsx
-import type { Components } from 'flowdown'
+import type { Components } from '@localix/flowdown'
 
 function linkFor(pagePath: string): Components['a'] {
   return ({ node, href, ...props }) => {

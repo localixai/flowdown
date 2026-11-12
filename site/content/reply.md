@@ -8,14 +8,14 @@
    One package, no dependencies.
 
    ```sh
-   npm install flowdown
+   npm install @localix/flowdown
    ```
 2. **Render**
    Pass `streaming` while the text is still arriving.
 
    ```tsx title="reply.tsx"
-   import { Markdown } from 'flowdown'
-   import 'flowdown/styles.css'
+   import { Markdown } from '@localix/flowdown'
+   import '@localix/flowdown/styles.css'
 
    export function Reply({ text, done }) {
      return <Markdown streaming={!done}>{text}</Markdown>
@@ -34,20 +34,20 @@ The same reply, outside React:
 > [!TABS]
 #### HTML text
 ```ts
-import { renderToHtml } from 'flowdown/static'
+import { renderToHtml } from '@localix/flowdown/static'
 
 const html = renderToHtml(reply)
 ```
 #### A page
 ```ts
-import { mount } from 'flowdown/dom'
+import { mount } from '@localix/flowdown/dom'
 
 const view = mount(document.querySelector('#reply'))
 view.update(text, { streaming: true })
 ```
 #### A terminal
 ```ts
-import { renderToAnsi } from 'flowdown/tui'
+import { renderToAnsi } from '@localix/flowdown/tui'
 
 process.stdout.write(renderToAnsi(reply))
 ```

@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 const root = join(import.meta.dir, '..')
 const parts = ['tokens.css', 'markdown.css', 'forms.css', 'code.css', 'diagram.css']
-const header = '/* flowdown styles. Import once: `import "flowdown/styles.css"`. */\n'
+const header = '/* flowdown styles. Import once: `import "@localix/flowdown/styles.css"`. */\n'
 const css = parts
   .map((name) => `/* ${name} */\n${readFileSync(join(root, 'styles', name), 'utf8').trim()}\n`)
   .join('\n')

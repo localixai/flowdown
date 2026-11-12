@@ -123,7 +123,7 @@ From the advanced pages of the same guide:
 | Collapsed sections (`<details>`) | ✓ | raw HTML, sanitized |
 | Fenced code blocks with a language | ✓ |  |
 | Diagrams (` ```mermaid `) | ✓ | drawn when `mermaid` is given |
-| Mathematical expressions: `$…$`, `$$…$$`, ` ```math ` | ✓ | with `flowdown/math` |
+| Mathematical expressions: `$…$`, `$$…$$`, ` ```math ` | ✓ | with `@localix/flowdown/math` |
 | `<kbd>` keys | ✓ | raw HTML, sanitized |
 
 ## The dialect
@@ -143,7 +143,7 @@ What flowdown draws beyond Markdown; [Syntax](syntax.md) describes each form. Ev
 | Figure with a caption | ✓ |  |
 | File tree | ✓ |  |
 | Code block with a file name | ✓ |  |
-| Diff | ✓ | colored with `flowdown/highlight` |
+| Diff | ✓ | colored with `@localix/flowdown/highlight` |
 | Numbered sections | ✓ |  |
 | Diagram | ✓ | drawn when `mermaid` is given |
-| Math | ✓ | with `flowdown/math` |
+| Math | ✓ | with `@localix/flowdown/math` |

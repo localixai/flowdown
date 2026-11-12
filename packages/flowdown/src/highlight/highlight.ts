@@ -30,7 +30,7 @@ const SHELL_KEYWORDS =
 
 /**
  * highlight.js's Bash knows the shell's own words (`cd`, `echo`, `export`), strings, variables and
- * comments, but not the programs a line runs: `bun add flowdown --dev`, the line a README is
+ * comments, but not the programs a line runs: `bun add @localix/flowdown --dev`, the line a README is
  * made of, came out in one colour. These modes add what Shiki's grammar shows: the command, the
  * first word after a line's start (or a `$ ` prompt), a `|`, `&&`, `;`, `(` or a `then`/`do`; its
  * flags; and bare numbers. An assignment before a command (`NODE_ENV=production bun test`) is not

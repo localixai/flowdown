@@ -63,15 +63,15 @@ export interface MarkdownProps {
   headingIds?: boolean
   /**
    * Raw HTML in the text, parsed and sanitized. `true` (the default) fetches the parser the first
-   * time a document holds HTML, and leaves the tags out until it is there; pass `flowdown/html`
+   * time a document holds HTML, and leaves the tags out until it is there; pass `@localix/flowdown/html`
    * itself to have it in the first render (a server); `false` drops raw HTML.
    */
   html?: boolean | StageOption<Extension>
-  /** Typeset `$…$`: `flowdown/math`, or a loader for it. Off by default. */
+  /** Typeset `$…$`: `@localix/flowdown/math`, or a loader for it. Off by default. */
   math?: StageOption<Extension>
   /** Draw ```mermaid fences: `() => import('mermaid')`. Off by default: they show as code. */
   mermaid?: MermaidLoader | null
-  /** Highlight fenced code: `flowdown/highlight`, or your own. Off by default. */
+  /** Highlight fenced code: `@localix/flowdown/highlight`, or your own. Off by default. */
   highlight?: Highlighter | null
   /** The words the renderer adds (callout names, button labels), for a page in another language. */
   labels?: LabelOverrides

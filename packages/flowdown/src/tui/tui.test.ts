@@ -1,5 +1,5 @@
 /**
- * `flowdown/tui` held to what a terminal needs of it:
+ * `@localix/flowdown/tui` held to what a terminal needs of it:
  *
  * 1. The layouts, row for row: the ones the Rust renderer of the `llx` terminal draws.
  * 2. No row is wider than the width, whatever the text and however deep it nests.

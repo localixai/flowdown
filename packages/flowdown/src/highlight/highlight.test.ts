@@ -34,7 +34,7 @@ test('a shell line shows its command and flags, not only the shell built-ins', (
     [...highlightCode(source, 'sh').matchAll(/<span class="hljs-([\w ]+)">([^<]*)<\/span>/g)].map(
       ([, kind, text]) => `${kind}:${text}`,
     )
-  expect(spans('bun add flowdown --dev')).toEqual(['built_in:bun', 'attr:--dev'])
+  expect(spans('bun add @localix/flowdown --dev')).toEqual(['built_in:bun', 'attr:--dev'])
   expect(spans('npm i -D katex && git status | grep -v foo')).toEqual([
     'built_in:npm',
     'attr:-D',

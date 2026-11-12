@@ -1,5 +1,5 @@
 /**
- * `flowdown/document`: a Markdown text as the blocks a renderer draws, kept up while it grows.
+ * `@localix/flowdown/document`: a Markdown text as the blocks a renderer draws, kept up while it grows.
  *
  * This is the part of streaming that belongs to no renderer. A reply arrives a few characters at a
  * time; each update the text is completed where it stops mid-construct, cut into its top-level
@@ -29,7 +29,7 @@ export { splitBlocks, isFenceBlock, type MarkdownBlock } from '../core/blocks'
 export { growingFence, createFenceMemory, type FenceMemory, type GrowingFence } from './fence'
 export { tableRows, type TableRows } from './table'
 /**
- * The dialect for `parse` of `flowdown/engine`, and what it marked a node as: a target of your
+ * The dialect for `parse` of `@localix/flowdown/engine`, and what it marked a node as: a target of your
  * own passes `extensions: [flowdownDialect]` and switches on `formOf(node)?.form`.
  */
 export { flowdownDialect } from '../core/remark-answer-blocks'

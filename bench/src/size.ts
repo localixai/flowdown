@@ -17,14 +17,14 @@ import { gzipSync } from 'node:zlib'
 const BUDGET_KB = 88
 
 const CASES = [
-  { name: 'flowdown', code: `import { Markdown } from 'flowdown'; console.log(Markdown)` },
+  { name: 'flowdown', code: `import { Markdown } from '@localix/flowdown'; console.log(Markdown)` },
   {
     name: 'flowdown + highlight',
-    code: `import { Markdown } from 'flowdown'; import { highlight } from 'flowdown/highlight'; console.log(Markdown, highlight)`,
+    code: `import { Markdown } from '@localix/flowdown'; import { highlight } from '@localix/flowdown/highlight'; console.log(Markdown, highlight)`,
   },
   {
-    name: 'flowdown/stream',
-    code: `import * as stream from 'flowdown/stream'; console.log(stream)`,
+    name: '@localix/flowdown/stream',
+    code: `import * as stream from '@localix/flowdown/stream'; console.log(stream)`,
   },
   {
     name: 'react-markdown + remark-gfm',

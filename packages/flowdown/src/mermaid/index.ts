@@ -1,5 +1,5 @@
 /**
- * `flowdown/mermaid`: what a page that draws ```mermaid fences itself needs, with
+ * `@localix/flowdown/mermaid`: what a page that draws ```mermaid fences itself needs, with
  * `components.diagram`: the page's one queue and cache of drawn diagrams, and the colours of
  * the tokens around an element.
  *

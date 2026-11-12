@@ -3,9 +3,9 @@
 > flowdown is a Markdown renderer for React and AI replies: GitHub Markdown plus a dialect of steps, tabs, figures, callouts, sources, diagrams and math, drawn while the text streams.
 
 One package with its own parser and no dependencies. `<Markdown streaming>` draws a reply as it
-arrives and repairs unfinished syntax; `flowdown/static`, `flowdown/dom`, `flowdown/element` and
-`flowdown/tui` draw the same reply as HTML text, in a page with no framework, as a custom element
-and in a terminal. `answerFormatPrompt()` from `flowdown/prompt` is the text that teaches a model
+arrives and repairs unfinished syntax; `@localix/flowdown/static`, `@localix/flowdown/dom`, `@localix/flowdown/element` and
+`@localix/flowdown/tui` draw the same reply as HTML text, in a page with no framework, as a custom element
+and in a terminal. `answerFormatPrompt()` from `@localix/flowdown/prompt` is the text that teaches a model
 the dialect.
 
-Install: `npm install flowdown`. Source: https://github.com/rsaryev/flowdown
+Install: `npm install @localix/flowdown`. Source: https://github.com/rsaryev/flowdown

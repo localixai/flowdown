@@ -1,7 +1,7 @@
 /**
  * A fence's code as rows, coloured by a highlighter when the terminal was given one.
  *
- * The highlighter is the one a page takes (`flowdown/highlight`, or any function of that
+ * The highlighter is the one a page takes (`@localix/flowdown/highlight`, or any function of that
  * shape): it returns HTML, spans named by highlight.js's classes. A terminal has no HTML, so the
  * spans are read here for what they say, a token's kind, and each kind is drawn in one of the few
  * colours a terminal theme can be trusted with.

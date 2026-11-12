@@ -28,8 +28,8 @@ import rehypeSanitize from 'rehype-sanitize'
 </ReactMarkdown>
 
 // After
-import { Markdown } from 'flowdown'
-import 'flowdown/styles.css'
+import { Markdown } from '@localix/flowdown'
+import '@localix/flowdown/styles.css'
 
 ;<Markdown components={components}>{text}</Markdown>
 ```
@@ -42,10 +42,10 @@ import 'flowdown/styles.css'
 | `rehypeRaw` + `rehypeSanitize`          | Built in, on by default (`html`).                                    |
 | `skipHtml`                              | `html={false}`                                                       |
 | `urlTransform`                          | `urlTransform`, the same function.                                   |
-| `remark-math` + `rehype-katex`          | `math={() => import('flowdown/math')}`                           |
-| `rehype-highlight`                      | `highlight={highlight}` from `flowdown/highlight`                |
+| `remark-math` + `rehype-katex`          | `math={() => import('@localix/flowdown/math')}`                           |
+| `rehype-highlight`                      | `highlight={highlight}` from `@localix/flowdown/highlight`                |
 | `className` on a wrapper                | `className`                                                          |
-| `remarkPlugins`, `rehypePlugins` of your own | Not accepted: there is no unified pipeline inside. Write the syntax as an [extension](../remark.md#your-own-syntax-in-markdown), or keep react-markdown and add `remarkFlowdown` from `flowdown/remark`; see [Extensions and remark](../remark.md#react-markdown-with-your-own-components). |
+| `remarkPlugins`, `rehypePlugins` of your own | Not accepted: there is no unified pipeline inside. Write the syntax as an [extension](../remark.md#your-own-syntax-in-markdown), or keep react-markdown and add `remarkFlowdown` from `@localix/flowdown/remark`; see [Extensions and remark](../remark.md#react-markdown-with-your-own-components). |
 | `allowElement`, `disallowedElements`, `unwrapDisallowed` | Not accepted. Override the element in `components` to drop or unwrap it. |
 
 What changes for the reader:
@@ -72,8 +72,8 @@ import { Streamdown } from 'streamdown'
 </Streamdown>
 
 // After
-import { Markdown } from 'flowdown'
-import 'flowdown/styles.css'
+import { Markdown } from '@localix/flowdown'
+import '@localix/flowdown/styles.css'
 
 ;<Markdown streaming={isStreaming}>{text}</Markdown>
 ```
@@ -97,14 +97,14 @@ import 'flowdown/styles.css'
 | `remarkPlugins`, `rehypePlugins`             | Not accepted; write an [extension](../remark.md#your-own-syntax-in-markdown). |
 | `dir`                                        | Set `dir` on an element around `<Markdown>`.                                  |
 | `animated`                                   | No equivalent. Animate in CSS if you want text to fade in.                    |
-| `BlockComponent`, `parseMarkdownIntoBlocksFn` | No equivalent. `createBlockSplitter` from `flowdown/remark` is the splitter `<Markdown>` uses. |
+| `BlockComponent`, `parseMarkdownIntoBlocksFn` | No equivalent. `createBlockSplitter` from `@localix/flowdown/remark` is the splitter `<Markdown>` uses. |
 | `remend` options                             | No options. The healing rules are in `closePartialMarkdown`; see [Streaming](../streaming.md). |
 
 ### Styling
 
 Streamdown draws with Tailwind classes. flowdown ships its own stylesheet driven by `--fd-*`
 tokens, with no Tailwind needed. Remove the `@source` line Streamdown's setup added to your
-Tailwind CSS, import `flowdown/styles.css`, and set the tokens to your theme's colours; see
+Tailwind CSS, import `@localix/flowdown/styles.css`, and set the tokens to your theme's colours; see
 [Styling](../styling.md).
 
 ### Links and images

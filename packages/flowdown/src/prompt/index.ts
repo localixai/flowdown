@@ -1,5 +1,5 @@
 /**
- * `flowdown/prompt`: the instructions that teach a model to write the dialect.
+ * `@localix/flowdown/prompt`: the instructions that teach a model to write the dialect.
  *
  * A model writes the forms it was told about and no others: without these lines, a renderer's
  * steps, tabs and callouts go unused, and a reply's shape is whatever the model defaults to

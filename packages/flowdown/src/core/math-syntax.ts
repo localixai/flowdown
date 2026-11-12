@@ -1,7 +1,7 @@
 /**
  * How a formula is written: `$…$`, `$$…$$` and a ```` ```math ```` fence, read into `inlineMath`
  * and `math` nodes that hold the LaTeX as written. What a formula is drawn as is the target's:
- * `flowdown/math` typesets it with KaTeX for a page, a terminal writes it in Unicode.
+ * `@localix/flowdown/math` typesets it with KaTeX for a page, a terminal writes it in Unicode.
  */
 import type { Extension, InlineRule, InlineState, Node } from '../engine/types'
 import { visit } from '../engine/visit'

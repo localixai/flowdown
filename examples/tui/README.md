@@ -3,8 +3,8 @@
 `reply.md` holds every form `flowdown` knows: headings, lists, tasks, callouts, steps, tabs, a
 file tree, code, a diff, stats, a table, the case for and against, a diagram, math, a figure, a
 folded section, sources and a footnote. `stream.ts` feeds it to
-[`flowdown/tui`](../../docs/targets.md) a few characters at a time, the way a model sends it,
-and redraws the terminal as the text grows. Code is coloured by `flowdown/highlight`,
+[`@localix/flowdown/tui`](../../docs/targets.md) a few characters at a time, the way a model sends it,
+and redraws the terminal as the text grows. Code is coloured by `@localix/flowdown/highlight`,
 and formulas are written in Unicode.
 
 <p align="center">
@@ -34,8 +34,8 @@ cursor up to the first one that differs, clears from there down and writes the r
 block grows, that is a few rows per token.
 
 ```ts
-import { highlight } from 'flowdown/highlight'
-import { createTerminalView, toAnsi } from 'flowdown/tui'
+import { highlight } from '@localix/flowdown/highlight'
+import { createTerminalView, toAnsi } from '@localix/flowdown/tui'
 
 const view = createTerminalView({ width: process.stdout.columns, highlight })
 let text = ''

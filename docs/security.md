@@ -16,7 +16,7 @@ exactly what the defaults let through, so you can decide what to tighten.
 | `html`                         | What happens to `<b>`, `<details>`, `<img onerror=…>`                                                                       |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `true` (the default)           | The HTML reader is fetched the first time a document holds HTML. Until it arrives, the tags are left out. Then they are parsed and sanitized. |
-| `html` from `flowdown/html` | Parsed and sanitized in the first render (for a server or a hydrating page).                                               |
+| `html` from `@localix/flowdown/html` | Parsed and sanitized in the first render (for a server or a hydrating page).                                               |
 | `false`                        | Every tag is dropped. The text between the tags stays.                                                                     |
 
 HTML is never shown unsanitized: while the reader loads, tags are skipped, not printed or
@@ -84,7 +84,7 @@ Two things the defaults do not do:
 ## Code
 
 Code is text. Fenced and inline code are printed as escaped text, and a highlighter's output is the
-one place HTML from code reaches the page: the bundled `flowdown/highlight` escapes the code
+one place HTML from code reaches the page: the bundled `@localix/flowdown/highlight` escapes the code
 first. A [highlighter of your own](highlighting.md#your-own-highlighter) must do the same.
 
 The copy button writes to the clipboard only when the reader presses it.

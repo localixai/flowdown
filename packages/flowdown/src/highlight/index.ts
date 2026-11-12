@@ -1,5 +1,5 @@
 /**
- * `flowdown/highlight`: a highlighter for `<Markdown highlight={…}>`, built on highlight.js
+ * `@localix/flowdown/highlight`: a highlighter for `<Markdown highlight={…}>`, built on highlight.js
  * with the languages replies and READMEs mostly hold and their usual aliases: shell, JavaScript and
  * TypeScript, Python, Go, Rust, Java, Kotlin, Swift, C, C++, C#, PHP, Ruby, SQL, JSON, YAML, TOML,
  * Dockerfile, CSS, HTML, Markdown and diffs.

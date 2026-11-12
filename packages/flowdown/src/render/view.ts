@@ -1,7 +1,7 @@
 /**
  * A whole document as plain elements (`vnode.ts`): what `<Markdown>` draws with React, for the
- * targets that have no framework. The HTML text of one (`flowdown/static`) and the page kept
- * up to date from one (`flowdown/dom`) are both made here, so they hold the same elements.
+ * targets that have no framework. The HTML text of one (`@localix/flowdown/static`) and the page kept
+ * up to date from one (`@localix/flowdown/dom`) are both made here, so they hold the same elements.
  */
 import { parseFileTree, type TreeRow } from '../core/file-tree-parse'
 import { flowdownDialect } from '../core/remark-answer-blocks'
@@ -31,11 +31,11 @@ export interface ViewOptions {
   extensions?: Extension[]
   /** Give headings ids (`setup`, `setup-1`) to link to. */
   headingIds?: boolean
-  /** Raw HTML in the text, parsed and sanitized: `flowdown/html`. Without it the tags are left out. */
+  /** Raw HTML in the text, parsed and sanitized: `@localix/flowdown/html`. Without it the tags are left out. */
   html?: Extension | null
-  /** Typeset `$…$`: `flowdown/math`. */
+  /** Typeset `$…$`: `@localix/flowdown/math`. */
   math?: Extension | null
-  /** Highlight fenced code: `flowdown/highlight`, or your own. */
+  /** Highlight fenced code: `@localix/flowdown/highlight`, or your own. */
   highlight?: views.Highlighter | null
   /** The words the renderer adds (callout names, button labels), for a page in another language. */
   labels?: LabelOverrides
@@ -48,7 +48,7 @@ export interface ViewOptions {
   caret?: boolean
   /**
    * What the ids of a `[!TABS]` form's tabs and panels start with. Two documents on one page need
-   * two prefixes; `flowdown/dom` gives each of its own.
+   * two prefixes; `@localix/flowdown/dom` gives each of its own.
    */
   idPrefix?: string
   /** The page the view is drawn on: with one, its tabs, trees and buttons answer the reader. */

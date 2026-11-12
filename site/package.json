@@ -29,7 +29,7 @@
     "highlight.js": "11.12.0",
     "typescript": "^6.0.0",
     "vite": "^8.0.0",
-    "flowdown": "workspace:*"
+    "@localix/flowdown": "workspace:*"
   },
   "description": "The landing page and the docs of flowdown, at flowdown.dev."
 }

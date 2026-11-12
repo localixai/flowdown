@@ -1,6 +1,6 @@
 /**
  * A reply streamed into a terminal. `reply.md` holds every form the renderer knows; it arrives a
- * few characters at a time, the way a model sends it, and `flowdown/tui` draws it as it grows.
+ * few characters at a time, the way a model sends it, and `@localix/flowdown/tui` draws it as it grows.
  *
  *     bun start                     # from this folder
  *     bun stream.ts notes.md        # a file of your own
@@ -9,8 +9,8 @@
  */
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { highlight } from 'flowdown/highlight'
-import { createTerminalView, toAnsi, type Line } from 'flowdown/tui'
+import { highlight } from '@localix/flowdown/highlight'
+import { createTerminalView, toAnsi, type Line } from '@localix/flowdown/tui'
 
 const reply = readFileSync(process.argv[2] ?? join(import.meta.dirname, 'reply.md'), 'utf8')
 const out = process.stdout

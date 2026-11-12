@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 /**
- * A stage of the pipeline that a page may load on demand: math (`flowdown/math`), raw HTML
- * (`flowdown/html`). Given as the module itself (it is used at once, server rendering
+ * A stage of the pipeline that a page may load on demand: math (`@localix/flowdown/math`), raw HTML
+ * (`@localix/flowdown/html`). Given as the module itself (it is used at once, server rendering
  * included), or as a loader that imports it (it is fetched the first time a document needs it).
  */
 export type StageLoader<T> = () => Promise<T | { default: T }>

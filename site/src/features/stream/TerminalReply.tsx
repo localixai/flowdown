@@ -1,5 +1,5 @@
-import type { Highlighter } from 'flowdown';
-import { createTerminalView, type Line, type Style } from 'flowdown/tui';
+import type { Highlighter } from '@localix/flowdown';
+import { createTerminalView, type Line, type Style } from '@localix/flowdown/tui';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 
 /** The columns the build draws for, before the page has measured its own. */
@@ -32,7 +32,7 @@ const Row = memo(function Row({ line }: { line: Line }) {
 });
 
 /**
- * A reply as a terminal draws it: the rows `flowdown/tui` makes, each a list of styled runs, set
+ * A reply as a terminal draws it: the rows `@localix/flowdown/tui` makes, each a list of styled runs, set
  * in the page's monospace. The view is the one a terminal program keeps for a streaming reply;
  * its width is the columns that fit the frame, measured from the font.
  */

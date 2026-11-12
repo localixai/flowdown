@@ -26,25 +26,25 @@ Install flowdown, render a document, stream a reply and teach the model the dial
 #### bun
 
 ```sh
-bun add flowdown
+bun add @localix/flowdown
 ```
 
 #### npm
 
 ```sh
-npm install flowdown
+npm install @localix/flowdown
 ```
 
 #### pnpm
 
 ```sh
-pnpm add flowdown
+pnpm add @localix/flowdown
 ```
 
 #### yarn
 
 ```sh
-yarn add flowdown
+yarn add @localix/flowdown
 ```
 
 ---
@@ -55,7 +55,7 @@ field (Vite, Next.js, webpack 5, Rspack, esbuild, Bun) and in Node 20 or later.
 ## 2. Import the stylesheet
 
 ```ts
-import 'flowdown/styles.css'
+import '@localix/flowdown/styles.css'
 ```
 
 Import it once, in your app's entry or root layout. Every rule is scoped to the `.flowdown`
@@ -65,7 +65,7 @@ tokens you can set; [Styling](styling.md) lists them.
 ## 3. Render
 
 ```tsx
-import { Markdown } from 'flowdown'
+import { Markdown } from '@localix/flowdown'
 
 export function Doc({ source }: { source: string }) {
   return <Markdown>{source}</Markdown>
@@ -98,7 +98,7 @@ A model writes the forms it was told about and no others. Add the dialect's inst
 system prompt:
 
 ```ts
-import { answerFormatPrompt } from 'flowdown/prompt'
+import { answerFormatPrompt } from '@localix/flowdown/prompt'
 
 const system = ['You are a helpful assistant.', answerFormatPrompt()].join('\n\n')
 ```
@@ -112,12 +112,12 @@ turn on `answerFormatPrompt({ math: true, diagrams: true })` together with the p
 They are off by default, so a page that does not use them does not ship them:
 
 ```tsx
-import { Markdown } from 'flowdown'
-import { highlight } from 'flowdown/highlight'
+import { Markdown } from '@localix/flowdown'
+import { highlight } from '@localix/flowdown/highlight'
 import 'katex/dist/katex.min.css'
 
 ;<Markdown
-  math={() => import('flowdown/math')}
+  math={() => import('@localix/flowdown/math')}
   mermaid={() => import('mermaid')}
   highlight={highlight}
 >

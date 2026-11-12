@@ -1,4 +1,4 @@
-import { type Highlighter, Markdown } from 'flowdown';
+import { type Highlighter, Markdown } from '@localix/flowdown';
 import { useEffect, useState } from 'react';
 import { TerminalReply } from './TerminalReply';
 import { useStream } from './use-stream';
@@ -8,7 +8,7 @@ const loadMermaid = () => import('mermaid');
 // KaTeX's stylesheet comes with the stage: a page with no formula loads neither.
 const loadMath = () => {
   void import('katex/dist/katex.min.css');
-  return import('flowdown/math');
+  return import('@localix/flowdown/math');
 };
 
 /** The highlighter, loaded after the page: until then code is drawn plain. */
@@ -16,7 +16,7 @@ function useHighlighter() {
   const [highlight, setHighlight] = useState<Highlighter | null>(null);
   useEffect(() => {
     let alive = true;
-    void import('flowdown/highlight').then((module) => {
+    void import('@localix/flowdown/highlight').then((module) => {
       if (alive) setHighlight(() => module.highlight);
     });
     return () => {
@@ -28,7 +28,7 @@ function useHighlighter() {
 
 /**
  * A reply streamed into the page and drawn by flowdown as it grows: the product itself, not a
- * recording of it. On a `page` it is `<Markdown>`; in a `terminal` it is the rows `flowdown/tui`
+ * recording of it. On a `page` it is `<Markdown>`; in a `terminal` it is the rows `@localix/flowdown/tui`
  * makes of the same text, at the columns the frame has. `rich` loads Mermaid and KaTeX for a
  * reply that holds a diagram or a formula.
  */

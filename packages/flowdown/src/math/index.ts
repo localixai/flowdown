@@ -1,11 +1,11 @@
 /**
- * `flowdown/math`: `$…$`, `$$…$$` and a ```` ```math ```` fence typeset with KaTeX.
+ * `@localix/flowdown/math`: `$…$`, `$$…$$` and a ```` ```math ```` fence typeset with KaTeX.
  *
  * Its own entry so that only a page that imports it bundles KaTeX (a quarter of a megabyte). Pass
  * it to `<Markdown math={…}>` directly, or as a loader so it is fetched the first time a document
  * holds a formula:
  *
- *     <Markdown math={() => import('flowdown/math')}>
+ *     <Markdown math={() => import('@localix/flowdown/math')}>
  *
  * KaTeX's stylesheet is the page's to add (`import 'katex/dist/katex.min.css'`): a bundler-only
  * CSS import inside a library breaks the hosts that do not run one.

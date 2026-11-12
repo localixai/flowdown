@@ -13,11 +13,11 @@ and a page ships only the one it imports.
 
 | Import                 | Draws                                              | Needs        |
 | ---------------------- | -------------------------------------------------- | ------------ |
-| `flowdown`         | React elements.                                    | `react`      |
-| `flowdown/static`  | HTML text: a server, an email, a static site.      |              |
-| `flowdown/dom`     | A page with no framework, kept up to date in place. | a browser    |
-| `flowdown/element` | A custom element, `<flow-down>`.                | a browser    |
-| `flowdown/tui`     | The rows of a terminal.                            |              |
+| `@localix/flowdown` | React elements.                                    | `react`      |
+| `@localix/flowdown/static`  | HTML text: a server, an email, a static site.      |              |
+| `@localix/flowdown/dom`     | A page with no framework, kept up to date in place. | a browser    |
+| `@localix/flowdown/element` | A custom element, `<flow-down>`.                | a browser    |
+| `@localix/flowdown/tui`     | The rows of a terminal.                            |              |
 
 None but the first imports React, and none imports any package. `/static` and `/tui` touch no page
 either: they run on a server, in a worker and in a CLI.
@@ -25,12 +25,12 @@ either: they run on a server, in a worker and in a CLI.
 ## HTML text
 
 ```ts
-import { renderToHtml } from 'flowdown/static'
+import { renderToHtml } from '@localix/flowdown/static'
 
 const html = renderToHtml(reply, { headingIds: true })
 ```
 
-The HTML is what `<Markdown>` draws, root element and all, so `flowdown/styles.css` styles it.
+The HTML is what `<Markdown>` draws, root element and all, so `@localix/flowdown/styles.css` styles it.
 Nothing in it runs: tabs show their first variant, and a code block's buttons are drawn but do
 nothing until something on the page wires them. Pass `streaming: true` for a reply that is still
 arriving.
@@ -38,9 +38,9 @@ arriving.
 Math, raw HTML and highlighting are passed in, the same engines `<Markdown>` takes:
 
 ```ts
-import { html } from 'flowdown/html'
-import { highlight } from 'flowdown/highlight'
-import { math } from 'flowdown/math'
+import { html } from '@localix/flowdown/html'
+import { highlight } from '@localix/flowdown/highlight'
+import { math } from '@localix/flowdown/math'
 
 renderToHtml(reply, { html, math, highlight })
 ```
@@ -50,8 +50,8 @@ Without `html`, tags in the text are left out. With it they are parsed and sanit
 ## A page with no framework
 
 ```ts
-import { mount } from 'flowdown/dom'
-import 'flowdown/styles.css'
+import { mount } from '@localix/flowdown/dom'
+import '@localix/flowdown/styles.css'
 
 const reply = mount(document.querySelector('#reply')!)
 for await (const text of stream) reply.update(text, { streaming: true })
@@ -70,8 +70,8 @@ you, call `update` when the text changes, and `destroy` when the element goes.
 ## A custom element
 
 ```ts
-import { defineMarkdownElement } from 'flowdown/element'
-import 'flowdown/styles.css'
+import { defineMarkdownElement } from '@localix/flowdown/element'
+import '@localix/flowdown/styles.css'
 
 defineMarkdownElement()
 ```
@@ -93,7 +93,7 @@ drawn with.
 ## A terminal
 
 ```ts
-import { renderToAnsi } from 'flowdown/tui'
+import { renderToAnsi } from '@localix/flowdown/tui'
 
 process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns }) + '\n')
 ```
@@ -123,8 +123,8 @@ Other fenced code is one colour until the terminal is given a highlighter, the s
 takes:
 
 ```ts
-import { highlight } from 'flowdown/highlight'
-import { renderToAnsi } from 'flowdown/tui'
+import { highlight } from '@localix/flowdown/highlight'
+import { renderToAnsi } from '@localix/flowdown/tui'
 
 process.stdout.write(renderToAnsi(reply, { width: process.stdout.columns, highlight }) + '\n')
 ```
@@ -146,7 +146,7 @@ leaves formulas as the text they were written as.
 For a reply that is still arriving, keep a view:
 
 ```ts
-import { createTerminalView, toAnsi } from 'flowdown/tui'
+import { createTerminalView, toAnsi } from '@localix/flowdown/tui'
 
 const view = createTerminalView({ width: 80 })
 for await (const text of stream) draw(view.render(text, { streaming: true }))
@@ -166,10 +166,10 @@ changed.
 
 Two lower entries are what the targets above are built on:
 
-- `flowdown/document` turns a growing text into blocks. `createDocument().update(text, {
+- `@localix/flowdown/document` turns a growing text into blocks. `createDocument().update(text, {
   streaming })` gives `blocks`, and a block that reads the same as at the last update is the same
   object.
-- `flowdown/engine` is the parser: `parse(markdown)` gives the tree, `toHtml(tree)` writes it.
+- `@localix/flowdown/engine` is the parser: `parse(markdown)` gives the tree, `toHtml(tree)` writes it.
 
 The dialect marks what a node is, apart from how it is drawn: a quote is
 `{ form: 'callout', kind: 'warning' }`, a list `{ form: 'steps' }`. A target switches on the form
@@ -177,8 +177,8 @@ and draws it its own way; a form it does not know is still the Markdown it was w
 or a list.
 
 ```ts
-import { createDocument, formOf, flowdownDialect } from 'flowdown/document'
-import { parse } from 'flowdown/engine'
+import { createDocument, formOf, flowdownDialect } from '@localix/flowdown/document'
+import { parse } from '@localix/flowdown/engine'
 
 const doc = createDocument()
 
