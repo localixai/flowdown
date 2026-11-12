@@ -53,6 +53,7 @@ application that owns the whole screen, with its own scrolling, has no such limi
 
 ## The recording
 
-`bun run record` runs `record.sh`: asciinema records the example headless in a window of 100 by 30,
-agg draws the frames at 20 a second, and gifsicle fits them to 32 colours, which is every colour a
-terminal shows and under half the size. It needs `brew install asciinema agg gifsicle`.
+`bun run record` runs `record.sh`: asciinema records the example headless in a window of 90 by 26,
+agg draws the frames on black at 20 a second and twice the width the README shows them, and
+gifsicle fits them to 48 colours, about half the size. It needs
+`brew install asciinema agg gifsicle`.

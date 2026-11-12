@@ -27,9 +27,14 @@ prompt
 sleep 0.4
 SESSION
 
-asciinema rec --headless --window-size 100x30 --quiet --overwrite \
+# Black, with the sixteen colours of a dark terminal: background, foreground, then 0 to 15.
+theme=000000,e6e6e6,2b2b2b,ff6b6b,7ee787,e3b341,6cb6ff,d2a8ff,56d4dd,d1d7e0,7d8590,ff938a,a5f3b0,f4d06f,96d0ff,e2c5ff,a5f3fc,ffffff
+
+asciinema rec --headless --window-size 90x26 --quiet --overwrite \
   --command "sh $work/session.sh" "$work/tui.cast"
-agg --quiet --theme dracula --fps-cap 20 --last-frame-duration 4 "$work/tui.cast" "$work/tui.gif"
-# A terminal has few colours: 32 hold every one of them, and the file is under half its size.
-gifsicle -O3 --colors 32 "$work/tui.gif" -o "$out"
+# The README shows it 760 pixels wide: a font of 28 makes it twice that, sharp on a dense screen.
+agg --quiet --theme "$theme" --font-size 28 --fps-cap 20 --last-frame-duration 4 \
+  "$work/tui.cast" "$work/tui.gif"
+# A terminal has few colours: 48 keep the edges of the letters smooth at about half the size.
+gifsicle -O3 --colors 48 "$work/tui.gif" -o "$out"
 ls -l "$out" | awk '{ printf "%s  %.2f MB\n", $NF, $5 / 1048576 }'
