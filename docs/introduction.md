@@ -6,7 +6,7 @@ description:
   streams.
 ---
 
-# flowdown
+# Introduction
 
 Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, no
 dependencies, 31.7 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
@@ -104,4 +104,4 @@ What sets it apart:
 
 - [Getting started](getting-started.md) — install, render, stream.
 - [Syntax](syntax.md) — every form, with its source.
-- [Playground](/playground) — paste a reply and watch it stream.
+- [flowdown.dev](https://flowdown.dev) — a reply streaming live, in a page.

@@ -59,7 +59,7 @@ The defaults sit at zero specificity, so any rule that sets a token wins. A toke
 holds in both themes; to give each theme its own value, use `light-dark()` as well.
 
 > [!TABS]
-#### Text and surfaces
+### Text and surfaces
 | Token | Used for |
 | --- | --- |
 | `--fd-fg` | Body text; panels are mixed from it. |
@@ -72,7 +72,7 @@ holds in both themes; to give each theme its own value, use `light-dark()` as we
 | `--fd-link` | Links. |
 | `--fd-focus` | Focus rings on tabs, tree rows, the copy button. |
 
-#### Status
+### Status
 | Token | Used for |
 | --- | --- |
 | `--fd-info` | `NOTE` callouts. |
@@ -83,7 +83,7 @@ holds in both themes; to give each theme its own value, use `light-dark()` as we
 
 These colour glyphs and marks only, never a fill.
 
-#### Code
+### Code
 | Token | Used for |
 | --- | --- |
 | `--fd-code-bg`, `--fd-code-fg` | Code blocks. |
@@ -95,14 +95,14 @@ These colour glyphs and marks only, never a fill.
 | `--fd-code-type` | Types and built-ins. |
 | `--fd-code-tag` | Markup tags. |
 
-#### Diagrams
+### Diagrams
 | Token | Used for |
 | --- | --- |
 | `--fd-chart-1` … `--fd-chart-8` | Diagram series, in order: pie slices, chart lines, git branches. |
 
 Diagrams read these tokens when they are drawn, so a diagram matches the page it sits on.
 
-#### Shape and type
+### Shape and type
 | Token | Used for |
 | --- | --- |
 | `--fd-font-heading` | Headings. Inherits the page's font by default. |

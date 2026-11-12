@@ -5,7 +5,8 @@
     "packages/*",
     "examples/*",
     "bench",
-    "demo"
+    "demo",
+    "site"
   ],
   "type": "module",
   "scripts": {

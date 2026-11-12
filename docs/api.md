@@ -6,6 +6,8 @@ description:
 
 # API reference
 
+Every entry point and export of flowdown, and every prop of `<Markdown>`.
+
 ## Entry points
 
 | Import                    | Holds                                                         | Needs                       |

@@ -205,7 +205,7 @@ by side; on a narrow screen they stack.
 Either one also works alone. Text after the marker titles that side.
 
 Forms nest where it reads well: a tab can hold its option's pros and cons, as in the
-[introduction](index.md#what-it-looks-like).
+[introduction](introduction.md#what-it-looks-like).
 
 ## Folded sections
 
@@ -372,7 +372,7 @@ Prices and variables stay text: `$5 and $10`, `$HOME/bin` and `$PATH` are not fo
 
 The boxes show the source's state and are read-only. Each carries `data-task-key`, the offset of its
 item in the source, so a page that stores ticks — or rewrites `[ ]` to `[x]` — can make them live.
-See [Components](components.md#task-lists).
+[Wrapping a built-in component](components.md#wrap-a-built-in-component) is how.
 
 ## Code
 

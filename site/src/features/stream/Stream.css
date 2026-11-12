@@ -1,0 +1,59 @@
+/* A reply streaming in a frame of the page's black, edged by a hairline: the shape of the film's
+   frame, so the hero is the same with either. Its size is the stylesheet's alone, whatever the
+   reply holds, and it scrolls inside: the page never moves while the reply grows. */
+@import '../../shared/styles/flowdown.css';
+
+.stream {
+  aspect-ratio: 1.16;
+  max-height: calc(100svh - 13.5rem);
+  min-height: 18rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1rem, 2.4vw, 1.5rem) clamp(1rem, 2.6vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.stream:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+.stream-reply {
+  --fd-bg: var(--panel);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.stream-reply > :first-child {
+  margin-top: 0;
+}
+
+/* One quiet line under it: how much of the reply has arrived, and play or pause. */
+.stream-caption {
+  display: flex;
+  gap: 0.25rem 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0.25rem 0;
+  color: var(--muted);
+  font: 400 0.8125rem / 1.5 var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+.stream-caption button {
+  min-width: 6ch;
+  min-height: 2.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--soft);
+  font: inherit;
+  text-align: right;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+.stream-caption button:hover {
+  color: var(--white);
+}

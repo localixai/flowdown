@@ -7,6 +7,9 @@ description:
 
 # Migrating
 
+Moving from react-markdown or Streamdown: what maps one to one, what moves to CSS, and what has no
+equivalent.
+
 ## From react-markdown
 
 flowdown reads Markdown with its own parser (it passes every example of CommonMark and of

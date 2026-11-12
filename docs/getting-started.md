@@ -6,6 +6,8 @@ description:
 
 # Getting started
 
+Install flowdown, render a document, stream a reply and teach the model the dialect.
+
 > [!STEPS]
 1. **Install the package**
    React 18 or 19 is the only required peer.

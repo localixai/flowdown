@@ -1,0 +1,33 @@
+/* flowdown on this site: its stylesheet, then its tokens set to the site's, wherever it draws (a
+   docs page, the landing's live reply). The site is dark alone, so every colour is named here. */
+@import 'flowdown/styles.css';
+
+.flowdown {
+  --fd-fg: var(--soft);
+  --fd-fg-soft: var(--soft);
+  --fd-fg-faint: var(--muted);
+  --fd-bg: var(--black);
+  --fd-border: var(--line-strong);
+  --fd-border-subtle: var(--line);
+  --fd-border-strong: var(--faint);
+  --fd-link: var(--link);
+  --fd-focus: var(--white);
+  --fd-success: var(--tk-ok);
+  --fd-danger: var(--tk-bad);
+  --fd-warning: var(--tk-flag);
+  --fd-info: var(--tk-key);
+  --fd-important: var(--tk-num);
+  --fd-code-bg: var(--code);
+  --fd-code-fg: var(--panel-text);
+  --fd-code-comment: var(--tk-dim);
+  --fd-code-keyword: var(--tk-key);
+  --fd-code-string: var(--tk-str);
+  --fd-code-number: var(--tk-num);
+  --fd-code-function: var(--tk-flag);
+  --fd-code-type: var(--tk-var);
+  --fd-code-tag: var(--tk-key);
+  --fd-font-heading: var(--display);
+  --fd-font-mono: var(--mono);
+  --fd-radius: var(--radius);
+  --fd-ease: var(--ease-out);
+}

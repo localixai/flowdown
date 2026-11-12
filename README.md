@@ -283,7 +283,7 @@ The recording is [`examples/tui`](examples/tui) as it runs, with every form of t
 | Path                    | What it holds                                        |
 | ----------------------- | ---------------------------------------------------- |
 | `packages/flowdown` | the library                                          |
-| `docs/`                 | the documentation, as Markdown; `nav.json` orders it |
+| `docs/`                 | the documentation, as Markdown; `site/content/docs/nav.ts` orders it |
 | `demo/`                 | the scenes above and the script that captures them   |
 | `examples/tui`          | a reply streamed into a terminal: `bun start`        |
 | `bench/`                | rendering benchmarks against other renderers         |

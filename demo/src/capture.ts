@@ -49,15 +49,15 @@ async function settled(page: Page) {
   )
 }
 
-async function still(page: Page, base: string, scene: string, theme: string) {
-  await page.goto(`${base}?scene=${scene}&theme=${theme}`)
+async function still(page: Page, base: string, scene: string, theme: string, site?: string) {
+  await page.goto(`${base}?scene=${scene}&theme=${theme}${site ? '&black' : ''}`)
   await settled(page)
   // A diagram's toolbar shows under the pointer: the picture has it.
   const diagram = page.locator('.fd-diagram').first()
   if ((await diagram.count()) > 0) await diagram.hover()
-  const path = join(OUT, `${scene}-${theme}.png`)
+  const path = site ?? join(OUT, `${scene}-${theme}.png`)
   await page.locator('[data-scene]').screenshot({ path, animations: 'disabled' })
-  console.log(`  ${scene}-${theme}.png`)
+  console.log(`  ${site ? path : `${scene}-${theme}.png`}`)
 }
 
 /** The hero reply typed in 5-character steps at 20 frames a second, as a model streams it, then held finished. */
@@ -413,6 +413,22 @@ try {
       if (wanted(scene)) await still(page, server.url.href, scene, theme)
     if (wanted('stream')) await stream(page, server.url.href, theme)
     if (wanted('viewer')) await viewer(page, server.url.href, theme)
+    await page.close()
+  }
+  // The site's card: the steps on its black. Only when asked for by name.
+  if (asked.includes('site')) {
+    const page = await browser.newPage({
+      viewport: { width: 760, height: 900 },
+      deviceScaleFactor: SCALE,
+      colorScheme: 'dark',
+    })
+    await still(
+      page,
+      server.url.href,
+      'steps',
+      'dark',
+      join(import.meta.dir, '../../site/public/media/steps.png'),
+    )
     await page.close()
   }
   if (wanted('pair')) {
