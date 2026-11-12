@@ -160,7 +160,7 @@ Both put `llx` on your `PATH`.
 - The tabs use the level of the first heading after the marker; `####` is the convention, any level
   works. A heading of that level opens the next tab, a deeper one stays inside the tab.
 - The tabs end at a shallower heading, a `---` line, or the end of the text.
-- A label keeps the heading's text without its formatting: `#### **macOS** \`arm64\`` is labelled
+- A label keeps the heading's text without its formatting: `` #### **macOS** `arm64` `` is labelled
   "macOS arm64".
 - Every panel stays in the page, hidden but present, so find-in-page, copy and print reach it.
 - The arrow keys, Home and End move between tabs; only the selected tab is a Tab stop.
