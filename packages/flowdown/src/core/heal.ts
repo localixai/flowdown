@@ -200,7 +200,8 @@ function dropTrailingPartialCalloutMarker(text: string): string {
  * nothing follows it but blank space; once the list starts, the form renders.
  */
 function dropTrailingBareFormMarker(text: string): string {
-  const trimmed = text.replace(/\s+$/, '')
+  // `trimEnd`, not `/\s+$/`: the pattern is tried at every run of blank space in the text.
+  const trimmed = text.trimEnd()
   const nl = trimmed.lastIndexOf('\n')
   const quoted = /^\s{0,3}>[ \t]?(.*)$/.exec(trimmed.slice(nl + 1))
   if (!quoted || !parseContainerMarker(quoted[1]!.trim())) return text

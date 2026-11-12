@@ -18,6 +18,7 @@
  * loop runs only while there is a backlog.
  */
 import { useEffect, useState } from 'react'
+import { continues } from '../core/continues'
 
 /** How long a backlog takes to show, by default. */
 export const DEFAULT_CATCH_UP_MS = 240
@@ -141,7 +142,7 @@ function createPacer(initial: string) {
         const shown =
           !live && !streaming
             ? next.length
-            : next.startsWith(text.slice(0, pace.shown))
+            : continues(next, text, pace.shown)
               ? pace.shown
               : commonPrefix(text, next)
         text = next

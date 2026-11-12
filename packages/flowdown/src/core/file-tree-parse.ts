@@ -28,7 +28,7 @@ const GUIDE = /^(?:│ {3}|\| {3}| {4})/
 const BRANCH = /^(?:├──|└──|\|--|`--|\+--)\s?/
 
 function readLine(line: string): Pick<TreeRow, 'depth' | 'name' | 'comment'> | null {
-  let rest = line.replace(/\s+$/, '')
+  let rest = line.trimEnd()
   if (!rest.trim()) return null
   let depth = 0
   while (GUIDE.test(rest)) {

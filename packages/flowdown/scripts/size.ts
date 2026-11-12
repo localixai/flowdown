@@ -33,7 +33,8 @@ const BUDGET: Record<string, number> = {
   './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
   './remark': 19.5,
-  './stream': 4.5,
+  // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`).
+  './stream': 4.6,
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,

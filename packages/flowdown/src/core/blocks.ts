@@ -24,6 +24,7 @@
  * the same markup, at every prefix.
  */
 import { parseContainerMarker, type ContainerKind } from '../dialect'
+import { continues } from './continues'
 
 export interface MarkdownBlock {
   /** The block's own source. */
@@ -566,7 +567,7 @@ export function createBlockSplitter(): BlockSplitter {
       let kept = blocks.slice(0, Math.max(0, blocks.length - REOPENED))
       let last = kept.at(-1)
       let from = last ? last.offset + last.source.length : 0
-      if (from > 0 && !(markdown.length >= from && markdown.startsWith(text.slice(0, from)))) {
+      if (from > 0 && !continues(markdown, text, from)) {
         kept = []
         last = undefined
         from = 0
@@ -577,8 +578,7 @@ export function createBlockSplitter(): BlockSplitter {
       if (progress !== null && progress.from === from) {
         for (let index = progress.marks.length - 1; index >= 0 && !mark; index -= 1) {
           const tried = progress.marks[index]!
-          if (markdown.length >= tried.at && markdown.startsWith(text.slice(from, tried.at), from))
-            mark = tried
+          if (continues(markdown, text, tried.at, from)) mark = tried
         }
       }
       lexed += markdown.length - (mark ? mark.at : from)

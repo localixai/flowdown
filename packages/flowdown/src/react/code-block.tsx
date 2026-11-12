@@ -115,13 +115,14 @@ export function CodeFrame({
   preProps?: ComponentPropsWithoutRef<'pre'>
   children: ReactNode
 }) {
+  const labels = useLabels()
+  // A line too long for the reply scrolls inside the `<pre>`: the keyboard must then reach it.
+  const [attach, scrolls, again] = useScrolls<HTMLPreElement>()
   const current = useRef(text)
   useEffect(() => {
     current.current = text
-  }, [text])
-  const labels = useLabels()
-  // A line too long for the reply scrolls inside the `<pre>`: the keyboard must then reach it.
-  const [attach, scrolls] = useScrolls<HTMLPreElement>(undefined, text)
+    again()
+  }, [text, again])
   return codeFrame(
     react,
     language,

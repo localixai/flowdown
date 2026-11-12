@@ -6,6 +6,7 @@
  * the scan state after the last complete line is remembered and resumed when the next text extends
  * it. Any other text simply rescans from the start.
  */
+import { continues } from './continues'
 
 export interface OpenFence {
   marker: string
@@ -59,7 +60,7 @@ export function createFenceScanner(): FenceScanner {
 
   return (text) => {
     let { prefix, open } = cached
-    if (!text.startsWith(prefix)) {
+    if (!continues(text, prefix, prefix.length)) {
       prefix = ''
       open = null
     }

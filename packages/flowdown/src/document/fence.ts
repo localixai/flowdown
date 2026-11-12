@@ -3,6 +3,7 @@
  * renderer needs to draw a long fence in pieces, a token costing only its last lines.
  */
 import { fenceTitle } from '../dialect'
+import { continues } from '../core/continues'
 
 const OPENING = /^(`{3,}|~{3,})([^\n`]*)\n/
 
@@ -80,12 +81,7 @@ export function growingFence(
   // A fence closed earlier in the block means the block is not just this fence.
   const read = memory.read
   let at =
-    read !== null &&
-    read.fence === fence &&
-    body.length >= read.clean &&
-    body.startsWith(read.body.slice(0, read.clean))
-      ? read.clean
-      : 0
+    read !== null && read.fence === fence && continues(body, read.body, read.clean) ? read.clean : 0
   memory.read = null
   for (let end = body.indexOf('\n', at); end !== -1; end = body.indexOf('\n', at)) {
     if (closesFence(body, at, end, marker, fence.length, 3)) return null
@@ -123,7 +119,7 @@ export function createCutter(): (body: string) => Cut {
   let run = 0
   return (body) => {
     const done = ends.at(-1) ?? 0
-    if (done > 0 && !(body.length >= done && body.startsWith(text.slice(0, done)))) {
+    if (done > 0 && !continues(body, text, done)) {
       ends = []
       run += 1
     }
