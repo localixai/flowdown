@@ -76,6 +76,31 @@ if (search) {
   });
 }
 
+// A table or a code block wider than the column scrolls sideways: it is then a Tab stop, so the
+// arrow keys can scroll it (WCAG 2.1.1). One that fits stays out of the Tab order. This is what
+// flowdown does itself where it runs in the browser; these pages are HTML alone.
+const scrollers = [...document.querySelectorAll<HTMLElement>('.fd-table, .flowdown pre')];
+function reach(box: HTMLElement) {
+  const scrolls = box.scrollWidth > box.clientWidth + 1;
+  if (scrolls === box.hasAttribute('tabindex')) return;
+  if (scrolls) {
+    box.tabIndex = 0;
+    box.setAttribute('role', 'group');
+    box.setAttribute('aria-label', box.localName === 'pre' ? 'Scrollable code' : 'Scrollable table');
+  } else {
+    box.removeAttribute('tabindex');
+    box.removeAttribute('role');
+    box.removeAttribute('aria-label');
+  }
+}
+if (typeof ResizeObserver === 'undefined') scrollers.forEach(reach);
+else {
+  const observer = new ResizeObserver((entries) => {
+    for (const entry of entries) reach(entry.target as HTMLElement);
+  });
+  for (const box of scrollers) observer.observe(box);
+}
+
 const links = [...document.querySelectorAll<HTMLAnchorElement>('.docs-toc a')];
 const sections = links.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))));
 let frame = 0;

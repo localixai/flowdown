@@ -16,7 +16,7 @@
  * gives you, call `update` when the text changes, `destroy` when the element goes.
  */
 import { codeFileName, copyText, downloadFile } from '../browser/file-actions'
-import { mergeLabels } from '../render/labels'
+import { mergeLabels, type MarkdownLabels } from '../render/labels'
 import { createView, type ViewOptions } from '../render/view'
 import type { DrawnElement } from '../render/vnode'
 import { create, patch } from './patch'
@@ -47,11 +47,17 @@ export interface Mounted {
 /** Documents mounted so far: each gets its own ids for its tabs. */
 let mounts = 0
 
-/** A table's box scrolls sideways when the table is wider: then the keyboard must reach it. */
-function measure(box: Element, label: string): void {
-  // One pixel of slack: a subpixel table width rounds up past the box it fits in.
-  if (box.scrollWidth > box.clientWidth + 1) {
-    box.setAttribute('role', 'region')
+/**
+ * A table's box, or a code block's `<pre>`, scrolls sideways when what it holds is wider: then the
+ * keyboard must reach it.
+ */
+function measure(box: Element, labels: MarkdownLabels): void {
+  // One pixel of slack: a subpixel content width rounds up past the box it fits in.
+  const scrolls = box.scrollWidth > box.clientWidth + 1
+  if (scrolls === box.hasAttribute('tabindex')) return
+  const label = box.localName === 'pre' ? labels.scrollableCode : labels.scrollableTable
+  if (scrolls) {
+    box.setAttribute('role', 'group')
     box.setAttribute('aria-label', label)
     box.setAttribute('tabindex', '0')
   } else {
@@ -75,13 +81,15 @@ export function mount(target: Element, options: MountOptions = {}): Mounted {
   /** The table boxes on the page, and the ones made since the last drawing. */
   const boxes = new WeakSet<Element>()
   let fresh: Element[] = []
+  /** Whether a measuring of the last code block is already waiting for the next frame. */
+  let asked = false
   const observer =
     typeof ResizeObserver === 'undefined'
       ? null
       : new ResizeObserver((entries) => {
           for (const entry of entries) {
-            const box = entry.target.closest('.fd-table')
-            if (box) measure(box, labels.scrollableTable)
+            const box = entry.target.closest('.fd-table, pre')
+            if (box) measure(box, labels)
           }
         })
 
@@ -127,7 +135,7 @@ export function mount(target: Element, options: MountOptions = {}): Mounted {
     // Measured once it is on the page, and again whenever it or its table changes size: a reply
     // that streams a row in, a window made narrower.
     for (const box of fresh) {
-      measure(box, labels.scrollableTable)
+      measure(box, labels)
       if (observer) {
         observer.observe(box)
         const table = box.querySelector('table')
@@ -135,6 +143,18 @@ export function mount(target: Element, options: MountOptions = {}): Mounted {
       }
     }
     fresh = []
+    // A line of code getting longer resizes nothing an observer watches. The block being written
+    // is the last one: it is measured once a frame, when the page is laid out anyway.
+    if (!asked && root !== null && typeof requestAnimationFrame === 'function') {
+      asked = true
+      requestAnimationFrame(() => {
+        asked = false
+        if (gone || root === null) return
+        const blocks = root.getElementsByTagName('pre')
+        const last = blocks[blocks.length - 1]
+        if (last && boxes.has(last)) measure(last, labels)
+      })
+    }
   }
 
   draw()

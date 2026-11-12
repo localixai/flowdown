@@ -323,7 +323,7 @@ export function tabs<E, C>(
 
 /**
  * A table in a box of its own that scrolls sideways: a wide comparison then scrolls inside the
- * reply instead of widening the page. A box that scrolls is a region the Tab key stops on, so the
+ * reply instead of widening the page. A box that scrolls is a named group the Tab key stops on, so the
  * arrow keys can scroll it (WCAG 2.1.1); a table that fits stays out of the Tab order.
  */
 export const table = <E, C>(
@@ -339,7 +339,7 @@ export const table = <E, C>(
     {
       ...box,
       className: 'fd-table',
-      role: scrolls ? 'region' : undefined,
+      role: scrolls ? 'group' : undefined,
       'aria-label': scrolls ? labels.scrollableTable : undefined,
       tabIndex: scrolls ? 0 : undefined,
     },

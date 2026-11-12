@@ -15,6 +15,8 @@ export interface BlockOptions {
   ownCode: boolean
   /** The page draws tables itself, or its extensions read them: a table is then parsed whole. */
   ownTable: boolean
+  /** The names of a task list's boxes. */
+  labels?: RenderOptions['labels']
 }
 
 /** One text read and drawn: a whole document, or one of its blocks. */
@@ -28,6 +30,7 @@ export function draw(
     components: options.components,
     urlTransform: options.urlTransform,
     special: options.special,
+    labels: options.labels,
     offset,
     headingIds,
   })

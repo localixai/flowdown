@@ -147,3 +147,17 @@ test('options: the HTML React writes', () => {
       compare(`${name} [${way}]`, markdown, pair, failures)
   expect(failures).toEqual([])
 })
+
+test('a task list box is named, in the words the page gives when it gives them', () => {
+  const tasks = '- [x] shipped\n- [ ] next'
+  const own = renderToHtml(tasks)
+  expect(own).toContain('aria-label="Completed task"')
+  expect(own).toContain('aria-label="Incomplete task"')
+  const labels = { taskDone: 'Сделано', taskOpen: 'Не сделано' }
+  const translated = renderToHtml(tasks, { labels })
+  expect(translated).toContain('aria-label="Сделано"')
+  expect(translated).toContain('aria-label="Не сделано"')
+  expect(comparable(renderToStaticMarkup(<Markdown labels={labels}>{tasks}</Markdown>))).toBe(
+    comparable(translated),
+  )
+})

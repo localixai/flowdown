@@ -241,7 +241,7 @@ describe('the page itself', () => {
     ])
   })
 
-  test('a table wider than its box becomes a region the keyboard can scroll', () => {
+  test('a table wider than its box becomes a group the keyboard can scroll', () => {
     const widths = { scroll: 900, client: 400 }
     const scroll = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollWidth')
     const client = Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')
@@ -256,14 +256,20 @@ describe('the page itself', () => {
     try {
       show('| a | b |\n|---|---|\n| 1 | 2 |\n')
       const box = all('.fd-table')[0]!
-      expect(box.getAttribute('role')).toBe('region')
+      expect(box.getAttribute('role')).toBe('group')
       expect(box.getAttribute('tabindex')).toBe('0')
       expect(box.getAttribute('aria-label')).toBe('Scrollable table')
       // Drawing again leaves what was measured: the drawing does not say otherwise.
       mounted!.update('| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n')
       expect(all('.fd-table')[0]).toBe(box)
-      expect(box.getAttribute('role')).toBe('region')
+      expect(box.getAttribute('role')).toBe('group')
       expect(all('tbody tr').length).toBe(2)
+      // A code block's `<pre>` scrolls the same way, and is named for what it is.
+      mounted!.update('```sh\necho a very long line\n```\n')
+      const pre = all('.fd-code pre')[0]!
+      expect(pre.getAttribute('role')).toBe('group')
+      expect(pre.getAttribute('tabindex')).toBe('0')
+      expect(pre.getAttribute('aria-label')).toBe('Scrollable code')
     } finally {
       if (scroll) Object.defineProperty(Element.prototype, 'scrollWidth', scroll)
       if (client) Object.defineProperty(Element.prototype, 'clientWidth', client)

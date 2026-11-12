@@ -14,6 +14,11 @@ export interface MarkdownLabels {
   fileTree: string
   /** A table wider than the reply, which then scrolls sideways and takes the keyboard's focus. */
   scrollableTable: string
+  /** A code block wider than the reply: the same, for its `<pre>`. */
+  scrollableCode: string
+  /** A task list's box, ticked and not: the item's text follows it. */
+  taskDone: string
+  taskOpen: string
   /** A diagram, while drawn, while drawing, and when it could not be drawn. */
   diagram: string
   drawingDiagram: string
@@ -48,6 +53,9 @@ export const DEFAULT_LABELS: MarkdownLabels = {
   variants: 'Variants',
   fileTree: 'File tree',
   scrollableTable: 'Scrollable table',
+  scrollableCode: 'Scrollable code',
+  taskDone: 'Completed task',
+  taskOpen: 'Incomplete task',
   diagram: 'Diagram',
   drawingDiagram: 'Drawing diagram…',
   diagramFailed: (reason) => `Diagram could not be drawn: ${reason}`,

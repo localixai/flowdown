@@ -20,6 +20,7 @@ import {
 import { useRenderContext } from './context'
 import { useLabels } from './labels'
 import { react } from './render'
+import { useScrolls } from './scrolls'
 
 type CodeProps = ComponentPropsWithoutRef<'code'> & { node?: unknown }
 type PreProps = ComponentPropsWithoutRef<'pre'> & { node?: unknown }
@@ -118,11 +119,18 @@ export function CodeFrame({
   useEffect(() => {
     current.current = text
   }, [text])
+  const labels = useLabels()
+  // A line too long for the reply scrolls inside the `<pre>`: the keyboard must then reach it.
+  const [attach, scrolls] = useScrolls<HTMLPreElement>(undefined, text)
   return codeFrame(
     react,
     language,
     <CodeBar language={language} title={title} code={current} />,
-    preProps as Props | undefined,
+    {
+      ...(preProps as Props | undefined),
+      ref: attach,
+      ...(scrolls ? { role: 'group', 'aria-label': labels.scrollableCode, tabIndex: 0 } : null),
+    },
     [children],
   )
 }

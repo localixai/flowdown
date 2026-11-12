@@ -67,7 +67,10 @@ export interface ViewHost {
   copy(text: string): Promise<boolean>
   /** Save `text` as a file named after its fence's title, or its language. */
   download(text: string, title: string | undefined, language: string | undefined): void
-  /** The box of a table, each time it is drawn: a host that can measure makes a wide one scroll. */
+  /**
+   * The box of a table or the `<pre>` of a code block, each time it is drawn: a host that can
+   * measure makes a wide one a Tab stop.
+   */
   table?(box: unknown): void
 }
 
@@ -305,7 +308,7 @@ export function createView(options: ViewOptions = {}): View {
         vnode,
         language,
         views.codeBar(vnode, language, title, buttons(text, title, language)),
-        props,
+        host?.table ? { ...props, ref: host.table } : props,
         children,
       )
     },
@@ -339,6 +342,7 @@ export function createView(options: ViewOptions = {}): View {
       components: using,
       urlTransform,
       special,
+      labels,
       offset: at,
       headingIds: ids,
     })
@@ -367,7 +371,7 @@ export function createView(options: ViewOptions = {}): View {
       vnode,
       language,
       views.codeBar(vnode, language, title, buttons(body, title, language)),
-      null,
+      host?.table ? { ref: host.table } : null,
       [vnode.element('code', { className: className || undefined }, pieces)],
     )
   }

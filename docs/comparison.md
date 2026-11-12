@@ -13,7 +13,7 @@ rerun and checked with Claude Fable 5.2 on 2026-11-10
 
 What the reader sees in a frame where the reply stops mid-syntax.
 
-| | Unfinished `**bold` | Half-typed link | Open code fence | Half a table row |
+| Library | Unfinished `**bold` | Half-typed link | Open code fence | Half a table row |
 | :--- | :---: | :---: | :---: | :---: |
 | **flowdown** | ✅ bold | ✅ its text | ✅ | ✅ |
 | Streamdown | ✅ bold | ✅ its text | ✅ | ✅ |
@@ -28,7 +28,7 @@ What the reader sees in a frame where the reply stops mid-syntax.
 
 All six draw tables, task lists, strikethrough and bare links.
 
-| | Footnotes | GitHub alerts | Raw HTML, no setup |
+| Library | Footnotes | GitHub alerts | Raw HTML, no setup |
 | :--- | :---: | :---: | :---: |
 | **flowdown** | ✅ | ✅ | ✅ |
 | Streamdown | ✅ | ❌ | ✅ |
@@ -47,9 +47,9 @@ in [bench/results/features.json](../bench/results/features.json).
 
 ## In your project
 
-| | Download, gzip | Packages installed | Styles | Licence |
+| Library | Download, gzip | Packages installed | Styles | Licence |
 | :--- | ---: | ---: | :--- | :--- |
-| **flowdown** | 31.7 KB | 1 | Own CSS, light and dark | MIT |
+| **flowdown** | 32.0 KB | 1 | Own CSS, light and dark | MIT |
 | Streamdown | 155.5 KB | 118 | Tailwind classes; the page needs Tailwind | Apache-2.0 |
 | react-markdown | 50.0 KB | 82 | None | MIT |
 | markdown-to-jsx | 31.0 KB | 1 | None | MIT |
@@ -71,7 +71,7 @@ in [bench/results/features.json](../bench/results/features.json).
 
 From each library's documentation, not measured.
 
-| | Code highlighting | Math | Diagrams |
+| Library | Code highlighting | Math | Diagrams |
 | :--- | :--- | :--- | :--- |
 | **flowdown** | highlight.js, `@localix-ai/flowdown/highlight` | KaTeX | Mermaid |
 | Streamdown | Shiki plugin | KaTeX plugin | Mermaid plugin |
@@ -85,7 +85,7 @@ From each library's documentation, not measured.
 Main-thread time to stream a whole reply, one update per animation frame, in milliseconds. Lower is
 better.
 
-| | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
+| Library | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | **flowdown** | **10** | **27** | **35** | **20** | **132** | **42** |
 | Streamdown | 51 | 285 | 4,960 | 4,058 | 6,265 | 129 |
@@ -113,7 +113,7 @@ Every scenario, chunk pattern and percentile is in
 The parser alone, with no React and no DOM: megabytes of Markdown read in a second, each text of
 the benchmark parsed whole. Higher is better.
 
-| | Writes | Bun (JavaScriptCore) | Node (V8) |
+| Parser | Writes | Bun (JavaScriptCore) | Node (V8) |
 | :--- | :--- | ---: | ---: |
 | **flowdown** | a tree | **187** | **187** |
 | markdown-it | HTML | 51 | 43 |
@@ -139,7 +139,7 @@ in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
 ## Which one to pick
 
 - **flowdown.** For an AI chat or assistant whose replies run long, threads that grow, and
-  documentation. It repairs unfinished syntax, comes styled, and is one package of 31.7 KB with its
+  documentation. It repairs unfinished syntax, comes styled, and is one package of 32.0 KB with its
   own parser. It does not take remark or rehype plugins.
 - **markdown-to-jsx.** When a small, unstyled renderer for short replies is enough. It is one
   package and 31 KB. It slows down on very long replies and threads, and ships no styles.

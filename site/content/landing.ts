@@ -70,7 +70,7 @@ const CARDS: Card[] = [
             [['hi', 'react-markdown'], ['', '204'], ['', '2,871'], ['bad', 'stopped']],
           ],
         },
-        out('31.7 KB gzipped, one package, no dependencies', 'dim'),
+        out('32.0 KB gzipped, one package, no dependencies', 'dim'),
       ],
       'Main-thread time to stream a reply, in milliseconds, for six React renderers',
     ),
@@ -126,7 +126,7 @@ const CARDS: Card[] = [
 const landing: LandingContent = {
   hero: {
     title: { chip: 'Markdown', after: '', rest: 'that draws while the model is still writing' },
-    lede: 'flowdown renders an AI reply in React as it streams: GitHub Markdown plus steps, tabs, figures, diagrams and math. Its own parser, no dependencies, 31.7 KB.',
+    lede: 'flowdown renders an AI reply in React as it streams: GitHub Markdown plus steps, tabs, figures, diagrams and math. Its own parser, no dependencies, 32.0 KB.',
     under: 'React 18 and 19 · MIT · [Docs](/docs) · also [outside React](/docs/targets)',
     stream: {
       text: reply,

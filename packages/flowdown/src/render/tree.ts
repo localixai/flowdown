@@ -7,6 +7,7 @@ import { normalizeUri } from '../engine/entities'
 import type { Node } from '../engine/types'
 import type { UrlTransform } from '../engine/url'
 import type { Factory, Props } from './factory'
+import { DEFAULT_LABELS, type MarkdownLabels } from './labels'
 
 /** A page's own element for a tag: it gets the tag's properties, and the node it draws as `node`. */
 export type Components<C> = Record<string, C | undefined>
@@ -20,6 +21,8 @@ export interface RenderOptions<E, C> {
   headingIds: ReadonlyMap<number, string> | null
   /** A ```mermaid or ```tree fence, drawn by the page that asked for one. */
   special: (language: string, source: string) => E | undefined
+  /** The names of a task list's boxes; the English ones when left out. */
+  labels?: Pick<MarkdownLabels, 'taskDone' | 'taskOpen'> | undefined
 }
 
 /** The prefix on every id content makes, so it cannot stand in for one of the page's own. */
@@ -123,6 +126,10 @@ export const createRenderer =
             {
               type: 'checkbox',
               disabled: true,
+              // A box with no name is announced as "checkbox" alone (WCAG 4.1.2).
+              'aria-label': (options.labels ?? DEFAULT_LABELS)[
+                node.checked ? 'taskDone' : 'taskOpen'
+              ],
               'data-task-key': options.offset + (node.position?.start.offset ?? 0),
               ...(node.checked ? { checked: true } : null),
             },

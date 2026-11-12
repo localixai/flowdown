@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Ultrafast, lightweight streaming Markdown for React and AI replies</strong><br>
-  Its own parser · 0 dependencies · 31.7 KB gzipped · 17× faster on a long stream
+  Its own parser · 0 dependencies · 32.0 KB gzipped · 17× faster on a long stream
 </p>
 
 <p align="center">
@@ -60,7 +60,7 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 - **Repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences never
   show their raw syntax.
 - **Complete.** Its parser passes every example of CommonMark and of GitHub's extensions.
-- **Light.** One package with no dependencies, 31.7 KB gzipped, styled without Tailwind.
+- **Light.** One package with no dependencies, 32.0 KB gzipped, styled without Tailwind.
 - **Safe.** Raw HTML from a reply is sanitized, and links are held to safe protocols.
 
 <p align="center">

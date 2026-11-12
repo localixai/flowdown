@@ -26,7 +26,7 @@
 
 > [!STATS]
 - **0.13 s** to stream 100k characters
-- **31.7 KB** gzipped
+- **32.0 KB** gzipped
 - **0** dependencies
 
 The same reply, outside React:

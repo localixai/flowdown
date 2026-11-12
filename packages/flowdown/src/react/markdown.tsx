@@ -336,9 +336,11 @@ export function Markdown({
   )
   // A name outside the common ones shows as written until the whole table is there.
   const entities = useStage(loadEntities, !hasAllEntities() && usesRareEntity(blocks))
+  const labelValue = useMemo(() => mergeLabels(labels), [labels])
   const options = useMemo<BlockOptions>(
     () => ({
       ...buildComponents(components),
+      labels: labelValue,
       // Raw HTML is made into elements last, so every pass before it sees the text as written.
       extensions: [
         flowdownDialect,
@@ -354,13 +356,12 @@ export function Markdown({
     }),
     // `entities` is here so that blocks are read again once every name can be decoded.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
-    [htmlStage, math, urlTransform, components, extensions, entities],
+    [htmlStage, math, urlTransform, components, extensions, entities, labelValue],
   )
   const context = useMemo<RenderContext>(() => {
     if (mermaid) setMermaidLoader(mermaid)
     return { highlight, mermaid: mermaid ? 'page' : null }
   }, [highlight, mermaid])
-  const labelValue = useMemo(() => mergeLabels(labels), [labels])
   const groups: ReactNode[] = []
   for (let from = 0; from < blocks.length; from += GROUP) {
     const to = Math.min(from + GROUP, blocks.length)

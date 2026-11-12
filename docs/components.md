@@ -189,6 +189,9 @@ diagram notes. Translate them with `labels`; every key is optional:
 | `variants`           | `Variants`                               | The tab list's name.                                    |
 | `fileTree`           | `File tree`                              | The tree's name.                                        |
 | `scrollableTable`    | `Scrollable table`                       | A table wider than the reply: the box then scrolls and is a Tab stop. |
+| `scrollableCode` | `Scrollable code` | A code block wider than the reply: its `<pre>` then is a Tab stop. |
+| `taskDone` | `Completed task` | A ticked box of a task list, to assistive tech. |
+| `taskOpen` | `Incomplete task` | An empty one. |
 | `diagram`            | `Diagram`                                | A drawn diagram's name.                                 |
 | `drawingDiagram`     | `Drawing diagram…`                       | Shown while Mermaid loads and lays out.                 |
 | `diagramFailed`      | ``(reason) => `Diagram could not be drawn: ${reason}` `` | Shown when the source does not parse.  |
