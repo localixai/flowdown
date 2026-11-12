@@ -1,5 +1,13 @@
 # @localix-ai/flowdown
 
+## 0.5.2
+
+### Patch Changes
+
+- The package's repository is `localixai/flowdown`: the links of its page on npm and of its README
+  lead there (the former `rsaryev/flowdown` forwards to it), and the README's logo is drawn for a
+  light page.
+
 ## 0.5.1
 
 ### Patch Changes
