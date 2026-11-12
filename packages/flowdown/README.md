@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/localixai/flowdown/main/docs/assets/logo.svg" width="72" height="72" alt="">
+  <img src="https://raw.githubusercontent.com/localixai/.github/main/profile/logo.svg" width="72" height="72" alt="">
 </p>
 
 <h1 align="center">flowdown</h1>
