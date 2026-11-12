@@ -67,7 +67,7 @@
     },
     "packages/flowdown": {
       "name": "@localix-ai/flowdown",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "devDependencies": {
         "@arethetypeswrong/cli": "0.18.5",
         "@happy-dom/global-registrator": "21.0.4",

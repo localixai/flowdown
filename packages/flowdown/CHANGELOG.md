@@ -1,5 +1,53 @@
 # @localix-ai/flowdown
 
+## 0.5.1
+
+### Patch Changes
+
+- 0d7c300: A reply can no longer stall or crash its page by its shape alone.
+  
+  - **Nesting is bounded.** Blocks nest a hundred deep and so do emphasis, links and images; past
+    that the rest is kept as text. Twenty thousand `>` on one line, or tens of thousands of `*`
+    around a word, used to throw `RangeError: Maximum call stack size exceeded`.
+  - **A link destination nests parentheses 32 deep**, as cmark reads them. `[a](` repeated over
+    313 KB took thirteen seconds to read and now takes twenty milliseconds.
+  - **`flowdown/tui` measures a word wider than its row once.** 656 KB without a space took six
+    seconds to wrap and now takes under thirty milliseconds.
+- 110fbbc: The quietest text meets WCAG AA on a code block. `--fd-fg-faint` in the light theme goes from
+  `#6e7781` to `#656d76`: a code block's language label had a contrast of 4.17 against the block's
+  ground, under the 4.5 the guideline asks for, and now has 4.81.
+- 1032274: Two things assistive technology could not reach or name.
+  
+  - **A code block that scrolls sideways is a Tab stop**, as a wide table already was: its `<pre>`
+    becomes a group named `labels.scrollableCode`, so the arrow keys scroll it (WCAG 2.1.1). A block
+    that fits stays out of the Tab order. In `<Markdown>`, `mount()` and `<flow-down>`.
+  - **A task list's box has a name**: `labels.taskDone` ("Completed task") or `labels.taskOpen`
+    ("Incomplete task"). It was announced as "checkbox" alone (WCAG 4.1.2).
+  - **A box that scrolls is a `group`, not a `region`.** Every wide table of a reply was a landmark
+    with the same name, which is what a screen reader's landmark list then filled with. The name and
+    the Tab stop are as they were.
+- c639833: Colours survive a bundler that lowers `light-dark()`. Vite 8 builds CSS with Lightning CSS for
+  browsers older than `light-dark()`, which rewrites every token into a pair of variables it sets only
+  where the page declares `color-scheme`. On a page that declared none, every colour was invalid:
+  callouts, code blocks, step marks and tabs lost their fills and borders. The stylesheet now makes
+  light the default for that case, as `light-dark()` does natively; a `.dark` class,
+  `data-theme="dark"` or a `color-scheme` of the page still switch it.
+  
+  `document.querySelector('flow-down')` is typed as the element, so `markdown` and `streaming` are
+  there without a cast once `@localix-ai/flowdown/element` is imported.
+- 72542f8: A long reply streams faster in Chrome, Edge and Node. Each token, the parts that remember a growing
+  text first check that the new text continues the last one. That check was `startsWith` on a slice,
+  which V8 walks a character at a time: seventy microseconds on a 35 KB reply, three times per token.
+  It is `===` on two slices now, which V8 compares as memory, in one microsecond. Bun and Safari
+  (JavaScriptCore) were already fast either way, which is why the benchmark, run on Bun, never saw it.
+  
+  The check for a form's marker that arrived before its content stripped trailing blank space with
+  `/\s+$/`, which V8 tries at every run of blank space in the reply; it is `trimEnd()` now. Together,
+  streaming a 100k-character report token by token in Chromium takes a third to a fifth of the script
+  time it did (7.4 s to 1.4 s on a rested machine, 9.2 s to 2.9 s on a busy one, over 22,000
+  updates), and a 20k-character answer about half. `bun run browser` in `bench/` measures every
+  renderer the same way; results are in `bench/results/browser.md`.
+
 ## 0.5.0
 
 ### Minor Changes
