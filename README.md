@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/localixai/.github/main/profile/logo.svg" width="72" height="72" alt="">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo.svg">
+    <img src="docs/assets/logo-light.svg" width="72" height="72" alt="">
+  </picture>
 </p>
 
 <h1 align="center">flowdown</h1>
