@@ -67,7 +67,7 @@
     },
     "packages/flowdown": {
       "name": "flowdown",
-      "version": "0.4.3",
+      "version": "0.5.0",
       "devDependencies": {
         "@arethetypeswrong/cli": "0.18.5",
         "@happy-dom/global-registrator": "21.0.4",

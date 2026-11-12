@@ -1,5 +1,42 @@
 # flowdown
 
+## 0.5.0
+
+### Minor Changes
+
+- bd2abd2: The package is now `flowdown` (it was `llx-markdown`), at https://flowdown.dev. To move:
+  
+  - Install `flowdown` and import from `flowdown`, `flowdown/static`, `flowdown/styles.css` and so on:
+    the entries and what they export are the same.
+  - The root class is `.flowdown`, every other class is `.fd-…` (it was `.llx-…`), and the tokens are
+    `--fd-…` (they were `--llx-…`). Rename them in the CSS that restyles a reply.
+  - The custom element is `<flow-down>` (it was `<llx-markdown>`).
+  - `remarkLlx` is `remarkFlowdown`, and `llxDialect` is `flowdownDialect`.
+- a69b29a: The same reply outside React, from the one package. `flowdown/static` gives the HTML
+  `<Markdown>` draws as text, for a server or an email. `flowdown/dom` mounts a reply on a page
+  with no framework and keeps it up to date token by token, with working tabs, file trees and code
+  buttons. `flowdown/element` is a custom element, `<flow-down>`, for Vue, Svelte, Solid or
+  Angular. `flowdown/tui` draws a reply as the rows of a terminal, wrapped to its width, with code
+  coloured by the highlighter a page takes and formulas written in Unicode (`x²`, `1/k ∑ᵢ₌₁ᵏ rᵢ`).
+  Each form has a terminal's own look: steps are a numbered chain down a rail, figures stand side by
+  side over what they count, a file tree has its branches, a source its address on a row of its own.
+  `flowdown/document` and `flowdown/engine` are the blocks and the parser, for a target of
+  your own. None of them imports React.
+  
+  `<Markdown>` draws what it drew. It now loads 31.7 KB gzipped, from 30.5: the renderer is shared
+  by every target.
+
+### Patch Changes
+
+- ba33db4: A tidier look for a reply on a page. A step is marked by its number in a round badge, with the
+  line between two steps on the badges' axis and the same gap at both ends; steps written as a
+  bulleted list get a dot. A code block right under a step's title sits nearer that title. A footnote
+  reference is a quiet raised number with no underline, and the notes close the reply under a rule,
+  smaller than the text. A tab that holds one code block shows it edge to edge. A diagram's nodes no
+  longer cast Mermaid's grey shadow, which glowed on a dark page.
+  
+  If you set `--fd-step-dot`, set `--fd-mark` on `.fd-steps > li` instead.
+
 ## 0.4.3
 
 ### Patch Changes
