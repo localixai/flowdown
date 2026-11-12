@@ -1,7 +1,7 @@
 import type { SiteConfig } from '@/shared/config';
 
 // What the site knows about itself.
-const GITHUB = 'https://github.com/rsaryev/flowdown';
+const GITHUB = 'https://github.com/localixai/flowdown';
 const CHANGELOG = `${GITHUB}/blob/main/packages/flowdown/CHANGELOG.md`;
 const DESCRIPTION =
   'flowdown is streaming Markdown for React and AI replies: its own parser, no dependencies, and a dialect of steps, tabs, figures, diagrams and math, drawn while the text arrives.';

@@ -158,7 +158,7 @@ did not change are the same objects as at the last render, so a screen that comp
 repaints only what is new. `toAnsi(lines)` writes them for a terminal; a TUI library with a screen
 of its own reads them as they are.
 
-[`examples/tui`](https://github.com/rsaryev/flowdown/tree/main/examples/tui) is that loop in one short
+[`examples/tui`](https://github.com/localixai/flowdown/tree/main/examples/tui) is that loop in one short
 script: a reply with every form, streamed into the terminal and redrawn from the first row that
 changed.
 

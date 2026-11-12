@@ -38,13 +38,13 @@
   ],
   "homepage": "https://flowdown.dev",
   "bugs": {
-    "url": "https://github.com/rsaryev/flowdown/issues"
+    "url": "https://github.com/localixai/flowdown/issues"
   },
   "license": "MIT",
   "author": "rsaryev (https://github.com/rsaryev)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rsaryev/flowdown.git",
+    "url": "git+https://github.com/localixai/flowdown.git",
     "directory": "packages/flowdown"
   },
   "files": [

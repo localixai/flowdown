@@ -6,6 +6,6 @@ business. What it guards against, and how, is in [docs/security.md](docs/securit
 ## Reporting a problem
 
 Report it privately, not in an issue:
-[open a security advisory](https://github.com/rsaryev/flowdown/security/advisories/new).
+[open a security advisory](https://github.com/localixai/flowdown/security/advisories/new).
 Say what input you rendered, with which props, and what it did. The latest release is the one that
 gets the fix.

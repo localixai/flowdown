@@ -6,7 +6,7 @@ import terminalReply from './terminal.md?raw';
 
 // The landing's words. Every figure is one of the repository's: bench/results and docs/comparison.md.
 const DOCS = '/docs';
-const GITHUB = 'https://github.com/rsaryev/flowdown';
+const GITHUB = 'https://github.com/localixai/flowdown';
 
 const out = (text: string, tone: Tone = 'hi'): Block => ({ out: text, tone });
 const terminal = (blocks: Block[], label: string): Media => ({ kind: 'terminal', blocks, label });

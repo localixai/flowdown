@@ -8,4 +8,4 @@ arrives and repairs unfinished syntax; `@localix-ai/flowdown/static`, `@localix-
 and in a terminal. `answerFormatPrompt()` from `@localix-ai/flowdown/prompt` is the text that teaches a model
 the dialect.
 
-Install: `npm install @localix-ai/flowdown`. Source: https://github.com/rsaryev/flowdown
+Install: `npm install @localix-ai/flowdown`. Source: https://github.com/localixai/flowdown

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rsaryev/flowdown/main/docs/assets/logo.svg" width="72" height="72" alt="">
+  <img src="https://raw.githubusercontent.com/localixai/flowdown/main/docs/assets/logo.svg" width="72" height="72" alt="">
 </p>
 
 <h1 align="center">flowdown</h1>
@@ -11,8 +11,8 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@localix-ai/flowdown"><img alt="npm" src="https://img.shields.io/npm/v/@localix-ai/flowdown?color=cb3837"></a>
-  <a href="https://github.com/rsaryev/flowdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsaryev/flowdown/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/rsaryev/flowdown/blob/main/packages/flowdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
+  <a href="https://github.com/localixai/flowdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/localixai/flowdown/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/localixai/flowdown/blob/main/packages/flowdown/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  <img alt="One reply streaming twice, side by side on black: on a page as callouts, steps, tabs, highlighted code, headline figures, a table, a diagram and a formula, and in a terminal as the same forms in styled text" src="https://raw.githubusercontent.com/rsaryev/flowdown/main/docs/assets/readme/pair.gif" width="878">
+  <img alt="One reply streaming twice, side by side on black: on a page as callouts, steps, tabs, highlighted code, headline figures, a table, a diagram and a formula, and in a terminal as the same forms in styled text" src="https://raw.githubusercontent.com/localixai/flowdown/main/docs/assets/readme/pair.gif" width="878">
 </p>
 
 <p align="center">
@@ -64,7 +64,7 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 - **Safe.** Raw HTML from a reply is sanitized, and links are held to safe protocols.
 
 <p align="center">
-  <a href="https://flowdown.dev/docs/comparison"><img alt="flowdown beside five other React Markdown renderers: time to stream six kinds of reply, download size, packages installed, and the cost of a four times longer reply" src="https://raw.githubusercontent.com/rsaryev/flowdown/main/bench/results/charts/compare.png" width="878"></a>
+  <a href="https://flowdown.dev/docs/comparison"><img alt="flowdown beside five other React Markdown renderers: time to stream six kinds of reply, download size, packages installed, and the cost of a four times longer reply" src="https://raw.githubusercontent.com/localixai/flowdown/main/bench/results/charts/compare.png" width="878"></a>
 </p>
 
 Every figure, its method and where another renderer suits better are in
@@ -99,7 +99,7 @@ Everything is at **[flowdown.dev](https://flowdown.dev)**:
 [security](https://flowdown.dev/docs/security) ·
 [extensions](https://flowdown.dev/docs/remark) ·
 [API](https://flowdown.dev/docs/api) ·
-[releases](https://github.com/rsaryev/flowdown/blob/main/packages/flowdown/CHANGELOG.md)
+[releases](https://github.com/localixai/flowdown/blob/main/packages/flowdown/CHANGELOG.md)
 
 ## License
 
