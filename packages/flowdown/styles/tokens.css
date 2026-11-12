@@ -68,6 +68,17 @@
   --fd-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
+/*
+ * A bundler that builds for browsers older than `light-dark()` (Vite 8 does, with Lightning CSS)
+ * rewrites each colour above as `var(--lightningcss-light, …) var(--lightningcss-dark, …)` and
+ * sets that pair only where the CSS it reads declares `color-scheme`. On a page that declares
+ * none, both fallbacks applied and every colour was invalid. This makes light the default there,
+ * as it is for `light-dark()` itself; any `color-scheme` the bundler does read still wins.
+ */
+:where(:root) {
+  --lightningcss-dark: ;
+}
+
 :where(.dark, [data-theme='dark']) :where(.flowdown),
 :where(.flowdown[data-theme='dark']) {
   color-scheme: dark;

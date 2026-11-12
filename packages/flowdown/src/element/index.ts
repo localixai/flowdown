@@ -25,6 +25,13 @@ export interface MarkdownElement extends HTMLElement {
   streaming: boolean
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    /** The element under its default name, so `querySelector('flow-down')` has `markdown`. */
+    'flow-down': MarkdownElement
+  }
+}
+
 /**
  * Registers the element under `name`. `options` are what every such element is drawn with: a
  * highlighter, math, raw HTML, labels. Registering a name twice keeps the first.
