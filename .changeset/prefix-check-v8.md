@@ -10,5 +10,7 @@ It is `===` on two slices now, which V8 compares as memory, in one microsecond. 
 
 The check for a form's marker that arrived before its content stripped trailing blank space with
 `/\s+$/`, which V8 tries at every run of blank space in the reply; it is `trimEnd()` now. Together,
-streaming a 100k-character report token by token in Chromium takes a fifth of the script time it
-did (7.4 s to 1.4 s over 22,000 updates), and a 50k-character code block the same (2.6 s to 0.5 s).
+streaming a 100k-character report token by token in Chromium takes a third to a fifth of the script
+time it did (7.4 s to 1.4 s on a rested machine, 9.2 s to 2.9 s on a busy one, over 22,000
+updates), and a 20k-character answer about half. `bun run browser` in `bench/` measures every
+renderer the same way; results are in `bench/results/browser.md`.

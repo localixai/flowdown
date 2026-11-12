@@ -25,7 +25,7 @@
    Add `answerFormatPrompt()` to the system prompt, and it writes these forms.
 
 > [!STATS]
-- **0.13 s** to stream 100k characters
+- **0.14 s** to stream 100k characters
 - **32 KB** gzipped
 - **0** dependencies
 
@@ -56,9 +56,9 @@ process.stdout.write(renderToAnsi(reply))
 
 | Streaming 100k characters | Time    |
 | :------------------------ | ------: |
-| **flowdown**              | **0.13 s** |
-| markdown-to-jsx           | 2.3 s   |
-| Streamdown                | 6.3 s   |
+| **flowdown**              | **0.14 s** |
+| markdown-to-jsx           | 2.4 s   |
+| Streamdown                | 6.1 s   |
 
 > [!PROS] It does
 - repair unfinished `**bold`, links and code fences

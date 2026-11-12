@@ -6,6 +6,7 @@
     "bench": "bun run --cwd ../packages/flowdown build && NODE_ENV=production bun src/run.ts",
     "bench:quick": "NODE_ENV=production bun src/run.ts --quick",
     "bench:check": "bun src/check.ts",
+    "browser": "bun run --cwd ../packages/flowdown build && bun src/browser.ts",
     "parse": "bun src/parse.ts",
     "size": "bun src/size.ts",
     "features": "NODE_ENV=production bun src/features.tsx",

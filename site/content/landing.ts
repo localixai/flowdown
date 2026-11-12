@@ -51,7 +51,7 @@ const CARDS: Card[] = [
   {
     tag: 'Speed',
     title: 'A long reply costs what a short one does',
-    text: 'A 100k-character reply streams in 0.13 s of main-thread time; the next fastest of six React renderers takes 2.3 s. No update takes more than 5 ms, so a stream never drops a frame.',
+    text: 'A 100k-character reply streams in 0.14 s of main-thread time; the next fastest of six React renderers takes 2.4 s. No update takes more than 5 ms, so a stream never drops a frame.',
     links: [
       { href: `${DOCS}/comparison`, label: 'The comparison' },
       { href: `${GITHUB}/tree/main/bench`, label: 'The benchmark' },
@@ -62,12 +62,12 @@ const CARDS: Card[] = [
           align: 'lrrr',
           grid: [
             [['dim', 'streaming, ms'], ['dim', 'chat 5k'], ['dim', 'code 50k'], ['dim', 'answer 100k']],
-            [['ok', 'flowdown'], ['ok', '10'], ['ok', '35'], ['ok', '132']],
-            [['hi', 'markdown-to-jsx'], ['', '14'], ['', '56'], ['', '2,293']],
-            [['hi', 'markstream'], ['', '40'], ['', '944'], ['', '5,522']],
-            [['hi', 'Streamdown'], ['', '51'], ['', '4,960'], ['', '6,265']],
-            [['hi', 'marked-react'], ['', '36'], ['', '78'], ['', '7,371']],
-            [['hi', 'react-markdown'], ['', '204'], ['', '2,871'], ['bad', 'stopped']],
+            [['ok', 'flowdown'], ['ok', '13'], ['ok', '50'], ['ok', '140']],
+            [['hi', 'markdown-to-jsx'], ['', '19'], ['', '67'], ['', '2,375']],
+            [['hi', 'markstream'], ['', '42'], ['', '919'], ['', '5,442']],
+            [['hi', 'Streamdown'], ['', '59'], ['', '4,881'], ['', '6,113']],
+            [['hi', 'marked-react'], ['', '39'], ['', '81'], ['', '7,072']],
+            [['hi', 'react-markdown'], ['', '208'], ['', '2,803'], ['bad', 'stopped']],
           ],
         },
         out('32 KB gzipped, one package, no dependencies', 'dim'),

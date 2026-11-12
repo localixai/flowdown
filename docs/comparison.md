@@ -87,18 +87,18 @@ better.
 
 | Library | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **flowdown** | **10** | **27** | **35** | **20** | **132** | **42** |
-| Streamdown | 51 | 285 | 4,960 | 4,058 | 6,265 | 129 |
-| react-markdown | 204 | 2,869 | 2,871 | 3,401 | stopped at 67% | 16,010 |
-| markdown-to-jsx | 14 | 129 | 56 | 167 | 2,293 | 603 |
-| markstream | 40 | 361 | 944 | 892 | 5,522 | 132 |
-| marked-react | 36 | 290 | 78 | 269 | 7,371 | 1,792 |
+| **flowdown** | **13** | **32** | **50** | **25** | **140** | **40** |
+| Streamdown | 59 | 285 | 4,881 | 3,786 | 6,113 | 130 |
+| react-markdown | 208 | 2,752 | 2,803 | 3,114 | stopped at 68% | 15,125 |
+| markdown-to-jsx | 19 | 126 | 67 | 163 | 2,375 | 576 |
+| markstream | 42 | 324 | 919 | 838 | 5,442 | 129 |
+| marked-react | 39 | 289 | 81 | 259 | 7,072 | 1,720 |
 
 - **Where flowdown wins: everywhere here, and most on length.** It parses again only the block
   still being written, and reads only the new lines of a growing code block, so a 100k reply and a
   30-reply thread cost about as much per update as the first lines.
 - **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
-  5 ms on a 5k chat answer and within 2× on 50k of code, where marked-react takes a little over 2×.
+  6 ms on a 5k chat answer, and both it and marked-react are within 2× on 50k of code.
   markdown-to-jsx holds unfinished syntax back instead of repairing it.
 - **Why react-markdown is slowest.** It parses the whole text again on every update.
 
@@ -107,6 +107,34 @@ of each stream every time, and the median kept. Pages are drawn with
 happy-dom, not a real browser, so the figures compare renderers rather than predict a real page.
 Every scenario, chunk pattern and percentile is in
 [bench/results/latest.md](../bench/results/latest.md).
+
+### In a real browser
+
+The same replies streamed token by token in Chromium, six updates per animation frame, read from the
+browser's own counters. Main-thread time in milliseconds: script, style, layout and paint together,
+with script alone in brackets. Lower is better.
+
+| Library | Chat, 5k | Answer, 20k | Tables, 20k | Code, 50k | Answer, 100k |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| **flowdown** | **287** (135) | **977** (411) | **700** (349) | **3,113** (647) | **7,731** (2,917) |
+| Streamdown | 556 (474) | 2,611 (2,275) | 16,491 (16,157) | 23,387 (18,754) | 20,875 (19,162) |
+| react-markdown | 1,060 (996) | 11,132 (10,892) | 12,962 (12,687) | 13,061 (10,359) | stopped at 37% |
+| markdown-to-jsx | 327 (208) | 1,604 (1,276) | 2,482 (2,130) | 4,543 (697) | 19,813 (18,153) |
+| markstream | 631 (490) | 2,538 (1,877) | 4,526 (4,017) | 10,202 (6,613) | 28,126 (24,069) |
+| marked-react | 491 (382) | 1,979 (1,626) | 2,650 (2,296) | 3,864 (**527**) | 25,461 (23,789) |
+
+- **The order holds, the gaps are smaller.** A browser lays the page out and paints it for every
+  renderer alike, and that is most of what flowdown has left: on 50k of code it spends 0.6 s in
+  script and 3.1 s in all.
+- **One place flowdown is not first:** script time on one long code block, where marked-react
+  spends less (527 ms against 647). Over the whole main thread flowdown is first in every row.
+
+How this is measured: Chromium 156 on the same Apple M5, the median of three runs, every renderer
+in turn so a slow minute falls on all of them. The run takes 45 minutes and the machine warms up
+through it: flowdown alone on a rested machine streams the 100k answer in 1.4 to 2.0 s of script,
+so read the rows against each other, not as what a page will take. flowdown is drawn with its
+stylesheet, the others as their components leave them. Every number is in
+[bench/results/browser.md](../bench/results/browser.md).
 
 ## Parser speed
 

@@ -107,6 +107,7 @@ bun install
 bun run bench          # builds the package, runs everything, writes results/
 bun run bench:check    # holds results/latest.json to budgets.json
 bun run bench:quick    # one run, `frame` only, for a quick look; writes no `latest`
+bun run browser        # the same streams in Chromium: results/browser.md (45 minutes)
 ```
 
 Options for `bun src/run.ts` (with `NODE_ENV=production`):
@@ -122,6 +123,14 @@ React runs its production build (`NODE_ENV=production`); the development build c
 on every render, and its numbers would be React's, not the renderer's. The DOM is happy-dom, so
 absolute times are not a browser's: compare renderers and runs on the same machine, not with a
 number measured elsewhere.
+
+`bun run browser` is the check in a real browser. It bundles each renderer as a page would, streams
+five scenarios token by token in Playwright's Chromium (`bunx playwright-core install
+chromium-headless-shell`), six updates per animation frame, and reads script time and whole
+main-thread time from the browser's own counters. Chromium's engine is V8 and Bun's is
+JavaScriptCore: a cost only one of them has shows in only one of the two runs. It takes
+`--only`, `--renderers`, `--runs` and `--no-write` as `run.ts` does, and no budget is held to it:
+its times move with how warm the machine is.
 
 ## Results in git
 
@@ -149,12 +158,16 @@ bench/
     renderers.tsx   how each renderer is set up
     report.ts       medians and the tables of latest.md
     check.ts        holds a run to budgets.json
+    browser.ts      the same streams in Chromium: results/browser.md
+    browser-page.tsx  the page it opens: one renderer, one stream
     parse.ts        the parser alone, against other parsers: results/parse.md
     parse-cell.ts   one parser through the corpus, in a process of its own
     parsers.ts      how each parser is set up
   results/
     latest.md
     latest.json
+    browser.md
+    browser.json
     parse.md
     parse.json
     <date>-<label>.json
@@ -189,6 +202,15 @@ much the machine differed between the two runs; flowdown's own moved by what 0.4
 0.4.1's build was streamed in turn with the new one, in one process, on each kind of reply; the
 repair of an unfinished table row was set against 0.4.1's on about 438,000 texts and the parser
 against 0.4.1's on about 198,000 documents, and each wrote what the old one did.
+
+On 2026-11-12, after the changes that will be 0.5.1, `bun run size` and `bun run bench` with
+`--passes=3` ran again, and `bun run browser` for the first time. The five other renderers came
+within a few percent of their figures for 0.4.2. flowdown's own are higher by 3 to 15 ms a stream:
+streamed in turn with the build before the changes, in one process, a 50k code block takes about
+46 ms where it took 40. That is the code block asking, once a frame, whether it has come to scroll
+sideways, so the keyboard can reach what is past its edge. The machine had run benchmarks for
+hours by then, which is the rest. In Chromium the same build streams a 100k answer in a third to a
+fifth of the script time the build before it took.
 
 ## The parser alone
 
