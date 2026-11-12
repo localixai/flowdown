@@ -6,6 +6,7 @@
  */
 import { decodeEntity, ENTITY, isEscapable, normalizeUri, unescapeString } from './entities'
 import type { InlineRule, InlineState, Node, Reference } from './types'
+import { toText } from './visit'
 
 export interface InlineContext {
   refs: Map<string, Reference>
@@ -413,6 +414,9 @@ const addBracket = (node: Inl, index: number, image: boolean): void => {
   }
 }
 
+/** How deep the parentheses of a link destination may nest. */
+const MAX_PARENS = 32
+
 /** A link destination at the current place, or null. */
 const parseLinkDestination = (): string | null => {
   const braced = match(reLinkDestinationBraces)
@@ -426,7 +430,8 @@ const parseLinkDestination = (): string | null => {
     if (code === C_BACKSLASH && isEscapable(subject.charCodeAt(pos + 1))) pos += 2
     else if (code === C_OPEN_PAREN) {
       pos++
-      depth++
+      // As cmark does: without a limit, `[a](` written n times is read n times to its end.
+      if (++depth > MAX_PARENS) return null
     } else if (code === C_CLOSE_PAREN) {
       if (depth < 1) break
       pos++
@@ -774,10 +779,43 @@ const linkify = (nodes: Node[]): Node[] => {
 }
 
 /**
+ * How deep emphasis, links and images may nest. Thousands of `*` around a word are thousands of
+ * nodes one inside another, and every pass after this one walks the tree by calling itself: past
+ * the limit the rest is kept as its text.
+ */
+const MAX_NESTING = 100
+
+/** The text under `parent`, read without a call per level. */
+const flat = (parent: Inl): string => {
+  let out = ''
+  const open: Inl[] = []
+  let node = parent.first
+  for (;;) {
+    if (node === null) {
+      const up = open.pop()
+      if (up === undefined) return out
+      node = up.next
+    } else if (node.first !== null) {
+      open.push(node)
+      node = node.first
+    } else {
+      if (node.type === 'softbreak' || node.type === 'break') out += '\n'
+      else if (node.type === 'node') out += node.node === null ? '' : toText(node.node)
+      else out += node.value
+      node = node.next
+    }
+  }
+}
+
+/**
  * The finished nodes under a parent, with text that ended up side by side joined. `links` is
  * whether bare addresses in the text become links: not inside a link, which cannot hold another.
  */
-const finish = (parent: Inl, links: boolean): Node[] => {
+const finish = (parent: Inl, links: boolean, depth = 0): Node[] => {
+  if (depth >= MAX_NESTING) {
+    const value = flat(parent)
+    return value === '' ? [] : [{ type: 'text', value }]
+  }
   const out: Node[] = []
   let last: Node | undefined
   for (let node = parent.first; node !== null; node = node.next) {
@@ -792,17 +830,22 @@ const finish = (parent: Inl, links: boolean): Node[] => {
         made = { type: 'text', value: node.value }
         break
       case 'link':
-        made = { type: 'link', url: node.url, title: node.title, children: finish(node, false) }
+        made = {
+          type: 'link',
+          url: node.url,
+          title: node.title,
+          children: finish(node, false, depth + 1),
+        }
         break
       case 'image': {
-        const children = finish(node, false)
+        const children = finish(node, false, depth + 1)
         made = { type: 'image', url: node.url, title: node.title, alt: plainText(children) }
         break
       }
       case 'emphasis':
       case 'strong':
       case 'delete':
-        made = { type: node.type, children: finish(node, links) }
+        made = { type: node.type, children: finish(node, links, depth + 1) }
         break
       case 'softbreak':
         // A line ending inside a paragraph is part of its text, as in mdast.

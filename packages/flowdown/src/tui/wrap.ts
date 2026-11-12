@@ -125,9 +125,10 @@ export function wrap(line: Line, columns: number, first: Line, rest: Line): Line
     // A word and what runs into it ("`code`," or "(**b**)"), and the words of a code span, go
     // to the next row together when a row holds them: no row starts with the comma.
     if (!fresh && used + (pending ? 1 : 0) + run > room && indent + run <= room) next()
+    // Measured once, and less each piece cut off: a word of a megabyte is not measured per row.
+    let own = width(word)
     for (;;) {
       const gap = pending && !fresh ? 1 : 0
-      const own = width(word)
       if (used + gap + own <= room) {
         if (gap) row.push({ text: ' ', style: shared(pending!, style) })
         row.push({ text: word, style })
@@ -139,9 +140,10 @@ export function wrap(line: Line, columns: number, first: Line, rest: Line): Line
         next()
         continue
       }
-      const cut = split(word, Math.max(1, room - used))
-      row.push({ text: word.slice(0, cut), style })
-      word = word.slice(cut)
+      const head = word.slice(0, split(word, Math.max(1, room - used)))
+      row.push({ text: head, style })
+      word = word.slice(head.length)
+      own -= width(head)
       next()
       if (!word) break
     }

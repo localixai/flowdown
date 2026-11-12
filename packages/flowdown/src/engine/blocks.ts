@@ -29,6 +29,8 @@ interface Block {
   endLine: number
   /** Where the block starts in the document. */
   startOffset: number
+  /** How many blocks hold this one: 0 for the document. */
+  depth: number
   // A list and its items.
   ordered: boolean
   bullet: number
@@ -104,6 +106,14 @@ const reFootnoteDefinition = /^\[\^([^\]\s]+)\]:[ \t]*/
 const reTaskMarker = /^\[([ xX])\](?=[ \t\n])/
 
 const isSpaceOrTab = (code: number): boolean => code === C_SPACE || code === C_TAB
+
+/**
+ * How deep blocks may hold blocks. A quote in a quote in a list is three; a hundred is past
+ * anything written to be read, and it bounds the depth of the tree every pass after this one
+ * walks: without it a line of twenty thousand `>` overflowed the stack. A line that would go
+ * deeper is read as text of the block it is in.
+ */
+const MAX_NESTING = 100
 
 /** Whether a block holds other blocks; a list holds only items. */
 const isContainer = (type: string): boolean =>
@@ -211,6 +221,7 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
     startLine,
     endLine: startLine,
     startOffset: 0,
+    depth: 0,
     ordered: false,
     bullet: 0,
     start: 0,
@@ -372,6 +383,7 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
     const child = block(type, lineNumber)
     child.startOffset = (starts[lineNumber - 1] ?? 0) + nextNonspace
     child.parent = tip
+    child.depth = tip.depth + 1
     tip.children.push(child)
     tip = child
     return child
@@ -508,6 +520,7 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
     }
     switch (first) {
       case C_GREATERTHAN:
+        if (container.depth >= MAX_NESTING) return 0
         advanceNextNonspace()
         advanceOffset(1, false)
         if (isSpaceOrTab(line.charCodeAt(offset))) advanceOffset(1, true)
@@ -619,6 +632,9 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
       advanceOffset(line.length - offset, false)
       return 2
     }
+
+    // A list and its item are two blocks.
+    if (container.depth >= MAX_NESTING - 1) return 0
 
     if (gfm && first === C_OPEN_BRACKET && line.charCodeAt(nextNonspace + 1) === 94 /* ^ */) {
       const found = reFootnoteDefinition.exec(line.slice(nextNonspace))
