@@ -385,7 +385,10 @@ pub fn texts() -> Vec<Text> {
         Text {
             name: "spec.txt",
             what: "the CommonMark specification",
-            text: fetched("third_party/CommonMark/spec.txt"),
+            text: std::fs::read_to_string(
+                Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../spec/commonmark/spec.txt"),
+            )
+            .expect("spec/commonmark/spec.txt"),
         },
     ]
 }
