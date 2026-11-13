@@ -53,11 +53,9 @@ jobs:
       # The layers, the types, the build and the docs' standard; it leaves the site in dist/.
       - run: bun run check
         working-directory: site
+      # Wrangler by bunx, pinned: wrangler-action installs it with npm, which cannot read this
+      # Bun workspace (`workspace:*`).
       - name: Publish dist/ to Pages
         if: github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: site
-          command: pages deploy dist --project-name=flowdown --branch=main
+        working-directory: site
+        run: bunx wrangler@4.161.0 pages deploy dist --project-name=flowdown --branch=main --commit-hash="$GITHUB_SHA" --commit-dirty=false
