@@ -7,7 +7,7 @@
 use std::fmt::Write as _;
 use std::fs;
 
-use markdown_bench::{count, shown, size};
+use flowdown_bench::{count, shown, size};
 use resvg::tiny_skia::{Pixmap, Transform};
 use resvg::usvg::{Options, Tree};
 
@@ -104,10 +104,9 @@ fn panel(
             &json
                 .lines()
                 .find(|row| row.contains(text))
+                .filter(|row| row.contains("\"reads\""))
                 .map_or_else(String::new, |row| {
-                    row.contains("\"reads\"")
-                        .then(|| count(field(row, "reads").parse().expect("reads")))
-                        .unwrap_or_default()
+                    count(field(row, "reads").parse().expect("reads"))
                 }),
         );
     Panel { title, under, bars }

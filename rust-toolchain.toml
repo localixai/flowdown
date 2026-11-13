@@ -1,0 +1,8 @@
+# The latest stable Rust for the crate in crates/flowdown: it builds on any stable from its
+# rust-version (Cargo.toml) on, which CI's msrv job holds. The wasm target is the build CI makes
+# for the browser.
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy"]
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"

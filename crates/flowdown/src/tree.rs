@@ -43,58 +43,88 @@ pub(crate) const SHORT: usize = 4096;
 /// How a table's column is aligned.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Align {
+    /// No colon in the delimiter row: `---`.
     None,
+    /// `:---`.
     Left,
+    /// `:---:`.
     Center,
+    /// `---:`.
     Right,
 }
 
 /// Whether a list item is a task, and whether it is done.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Task {
+    /// A plain item.
     None,
+    /// `- [ ]`: still to do.
     Todo,
+    /// `- [x]`: done.
     Done,
 }
 
 /// A callout's kind, as GitHub's alerts name them.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Callout {
+    /// `> [!NOTE]`: what is worth knowing even when skimming.
     Note,
+    /// `> [!TIP]`: a way to do it better.
     Tip,
+    /// `> [!IMPORTANT]`: what is needed to succeed.
     Important,
+    /// `> [!WARNING]`: what needs attention at once.
     Warning,
+    /// `> [!CAUTION]`: what an action risks.
     Caution,
 }
 
 /// What a node is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
+    /// The root: its children are the document's blocks.
     Document,
+    /// A paragraph: its children are its inlines.
     Paragraph,
     /// Its level, 1 to 6.
     Heading(u8),
+    /// A thematic break, `---`.
     Rule,
+    /// A block quote that is no form: its children are its blocks.
     Quote,
+    /// A list: its children are `Item`s; `start` is an ordered list's first number.
     List {
+        /// Numbered (`1.`) rather than bulleted (`-`).
         ordered: bool,
         /// No blank line parts its items.
         tight: bool,
     },
+    /// A list item, a task or not: its children are its blocks.
     Item(Task),
     /// `text` is the code, `info` what follows the fence.
     CodeBlock,
+    /// Raw HTML standing as a block: `text` is the HTML.
     HtmlBlock,
+    /// A table: its children are `Row`s, `aligns` its columns' alignments.
     Table,
+    /// A row of a table: its children are `Cell`s.
     Row {
+        /// The header row, the one above the delimiter row.
         head: bool,
     },
+    /// A cell, with its column's alignment: its children are its inlines.
     Cell(Align),
+    /// Plain text: `text` is it, entities and escapes resolved.
     Text,
+    /// A line break in the source, shown as a space.
     SoftBreak,
+    /// A line break shown as one: two spaces or a backslash before the end of a line.
     HardBreak,
+    /// `*text*`.
     Emphasis,
+    /// `**text**`.
     Strong,
+    /// `~~text~~`.
     Strike,
     /// `text` is the code.
     Code,
@@ -102,6 +132,7 @@ pub enum Kind {
     Link,
     /// `dest` and `title`; its children are the description.
     Image,
+    /// Raw HTML inside a line: `text` is the tag.
     Html,
     /// The forms of an agent's reply; `title` is the text after the marker.
     Callout(Callout),
@@ -113,7 +144,9 @@ pub enum Kind {
     Tab,
     /// Headline figures: its one child is their list.
     Stats,
+    /// The case for: its one child is the list of points.
     Pros,
+    /// The case against: its one child is the list of points.
     Cons,
     /// Secondary material under its title.
     Details,

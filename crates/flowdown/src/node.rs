@@ -28,6 +28,7 @@ impl<'d> Node<'d> {
         self.doc.raw(self.id)
     }
 
+    /// What the node is.
     #[must_use]
     #[inline]
     pub fn kind(self) -> Kind {
@@ -108,6 +109,7 @@ impl<'d> Node<'d> {
         aligns.unwrap_or_default()
     }
 
+    /// Its children, in the order of the text.
     #[must_use]
     #[inline]
     pub fn children(self) -> Children<'d> {
@@ -117,6 +119,7 @@ impl<'d> Node<'d> {
         }
     }
 
+    /// Its first child, if it has any.
     #[must_use]
     #[inline]
     pub fn first(self) -> Option<Self> {

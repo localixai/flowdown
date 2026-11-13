@@ -1,0 +1,114 @@
+# The Rust half of flowdown: the crate in crates/flowdown, the same dialect as the npm package in
+# packages/flowdown, read into a tree. The bench is a crate of its own (crates/flowdown/bench),
+# outside this workspace: the parsers it is compared with never reach a build of flowdown.
+[workspace]
+resolver = "3"
+members = ["crates/flowdown"]
+exclude = ["crates/flowdown/bench"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.89"
+license = "MIT"
+repository = "https://github.com/localixai/flowdown"
+homepage = "https://flowdown.dev"
+
+# The lints are hard (AGENTS.md, rule R4): denied, never turned off here. An exception is an
+# `expect` with its `reason`, on the smallest item. Their configuration is clippy.toml.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "deny"
+# The tightest visibility that compiles: `pub` only for what another crate uses.
+unreachable_pub = "deny"
+unused_qualifications = "deny"
+
+[workspace.lints.clippy]
+# A panic is a bug (R1): whatever a model wrote, reading it never crashes the program that draws
+# it. No unwrap, expect, panic or unreachable in working code.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unreachable = "deny"
+todo = "deny"
+unimplemented = "deny"
+# A string sliced inside a character panics.
+string_slice = "deny"
+# A number cut short by `as` is a silent bug: `try_from`, or a reason.
+cast_possible_truncation = "deny"
+# A library prints nothing and never ends the process.
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+exit = "deny"
+mem_forget = "deny"
+# A `Document` is `Send + Sync`, and the library does no I/O (R6); the list is in clippy.toml.
+disallowed_methods = "deny"
+disallowed_types = "deny"
+# Small functions, as small files (R3): at most 100 lines, a bounded complexity.
+too_many_lines = "deny"
+cognitive_complexity = "deny"
+# Explicit where it matters.
+clone_on_ref_ptr = "deny"
+redundant_clone = "deny"
+match_wildcard_for_single_variants = "deny"
+# Our own enums are matched exhaustively: a variant added is placed in every match, never
+# swallowed by a `_`. A renderer that forgets a `Kind` does not compile.
+wildcard_enum_match_arm = "deny"
+wildcard_imports = "deny"
+unused_self = "deny"
+# Rust's anti-patterns: a lost error cause, a cast that changes sign, flags instead of a state.
+map_err_ignore = "deny"
+unwrap_in_result = "deny"
+unused_result_ok = "deny"
+cast_sign_loss = "deny"
+cast_possible_wrap = "deny"
+fn_params_excessive_bools = "deny"
+struct_excessive_bools = "deny"
+option_option = "deny"
+unnecessary_wraps = "deny"
+needless_collect = "deny"
+format_collect = "deny"
+# `write!` into the String, not a `format!` allocated to be appended.
+format_push_string = "deny"
+# A default built only when it is needed: `unwrap_or_else`, `map_or_else`, `or_else`.
+or_fun_call = "deny"
+# A method that returns a changed copy is `#[must_use]`: dropping the copy loses the change.
+return_self_not_must_use = "deny"
+# A clone into a value already there reuses its allocation: `clone_from`.
+assigning_clones = "deny"
+# Primitives sort unstably: equal ones cannot be told apart, and it needs no buffer.
+stable_sort_primitive = "deny"
+# One module layout: `x.rs` beside its directory `x/`, never `x/mod.rs` (R5).
+mod_module_files = "deny"
+# What a function only reads it borrows; a value it takes it keeps, or moves on.
+needless_pass_by_value = "deny"
+# A struct is all public, or its fields say how far they reach.
+partial_pub_fields = "deny"
+iter_over_hash_type = "deny"
+fallible_impl_from = "deny"
+try_err = "deny"
+get_unwrap = "deny"
+verbose_file_reads = "deny"
+lossy_float_literal = "deny"
+mixed_read_write_in_expression = "deny"
+infinite_loop = "deny"
+empty_drop = "deny"
+error_impl_error = "deny"
+panic_in_result_fn = "deny"
+rest_pat_in_fully_bound_structs = "deny"
+trivially_copy_pass_by_ref = "deny"
+large_types_passed_by_value = "deny"
+inefficient_to_string = "deny"
+implicit_clone = "deny"
+# A lint set aside says why, and is an `expect`: an exemption that no longer applies fails the
+# build, so none outlives its reason.
+allow_attributes_without_reason = "deny"
+allow_attributes = "deny"
+
+# A reply is read again from its start each time a piece of it arrives, on the thread that draws:
+# the crate is built for speed, as the figures in its README are measured.
+[profile.release]
+codegen-units = 1
+lto = "fat"
+opt-level = 3

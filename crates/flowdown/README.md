@@ -59,7 +59,7 @@ How these are measured, and where the lead is small, is under [Measured](#measur
 ## Use
 
 ```rust
-use markdown::{Callout, Kind, parse};
+use flowdown::{Callout, Kind, parse};
 
 let doc = parse("> [!WARNING] Downtime\n> The migration locks the table.\n\n1. **Stop** the writers\n");
 let mut blocks = doc.blocks();
@@ -155,7 +155,7 @@ that opens with a dash as its source.
 ### Telling the model
 
 A model writes the forms it was told of and no others, so the text that teaches them is the
-package's own: `markdown::prompt()` is a section for a system prompt or a context (a heading,
+package's own: `flowdown::prompt()` is a section for a system prompt or a context (a heading,
 a rule a line, an example under those a model cannot guess), and the tests read every example
 in it into the form it shows. llx sends it with a session's context wherever the answer is
 drawn (`apps/server/src/context.rs`).

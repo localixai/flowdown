@@ -2,8 +2,8 @@
 //! reads in linear time takes about four times longer; one that does not, sixteen or more.
 //! Prints a Markdown table.
 
-use markdown_bench::parsers::{OURS, PULLDOWN};
-use markdown_bench::{measure_together, shown, size};
+use flowdown_bench::parsers::{OURS, PULLDOWN};
+use flowdown_bench::{measure_together, shown, size};
 
 fn cases(n: usize) -> Vec<(&'static str, String)> {
     vec![

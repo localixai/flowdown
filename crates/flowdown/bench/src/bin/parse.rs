@@ -2,9 +2,9 @@
 //! of the allocator (exact: the texts are fixed). Prints Markdown; `--json=PATH` writes the
 //! numbers of the same run there too, for the chart.
 
-use markdown_bench::corpus::texts;
-use markdown_bench::parsers::ALL;
-use markdown_bench::{count, machine, measure_together, shown, size};
+use flowdown_bench::corpus::texts;
+use flowdown_bench::parsers::ALL;
+use flowdown_bench::{count, machine, measure_together, shown, size};
 
 fn main() {
     let json = std::env::args().find_map(|arg| arg.strip_prefix("--json=").map(str::to_owned));

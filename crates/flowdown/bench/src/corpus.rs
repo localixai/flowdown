@@ -111,7 +111,7 @@ const IDENTS: &[&str] = &[
 ];
 const LANGS: &[&str] = &["rust", "sh", "ts", "json", "python", "diff", ""];
 const CODE: &[&str] = &[
-    "let doc = markdown::parse(text);",
+    "let doc = flowdown::parse(text);",
     "for block in doc.blocks() {",
     "    println!(\"{:?}\", block.kind());",
     "}",

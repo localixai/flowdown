@@ -1,0 +1,27 @@
+#!/bin/sh
+# The Rust crate's checks from one entry point, the same locally and in CI
+# (.github/workflows/rust.yml): formatting, the lints, the tests (the README's example, the shared
+# specifications in ../../spec and the crate's own rules among them), the documentation with its
+# warnings denied, a build for the browser's WebAssembly, and what a package would carry. The
+# benchmarks are not among them: bench/run.sh, then its check (bench/README.md).
+#
+#   crates/flowdown/scripts/check     every check, in order; stops at the first failure
+set -eu
+cd "$(dirname "$0")/../../.."
+step() { printf '\n== %s\n' "$*"; "$@"; }
+step cargo fmt --check
+step cargo clippy --locked --all-targets -- -D warnings
+step cargo test --locked
+RUSTDOCFLAGS='-D warnings' step cargo doc --locked --no-deps --package flowdown
+step cargo build --locked --release --package flowdown --target wasm32-unknown-unknown
+step cargo fmt --check --manifest-path crates/flowdown/bench/Cargo.toml
+step cargo clippy --locked --manifest-path crates/flowdown/bench/Cargo.toml --all-targets -- -D warnings
+# A package carries the library and its documents only (Cargo.toml's include).
+printf '\n== cargo package --list\n'
+listed=$(cargo package --list --locked --allow-dirty --package flowdown)
+stray=$(printf '%s\n' "$listed" | grep -Ev '^(src/|data/(entities\.txt|punct\.bin)$|(README|CHANGELOG)\.md$|LICENSE$|Cargo\.(toml|toml\.orig|lock)$|\.cargo_vcs_info\.json$)' || true)
+if [ -n "$stray" ]; then
+    printf 'the package would carry:\n%s\n' "$stray"
+    exit 1
+fi
+printf '\nall checks passed\n'

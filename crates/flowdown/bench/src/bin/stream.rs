@@ -6,9 +6,9 @@
 
 use std::time::Instant;
 
-use markdown_bench::corpus::{Made, reply};
-use markdown_bench::parsers::{COMRAK, OURS, PULLDOWN, PULLDOWN_KEPT};
-use markdown_bench::{shown, size};
+use flowdown_bench::corpus::{Made, reply};
+use flowdown_bench::parsers::{COMRAK, OURS, PULLDOWN, PULLDOWN_KEPT};
+use flowdown_bench::{shown, size};
 
 /// Where the text is cut, each 32 bytes on from the last, never inside a character.
 fn cuts(text: &str) -> Vec<usize> {

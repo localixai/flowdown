@@ -1,13 +1,23 @@
 [package]
-name = "markdown"
-description = "Markdown as a language model writes it, read into a tree: CommonMark, GitHub's extensions and the forms of an agent's reply"
-publish = false
-version.workspace = true
+name = "flowdown"
+version = "0.1.0"
+description = "Markdown as a language model writes it, read into a tree: CommonMark, GitHub's extensions and the forms of an agent's reply. No dependencies"
+readme = "README.md"
+documentation = "https://flowdown.dev/docs/rust"
+keywords = ["markdown", "commonmark", "gfm", "llm", "streaming"]
+categories = ["parser-implementations", "text-processing"]
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+# Taken by git tag (`rust-v<version>`) for now; crates.io comes later (AGENTS.md, "Releases").
+publish = false
+# What a package carries: the library, its tables and its documents; never the bench, the tests'
+# specifications or the pictures.
+include = ["/src/**/*.rs", "/src/prompt.md", "/data/entities.txt", "/data/punct.bin", "/README.md", "/CHANGELOG.md", "/LICENSE"]
 
-# No workspace package and no dependency at all: a primitive the interface draws from (rule L3).
+# No dependency at all (AGENTS.md, rule R2).
 [dependencies]
 
 [lints]

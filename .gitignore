@@ -8,3 +8,5 @@ bench/.size-*/
 .localix/
 # The terminal half of the README's first picture: recorded by examples/tui, then joined into pair.gif.
 docs/assets/readme/pair-terminal.gif
+# The Rust crate's build output (Cargo.toml, crates/flowdown/bench).
+target/

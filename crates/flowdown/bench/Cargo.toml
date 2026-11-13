@@ -1,7 +1,7 @@
-# The markdown package's benchmarks, against the Rust crates `pulldown-cmark` and `comrak`.
-# A crate of its own, outside the workspace: neither they nor the corpora reach llx's build.
+# The flowdown crate's benchmarks, against the Rust crates `pulldown-cmark` and `comrak`.
+# A crate of its own, outside the workspace: neither they nor the corpora reach a build of flowdown.
 [package]
-name = "markdown-bench"
+name = "flowdown-bench"
 version = "0.0.0"
 edition = "2024"
 publish = false
@@ -9,17 +9,14 @@ publish = false
 [workspace]
 
 [dependencies]
-markdown = { path = ".." }
+flowdown = { path = ".." }
 pulldown-cmark = { version = "=0.13.5", default-features = false }
 comrak = { version = "0.44", default-features = false }
-# The interface, for the pictures alone (`shots`): how llx draws what the parser read.
-tui = { path = "../../../apps/tui", features = ["testing"] }
 # The README's chart as a PNG (`charts`): the same picture in every reader, whatever its fonts.
 resvg = { version = "0.50.0", default-features = false, features = ["text", "system-fonts"] }
 
-# Every parser built for speed, as llx builds this one (the workspace's
-# `profile.release.package.markdown`); run.sh reads the whole texts again with all of them built
-# for size, as the rest of llx is.
+# Every parser built for speed, as flowdown's own workspace builds it; run.sh reads the whole
+# texts again with all of them built for size, as a program that ships small builds it.
 [profile.release]
 codegen-units = 1
 lto = "fat"

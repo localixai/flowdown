@@ -1,0 +1,20 @@
+# Changelog
+
+The Rust crate `flowdown`. Its versions are its own, apart from the npm package's: a tag
+`rust-v<version>` releases one. The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and the crate follows [Semantic Versioning](https://semver.org/).
+
+## Unreleased
+
+## 0.1.0
+
+The crate's first version in this repository, as it left Localix CLI's `packages/markdown`.
+
+### Added
+
+- `parse` and `parse_as`: any text read into a `Document`, as CommonMark, as GitHub's dialect or
+  as an agent's reply with its forms (callouts, steps, tabs, figures, the case for and against,
+  folded sections, sources) and formulas. Nothing fails, and a reply cut mid-stream reads as far
+  as it goes.
+- `Node`, a place in the tree, and `Kind`, matched exhaustively.
+- `prompt`: the text that teaches a model to write the forms.

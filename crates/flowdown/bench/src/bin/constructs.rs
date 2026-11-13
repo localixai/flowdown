@@ -1,8 +1,8 @@
 //! One construct repeated, to see what each costs: nanoseconds a byte of text, the median of 15
 //! rounds. Prints a Markdown table.
 
-use markdown_bench::measure_together;
-use markdown_bench::parsers::{COMRAK, OURS, PULLDOWN, PULLDOWN_KEPT};
+use flowdown_bench::measure_together;
+use flowdown_bench::parsers::{COMRAK, OURS, PULLDOWN, PULLDOWN_KEPT};
 
 fn main() {
     let line = |text: &str| text.repeat(400);
@@ -89,7 +89,7 @@ fn main() {
             "fences",
             "a fenced block of 4 lines",
             line(
-                "```rust\nlet doc = markdown::parse(text);\nfor block in doc.blocks() {\n    draw(block);\n}\n```\n\n",
+                "```rust\nlet doc = flowdown::parse(text);\nfor block in doc.blocks() {\n    draw(block);\n}\n```\n\n",
             ),
         ),
         (

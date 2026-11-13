@@ -22,19 +22,19 @@ fn options() -> Options {
 
 /// Ours: the tree, built.
 fn ours(text: &str) -> usize {
-    let doc = markdown::parse(text);
+    let doc = flowdown::parse(text);
     black_box(&doc);
     doc.blocks().count()
 }
 
-fn visit(node: markdown::Node<'_>) -> usize {
+fn visit(node: flowdown::Node<'_>) -> usize {
     let own = node.text().len() + node.dest().len() + node.title().len() + node.info().len();
     node.children().map(visit).sum::<usize>() + own + 1
 }
 
 /// Ours: the tree built, then every node of it visited and its texts read, as a renderer does.
 fn ours_walked(text: &str) -> usize {
-    visit(markdown::parse(text).root())
+    visit(flowdown::parse(text).root())
 }
 
 /// pulldown-cmark: every event pulled and dropped; nothing is kept to draw from.
@@ -64,7 +64,7 @@ fn comrak(text: &str) -> usize {
 }
 
 pub const OURS: Reader = Reader {
-    name: "markdown",
+    name: "flowdown",
     gives: "a tree",
     read: ours,
 };
