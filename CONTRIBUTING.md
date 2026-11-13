@@ -13,8 +13,8 @@ bun run build && bun run check && bun run size
   of the whole draws, at every prefix of a stream. `blocks.test.tsx`, `stream-split.test.ts` and
   `blocks-fuzz.test.tsx` hold this; `FUZZ=60000 bun test blocks-fuzz` is the long sweep.
 - **Linear streaming.** An update costs the end of the reply, not the reply. The budgets are in
-  [bench/budgets.json](bench/budgets.json), and `bun run bench` followed by `bun run bench:check`
-  holds a run to them.
+  [bench/budgets.json](bench/budgets.json), and `bun run bench` followed by
+  `bun run --cwd bench bench:check` holds a run to them.
 - **Layers.** `engine`, `core`, `document` and `render` know no framework and no page; `static`,
   `dom`, `element`, `react` and `tui` are targets that name only what is under them.
   `layers.test.ts` holds the table of what each folder may import.
