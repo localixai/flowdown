@@ -5,21 +5,19 @@ use std::fmt::Write as _;
 
 use crate::{Align, Document, Kind, Node, Task};
 
-fn escape_as(text: &str, attribute: bool, out: &mut String) {
+pub(crate) mod spec;
+
+/// Text as the specifications print it, a quote escaped wherever it stands.
+fn escape(text: &str, out: &mut String) {
     for ch in text.chars() {
         match ch {
             '&' => out.push_str("&amp;"),
             '<' => out.push_str("&lt;"),
             '>' => out.push_str("&gt;"),
-            '"' if attribute => out.push_str("&quot;"),
+            '"' => out.push_str("&quot;"),
             _ => out.push(ch),
         }
     }
-}
-
-/// Text as the specifications print it: a quote is escaped only inside an attribute.
-fn escape(text: &str, out: &mut String) {
-    escape_as(text, false, out);
 }
 
 /// An address as the specifications print it: percent-encoded, then escaped.
@@ -37,7 +35,7 @@ fn address(dest: &str, out: &mut String) {
             write!(encoded, "%{byte:02X}").unwrap();
         }
     }
-    escape_as(&encoded, true, out);
+    escape(&encoded, out);
 }
 
 fn plain(node: Node<'_>, out: &mut String) {
@@ -122,12 +120,12 @@ fn link(node: Node<'_>, out: &mut String) {
         let mut alt = String::new();
         plain(node, &mut alt);
         out.push_str(" alt=\"");
-        escape_as(&alt, true, out);
+        escape(&alt, out);
         out.push('"');
     }
     if !node.title().is_empty() {
         out.push_str(" title=\"");
-        escape_as(node.title(), true, out);
+        escape(node.title(), out);
         out.push('"');
     }
     if image {
@@ -188,7 +186,7 @@ fn render(node: Node<'_>, tight: bool, out: &mut String) {
             out.push_str("<pre><code");
             if let Some(language) = node.info().split_whitespace().next() {
                 out.push_str(" class=\"language-");
-                escape_as(language, true, out);
+                escape(language, out);
                 out.push('"');
             }
             out.push('>');

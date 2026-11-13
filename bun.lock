@@ -15,7 +15,6 @@
       "dependencies": {
         "@happy-dom/global-registrator": "21.0.4",
         "@localix-ai/flowdown": "workspace:*",
-        "commonmark-spec": "0.31.2",
         "highlight.js": "11.11.1",
         "markdown-it": "15.0.3",
         "markdown-it-footnote": "4.0.0",
@@ -77,7 +76,6 @@
         "@types/react-dom": "^19.3.0",
         "character-entities": "2.0.2",
         "character-entities-html4": "2.1.0",
-        "commonmark-spec": "0.31.2",
         "highlight.js": "11.12.0",
         "katex": "0.19.1",
         "lightningcss": "1.33.0",
@@ -541,8 +539,6 @@
     "comma-separated-tokens": ["comma-separated-tokens@2.0.3", "", {}, "sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg=="],
 
     "commander": ["commander@10.0.1", "", {}, "sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug=="],
-
-    "commonmark-spec": ["commonmark-spec@0.31.2", "", {}, "sha512-vXKxmclzJPymhOJYD26G0oBjVmIcKC8p5m2DvHIq1A1btr1m0r0dT/PzRA5/nwxUbCAPedMNPEoiQE+zvuOcOw=="],
 
     "cose-base": ["cose-base@1.0.3", "", { "dependencies": { "layout-base": "^1.0.0" } }, "sha512-s9whTXInMSgAp/NVXVNuVxVKzGH2qck3aQlVHxDCdAEPgtMKwc4Wq6/QKhgdEdgbLSi9rBTAcPoRa6JpiG4ksg=="],
 

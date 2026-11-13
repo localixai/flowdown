@@ -89,7 +89,7 @@ fn prices_and_shell_variables_stay_text() {
 
 #[test]
 fn single_dollars_pair_by_pandocs_rule() {
-    let shell = "for i in $(seq 1 12); do printf \"line %s\" $i; done";
+    let shell = "for i in $(seq 1 12); do printf 'line %s' $i; done";
     assert_eq!(read(shell), shell);
     for text in ["$ x $", "$x $", "$a$5", "$ x", "a $", "$"] {
         assert_eq!(read(text), text, "{text:?}");

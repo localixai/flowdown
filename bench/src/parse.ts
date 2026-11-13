@@ -15,7 +15,6 @@
  */
 import { execSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { createRequire } from 'node:module'
 import { cpus, platform, release, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { scaling, scenarios } from '../../packages/flowdown/test/replies'
@@ -32,8 +31,8 @@ const parsers = PARSERS.filter(
 const wantedRuntimes = flag('runtimes')?.split(',') ?? ['bun', 'node']
 const partial = quick || flag('parsers') !== undefined || flag('runtimes') !== undefined
 
-const require = createRequire(import.meta.url)
-const spec = readFileSync(require.resolve('commonmark-spec/spec.txt'), 'utf8')
+// The CommonMark specification, the repository's own copy in spec/.
+const spec = readFileSync(join(import.meta.dir, '../../spec/commonmark/spec.txt'), 'utf8')
 const corpus = [
   ...scenarios()
     .filter((s) => s.history === undefined)

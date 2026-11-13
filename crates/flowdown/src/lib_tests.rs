@@ -2,50 +2,30 @@
 //! printed as HTML is what the specification gives.
 
 use crate::testing::html;
+use crate::testing::spec::{COMMONMARK, Example, GITHUB, examples};
 use crate::{Dialect, parse_as};
 
-fn unescaped(text: &str) -> String {
-    let mut out = String::new();
-    let mut chars = text.chars();
-    while let Some(ch) = chars.next() {
-        if ch != '\\' {
-            out.push(ch);
-            continue;
-        }
-        match chars.next().unwrap() {
-            'n' => out.push('\n'),
-            't' => out.push('\t'),
-            'u' => {
-                let hex: String = chars.by_ref().skip(1).take_while(|ch| *ch != '}').collect();
-                out.push(char::from_u32(u32::from_str_radix(&hex, 16).unwrap()).unwrap());
-            }
-            other => out.push(other),
-        }
-    }
-    out
-}
-
 /// The examples that read otherwise than expected, each with what it gave.
-fn failures(examples: &str, dialect: Dialect) -> (usize, Vec<String>) {
-    let lines: Vec<&str> = examples.lines().collect();
+fn failures(examples: &[Example], dialect: Dialect) -> Vec<String> {
     let mut failed = Vec::new();
-    for example in lines.chunks(3) {
-        let (markdown, expected) = (unescaped(example[1]), unescaped(example[2]));
-        let got = html(&parse_as(&markdown, dialect));
-        if got != expected {
+    for example in examples {
+        let (markdown, expected) = (&example.markdown, &example.html);
+        let got = html(&parse_as(markdown, dialect));
+        if got != *expected {
             failed.push(format!(
                 "{}\n  markdown {markdown:?}\n  expected {expected:?}\n  got      {got:?}",
-                example[0]
+                example.name()
             ));
         }
     }
-    (lines.len() / 3, failed)
+    failed
 }
 
 #[test]
 fn every_example_of_commonmark_reads_as_the_specification_says() {
-    let (count, failed) = failures(include_str!("../data/commonmark.txt"), Dialect::CommonMark);
-    assert_eq!(count, 652);
+    let examples = examples(COMMONMARK, false);
+    assert_eq!(examples.len(), 652);
+    let failed = failures(&examples, Dialect::CommonMark);
     assert!(
         failed.is_empty(),
         "{} failed:\n{}",
@@ -57,7 +37,7 @@ fn every_example_of_commonmark_reads_as_the_specification_says() {
 #[test]
 fn commonmark_reads_the_same_with_githubs_extensions_on() {
     // But where an extension is what the example is about: a bare address, a tilde.
-    let (_, failed) = failures(include_str!("../data/commonmark.txt"), Dialect::Github);
+    let failed = failures(&examples(COMMONMARK, false), Dialect::Github);
     let known = ["# 608 Autolinks", "# 611 Autolinks"];
     let other: Vec<_> = failed
         .iter()
@@ -68,27 +48,25 @@ fn commonmark_reads_the_same_with_githubs_extensions_on() {
 
 #[test]
 fn every_example_of_githubs_extensions_reads_as_github_says() {
-    let (count, failed) = failures(include_str!("../data/github.txt"), Dialect::Github);
-    assert_eq!(count, 23);
+    let examples = examples(GITHUB, true);
+    assert_eq!(examples.len(), 23);
+    let failed = failures(&examples, Dialect::Github);
     // A bare e-mail address is left as text: nothing an agent's reader does with one.
-    let known = ["# 613 ", "# 614 ", "# 615 "];
+    let known = ["# 629 ", "# 630 ", "# 631 "];
     let other: Vec<_> = failed
         .iter()
         .filter(|failure| !known.iter().any(|known| failure.starts_with(known)))
         .collect();
-    assert_eq!(failed.len() - other.len(), known.len());
+    assert_eq!(failed.len() - other.len(), known.len(), "{failed:#?}");
     assert!(other.is_empty(), "{} failed:\n{other:#?}", other.len());
 }
 
 #[test]
 fn a_text_cut_before_its_last_line_ending_reads_the_same() {
     // What a reply is while it still arrives: its last line has no ending yet.
-    let examples = include_str!("../data/commonmark.txt");
-    let lines: Vec<&str> = examples.lines().collect();
     let mut differ = Vec::new();
-    for example in lines.chunks(3) {
-        let whole = unescaped(example[1]);
-        let Some(cut) = whole.strip_suffix('\n') else {
+    for example in examples(COMMONMARK, false) {
+        let Some(cut) = example.markdown.strip_suffix('\n') else {
             continue;
         };
         // A line of blanks alone is not the same text without its ending.
@@ -96,11 +74,11 @@ fn a_text_cut_before_its_last_line_ending_reads_the_same() {
             continue;
         }
         let (whole, cut) = (
-            parse_as(&whole, Dialect::Github),
+            parse_as(&example.markdown, Dialect::Github),
             parse_as(cut, Dialect::Github),
         );
         if html(&whole) != html(&cut) {
-            differ.push(example[0]);
+            differ.push(example.name());
         }
     }
     assert!(differ.is_empty(), "{differ:#?}");

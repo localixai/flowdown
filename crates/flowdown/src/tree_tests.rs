@@ -1,5 +1,6 @@
 //! Any text is a document: nothing panics, and every node's text is a cut that exists.
 
+use crate::testing::spec::{COMMONMARK, GITHUB, examples};
 use crate::testing::{html, outline};
 use crate::{Dialect, parse_as};
 
@@ -132,15 +133,11 @@ fn pieces_put_together_at_random_are_read() {
 
 #[test]
 fn every_example_cut_anywhere_is_read() {
-    for examples in [
-        include_str!("../data/commonmark.txt"),
-        include_str!("../data/github.txt"),
-    ] {
-        for line in examples.lines().skip(1).step_by(3) {
-            let text = line.replace("\\n", "\n").replace("\\t", "\t");
-            for end in (0..=text.len()).filter(|end| text.is_char_boundary(*end)) {
-                read_all(text.get(..end).unwrap());
-            }
+    let all = [examples(COMMONMARK, false), examples(GITHUB, true)];
+    for example in all.iter().flatten() {
+        let text = &example.markdown;
+        for end in (0..=text.len()).filter(|end| text.is_char_boundary(*end)) {
+            read_all(text.get(..end).unwrap());
         }
     }
 }

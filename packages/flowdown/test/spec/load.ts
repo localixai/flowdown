@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs'
-import { createRequire } from 'node:module'
 import { parse, toHtml } from '../../src/engine'
 import { addEntities } from '../../src/engine/entities'
 import { ENTITY_TABLE } from '../../src/engine/entity-table'
@@ -20,24 +19,12 @@ export interface Example {
 
 const tabs = (text: string): string => text.replace(/→/g, '\t')
 
-/** CommonMark 0.31.2: every example of the specification. */
-export const commonmark = (): Example[] => {
-  const { tests } = createRequire(import.meta.url)('commonmark-spec') as {
-    tests: { markdown: string; html: string; section: string; number: number }[]
-  }
-  return tests.map((test) => ({
-    suite: 'CommonMark',
-    section: test.section,
-    number: test.number,
-    markdown: tabs(test.markdown),
-    html: tabs(test.html),
-    extension: '',
-  }))
-}
-
-/** The examples of one of GitHub's spec files, with the extension each is marked with. */
-const github = (file: string, suite: Example['suite']): Example[] => {
-  const text = readFileSync(new URL(file, import.meta.url), 'utf8')
+/**
+ * The examples of a specification in the repository's `spec/`, the files the Rust crate's tests
+ * read too, each with the extension it is marked with.
+ */
+const examples = (file: string, suite: Example['suite']): Example[] => {
+  const text = readFileSync(new URL(`../../../../spec/${file}`, import.meta.url), 'utf8')
     .replace(/\r\n?/g, '\n')
     .replace(/^<!-- END TESTS -->[\s\S]*/m, '')
   const out: Example[] = []
@@ -58,17 +45,20 @@ const github = (file: string, suite: Example['suite']): Example[] => {
   return out
 }
 
+/** CommonMark 0.31.2: every example of the specification. */
+export const commonmark = (): Example[] => examples('commonmark/spec.txt', 'CommonMark')
+
 /**
  * The examples of GitHub Flavored Markdown's specification that are about an extension. The rest
  * of that file restates an older CommonMark, which the CommonMark suite covers at 0.31.2.
  */
 export const gfm = (): Example[] =>
-  github('./gfm-spec.txt', 'GFM').filter(
+  examples('github/gfm-spec.txt', 'GFM').filter(
     (example) => example.extension !== '' && example.extension !== 'disabled',
   )
 
 /** cmark-gfm's own tests of the extensions: tables, strikethrough, autolinks, task lists, footnotes. */
-export const cmarkGfm = (): Example[] => github('./gfm-extensions.txt', 'cmark-gfm')
+export const cmarkGfm = (): Example[] => examples('github/gfm-extensions.txt', 'cmark-gfm')
 
 /**
  * cmark-gfm writes a task box as `<input type="checkbox" disabled="" />`; the same element with
