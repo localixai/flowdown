@@ -19,7 +19,7 @@ bun run dev            # http://localhost:5173
 | `bun run check` | Lint, types, build, the docs' links. Run it before every deploy. |
 | `bun run build` | The static site, in `dist/`. |
 | `bun run preview` | Serve `dist/`. |
-| `bun run deploy` | Build and publish `dist/` to Cloudflare Pages. |
+| `bun run deploy` | Build and publish `dist/` to Cloudflare Pages by hand; a push to main does it itself (`.github/workflows/site.yml`). |
 
 ## Where things are
 

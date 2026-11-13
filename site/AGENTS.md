@@ -48,7 +48,7 @@ llx-sitekit and is now this repository's own: there is no template to merge from
 | Change a colour or a shape | `content/theme.css`, then `src/shared/styles/global.css`. |
 | Add a section to the landing | A field of `LandingContent`, a widget in `src/widgets/`, a line in `LandingPage.tsx`, a specimen on the kit page. |
 | Redraw the link preview | Edit `public/og-card.html`, render it at 1200×630 to `public/og.png`. |
-| Publish | `bun run deploy` (Cloudflare Pages, project `flowdown`). |
+| Publish | A push to main that changes the site, `docs/` or the library publishes it (`.github/workflows/site.yml`, Cloudflare Pages project `flowdown`); `bun run deploy` publishes by hand. |
 
 ## Before you say it is done
 
