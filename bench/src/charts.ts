@@ -147,11 +147,11 @@ const SECTIONS: Section[] = [
 
 const theme = {
   page: '#ffffff',
-  text: '#1f2328',
-  muted: '#59636e',
-  bar: '#d1d9e0',
+  text: '#1c1c1b',
+  muted: '#5f5f5b',
+  bar: '#d6d6d3',
   ours: '#6e56cf',
-  rule: '#d1d9e0',
+  rule: '#d6d6d3',
 }
 
 /** One unit to a panel, and milliseconds everywhere in the speed section: 37 ms reads against 2,773 ms. */

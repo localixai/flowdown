@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 132" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
   <style>
-    .panel { fill: #f3f5f6 }
-    .label { fill: #57606a }
-    .value { fill: #1f2328 }
-    .before { fill: #afb8c1 }
+    .panel { fill: #f3f3f1 }
+    .label { fill: #6b6b67 }
+    .value { fill: #1c1c1b }
+    .before { fill: #b0b0ad }
     .after { fill: #1a7f37 }
     @media (prefers-color-scheme: dark) {
-      .panel { fill: #161b22 }
-      .label { fill: #9198a1 }
-      .value { fill: #e6edf3 }
-      .before { fill: #6e7681 }
+      .panel { fill: #171717 }
+      .label { fill: #8b8b87 }
+      .value { fill: #f4f4f2 }
+      .before { fill: #4a4a47 }
       .after { fill: #3fb950 }
     }
   </style>

@@ -13,17 +13,18 @@
  * ancestor or on the root itself), and a page that has no dark mode stays light.
  */
 :where(.flowdown) {
-  /* Text, from the body copy to the quietest annotation. */
-  --fd-fg: light-dark(#1f2328, #e6edf3);
-  --fd-fg-soft: light-dark(#4b535d, #b1bac4);
-  --fd-fg-faint: light-dark(#656d76, #8b949e);
+  /* Text, from the body copy to the quietest annotation. The greys are neutral, with no cast:
+     on any page they read as grey, never as a tint of blue. */
+  --fd-fg: light-dark(#1c1c1b, #f4f4f2);
+  --fd-fg-soft: light-dark(#4a4a47, #b0b0ad);
+  --fd-fg-faint: light-dark(#6b6b67, #8b8b87);
   /* The ground the Markdown sits on: diagrams mix their fills over it. Set it to your page's. */
-  --fd-bg: light-dark(#ffffff, #0d1117);
+  --fd-bg: light-dark(#ffffff, #0b0b0b);
   /* What shows through --fd-bg when it is translucent (a glass panel): the opaque colour under it.
      Diagrams lay the ground over it once. Unset, white. */
-  --fd-border: light-dark(#d0d7de, #30363d);
-  --fd-border-subtle: light-dark(#e6e9ed, #21262d);
-  --fd-border-strong: light-dark(#afb8c1, #484f58);
+  --fd-border: light-dark(#d6d6d3, #2e2e2c);
+  --fd-border-subtle: light-dark(#e8e8e5, #222221);
+  --fd-border-strong: light-dark(#b0b0ad, #4a4a47);
   /* A panel (a callout, a figure, a stat): the text colour at a few percent, right on any ground. */
   --fd-veil: color-mix(in oklab, var(--fd-fg) 4.5%, transparent);
   --fd-veil-strong: color-mix(in oklab, var(--fd-fg) 8%, transparent);
@@ -45,7 +46,7 @@
   --fd-chart-5: light-dark(#bf3989, #db61a2);
   --fd-chart-6: light-dark(#1b7c83, #39c5cf);
   --fd-chart-7: light-dark(#9a6700, #d29922);
-  --fd-chart-8: light-dark(#57606a, #8b949e);
+  --fd-chart-8: light-dark(#6b6b67, #8b8b87);
 
   /* Code: the block's ground and the highlighter's hues. */
   --fd-code-bg: var(--fd-veil);

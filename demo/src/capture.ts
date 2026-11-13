@@ -229,7 +229,7 @@ function sideBySide(left: string, right: string, path: string, width: number, he
     right,
     '-filter_complex',
     `[1:v]fps=20,pad=${width}:${height}:0:0:black,tpad=stop_mode=clone:stop=-1[r];` +
-      `[0:v][r]hstack=shortest=1,drawbox=x=${width - 1}:y=0:w=2:h=ih:color=0x30363d:t=fill,` +
+      `[0:v][r]hstack=shortest=1,drawbox=x=${width - 1}:y=0:w=2:h=ih:color=0x2e2e2c:t=fill,` +
       'split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=none',
     '-loop',
     '0',

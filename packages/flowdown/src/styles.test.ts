@@ -16,13 +16,13 @@ const lowered = transform({
 test('a bundler that lowers light-dark() turns each colour into a pair of fallbacks', () => {
   expect(lowered).not.toContain('light-dark(')
   expect(lowered).toContain(
-    '--fd-fg:var(--lightningcss-light,#1f2328)var(--lightningcss-dark,#e6edf3)',
+    '--fd-fg:var(--lightningcss-light,#1c1c1b)var(--lightningcss-dark,#f4f4f2)',
   )
 })
 
 test('on a page that declares no colour scheme the pair still resolves, to light', () => {
   // One colour is left only when one of the two variables is the empty value. Without a default
-  // both fallbacks apply, `#1f2328#e6edf3`, and nothing that reads a token has a colour.
+  // both fallbacks apply, `#1c1c1b#f4f4f2`, and nothing that reads a token has a colour.
   expect(lowered).toMatch(/:where\(:root\)\{--lightningcss-dark: ?\}/)
 })
 

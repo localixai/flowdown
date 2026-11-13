@@ -1,10 +1,10 @@
-/* The page around a scene: a chat with one question and its reply, in GitHub's colours. */
+/* The page around a scene: a chat with one question and its reply, in flowdown's own greys. */
 :root {
   color-scheme: light dark;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-  background: light-dark(#ffffff, #0d1117);
-  color: light-dark(#1f2328, #e6edf3);
+  background: light-dark(#ffffff, #0b0b0b);
+  color: light-dark(#1c1c1b, #f4f4f2);
 }
 :root[data-theme='light'] {
   color-scheme: light;
@@ -34,7 +34,7 @@ body {
   max-width: 80%;
   padding: 10px 16px;
   border-radius: 18px 18px 4px 18px;
-  background: light-dark(#f0f2f5, #1c2128);
+  background: light-dark(#efefed, #1c1c1b);
   font-size: 15px;
   line-height: 1.45;
 }
