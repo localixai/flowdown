@@ -28,6 +28,7 @@ const site: SiteConfig = {
     ],
     action: { label: 'Get started', href: '/#start' },
   },
+  maker: { label: 'Localix Lab', href: 'https://localix.ai' },
   footer: {
     note: 'flowdown is MIT-licensed and open source.',
     links: [
