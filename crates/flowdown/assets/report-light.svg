@@ -2,7 +2,7 @@
 <rect x="0.5" y="0.5" width="579" height="669" rx="10" fill="#ffffff" stroke="#d0d7de"/>
 <text x="20.0" y="35.0" fill="#1f2328" xml:space="preserve" textLength="168.6" lengthAdjust="spacingAndGlyphs" font-weight="700">The parser, measured</text>
 <text x="20.0" y="77.0" fill="#1f2328" xml:space="preserve" textLength="33.7" lengthAdjust="spacingAndGlyphs" font-weight="700">1.2x</text>
-<text x="163.3" y="77.0" fill="#1f2328" xml:space="preserve" textLength="16.9" lengthAdjust="spacingAndGlyphs" font-weight="700">5x</text>
+<text x="163.3" y="77.0" fill="#1f2328" xml:space="preserve" textLength="33.7" lengthAdjust="spacingAndGlyphs" font-weight="700">4.8x</text>
 <text x="239.2" y="77.0" fill="#1f2328" xml:space="preserve" textLength="16.9" lengthAdjust="spacingAndGlyphs" font-weight="700">89</text>
 <text x="20.0" y="98.0" fill="#8c959f" xml:space="preserve" textLength="118.0" lengthAdjust="spacingAndGlyphs">pulldown-cmark</text>
 <text x="163.3" y="98.0" fill="#8c959f" xml:space="preserve" textLength="50.6" lengthAdjust="spacingAndGlyphs">comrak</text>
@@ -16,11 +16,11 @@
 <text x="298.2" y="140.0" fill="#8c959f" xml:space="preserve" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="20.0" y="161.0" fill="#8c959f" xml:space="preserve" textLength="286.6" lengthAdjust="spacingAndGlyphs">├────────────────┼────────┼──────┤</text>
 <text x="20.0" y="182.0" fill="#8c959f" xml:space="preserve" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="36.9" y="182.0" fill="#1b7c83" xml:space="preserve" textLength="67.4" lengthAdjust="spacingAndGlyphs">markdown</text>
+<text x="36.9" y="182.0" fill="#1b7c83" xml:space="preserve" textLength="67.4" lengthAdjust="spacingAndGlyphs">flowdown</text>
 <text x="163.3" y="182.0" fill="#8c959f" xml:space="preserve" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="171.7" y="182.0" fill="#1f2328" xml:space="preserve" textLength="67.4" lengthAdjust="spacingAndGlyphs"> a tree </text>
 <text x="239.2" y="182.0" fill="#8c959f" xml:space="preserve" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="247.6" y="182.0" fill="#1f2328" xml:space="preserve" textLength="50.6" lengthAdjust="spacingAndGlyphs">  429 </text>
+<text x="247.6" y="182.0" fill="#1f2328" xml:space="preserve" textLength="50.6" lengthAdjust="spacingAndGlyphs">  414 </text>
 <text x="298.2" y="182.0" fill="#8c959f" xml:space="preserve" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="20.0" y="203.0" fill="#8c959f" xml:space="preserve" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="36.9" y="203.0" fill="#1b7c83" xml:space="preserve" textLength="118.0" lengthAdjust="spacingAndGlyphs">pulldown-cmark</text>

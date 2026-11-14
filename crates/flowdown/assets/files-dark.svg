@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 670" width="580" height="670" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14">
 <rect x="0.5" y="0.5" width="579" height="669" rx="10" fill="#0d1117" stroke="#30363d"/>
 <text x="20.0" y="35.0" fill="#e6edf3" xml:space="preserve" textLength="185.5" lengthAdjust="spacingAndGlyphs" font-weight="700">Where the parser lives</text>
-<text x="20.0" y="77.0" fill="#e6edf3" xml:space="preserve" textLength="151.7" lengthAdjust="spacingAndGlyphs" font-weight="700">packages/markdown/</text>
+<text x="20.0" y="77.0" fill="#e6edf3" xml:space="preserve" textLength="134.9" lengthAdjust="spacingAndGlyphs" font-weight="700">crates/flowdown/</text>
 <text x="20.0" y="98.0" fill="#7d8590" xml:space="preserve" textLength="25.3" lengthAdjust="spacingAndGlyphs">├─ </text>
 <text x="45.3" y="98.0" fill="#e6edf3" xml:space="preserve" textLength="33.7" lengthAdjust="spacingAndGlyphs" font-weight="700">src/</text>
 <text x="20.0" y="119.0" fill="#7d8590" xml:space="preserve" textLength="50.6" lengthAdjust="spacingAndGlyphs">│  ├─ </text>

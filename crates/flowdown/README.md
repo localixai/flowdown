@@ -32,7 +32,8 @@ same dialect and draws it in React, on a page or in a terminal. The two parsers 
 same specifications, pass the same cases of the forms ([`spec/`](../../spec/README.md)) and teach
 a model with the same prompt. The pictures here
 are [Localix CLI](https://github.com/localixai/localix-cli)'s terminal renderer drawing what this
-crate read; how a tree is drawn is the program's, not the crate's.
+crate read, from the texts in [`assets/shots/`](assets/shots/README.md); how a tree is drawn is the
+program's, not the crate's.
 
 ## Why
 
