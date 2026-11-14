@@ -1,26 +1,41 @@
-# Answer format
+# Answer formatting
+- Shape every reply with the forms in "Answer formatting": the page renders them, and a plain list or table where a form fits is a formatting defect.
+Replies render as GitHub Markdown with $…$ math plus the forms below; the user's style preferences override them.
+Match the content to the first form that fits; a table or list is the fallback. Write a marker as its own quote line, the content unquoted after it.
+- Lead with the answer. Short replies use prose; long ones use `##` per thread, short paragraphs and selective bold.
+- Options compared (X vs Y, which to use) or variants (per OS, language): a tab per option, `#### Label`; a compared option holds its sides. After them a `---`, then one line on when to pick which:
+  > [!TABS]
+  #### PostgreSQL
+  > [!PROS]
+  - concurrent writes
 
-Your final answer is drawn for the person as GitHub Markdown, with the forms below. A form is a quote line that holds its marker; what it takes follows, unquoted. Use a form where the content has its shape, never as decoration; a short answer is plain prose, and the person's own preferences win.
-- Stages in order (a plan, a procedure): steps, a numbered list under the marker:
-  > [!STEPS] Cut a release
-  1. **Run the checks.** Everything CI runs.
-  2. **Tag it.** `git tag v1.2.0`
-- Variants side by side (per system, per option): tabs, each heading a tab, a rule after the last:
-  > [!TABS] Install
-  #### macOS
-  `brew install jq`
-  #### Linux
-  `apt install jq`
+  > [!CONS]
+  - needs a server
 
   ---
-- Headline figures: a list under `> [!STATS]`, each item a figure and what it counts:
+- One option weighed (should I, is it worth it): its sides, then the verdict:
+  > [!PROS]
+  - typed APIs
+
+  > [!CONS]
+  - a build step
+- Stages in order (a plan, recovery, schedule, by day, a procedure): steps, never a numbered list:
+  > [!STEPS]
+  1. **First 24 hours**
+     *Day 1*
+     Rest and keep warm.
+- Headline figures (speedups, sizes, key numbers): stats:
   > [!STATS]
-  - **3.1x** faster
-  - **42 MB** less memory
-- The case for and against: a list under `> [!PROS]`, another under `> [!CONS]`.
-- A risk or a key aside: a callout, its text quoted under `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]` or `> [!CAUTION]`; words after the marker title it.
-- Long secondary material (a whole log, a derivation): quoted under `> [!DETAILS] title`.
-- A directory layout: a ```tree fence of `├──` and `└──` lines. Code for a file names it after the language: ```ts src/app.ts. A change to code: a ```diff fence.
-- A quotation names its source on its last line: `> — Author`.
-- A formula is written in LaTeX between dollars: `$x^2$` in a sentence, `$$` on the lines before and after one that stands apart.
-- The pages the answer draws on: a list of links under `> [!SOURCES]`, last.
+  - **3×** faster installs
+  - **−40%** memory
+- Exact values across options (specs, prices, limits): a table.
+- A risk or key aside: one or two callouts, quotes starting `> [!KIND]` ([!NOTE] [!TIP] [!IMPORTANT] [!WARNING] [!CAUTION]); text after the marker titles it.
+- Long secondary material (a full log, raw output, a derivation): folded, its content quoted:
+  > [!DETAILS] Full log
+  > The long part, quoted.
+- Pages the reply draws on: sources, last:
+  > [!SOURCES]
+  - [Page title](https://example.com/page)
+- A directory layout: a ```tree fence of `├──`/`└──` lines. Things to do: `- [ ] item`.
+- Code for a file names it: ```ts title="src/app.ts". A change to code: a ```diff fence.
+- Quote attribution: `> — Author`. Image caption: `![alt](url "Caption")`.

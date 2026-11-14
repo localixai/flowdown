@@ -2,11 +2,12 @@ use super::prompt;
 use crate::forms::{FORMS, form};
 use crate::{Kind, parse};
 
-/// The names of the markers in `text`, in the order written.
+/// The names of the markers in `text`, in the order written; `[!KIND]` stands for any callout's.
 fn markers(text: &str) -> Vec<&str> {
     text.split("[!")
         .skip(1)
         .filter_map(|rest| rest.split(']').next())
+        .filter(|name| *name != "KIND")
         .collect()
 }
 
@@ -66,5 +67,6 @@ fn tabs_end_at_the_rule_so_what_follows_is_not_in_the_last_one() {
     let doc = parse(&text);
     let kinds: Vec<Kind> = doc.blocks().map(|block| block.kind()).collect();
     assert_eq!(kinds, [Kind::Tabs, Kind::Paragraph]);
-    assert_eq!(doc.blocks().next().unwrap().children().count(), 2);
+    let labels = tabs.lines().filter(|line| line.starts_with("#### ")).count();
+    assert_eq!(doc.blocks().next().unwrap().children().count(), labels);
 }

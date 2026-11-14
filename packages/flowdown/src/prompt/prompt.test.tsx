@@ -1,4 +1,6 @@
 import { describe, expect, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
+import { CRATE_PROMPT, cratePrompt } from '../../test/crate-prompt'
 import { render } from '../../test/render'
 import { answerFormatPrompt } from './index'
 
@@ -34,5 +36,11 @@ describe('the prompt teaches only what the page renders', () => {
     const full = answerFormatPrompt({ math: true, diagrams: true })
     expect(full).toContain('```mermaid')
     expect(full).toContain('$…$')
+  })
+})
+
+describe('the Rust crate teaches the same text', () => {
+  test('crates/flowdown/src/prompt.md is what scripts/prompt.ts writes (bun run prompt)', () => {
+    expect(readFileSync(CRATE_PROMPT, 'utf8')).toBe(cratePrompt())
   })
 })

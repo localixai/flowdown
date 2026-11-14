@@ -81,7 +81,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "check": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints styles.css && bun scripts/check-package.ts",
     "size": "bun scripts/size.ts",
-    "conformance": "bun scripts/conformance.ts"
+    "conformance": "bun scripts/conformance.ts",
+    "prompt": "bun scripts/prompt.ts"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
