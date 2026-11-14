@@ -1,0 +1,51 @@
+name: Rust release
+
+# Push a tag `rust-v<version>`, the version in crates/flowdown/Cargo.toml, to release the crate:
+# its checks run on the tag, and a GitHub release is made with that version's part of
+# crates/flowdown/CHANGELOG.md. Programs take the crate as a git dependency on the tag; nothing is
+# published to crates.io yet. The npm package's tags are `v<version>` (release.yml): the two never
+# match each other's pattern.
+
+on:
+  push:
+    tags: ['rust-v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: The tag names the crate's version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' crates/flowdown/Cargo.toml | head -1)
+          if [ "$TAG" != "rust-v$version" ]; then
+            echo "::error::tag $TAG, but crates/flowdown/Cargo.toml is $version"
+            exit 1
+          fi
+
+      - run: rustup toolchain install
+      - run: crates/flowdown/scripts/check
+
+      - name: The release, with its changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=${TAG#rust-v}
+          awk -v v="## $version" '$0 == v { on = 1; next } on && /^## / { exit } on' \
+            crates/flowdown/CHANGELOG.md > notes.md
+          gh release create "$TAG" --title "flowdown (Rust) $version" --notes-file notes.md \
+            --latest=false

@@ -1,0 +1,57 @@
+# The Rust crate (crates/flowdown): its checks on every change that can move it. The crate reads
+# spec/ in its tests and its prompt and tables are written by the npm package, so a change there
+# runs this too; the npm package's own CI (ci.yml) runs on every change.
+name: Rust
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'spec/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - 'clippy.toml'
+      - '.github/workflows/rust.yml'
+  pull_request:
+    paths:
+      - 'crates/**'
+      - 'spec/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - 'clippy.toml'
+      - '.github/workflows/rust.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Formatting, the lints, the tests (the README's example, spec/'s cases and the crate's own
+  # rules), the docs with warnings denied, the wasm build and what a package carries:
+  # crates/flowdown/scripts/check, as it runs locally.
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # rust-toolchain.toml names the toolchain, its components and the wasm target.
+      - run: rustup toolchain install
+      - run: crates/flowdown/scripts/check
+
+  # The oldest Rust the crate says it builds on (Cargo.toml's rust-version).
+  msrv:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: The tests on Cargo.toml's rust-version
+        run: |
+          version=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' Cargo.toml)
+          rustup toolchain install "$version" --profile minimal
+          cargo +"$version" test --locked --package flowdown
