@@ -87,7 +87,7 @@ better.
 
 | Library | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **flowdown** | **12** | **29** | **49** | **26** | **138** | **41** |
+| **flowdown** | **11** | **29** | **45** | **24** | **138** | **41** |
 | Streamdown | 51 | 291 | 5,926 | 4,248 | 6,529 | 137 |
 | react-markdown | 213 | 3,002 | 3,808 | 3,473 | stopped at 65% | 16,506 |
 | markdown-to-jsx | 15 | 127 | 63 | 173 | 2,393 | 591 |
@@ -98,7 +98,7 @@ better.
   still being written, and reads only the new lines of a growing code block, so a 100k reply and a
   30-reply thread cost about as much per update as the first lines.
 - **Where the others come close: short replies and one long code block.** markdown-to-jsx is within
-  4 ms on a 5k chat answer, and both it and marked-react are within 2× on 50k of code.
+  5 ms on a 5k chat answer, and both it and marked-react are within 2× on 50k of code.
   markdown-to-jsx holds unfinished syntax back instead of repairing it.
 - **Why react-markdown is slowest.** It parses the whole text again on every update.
 
