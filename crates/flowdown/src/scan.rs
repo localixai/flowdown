@@ -3,7 +3,8 @@
 use crate::tree::at;
 
 /// Unicode's punctuation past ASCII (general categories P and S), as sorted ranges: first and
-/// last code point, three bytes each (`data/make.py`).
+/// last code point, three bytes each. The npm package writes it (`bun run crate-tables`) from the
+/// test its own parser makes, `\p{P}` and `\p{S}`, so both delimit emphasis alike.
 const PUNCT: &[u8] = include_bytes!("../data/punct.bin");
 
 pub(crate) const fn is_space(byte: u8) -> bool {

@@ -2,8 +2,9 @@
 
 use crate::scan::is_ascii_punct;
 
-/// Every named reference, a line each, sorted by name: the name, then its code points in hex
-/// (`data/make.py`). Searched as it is, so nothing is built before the first lookup.
+/// Every named reference, a line each, sorted by name: the name, then its code points in hex.
+/// The npm package writes it (`bun run crate-tables`) from the table it decodes with, so both
+/// parsers know the same names. Searched as it is, so nothing is built before the first lookup.
 const TABLE: &[u8] = include_bytes!("../data/entities.txt");
 
 /// Where the names that start with each ASCII byte start in the table, and where the last end.

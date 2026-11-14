@@ -29,3 +29,10 @@ test('common names are decoded at once, the rest of HTML5 once its table is adde
     rare: false,
   })
 })
+
+test("the Rust crate's tables are what scripts/crate-tables.ts writes (bun run crate-tables)", async () => {
+  const { readFileSync } = await import('node:fs')
+  const tables = await import('../../test/crate-tables')
+  expect(readFileSync(tables.CRATE_ENTITIES, 'utf8')).toBe(tables.crateEntities())
+  expect(new Uint8Array(readFileSync(tables.CRATE_PUNCTUATION))).toEqual(tables.cratePunctuation())
+})

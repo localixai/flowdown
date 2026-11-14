@@ -256,4 +256,6 @@ allocation counts are the same on every run.
   whole linear: a backtick run's closer is looked for once a length, a link's brackets nest 32
   deep, a table's missing cells are filled only while the text is longer than what filling adds.
 - **Tables, not code.** Entities (`data/entities.txt`, 2,125 names) and Unicode's punctuation
-  (`data/punct.bin`, 335 ranges) are data searched by halves, written by `data/make.py`.
+  (`data/punct.bin`, 351 ranges, Unicode 17) are data searched by halves, written by the npm
+  package's `bun run crate-tables` from what that parser reads, so the two decode and delimit
+  alike.

@@ -17,4 +17,10 @@ The crate's first version in this repository, as it left Localix CLI's `packages
   folded sections, sources) and formulas. Nothing fails, and a reply cut mid-stream reads as far
   as it goes.
 - `Node`, a place in the tree, and `Kind`, matched exhaustively.
-- `prompt`: the text that teaches a model to write the forms.
+- `prompt`: the text that teaches a model to write the forms, the npm package's own.
+
+### Changed since Localix CLI's copy
+
+- Unicode's punctuation is Unicode 17's, the table the npm package's parser reads (it was
+  Unicode 13's): emphasis next to a character added since is delimited as both parsers agree.
+- `prompt()` returns the npm package's section, formulas taught, in place of Localix CLI's own.
