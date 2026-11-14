@@ -1,6 +1,7 @@
 use super::{FORMS, LONGEST};
 use crate::testing::outline;
-use crate::{Dialect, parse, parse_as};
+use crate::testing::spec::{self, examples, markers};
+use crate::{Dialect, Kind, parse, parse_as};
 
 fn read(text: &str) -> String {
     outline(&parse(text))
@@ -153,4 +154,40 @@ fn tasks_tables_and_strikes_are_read_as_github_writes_them() {
 fn no_marker_is_longer_than_the_longest_looked_for() {
     let longest = FORMS.iter().map(|(name, _)| name.len()).max();
     assert_eq!(longest, Some(LONGEST));
+}
+
+#[test]
+fn the_markers_read_are_the_specifications() {
+    let read: Vec<(String, String)> = FORMS
+        .iter()
+        .map(|(name, kind)| {
+            let form = match kind {
+                Kind::Callout(_) => "callout".to_owned(),
+                other => format!("{other:?}").to_lowercase(),
+            };
+            ((*name).to_owned(), form)
+        })
+        .collect();
+    assert_eq!(read, markers(), "forms.rs's FORMS against spec/forms/spec.txt's table");
+}
+
+#[test]
+fn every_case_of_the_forms_reads_as_the_specification_says() {
+    let cases = examples(spec::FORMS, false);
+    assert!(cases.len() >= 15, "found only {} cases", cases.len());
+    let failed: Vec<String> = cases
+        .iter()
+        .filter_map(|case| {
+            let got = spec::forms(&parse(&case.markdown));
+            (got != case.html).then(|| {
+                format!(
+                    "{}\n{}\n  expected\n{}  got\n{got}",
+                    case.name(),
+                    case.markdown,
+                    case.html
+                )
+            })
+        })
+        .collect();
+    assert!(failed.is_empty(), "{} failed:\n{}", failed.len(), failed.join("\n"));
 }

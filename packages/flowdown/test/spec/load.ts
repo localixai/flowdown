@@ -8,7 +8,7 @@ addEntities(ENTITY_TABLE)
 
 export interface Example {
   /** The suite the example belongs to. */
-  suite: 'CommonMark' | 'GFM' | 'cmark-gfm'
+  suite: 'CommonMark' | 'GFM' | 'cmark-gfm' | 'forms'
   section: string
   number: number
   markdown: string
@@ -56,6 +56,20 @@ export const gfm = (): Example[] =>
   examples('github/gfm-spec.txt', 'GFM').filter(
     (example) => example.extension !== '' && example.extension !== 'disabled',
   )
+
+/**
+ * The dialect's forms (`spec/forms/spec.txt`): what follows an example's `.` is the forms the text
+ * holds, as `test/forms.ts` prints them, the Rust crate's tests printing them alike.
+ */
+export const forms = (): Example[] => examples('forms/spec.txt', 'forms')
+
+/** The markers of `spec/forms/spec.txt`'s table, by name, each with the form it makes. */
+export const formMarkers = (): [string, string][] =>
+  [
+    ...readFileSync(new URL('../../../../spec/forms/spec.txt', import.meta.url), 'utf8').matchAll(
+      /^\| `\[!(\w+)\]` \| (\w+) \|/gm,
+    ),
+  ].map((hit) => [hit[1] ?? '', hit[2] ?? ''])
 
 /** cmark-gfm's own tests of the extensions: tables, strikethrough, autolinks, task lists, footnotes. */
 export const cmarkGfm = (): Example[] => examples('github/gfm-extensions.txt', 'cmark-gfm')

@@ -1,5 +1,10 @@
 //! Test-only: the examples of the specifications in the repository's `spec/`, the same files the
-//! npm package's tests read: CommonMark's, and GitHub's for its extensions.
+//! npm package's tests read: CommonMark's, GitHub's for its extensions, and the dialect's forms,
+//! printed as that file prints them.
+
+use std::fmt::Write as _;
+
+use crate::{Document, Kind, Node};
 
 /// CommonMark 0.31.2, its 652 examples.
 pub(crate) const COMMONMARK: &str = include_str!("../../../../spec/commonmark/spec.txt");
@@ -55,4 +60,60 @@ pub(crate) fn examples(spec: &str, extensions: bool) -> Vec<Example> {
         }
     }
     found
+}
+
+/// The dialect's forms: their markers and the cases both parsers must read alike.
+pub(crate) const FORMS: &str = include_str!("../../../../spec/forms/spec.txt");
+
+/// The markers of `spec/forms/spec.txt`'s table, by name, each with the form it makes.
+pub(crate) fn markers() -> Vec<(String, String)> {
+    FORMS
+        .lines()
+        .filter_map(|line| line.strip_prefix("| `[!"))
+        .filter_map(|rest| {
+            let (name, rest) = rest.split_once("]` | ")?;
+            let form = rest.split(" |").next()?;
+            Some((name.to_owned(), form.to_owned()))
+        })
+        .collect()
+}
+
+/// The forms `doc` holds, one a line, as `spec/forms/spec.txt` prints them.
+pub(crate) fn forms(doc: &Document<'_>) -> String {
+    let mut out = String::new();
+    forms_in(doc.root(), 0, &mut out);
+    if out.is_empty() {
+        out.push_str("(none)\n");
+    }
+    out
+}
+
+/// How many items the list a form took holds.
+fn items(node: Node<'_>) -> usize {
+    node.children()
+        .find(|child| matches!(child.kind(), Kind::List { .. }))
+        .map_or(0, |list| list.children().count())
+}
+
+fn forms_in(node: Node<'_>, depth: usize, out: &mut String) {
+    for child in node.children() {
+        let kind = child.kind();
+        if !kind.is_form() {
+            forms_in(child, depth, out);
+            continue;
+        }
+        let name = match kind {
+            Kind::Callout(callout) => format!("callout {}", format!("{callout:?}").to_lowercase()),
+            other => format!("{other:?}").to_lowercase(),
+        };
+        write!(out, "{:width$}{name}", "", width = depth * 2).unwrap();
+        if !child.title().is_empty() {
+            write!(out, " \"{}\"", child.title()).unwrap();
+        }
+        if matches!(kind, Kind::Steps | Kind::Stats | Kind::Pros | Kind::Cons | Kind::Sources) {
+            write!(out, " {}", items(child)).unwrap();
+        }
+        out.push('\n');
+        forms_in(child, depth + 1, out);
+    }
 }

@@ -9,6 +9,7 @@ measure themselves against different texts.
 | `commonmark/spec.txt` | CommonMark 0.31.2, its 652 examples | `packages/flowdown/test/spec/load.ts`, `crates/flowdown/src/testing/spec.rs`, both benches (a long real text) |
 | `github/gfm-spec.txt` | GitHub Flavored Markdown's specification; the examples marked with an extension are its extensions | both test suites |
 | `github/gfm-extensions.txt` | cmark-gfm's own tests of the extensions | the npm package's |
+| `forms/spec.txt` | The dialect's forms (`> [!STEPS]`, `> [!TABS]`, …): the table of their markers, and cases whose expected result is the forms a text holds, as both suites print them | `packages/flowdown/src/forms-spec.test.ts` (with `test/forms.ts`), `crates/flowdown/src/forms_tests.rs` (with `src/testing/spec.rs`) |
 
 An example is a fence of 32 backticks opened with `example` and the extension it is about, the
 Markdown, a line holding `.`, then the HTML it reads as; `→` stands for a tab. Each suite numbers
@@ -25,4 +26,6 @@ the examples of a file from 1, in order, as the specifications do.
   its BSD 2-Clause license.
 
 A file here changes only by copying a newer release whole; both suites then say what moved.
+`forms/spec.txt` is ours: a change to the dialect is a change there first, then to both parsers,
+in one commit. Each suite also checks its own list of markers against the file's table.
 `scripts/conformance.ts` in the package writes `docs/conformance.md` from the npm package's run.
