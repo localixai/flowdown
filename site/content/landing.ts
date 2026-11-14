@@ -135,9 +135,9 @@ const CARDS: Card[] = [
           align: 'lrr',
           grid: [
             [['dim', 'reading a reply'], ['dim', 'MB/s'], ['dim', 'allocations']],
-            [['ok', 'flowdown'], ['ok', '429'], ['ok', '89']],
-            [['hi', 'pulldown-cmark'], ['', '357'], ['', '262']],
-            [['hi', 'comrak'], ['', '90'], ['', '217,548']],
+            [['ok', 'flowdown'], ['ok', '414'], ['ok', '89']],
+            [['hi', 'pulldown-cmark'], ['', '349'], ['', '262']],
+            [['hi', 'comrak'], ['', '87'], ['', '217,548']],
           ],
         },
         out('one crate in the build, no unsafe, any text a document', 'dim'),

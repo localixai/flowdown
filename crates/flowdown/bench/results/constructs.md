@@ -1,23 +1,23 @@
 | Construct | What is repeated | `flowdown` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
 | --- | --- | ---: | ---: | ---: | ---: |
-| words | plain prose | 0.38 | 0.73 | 0.88 | 3.78 |
-| paragraphs | a line, a blank line | 0.80 | 1.31 | 1.49 | 5.84 |
-| strong | `**word**` | 3.11 | 5.10 | 5.63 | 16.05 |
-| emphasis | `*word*` | 3.43 | 5.25 | 5.97 | 17.75 |
-| strike | `~~word~~` | 3.22 | 5.31 | 5.88 | 16.39 |
-| code | `` `word` `` | 1.18 | 3.45 | 3.92 | 9.50 |
-| links | `[word](address)` | 1.58 | 2.95 | 3.31 | 7.62 |
-| references | `&amp;` | 1.18 | 4.92 | 5.36 | 23.91 |
-| snake_case | an underscore inside a word | 1.28 | 1.52 | 1.70 | 17.17 |
-| bare links | `https://…` (only `flowdown` and `comrak` link them) | 0.68 | 0.66 | 0.79 | 11.25 |
-| bullets | `- item` | 1.97 | 2.33 | 2.62 | 8.15 |
-| ordered | `1. item` | 1.53 | 2.18 | 2.47 | 7.75 |
-| tasks | `- [x] item` | 1.76 | 2.16 | 2.51 | 13.54 |
-| quote | `> text` | 0.63 | 0.90 | 1.08 | 4.39 |
-| headings | `## text` | 2.16 | 3.25 | 3.74 | 14.61 |
-| fences | a fenced block of 4 lines | 0.54 | 0.93 | 1.03 | 5.79 |
-| table | 400 rows of 3 cells | 2.21 | 3.01 | 3.75 | 18.34 |
-| callouts | `> [!NOTE]` and its text | 1.88 | 2.18 | 2.48 | 8.59 |
-| steps | `> [!STEPS]` and three steps | 4.73 | 7.60 | 8.66 | 25.88 |
+| words | plain prose | 0.44 | 0.84 | 1.02 | 4.45 |
+| paragraphs | a line, a blank line | 0.71 | 1.20 | 1.37 | 5.21 |
+| strong | `**word**` | 2.78 | 4.49 | 4.98 | 14.24 |
+| emphasis | `*word*` | 3.06 | 4.64 | 5.27 | 16.07 |
+| strike | `~~word~~` | 2.88 | 4.62 | 5.21 | 14.24 |
+| code | `` `word` `` | 1.13 | 3.49 | 3.86 | 9.31 |
+| links | `[word](address)` | 1.52 | 2.92 | 3.24 | 7.37 |
+| references | `&amp;` | 1.13 | 4.54 | 5.00 | 23.29 |
+| snake_case | an underscore inside a word | 1.17 | 1.40 | 1.58 | 16.56 |
+| bare links | `https://…` (only `flowdown` and `comrak` link them) | 0.62 | 0.63 | 0.76 | 10.41 |
+| bullets | `- item` | 1.74 | 2.17 | 2.46 | 7.30 |
+| ordered | `1. item` | 1.40 | 2.03 | 2.32 | 7.04 |
+| tasks | `- [x] item` | 1.63 | 2.00 | 2.28 | 11.98 |
+| quote | `> text` | 0.55 | 0.78 | 0.94 | 3.82 |
+| headings | `## text` | 1.88 | 2.86 | 3.28 | 12.41 |
+| fences | a fenced block of 4 lines | 0.49 | 0.86 | 0.95 | 5.22 |
+| table | 400 rows of 3 cells | 2.00 | 2.74 | 3.42 | 17.20 |
+| callouts | `> [!NOTE]` and its text | 1.61 | 1.96 | 2.22 | 7.64 |
+| steps | `> [!STEPS]` and three steps | 4.27 | 6.92 | 7.80 | 23.12 |
 
 Nanoseconds a byte of text; lower is faster.

@@ -6,23 +6,23 @@ Apple M5, Darwin 25.6.0, rustc 1.100.0 (0ef1bc386 2026-11-09)
 
 | Parser | Gives | Throughput | flowdown is faster by | Allocations | Allocated |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `flowdown` | a tree | 194 MB/s | 1.0x | 89 | 4.4 MB |
-| `flowdown, walked` | a tree, every node visited | 167 MB/s | 1.2x | 89 | 4.4 MB |
-| `pulldown-cmark` | events, dropped | 182 MB/s | 1.1x | 262 | 5.2 MB |
-| `pulldown-cmark, kept` | events in a `Vec` | 171 MB/s | 1.1x | 339 | 13 MB |
-| `comrak` | a tree | 55 MB/s | 3.5x | 217,548 | 54 MB |
+| `flowdown` | a tree | 199 MB/s | 1.0x | 89 | 4.4 MB |
+| `flowdown, walked` | a tree, every node visited | 173 MB/s | 1.1x | 89 | 4.4 MB |
+| `pulldown-cmark` | events, dropped | 181 MB/s | 1.1x | 262 | 5.2 MB |
+| `pulldown-cmark, kept` | events in a `Vec` | 169 MB/s | 1.2x | 339 | 13 MB |
+| `comrak` | a tree | 55 MB/s | 3.6x | 217,548 | 54 MB |
 
 ## Text by text: the time of one read
 
 | Text | Size | `flowdown` | `flowdown, walked` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| reply, 1 KB | 2.0 KB | 7.06 µs | 8.08 µs | 7.22 µs | 7.60 µs | 21 µs |
-| reply, 8 KB | 8.5 KB | 55 µs | 67 µs | 62 µs | 64 µs | 180 µs |
-| reply, 64 KB | 64 KB | 360 µs | 433 µs | 395 µs | 406 µs | 1.31 ms |
-| reply, 512 KB | 512 KB | 3.17 ms | 3.65 ms | 3.32 ms | 3.60 ms | 11 ms |
-| github, 64 KB | 64 KB | 353 µs | 425 µs | 393 µs | 405 µs | 1.26 ms |
-| crdt.md | 76 KB | 125 µs | 143 µs | 130 µs | 132 µs | 513 µs |
-| spec.txt | 200 KB | 600 µs | 675 µs | 662 µs | 675 µs | 2.47 ms |
+| reply, 1 KB | 2.0 KB | 6.44 µs | 7.44 µs | 6.89 µs | 7.26 µs | 20 µs |
+| reply, 8 KB | 8.5 KB | 50 µs | 62 µs | 58 µs | 60 µs | 166 µs |
+| reply, 64 KB | 64 KB | 334 µs | 405 µs | 382 µs | 392 µs | 1.27 ms |
+| reply, 512 KB | 512 KB | 3.13 ms | 3.56 ms | 3.36 ms | 3.66 ms | 11 ms |
+| github, 64 KB | 64 KB | 341 µs | 415 µs | 402 µs | 410 µs | 1.28 ms |
+| crdt.md | 76 KB | 124 µs | 142 µs | 130 µs | 132 µs | 510 µs |
+| spec.txt | 200 KB | 567 µs | 643 µs | 667 µs | 688 µs | 2.37 ms |
 
 ## Text by text: allocations of one read (exact)
 

@@ -2,7 +2,7 @@
 
 <p align="center">
   <strong>The Markdown a model writes, read into a tree, in Rust</strong><br>
-  All of CommonMark · GitHub's extensions · the forms of a reply · 0 dependencies · 429 MB/s
+  All of CommonMark · GitHub's extensions · the forms of a reply · 0 dependencies · 414 MB/s
 </p>
 
 <p align="center">
@@ -36,16 +36,16 @@ crate read; how a tree is drawn is the program's, not the crate's.
 
 ## Why
 
-- **Fast.** It builds its tree 1.2 times as fast as `pulldown-cmark` pulls its events and 4.7
-  times as fast as `comrak` builds its own: 429 MB/s against 357 and 90. A 64 KB report is read
-  in 117 µs.
+- **Fast.** It builds its tree 1.2 times as fast as `pulldown-cmark` pulls its events and 4.8
+  times as fast as `comrak` builds its own: 414 MB/s against 349 and 87. A 64 KB report is read
+  in 118 µs.
 - **Made for a stream.** An interface reads the whole reply again as each piece of it arrives.
   A 128 KB reply read again 4,098 times takes 0.45 s here, 0.68 s with `pulldown-cmark` and
-  3.0 s with `comrak`; its slowest single read is 0.25 ms.
+  2.9 s with `comrak`; its slowest single read is 0.26 ms.
 - **Light.** No dependency at all: one crate in a build, where `pulldown-cmark` brings 4 and
   `comrak` 10. That 64 KB report costs 18 allocations, against 31 and 16,793.
-- **Linear.** Time and memory grow with the text, whatever it is: each of 19 texts built to be
-  slow costs 3.5 to 5.5 times as much at four times the size, never sixteen.
+- **Linear.** Time and memory grow with the text, whatever it is: each of 20 texts built to be
+  slow costs 3.5 to 5.1 times as much at four times the size, never sixteen.
 - **The forms of a reply.** Steps, tabs, figures and sources are in the tree as what they are,
   not as a quote and a list, and the text that teaches a model to write them comes with the
   parser.
@@ -213,11 +213,11 @@ the CommonMark specification. Each parser a round in turn, the median of 51.
 
 | Parser | Gives | Built for speed | Built for size | Allocations | Allocated |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `flowdown` | a tree | 429 MB/s | 194 MB/s | 89 | 4.4 MB |
-| `flowdown`, every node then visited | a tree, walked | 407 MB/s | 167 MB/s | 89 | 4.4 MB |
-| `pulldown-cmark` | events, dropped | 357 MB/s | 182 MB/s | 262 | 5.2 MB |
-| `pulldown-cmark`, events kept | events in a `Vec` | 314 MB/s | 171 MB/s | 339 | 13 MB |
-| `comrak` | a tree | 90 MB/s | 55 MB/s | 217,548 | 54 MB |
+| `flowdown` | a tree | 414 MB/s | 199 MB/s | 89 | 4.4 MB |
+| `flowdown`, every node then visited | a tree, walked | 393 MB/s | 173 MB/s | 89 | 4.4 MB |
+| `pulldown-cmark` | events, dropped | 349 MB/s | 181 MB/s | 262 | 5.2 MB |
+| `pulldown-cmark`, events kept | events in a `Vec` | 308 MB/s | 169 MB/s | 339 | 13 MB |
+| `comrak` | a tree | 87 MB/s | 55 MB/s | 217,548 | 54 MB |
 
 Apple M5, rustc 1.100.0. Built for speed is every parser at `opt-level = 3`, as this workspace
 builds the crate; built for size is every parser at `opt-level = "z"`, as a program that ships
@@ -227,11 +227,11 @@ How much faster it is, over everything measured:
 
 | | than `pulldown-cmark` | than `pulldown-cmark`, events kept | than `comrak` |
 | --- | ---: | ---: | ---: |
-| The whole corpus, built for speed | 1.2× | 1.4× | 4.7× |
-| The whole corpus, built for size | 1.1× | 1.1× | 3.5× |
-| One text, the least and the most of 7 | 1.1× to 1.8× | 1.3× to 2.0× | 4.0× to 10× |
-| One construct repeated, of 19 | 0.97× to 4.2× | 1.2× to 4.5× | 4.1× to 20× |
-| A reply read again as it streams, of 4 | 1.4× to 2.1× | 1.5× to 2.6× | 5.5× to 8.1× |
+| The whole corpus, built for speed | 1.2× | 1.3× | 4.8× |
+| The whole corpus, built for size | 1.1× | 1.2× | 3.6× |
+| One text, the least and the most of 7 | 1.1× to 1.8× | 1.3× to 1.9× | 4.1× to 10× |
+| One construct repeated, of 19 | 1.0× to 4.0× | 1.2× to 4.4× | 4.2× to 21× |
+| A reply read again as it streams, of 4 | 1.3× to 1.5× | 1.3× to 1.7× | 4.0× to 6.4× |
 | Allocations over the corpus, fewer by | 2.9× | 3.8× | 2,444× |
 | Memory asked for over the corpus, less by | 1.2× | 2.9× | 12× |
 
@@ -250,13 +250,16 @@ slow that grow at most six times at four times their size.
 - [`bench/results/worst.md`](bench/results/worst.md): texts built to be slow, at one size and
   at four times it: the time grows as the text does.
 
-It is the faster of the three on every text, every stream and every text built to be slow, and
-on every construct but one. What the numbers do not say:
+It is the faster of the three on every text, every construct and every stream. What the numbers
+do not say:
 
-- On bare links it is a little behind (0.68 against 0.66 ns a byte), and `pulldown-cmark` does
-  not link them.
-- Built for size, the tree built and then walked is behind `pulldown-cmark`'s events, dropped and
-  kept (167 against 182 and 171 MB/s); the tree alone is ahead (194).
+- On bare links the lead is within the noise (0.62 against 0.63 ns a byte), and
+  `pulldown-cmark` does not link them.
+- Built for size, the tree built and then walked is a little behind `pulldown-cmark`'s events
+  dropped (173 against 181 MB/s), and ahead of them kept (169); the tree alone is ahead (199).
+- On 2 of the 20 texts built to be slow `pulldown-cmark` is the faster: `<!--` again and again,
+  and a run of `)` after an address, which it does not link. Each still grows with the text
+  ([`bench/results/worst.md`](bench/results/worst.md)).
 - On the 512 KB reply the lead is its smallest, 1.1 times.
 - `pulldown-cmark` reads definition lists, and `comrak` many more extensions and writes HTML;
   this reads none of those ([What it reads](#what-it-reads)).

@@ -82,11 +82,11 @@ CommonMark specification:
 
 | Parser | Gives | Throughput | Allocations |
 | --- | --- | ---: | ---: |
-| `flowdown` | a tree | 429 MB/s | 89 |
-| `pulldown-cmark` | events | 357 MB/s | 262 |
-| `comrak` | a tree | 90 MB/s | 217,548 |
+| `flowdown` | a tree | 414 MB/s | 89 |
+| `pulldown-cmark` | events | 349 MB/s | 262 |
+| `comrak` | a tree | 87 MB/s | 217,548 |
 
-A 128 KB reply read again from its start as each of its 4,098 pieces arrives takes 448 ms in all,
-against 682 ms and 3.01 s. Every figure, how it is taken and where the lead is small are in
+A 128 KB reply read again from its start as each of its 4,098 pieces arrives takes 446 ms in all,
+against 682 ms and 2.85 s. Every figure, how it is taken and where the lead is small are in
 [the crate's README](https://github.com/localixai/flowdown/tree/main/crates/flowdown#measured),
 from `crates/flowdown/bench/results/`.

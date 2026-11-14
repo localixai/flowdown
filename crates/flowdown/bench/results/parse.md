@@ -6,23 +6,23 @@ Apple M5, Darwin 25.6.0, rustc 1.100.0 (0ef1bc386 2026-11-09)
 
 | Parser | Gives | Throughput | flowdown is faster by | Allocations | Allocated |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `flowdown` | a tree | 429 MB/s | 1.0x | 89 | 4.4 MB |
-| `flowdown, walked` | a tree, every node visited | 407 MB/s | 1.1x | 89 | 4.4 MB |
-| `pulldown-cmark` | events, dropped | 357 MB/s | 1.2x | 262 | 5.2 MB |
-| `pulldown-cmark, kept` | events in a `Vec` | 314 MB/s | 1.4x | 339 | 13 MB |
-| `comrak` | a tree | 90 MB/s | 4.7x | 217,548 | 54 MB |
+| `flowdown` | a tree | 414 MB/s | 1.0x | 89 | 4.4 MB |
+| `flowdown, walked` | a tree, every node visited | 393 MB/s | 1.1x | 89 | 4.4 MB |
+| `pulldown-cmark` | events, dropped | 349 MB/s | 1.2x | 262 | 5.2 MB |
+| `pulldown-cmark, kept` | events in a `Vec` | 308 MB/s | 1.3x | 339 | 13 MB |
+| `comrak` | a tree | 87 MB/s | 4.8x | 217,548 | 54 MB |
 
 ## Text by text: the time of one read
 
 | Text | Size | `flowdown` | `flowdown, walked` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| reply, 1 KB | 2.0 KB | 2.31 µs | 2.55 µs | 3.07 µs | 3.66 µs | 13 µs |
-| reply, 8 KB | 8.5 KB | 17 µs | 19 µs | 24 µs | 28 µs | 93 µs |
-| reply, 64 KB | 64 KB | 117 µs | 128 µs | 181 µs | 187 µs | 762 µs |
-| reply, 512 KB | 512 KB | 1.61 ms | 1.69 ms | 1.77 ms | 2.07 ms | 6.44 ms |
-| github, 64 KB | 64 KB | 115 µs | 127 µs | 177 µs | 184 µs | 724 µs |
-| crdt.md | 76 KB | 32 µs | 36 µs | 58 µs | 62 µs | 322 µs |
-| spec.txt | 200 KB | 221 µs | 224 µs | 315 µs | 346 µs | 1.67 ms |
+| reply, 1 KB | 2.0 KB | 2.18 µs | 2.41 µs | 2.86 µs | 3.46 µs | 12 µs |
+| reply, 8 KB | 8.5 KB | 16 µs | 19 µs | 24 µs | 27 µs | 91 µs |
+| reply, 64 KB | 64 KB | 118 µs | 129 µs | 183 µs | 189 µs | 777 µs |
+| reply, 512 KB | 512 KB | 1.68 ms | 1.77 ms | 1.84 ms | 2.14 ms | 6.81 ms |
+| github, 64 KB | 64 KB | 113 µs | 127 µs | 176 µs | 184 µs | 726 µs |
+| crdt.md | 76 KB | 34 µs | 38 µs | 60 µs | 65 µs | 350 µs |
+| spec.txt | 200 KB | 217 µs | 219 µs | 308 µs | 334 µs | 1.66 ms |
 
 ## Text by text: allocations of one read (exact)
 
