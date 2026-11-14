@@ -124,7 +124,7 @@ const CARDS: Card[] = [
   {
     tag: 'Rust',
     title: 'The same dialect in Rust',
-    text: 'A crate with no dependency reads a reply into a tree, for a terminal, a server or an agent written in Rust. Both parsers pass the same cases and teach a model with the same prompt, and the crate builds its tree faster than `pulldown-cmark` pulls its events.',
+    text: 'A crate with no dependency reads a reply into a tree, for a terminal, a server or an agent written in Rust. Both parsers pass the same cases of the dialect and teach a model with the same prompt, and the crate builds its tree faster than `pulldown-cmark` pulls its events.',
     links: [
       { href: `${DOCS}/rust`, label: 'The Rust crate' },
       { href: `${GITHUB}/tree/main/crates/flowdown`, label: 'Its benchmarks' },

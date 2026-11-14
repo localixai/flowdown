@@ -7,7 +7,7 @@ measure themselves against different texts.
 | File | What it is | Who reads it |
 | --- | --- | --- |
 | `commonmark/spec.txt` | CommonMark 0.31.2, its 652 examples | `packages/flowdown/test/spec/load.ts`, `crates/flowdown/src/testing/spec.rs`, both benches (a long real text) |
-| `github/gfm-spec.txt` | GitHub Flavored Markdown's specification; the examples marked with an extension are its extensions | both test suites |
+| `github/gfm-spec.txt` | GitHub Flavored Markdown's specification; the examples marked with an extension are its extensions | both test suites: the npm package every one of the 24, the crate all but `tagfilter` (a filter of the HTML a renderer writes; the crate writes none), its three bare e-mail addresses read as text and named in its tests |
 | `github/gfm-extensions.txt` | cmark-gfm's own tests of the extensions | the npm package's |
 | `forms/spec.txt` | The dialect's forms (`> [!STEPS]`, `> [!TABS]`, …): the table of their markers, and cases whose expected result is the forms a text holds, as both suites print them | `packages/flowdown/src/forms-spec.test.ts` (with `test/forms.ts`), `crates/flowdown/src/forms_tests.rs` (with `src/testing/spec.rs`) |
 

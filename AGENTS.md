@@ -115,5 +115,6 @@ fails when it is broken.
 ## Before you say it is done
 
 `bun run check`, and `bun run size` when code that ships changed; `crates/flowdown/scripts/check`
-when the crate, `spec/` or the Cargo files changed. A failure names the file and the rule: fix what
+when the crate, `spec/`, `docs/rust.md` (its examples are the crate's doctests) or the Cargo files
+changed. A failure names the file and the rule: fix what
 it names, never the check.

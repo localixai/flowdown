@@ -1,6 +1,8 @@
-# The Rust crate (crates/flowdown): its checks on every change that can move it. The crate reads
-# spec/ in its tests and its prompt and tables are written by the npm package, so a change there
-# runs this too; the npm package's own CI (ci.yml) runs on every change.
+# The Rust crate (crates/flowdown): its checks on every change that can move it: the crate, spec/
+# (its tests read the specifications and the forms' cases), docs/rust.md (its examples are the
+# crate's doctests) and the Cargo files. Its prompt and tables are written by the npm package;
+# ci.yml, which runs on every change, fails when they are not what the package writes, and
+# writing them again changes crates/, which runs this.
 name: Rust
 
 on:
@@ -9,6 +11,7 @@ on:
     paths:
       - 'crates/**'
       - 'spec/**'
+      - 'docs/rust.md'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
@@ -18,6 +21,7 @@ on:
     paths:
       - 'crates/**'
       - 'spec/**'
+      - 'docs/rust.md'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'rust-toolchain.toml'

@@ -90,8 +90,8 @@ The same reply, from the same package, by import path. None but the first import
 ## In Rust
 
 The same dialect, read into a tree by a Rust crate with no dependency: for a terminal, a server or
-an agent written in Rust. Both parsers pass the same cases ([spec/](spec/README.md)) and teach a
-model with the same prompt.
+an agent written in Rust. Both parsers are held to the same specifications, pass the same cases of
+the dialect's forms ([spec/](spec/README.md)) and teach a model with the same prompt.
 
 ```toml
 [dependencies]

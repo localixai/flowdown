@@ -28,8 +28,9 @@ tabs, figures, the case for and against, a folded section, sources). Any text is
 nothing fails, and a reply cut mid-stream reads as far as it goes.
 
 It is the Rust half of [flowdown](../../README.md): the npm package `@localix-ai/flowdown` reads the
-same dialect and draws it in React, on a page or in a terminal. The two parsers pass the same
-cases ([`spec/`](../../spec/README.md)) and teach a model with the same prompt. The pictures here
+same dialect and draws it in React, on a page or in a terminal. The two parsers are held to the
+same specifications, pass the same cases of the forms ([`spec/`](../../spec/README.md)) and teach
+a model with the same prompt. The pictures here
 are [Localix CLI](https://github.com/localixai/localix-cli)'s terminal renderer drawing what this
 crate read; how a tree is drawn is the program's, not the crate's.
 

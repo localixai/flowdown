@@ -9,8 +9,8 @@ description:
 
 flowdown is also a Rust crate: a parser that reads what a model writes into a tree, for a terminal,
 a server or an agent written in Rust. It reads the same Markdown and the same forms as the npm
-package, passes the same cases and teaches a model with the same prompt. It has no dependency at
-all and does no I/O; how it is drawn is the program's.
+package, passes the same cases of the forms and teaches a model with the same prompt. It has no
+dependency at all and does no I/O; how it is drawn is the program's.
 
 ## Taking it
 
@@ -65,7 +65,9 @@ crate from it. The crate's tests read every example in it into the form it shows
 The npm package and the crate are two parsers, in two languages, of one dialect. They are held to
 the same files, in the repository's `spec/`:
 
-- CommonMark's 652 examples and GitHub's extensions, run by both test suites.
+- CommonMark's 652 examples and GitHub's extensions, run by both test suites. Two differences
+  are known and named in the crate's tests: it leaves a bare e-mail address as text (GitHub's
+  three examples of one), and it does not filter raw HTML, which it never writes.
 - `spec/forms/spec.txt`: the forms, the table of their markers, and cases whose expected result is
   the forms a text holds. Each suite prints its own tree that way and checks its list of markers
   against the table.
