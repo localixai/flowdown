@@ -121,13 +121,37 @@ const CARDS: Card[] = [
       'A hostile reply, and the HTML flowdown makes of it',
     ),
   },
+  {
+    tag: 'Rust',
+    title: 'The same dialect in Rust',
+    text: 'A crate with no dependency reads a reply into a tree, for a terminal, a server or an agent written in Rust. Both parsers pass the same cases and teach a model with the same prompt, and the crate builds its tree faster than `pulldown-cmark` pulls its events.',
+    links: [
+      { href: `${DOCS}/rust`, label: 'The Rust crate' },
+      { href: `${GITHUB}/tree/main/crates/flowdown`, label: 'Its benchmarks' },
+    ],
+    media: terminal(
+      [
+        {
+          align: 'lrr',
+          grid: [
+            [['dim', 'reading a reply'], ['dim', 'MB/s'], ['dim', 'allocations']],
+            [['ok', 'flowdown'], ['ok', '427'], ['ok', '89']],
+            [['hi', 'pulldown-cmark'], ['', '356'], ['', '262']],
+            [['hi', 'comrak'], ['', '89'], ['', '217,548']],
+          ],
+        },
+        out('one crate in the build, no unsafe, any text a document', 'dim'),
+      ],
+      'Throughput and allocations of three Rust Markdown parsers over the same seven texts',
+    ),
+  },
 ];
 
 const landing: LandingContent = {
   hero: {
     title: { chip: 'Markdown', after: '', rest: 'that draws while the model is still writing' },
     lede: 'flowdown renders an AI reply in React as it streams: GitHub Markdown plus steps, tabs, figures, diagrams and math. Its own parser, no dependencies, 32 KB.',
-    under: 'React 18 and 19 · MIT · [Docs](/docs) · also [outside React](/docs/targets)',
+    under: 'React 18 and 19 · MIT · [Docs](/docs) · also [outside React](/docs/targets) and [in Rust](/docs/rust)',
     stream: {
       text: reply,
       label: 'A reply streaming into the page, drawn by flowdown as it arrives: a callout, numbered steps with code, headline figures, tabs, a table, pros and cons, and sources',
@@ -135,7 +159,7 @@ const landing: LandingContent = {
   },
   loop: {
     title: 'Built for a reply, not a document',
-    aside: 'Six things it does',
+    aside: 'Seven things it does',
     cards: CARDS,
   },
   docs: { title: 'Documentation' },

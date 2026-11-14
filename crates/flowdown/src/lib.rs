@@ -61,6 +61,11 @@ pub fn parse_as(text: &str, dialect: Dialect) -> Document<'_> {
     doc
 }
 
+/// The documentation's page on the crate (`docs/rust.md`), its examples run as tests.
+#[cfg(doctest)]
+#[doc = include_str!("../../../docs/rust.md")]
+pub struct RustPage;
+
 #[cfg(test)]
 mod testing;
 

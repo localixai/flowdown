@@ -87,6 +87,24 @@ The same reply, from the same package, by import path. None but the first import
 
 [Other targets](https://flowdown.dev/docs/targets) has each one's options.
 
+## In Rust
+
+The same dialect, read into a tree by a Rust crate with no dependency: for a terminal, a server or
+an agent written in Rust. Both parsers pass the same cases ([spec/](spec/README.md)) and teach a
+model with the same prompt.
+
+```toml
+[dependencies]
+flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.0" }
+```
+
+```rust
+let doc = flowdown::parse("> [!STEPS] Cut a release\n1. **Run the checks**\n2. **Tag it**\n");
+```
+
+What it reads, how fast and how it is made: [crates/flowdown](crates/flowdown/README.md), and
+[the Rust crate](https://flowdown.dev/docs/rust) in the docs.
+
 ## Documentation
 
 Everything is at **[flowdown.dev](https://flowdown.dev)**:
@@ -113,8 +131,10 @@ bun run check    # the build's exports, types and entry isolation
 bun run bench    # the benchmarks, against other renderers
 ```
 
-The library is in `packages/flowdown`, the documentation in `docs/`, the site in `site/` and the
-benchmarks in [`bench/`](bench/README.md). How to work on it: [CONTRIBUTING.md](CONTRIBUTING.md).
+The library is in `packages/flowdown`, the Rust crate in [`crates/flowdown`](crates/flowdown/README.md),
+what both are held to in [`spec/`](spec/README.md), the documentation in `docs/`, the site in
+`site/` and the benchmarks in [`bench/`](bench/README.md). How to work on it:
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

@@ -26,6 +26,22 @@ bun run build && bun run check && bun run size
   Raise a budget only with the reason in the pull request.
 - **The dialect reads as plain Markdown.** A form a model writes must degrade to something sensible
   on GitHub or in any other renderer: a quote, a list, headings.
+- **One dialect, two parsers.** The npm package and the Rust crate read the same forms:
+  [spec/forms/spec.txt](spec/forms/spec.txt) says what they are, and both suites run its cases. A
+  change to the dialect changes that file first and both parsers with it.
+
+## The Rust crate
+
+```sh
+crates/flowdown/scripts/check    # what CI runs: fmt, clippy, the tests, the docs, the wasm build
+sh crates/flowdown/bench/run.sh  # the benchmarks, into crates/flowdown/bench/results/
+```
+
+What a change to the crate keeps is in [AGENTS.md](AGENTS.md), "The Rust crate" (rules R1 to R7):
+no panic, no dependency, small files, the lints denied, no I/O, time that grows with the text. Its
+prompt and its tables are written from the npm package's (`bun run prompt`, `bun run
+crate-tables` in `packages/flowdown`), never by hand. A figure in its README comes from
+`bench/results/`, as the package's do from `bench/`.
 
 ## Figures in the documentation
 
@@ -36,3 +52,7 @@ from a script in [bench](bench). Change the script or rerun it, then copy the fi
 
 Add a changeset (`bunx changeset`) to a pull request that changes the package. A tag `v<version>`
 publishes that version ([release workflow](.github/workflows/release.yml)).
+
+The crate's versions are its own: write a change to it under "Unreleased" in
+[crates/flowdown/CHANGELOG.md](crates/flowdown/CHANGELOG.md). A tag `rust-v<version>` releases
+that version on GitHub ([Rust release workflow](.github/workflows/rust-release.yml)).

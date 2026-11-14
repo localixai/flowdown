@@ -27,8 +27,8 @@ const docs: DocsConfig = {
     },
     {
       title: 'Beyond React',
-      blurb: 'The same reply as HTML text, a page, a custom element or a terminal, and in a remark pipeline.',
-      pages: ['targets', 'remark'],
+      blurb: 'The same reply as HTML text, a page, a custom element or a terminal, in a remark pipeline, and in Rust.',
+      pages: ['targets', 'remark', 'rust'],
     },
     {
       title: 'Recipes',
