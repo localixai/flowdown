@@ -7,6 +7,7 @@
 use std::fmt::Write as _;
 use std::fs;
 
+use flowdown_bench::results::{field, figure};
 use flowdown_bench::{count, shown, size};
 use resvg::tiny_skia::{Pixmap, Transform};
 use resvg::usvg::{Options, Tree};
@@ -56,28 +57,6 @@ struct Section {
     title: &'static str,
     under: &'static str,
     panels: Vec<Panel>,
-}
-
-/// The value of `"key": ` in one row of a result's JSON, a row a line.
-fn field<'a>(row: &'a str, key: &str) -> &'a str {
-    let from = row.find(&format!("\"{key}\": ")).expect("the key") + key.len() + 4;
-    let rest = &row[from..];
-    let rest = rest.strip_prefix('"').map_or_else(
-        || &rest[..rest.find([',', '}']).unwrap_or(rest.len())],
-        |text| &text[..text.find('"').expect("a closing quote")],
-    );
-    rest.trim()
-}
-
-/// A number of the row of `json` for `text` and `parser`.
-fn figure(json: &str, text: &str, parser: &str, key: &str) -> f64 {
-    let row = json
-        .lines()
-        .find(|row| {
-            row.contains("\"text\"") && field(row, "text") == text && field(row, "parser") == parser
-        })
-        .unwrap_or_else(|| panic!("no row for {text} and {parser}"));
-    field(row, key).parse().expect("a number")
 }
 
 /// A panel of one figure of `json`'s rows for `text`, a bar a parser.

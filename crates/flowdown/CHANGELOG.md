@@ -1,8 +1,9 @@
 # Changelog
 
 The Rust crate `flowdown`. Its versions are its own, apart from the npm package's: a tag
-`rust-v<version>` releases one. The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and the crate follows [Semantic Versioning](https://semver.org/).
+`rust-v<version>` releases one. The format is
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the crate follows
+[Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 

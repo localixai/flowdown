@@ -21,5 +21,6 @@ target/size/release/parse >results/parse-size.md
 for parser in flowdown pulldown-cmark comrak; do
     echo "$parser $(cargo tree --edges normal --prefix none --package "$parser" | sort -u | wc -l | tr -d ' ')"
 done >results/crates.txt
-# The README's chart, from the numbers just written.
+# The README's chart, from the numbers just written; then the numbers held to budgets.json.
 target/release/charts
+target/release/check

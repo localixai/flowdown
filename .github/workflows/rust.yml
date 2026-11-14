@@ -55,3 +55,14 @@ jobs:
           version=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' Cargo.toml)
           rustup toolchain install "$version" --profile minimal
           cargo +"$version" test --locked --package flowdown
+
+  # The benchmarks are not timed here (a shared runner's times say little): the results committed
+  # with the change are held to crates/flowdown/bench/budgets.json.
+  budgets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - run: rustup toolchain install
+      - name: The committed results hold to the budgets
+        run: cargo run --locked --quiet --release --bin check --manifest-path crates/flowdown/bench/Cargo.toml

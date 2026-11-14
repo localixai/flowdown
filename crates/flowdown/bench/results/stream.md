@@ -1,15 +1,15 @@
-| Stream | Size | Reads | `markdown` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
+| Stream | Size | Reads | `flowdown` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| reply, 2 KB | 2.3 KB | 73 | 253 µs | 348 µs | 376 µs | 1.28 ms |
-| reply, 8 KB | 8.1 KB | 259 | 1.74 ms | 2.39 ms | 2.72 ms | 9.97 ms |
-| reply, 32 KB | 34 KB | 1088 | 31 ms | 49 ms | 55 ms | 204 ms |
-| reply, 128 KB | 128 KB | 4098 | 469 ms | 765 ms | 841 ms | 3.21 s |
+| reply, 2 KB | 2.3 KB | 73 | 157 µs | 327 µs | 408 µs | 1.28 ms |
+| reply, 8 KB | 8.1 KB | 259 | 1.72 ms | 2.36 ms | 2.62 ms | 9.48 ms |
+| reply, 32 KB | 34 KB | 1088 | 31 ms | 47 ms | 52 ms | 193 ms |
+| reply, 128 KB | 128 KB | 4098 | 448 ms | 682 ms | 783 ms | 3.01 s |
 
 The slowest single read of each stream:
 
-| Stream | `markdown` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
+| Stream | `flowdown` | `pulldown-cmark` | `pulldown-cmark, kept` | `comrak` |
 | --- | ---: | ---: | ---: | ---: |
-| reply, 2 KB | 7.12 µs | 10 µs | 8.17 µs | 35 µs |
-| reply, 8 KB | 14 µs | 20 µs | 23 µs | 84 µs |
-| reply, 32 KB | 67 µs | 96 µs | 110 µs | 442 µs |
-| reply, 128 KB | 346 µs | 525 µs | 512 µs | 2.25 ms |
+| reply, 2 KB | 4.29 µs | 6.62 µs | 12 µs | 36 µs |
+| reply, 8 KB | 14 µs | 19 µs | 22 µs | 78 µs |
+| reply, 32 KB | 67 µs | 93 µs | 99 µs | 365 µs |
+| reply, 128 KB | 247 µs | 383 µs | 406 µs | 1.70 ms |

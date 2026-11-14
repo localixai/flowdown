@@ -1,5 +1,5 @@
 //! What the benchmarks share: an allocator that counts, a timer that takes the median of many
-//! rounds, the parsers each behind one name, and the texts.
+//! rounds, the parsers each behind one name, the texts, and the results read back.
 
 use std::alloc::{GlobalAlloc, Layout, System};
 use std::hint::black_box;
@@ -8,6 +8,7 @@ use std::time::Instant;
 
 pub mod corpus;
 pub mod parsers;
+pub mod results;
 
 /// The system's allocator, every allocation counted, and the bytes asked for.
 struct Counting;

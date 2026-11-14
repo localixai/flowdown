@@ -1,0 +1,7 @@
+[
+  {"id": "never-slower", "min": 1.0, "about": "On every text, flowdown builds its tree in no more time than pulldown-cmark pulls its events (results/parse.json, built for speed)."},
+  {"id": "corpus-lead", "pulldown": 1.1, "comrak": 3.0, "about": "Over the whole corpus, flowdown reads at least 1.1 times as fast as pulldown-cmark and 3 times as fast as comrak."},
+  {"id": "few-allocations", "max": 32, "about": "A read allocates a handful of times, not once a node: at most 32 allocations for any one text."},
+  {"id": "stream", "min": 1.0, "slowest_ms": 1.0, "about": "A reply read again as it streams costs no more than with pulldown-cmark, and no single read of it takes 1 ms (results/stream.json)."},
+  {"id": "linear", "max": 6.0, "about": "Every text built to be slow costs at most 6 times as much at four times its size: 16 would be quadratic (results/worst.md)."}
+]

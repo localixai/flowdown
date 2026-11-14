@@ -1,11 +1,12 @@
-<h1 align="center">markdown</h1>
+<h1 align="center">flowdown</h1>
 
 <p align="center">
-  <strong>The Markdown a model writes, read into a tree</strong><br>
+  <strong>The Markdown a model writes, read into a tree, in Rust</strong><br>
   All of CommonMark · GitHub's extensions · the forms of a reply · 0 dependencies · 429 MB/s
 </p>
 
 <p align="center">
+  <a href="#taking-it">Take it</a> ·
   <a href="#use">Use</a> ·
   <a href="#the-forms-of-a-reply">Forms</a> ·
   <a href="#telling-the-model">Prompt</a> ·
@@ -17,7 +18,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/steps-dark.svg">
-    <img src="assets/steps-light.svg" alt="Steps and a warning, as llx draws them in a terminal" width="580">
+    <img src="assets/steps-light.svg" alt="Steps and a warning, as Localix CLI draws them in a terminal" width="580">
   </picture>
 </p>
 
@@ -26,35 +27,50 @@ strikethrough, task lists and bare links, and the forms a reply is made of (a ca
 tabs, figures, the case for and against, a folded section, sources). Any text is a document:
 nothing fails, and a reply cut mid-stream reads as far as it goes.
 
-It is what `llx` draws a model's answer from (`apps/tui/src/markdown.rs`); the pictures here are
-that renderer's rows, written as SVG by `bench/src/bin/shots.rs` from the texts in
-`bench/shots/`.
+It is the Rust half of [flowdown](../../README.md): the npm package `@localix-ai/flowdown` reads the
+same dialect and draws it in React, on a page or in a terminal. The two parsers pass the same
+cases ([`spec/`](../../spec/README.md)) and teach a model with the same prompt. The pictures here
+are [Localix CLI](https://github.com/localixai/localix-cli)'s terminal renderer drawing what this
+crate read; how a tree is drawn is the program's, not the crate's.
 
 ## Why
 
-- **Fast.** It builds its tree 1.2 times as fast as `pulldown-cmark` pulls its events and 5
-  times as fast as `comrak` builds its own: 429 MB/s against 349 and 87. A 64 KB report is read
-  in 122 µs.
+- **Fast.** It builds its tree 1.2 times as fast as `pulldown-cmark` pulls its events and 4.7
+  times as fast as `comrak` builds its own: 429 MB/s against 357 and 90. A 64 KB report is read
+  in 117 µs.
 - **Made for a stream.** An interface reads the whole reply again as each piece of it arrives.
-  A 128 KB reply read again 4,098 times takes 0.47 s here, 0.77 s with `pulldown-cmark` and
-  3.2 s with `comrak`; its slowest single read is 0.35 ms.
+  A 128 KB reply read again 4,098 times takes 0.45 s here, 0.68 s with `pulldown-cmark` and
+  3.0 s with `comrak`; its slowest single read is 0.25 ms.
 - **Light.** No dependency at all: one crate in a build, where `pulldown-cmark` brings 4 and
   `comrak` 10. That 64 KB report costs 18 allocations, against 31 and 16,793.
 - **Linear.** Time and memory grow with the text, whatever it is: each of 19 texts built to be
-  slow costs 3.2 to 5.8 times as much at four times the size, never sixteen.
+  slow costs 3.5 to 5.5 times as much at four times the size, never sixteen.
 - **The forms of a reply.** Steps, tabs, figures and sources are in the tree as what they are,
   not as a quote and a list, and the text that teaches a model to write them comes with the
   parser.
-- **Whole.** Every one of CommonMark's 652 examples reads as the specification says.
+- **Whole.** Every one of CommonMark's 652 examples reads as the specification says, and every
+  case of the dialect's forms as the npm package reads it.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/compare-dark.png">
-    <img src="assets/compare-light.png" alt="markdown compared with pulldown-cmark and comrak: the time to read a short answer, an answer with forms, a long report and the CommonMark specification, a reply read again as it streams, and the allocations, memory and crates each parser brings" width="840">
+    <img src="assets/compare-light.png" alt="flowdown compared with pulldown-cmark and comrak: the time to read a short answer, an answer with forms, a long report and the CommonMark specification, a reply read again as it streams, and the allocations, memory and crates each parser brings" width="840">
   </picture>
 </p>
 
 How these are measured, and where the lead is small, is under [Measured](#measured).
+
+## Taking it
+
+From this repository by its tag; the crate is not on crates.io yet. It builds on Rust 1.89 and
+later, and for `wasm32-unknown-unknown`.
+
+```toml
+[dependencies]
+flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.0" }
+```
+
+Its versions are its own, apart from the npm package's: [CHANGELOG.md](CHANGELOG.md).
 
 ## Use
 
@@ -124,12 +140,12 @@ forms nest (a tab may hold steps):
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/tabs-dark.svg">
-  <img src="assets/tabs-light.svg" alt="Tabs and a tip, as llx draws them in a terminal" width="580">
+  <img src="assets/tabs-light.svg" alt="Tabs and a tip, as Localix CLI draws them in a terminal" width="580">
 </picture>
 
 A terminal folds nothing and switches nothing: tabs are drawn one under another, each under a
 rule that holds its label, and a folded section under its title. The tree says only what a form
-is; how it is shown is the renderer's. llx's gives a table's columns room by what they hold and
+is; how it is shown is the renderer's. Localix CLI's gives a table's columns room by what they hold and
 rules its rows apart when they hold long text, stands a task's mark where its bullet would,
 puts figures side by side, each number over what it counts (a list where no row holds them),
 gives a step's name and a source's address a row of their own, and keeps a code span on one row
@@ -154,19 +170,24 @@ that opens with a dash as its source.
 
 ### Telling the model
 
-A model writes the forms it was told of and no others, so the text that teaches them is the
-package's own: `flowdown::prompt()` is a section for a system prompt or a context (a heading,
-a rule a line, an example under those a model cannot guess), and the tests read every example
-in it into the form it shows. llx sends it with a session's context wherever the answer is
-drawn (`apps/server/src/context.rs`).
+A model writes the forms it was told of and no others, so the text that teaches them comes with
+the parser: `flowdown::prompt()` is a section for a system prompt or a context (a heading, a rule
+a line, an example under those a model cannot guess). It is the npm package's own
+(`answerFormatPrompt({ math: true })`), written here by its `bun run prompt`, so a model is taught
+one text whichever parser reads its reply; the tests read every example in it into the form it
+shows.
 
 ## What it reads
 
 - **CommonMark 0.31.2**: every one of the specification's 652 examples reads as the
-  specification says (`src/lib_tests.rs`, from `data/commonmark.txt`), and the same with
-  GitHub's extensions on, but for the two that are about a bare address.
+  specification says (`src/lib_tests.rs`, from the repository's `spec/commonmark/spec.txt`, the
+  file the npm package's tests read), and the same with GitHub's extensions on, but for the two
+  that are about a bare address.
 - **GitHub's extensions**: tables, strikethrough, task lists, bare links (`https://…`, `www.…`),
-  by the examples of GitHub's specification (`data/github.txt`).
+  by the examples of GitHub's specification (`spec/github/gfm-spec.txt`), but for the three bare
+  e-mail addresses, left as text.
+- **The forms of a reply**: every case of `spec/forms/spec.txt`, the cases the npm package's
+  parser is held to as well (`src/forms_tests.rs`).
 - **Footnotes**, with GitHub's extensions: `[^label]` where a `[^label]: text` defines it, the
   definition's lines after its first indented by four columns. Each is numbered as it is first
   referred to (`Kind::FootnoteRef`, its number `start`), and the ones referred to are the
@@ -191,26 +212,32 @@ the CommonMark specification. Each parser a round in turn, the median of 51.
 
 | Parser | Gives | Built for speed | Built for size | Allocations | Allocated |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `markdown` | a tree | 429 MB/s | 205 MB/s | 89 | 4.4 MB |
-| `markdown`, every node then visited | a tree, walked | 408 MB/s | 179 MB/s | 89 | 4.4 MB |
-| `pulldown-cmark` | events, dropped | 349 MB/s | 182 MB/s | 262 | 5.2 MB |
-| `pulldown-cmark`, events kept | events in a `Vec` | 303 MB/s | 169 MB/s | 339 | 13 MB |
-| `comrak` | a tree | 87 MB/s | 54 MB/s | 217,541 | 54 MB |
+| `flowdown` | a tree | 429 MB/s | 194 MB/s | 89 | 4.4 MB |
+| `flowdown`, every node then visited | a tree, walked | 407 MB/s | 167 MB/s | 89 | 4.4 MB |
+| `pulldown-cmark` | events, dropped | 357 MB/s | 182 MB/s | 262 | 5.2 MB |
+| `pulldown-cmark`, events kept | events in a `Vec` | 314 MB/s | 171 MB/s | 339 | 13 MB |
+| `comrak` | a tree | 90 MB/s | 55 MB/s | 217,548 | 54 MB |
 
-Apple M5, rustc 1.96.1. Built for speed (`opt-level = 3`, as llx's release builds this crate);
-built for size is every parser at `opt-level = "z"`, as the rest of llx is.
+Apple M5, rustc 1.100.0. Built for speed is every parser at `opt-level = 3`, as this workspace
+builds the crate; built for size is every parser at `opt-level = "z"`, as a program that ships
+small binaries builds them.
 
 How much faster it is, over everything measured:
 
 | | than `pulldown-cmark` | than `pulldown-cmark`, events kept | than `comrak` |
 | --- | ---: | ---: | ---: |
-| The whole corpus, built for speed | 1.2× | 1.4× | 5.0× |
-| The whole corpus, built for size | 1.1× | 1.2× | 3.8× |
-| One text, the least and the most of 7 | 1.1× to 1.9× | 1.3× to 2.0× | 4.2× to 11× |
-| One construct repeated, of 19 | 1.0× to 4.6× | 1.2× to 5.0× | 4.3× to 24× |
-| A reply read again as it streams, of 4 | 1.4× to 1.6× | 1.5× to 1.8× | 5.1× to 6.8× |
+| The whole corpus, built for speed | 1.2× | 1.4× | 4.7× |
+| The whole corpus, built for size | 1.1× | 1.1× | 3.5× |
+| One text, the least and the most of 7 | 1.1× to 1.8× | 1.3× to 2.0× | 4.0× to 10× |
+| One construct repeated, of 19 | 0.97× to 4.2× | 1.2× to 4.5× | 4.1× to 20× |
+| A reply read again as it streams, of 4 | 1.4× to 2.1× | 1.5× to 2.6× | 5.5× to 8.1× |
 | Allocations over the corpus, fewer by | 2.9× | 3.8× | 2,444× |
-| Memory asked for over the corpus, less by | 1.2× | 3.0× | 12× |
+| Memory asked for over the corpus, less by | 1.2× | 2.9× | 12× |
+
+Every figure here is held to [`bench/budgets.json`](bench/budgets.json) by the bench's `check`,
+which CI runs on the committed results: never slower than `pulldown-cmark` on a text or a stream,
+at least 1.1 times as fast over the corpus, a handful of allocations a read, and texts built to be
+slow that grow at most six times at four times their size.
 
 - [`bench/results/parse.md`](bench/results/parse.md): each text, the time of one read and its
   allocations (exact: the texts are fixed), built for speed;
@@ -222,25 +249,24 @@ How much faster it is, over everything measured:
 - [`bench/results/worst.md`](bench/results/worst.md): texts built to be slow, at one size and
   at four times it: the time grows as the text does.
 
-It is the faster of the three on every text, every construct, every stream and every text
-built to be slow. What the numbers do not say:
+It is the faster of the three on every text, every stream and every text built to be slow, and
+on every construct but one. What the numbers do not say:
 
-- On bare links the lead is within the noise (0.70 against 0.71 ns a byte), and
-  `pulldown-cmark` does not link them.
-- Built for size, the tree built and then walked is a little behind `pulldown-cmark`'s events
-  dropped (179 against 182 MB/s), and ahead of them kept.
+- On bare links it is a little behind (0.68 against 0.66 ns a byte), and `pulldown-cmark` does
+  not link them.
+- Built for size, the tree built and then walked is behind `pulldown-cmark`'s events, dropped and
+  kept (167 against 182 and 171 MB/s); the tree alone is ahead (194).
 - On the 512 KB reply the lead is its smallest, 1.1 times.
 - `pulldown-cmark` reads definition lists, and `comrak` many more extensions and writes HTML;
-  this reads none of those ([What it reads](#what-it-reads)). The numbers were taken before
-  footnotes and formulas were read.
-- The machine was not idle when these were taken (a load average near 4), which is why the
+  this reads none of those ([What it reads](#what-it-reads)).
+- The machine was not idle when these were taken (a load average near 3), which is why the
   parsers are timed a round each in turn: the ratios held from run to run, the absolute times
   moved by a tenth.
 
-To run them again: `sh bench/run.sh` (it fetches pulldown-cmark's sources once for two of the
-texts, builds, and writes `bench/results/` and `assets/`: the chart as an SVG and, drawn from it
-by `resvg`, the PNG shown above). The times are the machine's; the
-allocation counts are the same on every run.
+To run them again: `sh bench/run.sh` (it fetches pulldown-cmark's sources once for its benchmark
+text, builds, writes `bench/results/` and `assets/`: the chart as an SVG and, drawn from it by
+`resvg`, the PNG shown above, then holds the results to the budgets). The times are the
+machine's; the allocation counts are the same on every run.
 
 ## How it is made
 
