@@ -37,8 +37,16 @@ fn a_link_finds_its_definition_whatever_the_case_and_the_spaces() {
     let mut refs = Refs::default();
     let mut own = String::new();
     assert!(refs.define("[Foo  Bar]: /there\n", &mut own, 0).is_some());
-    assert!(refs.define("[ΑΓΩ]: /greek\n", &mut own, 0).is_some());
-    for label in ["foo bar", "FOO\tBAR", " foo\n bar ", "αγω"] {
+    assert!(
+        refs.define("[\u{391}\u{393}\u{3a9}]: /greek\n", &mut own, 0)
+            .is_some()
+    );
+    for label in [
+        "foo bar",
+        "FOO\tBAR",
+        " foo\n bar ",
+        "\u{3b1}\u{3b3}\u{3c9}",
+    ] {
         assert!(refs.get(label).is_some(), "{label:?}");
     }
     assert!(refs.get("foobar").is_none());

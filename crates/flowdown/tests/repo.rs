@@ -127,6 +127,16 @@ fn tests_live_in_their_own_files() {
     }
 }
 
+/// A letter of a script other than Latin. Symbols, arrows, box drawing, math and the micro sign
+/// of `µs` stay allowed.
+fn foreign(c: char) -> bool {
+    let latin = c.is_ascii()
+        || c == '\u{b5}'
+        || ('\u{c0}'..='\u{24f}').contains(&c)
+        || ('\u{1e00}'..='\u{1eff}').contains(&c);
+    c.is_alphabetic() && !latin && !('\u{2100}'..='\u{214f}').contains(&c)
+}
+
 /// A test that needs another script writes it as an escape (`\u{43f}`): the files stay English.
 #[test]
 fn the_crate_is_english_only() {
@@ -134,13 +144,17 @@ fn the_crate_is_english_only() {
     walk(&root(), &|_| true, &mut files);
     assert!(files.len() > 20, "found only {} files", files.len());
     let found: Vec<String> = (files.iter())
-        .filter(|path| {
-            std::fs::read_to_string(path)
-                .is_ok_and(|text| text.chars().any(|c| ('\u{400}'..='\u{52f}').contains(&c)))
-        })
+        .filter(|path| std::fs::read_to_string(path).is_ok_and(|text| text.chars().any(foreign)))
         .map(|path| shown(path))
         .collect();
-    assert!(found.is_empty(), "Cyrillic in {found:?}");
+    assert!(found.is_empty(), "a script other than Latin in {found:?}");
+}
+
+#[test]
+fn another_script_is_found_and_symbols_are_not() {
+    assert!(foreign('\u{3b1}') && foreign('\u{43f}') && foreign('\u{4e2d}'));
+    assert!(!foreign('\u{e9}') && !foreign('\u{2192}') && !foreign('\u{2500}'));
+    assert!(!foreign('\u{d7}') && !foreign('\u{b5}') && !foreign('\u{2124}'));
 }
 
 #[test]
