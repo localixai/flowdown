@@ -48,6 +48,10 @@ fn cases(n: usize) -> Vec<(&'static str, String)> {
             format!("[x]: {}{}", "x".repeat(n / 20), "\n[x]".repeat(n / 20)),
         ),
         ("bare links", "http://a.b/".repeat(n)),
+        (
+            "an address, then `)` again and again",
+            format!("https://a.b{}", ")".repeat(n)),
+        ),
     ]
 }
 

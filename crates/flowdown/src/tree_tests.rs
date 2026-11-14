@@ -170,6 +170,9 @@ fn deep_and_long_runs_are_read_in_time() {
         "|a".repeat(5_000) + "\n" + &"|-".repeat(5_000) + "\n" + &"|b".repeat(5_000),
         "<!--".repeat(20_000),
         "http://a.b/".repeat(10_000),
+        // An address's trailing `)`s, each weighed against the brackets it holds.
+        format!("https://a{}", ")".repeat(100_000)),
+        format!("https://a({}", ")".repeat(100_000)),
         "a ".repeat(20_000) + "\n" + &"[a]: b\n".repeat(5_000),
         "$a ".repeat(30_000),
         "$$a".repeat(30_000),

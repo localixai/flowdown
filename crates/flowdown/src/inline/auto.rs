@@ -64,6 +64,15 @@ fn email(text: &[u8], at: usize) -> Option<usize> {
     }
 }
 
+/// How many more `)` than `(` `bytes` holds.
+fn brackets(bytes: &[u8]) -> isize {
+    bytes.iter().fold(0, |sum, byte| match byte {
+        b')' => sum + 1,
+        b'(' => sum - 1,
+        _ => sum,
+    })
+}
+
 impl Inline<'_, '_, '_> {
     /// A link whose text is its address: `text` is shown, `dest` where it leads.
     fn link(&mut self, dest: Span, text: Span, end: usize) {
@@ -96,16 +105,20 @@ impl Inline<'_, '_, '_> {
         }
     }
 
-    /// Where the address that starts at `at` ends, its trailing punctuation left out.
+    /// Where the address that starts at `at` ends, its trailing punctuation left out. A `)` is
+    /// left out while the address closes more brackets than it opens. The brackets are counted
+    /// once, when a `)` first ends it, and the count kept as the end moves back: a long run of
+    /// them stays linear, and an address with none is never counted.
     fn address(&self, at: usize, prefix: usize) -> usize {
         let mut end = unbroken(self.bytes, at + prefix);
+        // How many more `)` than `(` the address holds, once a `)` asks.
+        let mut unopened: Option<isize> = None;
         loop {
             let last = self.bytes[end - 1];
             let link = &self.bytes[at..end];
-            let count = |mark: u8| link.iter().filter(|byte| **byte == mark).count();
             let trails = match last {
                 b'?' | b'!' | b'.' | b',' | b':' | b'*' | b'_' | b'~' | b'\'' | b'"' => true,
-                b')' => count(b')') > count(b'('),
+                b')' => *unopened.get_or_insert_with(|| brackets(link)) > 0,
                 _ => false,
             };
             // What reads as a character reference at the end (`&hl;`) is not the address's.
@@ -115,11 +128,18 @@ impl Inline<'_, '_, '_> {
                     .rposition(|byte| !byte.is_ascii_alphanumeric() && *byte != b';')
                     .is_some_and(|amp| link[amp] == b'&' && amp + 2 < link.len());
             if reference {
-                end = at + link.iter().rposition(|byte| *byte == b'&').unwrap_or(0);
+                let cut = link.iter().rposition(|byte| *byte == b'&').unwrap_or(0);
+                if let Some(unopened) = unopened.as_mut() {
+                    *unopened -= brackets(&link[cut..]);
+                }
+                end = at + cut;
                 continue;
             }
             if !trails || end <= at + prefix {
                 return end;
+            }
+            if let (b')', Some(unopened)) = (last, unopened.as_mut()) {
+                *unopened -= 1;
             }
             end -= 1;
         }

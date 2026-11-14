@@ -25,3 +25,9 @@ The crate's first version in this repository, as it left Localix CLI's `packages
 - Unicode's punctuation is Unicode 17's, the table the npm package's parser reads (it was
   Unicode 13's): emphasis next to a character added since is delimited as both parsers agree.
 - `prompt()` returns the npm package's section, formulas taught, in place of Localix CLI's own.
+
+### Fixed since Localix CLI's copy
+
+- A bare address followed by a long run of `)` took time that grew with the square of the run
+  (160 KB of them, 3 s): the brackets were counted again for each `)` let go. They are counted
+  once, and only when a `)` ends the address (R7). The bench's `worst` measures the case.
