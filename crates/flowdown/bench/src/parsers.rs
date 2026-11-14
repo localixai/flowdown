@@ -69,7 +69,7 @@ pub const OURS: Reader = Reader {
     read: ours,
 };
 pub const OURS_WALKED: Reader = Reader {
-    name: "markdown, walked",
+    name: "flowdown, walked",
     gives: "a tree, every node visited",
     read: ours_walked,
 };

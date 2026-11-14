@@ -1,9 +1,9 @@
 #!/bin/sh
 # Every benchmark, its result written to results/: every parser built for speed (opt-level 3),
 # as flowdown's workspace builds it, and the whole-text one again with all of them built for size
-# (opt-level z), as a program that ships small builds it. The texts are generated from fixed seeds or fetched at a
-# pinned release (fetch.sh), so the allocation counts are the same on every run; the times are
-# the machine's.
+# (opt-level z). The texts are generated from fixed seeds, read from spec/ or fetched at a pinned
+# release (fetch.sh), so the allocation counts are the same on every run; the times are the
+# machine's.
 set -eu
 cd "$(dirname "$0")"
 sh fetch.sh >/dev/null

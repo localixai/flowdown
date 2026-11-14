@@ -57,7 +57,7 @@ fn main() {
         ),
         (
             "bare links",
-            "`https://…` (only `markdown` and `comrak` link them)",
+            "`https://…` (only `flowdown` and `comrak` link them)",
             line("the https://example.com/parser reads https://example.com/each line\n"),
         ),
         (

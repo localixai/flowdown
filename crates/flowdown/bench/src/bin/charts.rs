@@ -42,7 +42,7 @@ const DARK: Theme = Theme {
 
 /// The parsers drawn, as the results name them. `pulldown-cmark` with its events dropped: the
 /// least it can be asked for.
-const PARSERS: [&str; 3] = ["markdown", "pulldown-cmark", "comrak"];
+const PARSERS: [&str; 3] = ["flowdown", "pulldown-cmark", "comrak"];
 
 /// One panel: what was measured, and each parser's figure with how it reads.
 struct Panel {

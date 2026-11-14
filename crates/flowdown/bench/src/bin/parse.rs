@@ -52,7 +52,7 @@ fn main() {
     };
     println!("# The whole text, read once\n\n{}\n", machine());
     println!("## Over the whole corpus\n");
-    println!("| Parser | Gives | Throughput | markdown is faster by | Allocations | Allocated |");
+    println!("| Parser | Gives | Throughput | flowdown is faster by | Allocations | Allocated |");
     println!("| --- | --- | ---: | ---: | ---: | ---: |");
     for (r, reader) in ALL.iter().enumerate() {
         let allocations: u64 = (0..texts.len()).map(|text| cell(text, r).allocations).sum();

@@ -54,7 +54,7 @@ fn cases(n: usize) -> Vec<(&'static str, String)> {
 fn main() {
     let (small, large) = (cases(5_000), cases(20_000));
     println!(
-        "| Text | Size | `markdown` | at four times | grows | `pulldown-cmark` | at four times | grows |"
+        "| Text | Size | `flowdown` | at four times | grows | `pulldown-cmark` | at four times | grows |"
     );
     println!("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |");
     for ((name, text), (_, larger)) in small.iter().zip(&large) {
