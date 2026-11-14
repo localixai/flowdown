@@ -26,6 +26,7 @@ Every entry point and export of flowdown, and every prop of `<Markdown>`.
 | `@localix-ai/flowdown/html`       | The raw HTML stage (reader and sanitizer).                    |                             |
 | `@localix-ai/flowdown/math`       | The math stage.                                               | `katex` 0.16 or later       |
 | `@localix-ai/flowdown/highlight`  | A highlighter for fenced code.                                | `highlight.js` 11           |
+| `@localix-ai/flowdown/mermaid`    | The diagram renderer, for a page that draws ` ```mermaid ` fences itself. | `mermaid`, loaded by you |
 
 The package is ESM only. Every module that uses React hooks starts with `'use client'`.
 Only `@localix-ai/flowdown` itself imports React. `/static`, `/tui`, `/document`, `/engine`, `/remark`,

@@ -73,6 +73,9 @@ CI runs the check and the tests on the crate's `rust-version` (`.github/workflow
   and reaches both parsers in the same commit; both suites run its cases and check their list of
   markers against its table. The crate's prompt and tables are written from the package's
   (`prompt`, `crate-tables`), never edited by hand: the package's tests fail when they differ.
+- **One README.** The package's README on npm is the repository's, its links made absolute and
+  its Development section left out: change `README.md` at the root, then `bun run --cwd
+  packages/flowdown readme`. `src/readme.test.ts` fails when the copy differs.
 - TypeScript is formatted by Oxfmt and linted by Oxlint: two spaces, 100 columns, single quotes, no
   semicolons, trailing commas. English only. Comments say why.
 

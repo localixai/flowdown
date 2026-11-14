@@ -83,7 +83,8 @@
     "size": "bun scripts/size.ts",
     "conformance": "bun scripts/conformance.ts",
     "prompt": "bun scripts/prompt.ts",
-    "crate-tables": "bun scripts/crate-tables.ts"
+    "crate-tables": "bun scripts/crate-tables.ts",
+    "readme": "bun scripts/readme.ts"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
