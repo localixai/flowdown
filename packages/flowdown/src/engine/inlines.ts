@@ -642,26 +642,41 @@ const parseEntity = (): void => {
 const isAlphanumeric = (code: number): boolean =>
   (code >= 48 && code <= 57) || (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
 
-/** Where a bare URL ends, by GitHub's rules for what trails a link without being part of it. */
+/** How many more `(` than `)` the characters of `link` from `from` to `to` hold. */
+const parenBalance = (link: string, from: number, to: number): number => {
+  let balance = 0
+  for (let index = from; index < to; index++) {
+    const code = link.charCodeAt(index)
+    if (code === C_OPEN_PAREN) balance++
+    else if (code === C_CLOSE_PAREN) balance--
+  }
+  return balance
+}
+
+/**
+ * Where a bare URL ends, by GitHub's rules for what trails a link without being part of it. A `)`
+ * trails while the link closes more brackets than it opens. The brackets are counted once, when a
+ * `)` first ends the link, and the count kept as the end moves back: a long run of them stays
+ * linear, and a link with none is never counted.
+ */
 const trimBareLink = (link: string): string => {
   let length = link.length
+  let balance: number | undefined
   for (;;) {
     const last = link.charCodeAt(length - 1)
     if ('?!.,:*_~\'"'.indexOf(link.charAt(length - 1)) !== -1 && length > 0) length--
     else if (last === C_CLOSE_PAREN) {
-      let balance = 0
-      for (let index = 0; index < length; index++) {
-        const code = link.charCodeAt(index)
-        if (code === C_OPEN_PAREN) balance++
-        else if (code === C_CLOSE_PAREN) balance--
-      }
+      balance ??= parenBalance(link, 0, length)
       if (balance >= 0) break
+      balance++
       length--
     } else if (last === 59 /* ; */) {
       let start = length - 2
       while (start >= 0 && isAlphanumeric(link.charCodeAt(start))) start--
-      if (start >= 0 && start < length - 2 && link.charCodeAt(start) === C_AMPERSAND) length = start
-      else length--
+      if (start >= 0 && start < length - 2 && link.charCodeAt(start) === C_AMPERSAND) {
+        if (balance !== undefined) balance -= parenBalance(link, start, length)
+        length = start
+      } else length--
     } else break
   }
   return link.slice(0, length)

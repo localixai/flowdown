@@ -2,7 +2,7 @@
 //! printed as HTML is what the specification gives.
 
 use crate::testing::html;
-use crate::testing::spec::{COMMONMARK, Example, GITHUB, examples};
+use crate::testing::spec::{BARE_LINKS, COMMONMARK, Example, GITHUB, examples};
 use crate::{Dialect, parse_as};
 
 /// The examples that read otherwise than expected, each with what it gave.
@@ -95,4 +95,17 @@ fn a_last_line_with_no_ending_stays_a_cut_of_the_source() {
         let (source, read) = (text.as_bytes().as_ptr_range(), node.text().as_ptr());
         assert!(source.contains(&read), "{text:?}: {:?}", node.text());
     }
+}
+
+#[test]
+fn a_bare_address_lets_go_of_what_trails_it_as_cmark_gfm_does() {
+    let examples = examples(BARE_LINKS, true);
+    assert!(examples.len() >= 6, "found only {}", examples.len());
+    let failed = failures(&examples, Dialect::Github);
+    assert!(
+        failed.is_empty(),
+        "{} failed:\n{}",
+        failed.len(),
+        failed.join("\n")
+    );
 }

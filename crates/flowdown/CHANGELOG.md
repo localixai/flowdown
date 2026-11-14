@@ -25,6 +25,8 @@ The crate's first version in this repository, as it left Localix CLI's `packages
 - Unicode's punctuation is Unicode 17's, the table the npm package's parser reads (it was
   Unicode 13's): emphasis next to a character added since is delimited as both parsers agree.
 - `prompt()` returns the npm package's section, formulas taught, in place of Localix CLI's own.
+- A bare address lets go of a `;` at its end, as cmark-gfm and the npm package do: it kept one
+  that ended no character reference (`spec/github/bare-links.txt`).
 
 ### Fixed since Localix CLI's copy
 

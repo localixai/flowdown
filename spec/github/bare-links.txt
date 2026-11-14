@@ -1,0 +1,55 @@
+---
+title: Bare links, as cmark-gfm ends them
+...
+
+# Bare links, as cmark-gfm ends them
+
+flowdown's own cases of GitHub's bare links, where GitHub's specification shows less than
+cmark-gfm does: which characters at an address's end are let go of. Each is what cmark-gfm
+writes, and both of flowdown's parsers are held to it.
+
+## What trails an address
+
+A `;` is let go, alone or with the character reference it ends.
+
+```````````````````````````````` example autolink
+https://a.b/c;
+.
+<p><a href="https://a.b/c">https://a.b/c</a>;</p>
+````````````````````````````````
+
+```````````````````````````````` example autolink
+https://a.b/c&hl;
+.
+<p><a href="https://a.b/c">https://a.b/c</a>&amp;hl;</p>
+````````````````````````````````
+
+A `)` is let go while the address closes more brackets than it opens.
+
+```````````````````````````````` example autolink
+https://a.b/(c))
+.
+<p><a href="https://a.b/(c)">https://a.b/(c)</a>)</p>
+````````````````````````````````
+
+```````````````````````````````` example autolink
+https://a.b/c).
+.
+<p><a href="https://a.b/c">https://a.b/c</a>).</p>
+````````````````````````````````
+
+Punctuation that ends a sentence is let go, however much of it there is.
+
+```````````````````````````````` example autolink
+https://a.b/c?!
+.
+<p><a href="https://a.b/c">https://a.b/c</a>?!</p>
+````````````````````````````````
+
+```````````````````````````````` example autolink
+www.a.b/c...
+.
+<p><a href="http://www.a.b/c">www.a.b/c</a>...</p>
+````````````````````````````````
+
+<!-- END TESTS -->

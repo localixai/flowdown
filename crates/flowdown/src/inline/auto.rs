@@ -116,8 +116,9 @@ impl Inline<'_, '_, '_> {
         loop {
             let last = self.bytes[end - 1];
             let link = &self.bytes[at..end];
+            // A `;` is let go as cmark-gfm lets it go: with the reference it ends, or alone.
             let trails = match last {
-                b'?' | b'!' | b'.' | b',' | b':' | b'*' | b'_' | b'~' | b'\'' | b'"' => true,
+                b'?' | b'!' | b'.' | b',' | b':' | b'*' | b'_' | b'~' | b'\'' | b'"' | b';' => true,
                 b')' => *unopened.get_or_insert_with(|| brackets(link)) > 0,
                 _ => false,
             };

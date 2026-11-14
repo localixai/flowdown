@@ -2,8 +2,8 @@
  * What a reply cannot do to the page that draws it by its shape alone: no depth of nesting
  * overflows the stack, and no repetition takes time that grows faster than the text.
  *
- * Each input here once did one or the other: twenty thousand `>` threw a `RangeError`, and 313 KB
- * of `[a](` took thirteen seconds. The time checks compare a text with one four times as long,
+ * Each input here once did one or the other: twenty thousand `>` threw a `RangeError`, 313 KB
+ * of `[a](` took thirteen seconds, and 160 KB of `)` after an address six. The time checks compare a text with one four times as long,
  * so they hold on a slow machine as on a fast one.
  */
 import { expect, test } from 'bun:test'
@@ -77,6 +77,8 @@ const REPEATED: [string, (count: number) => string][] = [
   ['open code spans', (count) => '`a ``b '.repeat(count)],
   ['open tags', (count) => '<a '.repeat(count)],
   ['footnote references', (count) => `${'[^1]'.repeat(count)}\n\n[^1]: x`],
+  // Each `)` let go of an address once counted every bracket of it again: 160 KB took 6 s.
+  ['brackets after an address', (count) => `https://a.b${')'.repeat(count * 4)}`],
   [
     'table cells',
     (count) => `${'|a'.repeat(count)}|\n${'|-'.repeat(count)}|\n${'|b'.repeat(count)}|`,

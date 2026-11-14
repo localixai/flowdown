@@ -8,7 +8,7 @@ addEntities(ENTITY_TABLE)
 
 export interface Example {
   /** The suite the example belongs to. */
-  suite: 'CommonMark' | 'GFM' | 'cmark-gfm' | 'forms'
+  suite: 'CommonMark' | 'GFM' | 'cmark-gfm' | 'forms' | 'flowdown'
   section: string
   number: number
   markdown: string
@@ -70,6 +70,9 @@ export const formMarkers = (): [string, string][] =>
       /^\| `\[!(\w+)\]` \| (\w+) \|/gm,
     ),
   ].map((hit) => [hit[1] ?? '', hit[2] ?? ''])
+
+/** flowdown's own cases of GitHub's bare links, as cmark-gfm ends them, held to by both parsers. */
+export const bareLinks = (): Example[] => examples('github/bare-links.txt', 'flowdown')
 
 /** cmark-gfm's own tests of the extensions: tables, strikethrough, autolinks, task lists, footnotes. */
 export const cmarkGfm = (): Example[] => examples('github/gfm-extensions.txt', 'cmark-gfm')

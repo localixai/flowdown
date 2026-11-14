@@ -67,6 +67,9 @@ pub(crate) fn examples(spec: &str, extensions: bool) -> Vec<Example> {
     found
 }
 
+/// flowdown's own cases of GitHub's bare links, as cmark-gfm ends them.
+pub(crate) const BARE_LINKS: &str = include_str!("../../../../spec/github/bare-links.txt");
+
 /// The dialect's forms: their markers and the cases both parsers must read alike.
 pub(crate) const FORMS: &str = include_str!("../../../../spec/forms/spec.txt");
 

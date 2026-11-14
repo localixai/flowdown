@@ -9,6 +9,7 @@ measure themselves against different texts.
 | `commonmark/spec.txt` | CommonMark 0.31.2, its 652 examples | `packages/flowdown/test/spec/load.ts`, `crates/flowdown/src/testing/spec.rs`, both benches (a long real text) |
 | `github/gfm-spec.txt` | GitHub Flavored Markdown's specification; the examples marked with an extension are its extensions | both test suites: the npm package every one of the 24, the crate all but `tagfilter` (a filter of the HTML a renderer writes; the crate writes none), its three bare e-mail addresses read as text and named in its tests |
 | `github/gfm-extensions.txt` | cmark-gfm's own tests of the extensions | the npm package's |
+| `github/bare-links.txt` | flowdown's own cases of GitHub's bare links: which characters at an address's end are let go of, as cmark-gfm does it, where GitHub's specification shows less | both test suites (`src/engine/spec.test.ts`, `src/lib_tests.rs`) |
 | `forms/spec.txt` | The dialect's forms (`> [!STEPS]`, `> [!TABS]`, …): the table of their markers, and cases whose expected result is the forms a text holds, as both suites print them | `packages/flowdown/src/forms-spec.test.ts` (with `test/forms.ts`), `crates/flowdown/src/forms_tests.rs` (with `src/testing/spec.rs`) |
 
 An example is a fence of 32 backticks opened with `example` and the extension it is about, the
@@ -26,6 +27,7 @@ the examples of a file from 1, in order, as the specifications do.
   its BSD 2-Clause license.
 
 A file here changes only by copying a newer release whole; both suites then say what moved.
-`forms/spec.txt` is ours: a change to the dialect is a change there first, then to both parsers,
-in one commit. Each suite also checks its own list of markers against the file's table.
-`scripts/conformance.ts` in the package writes `docs/conformance.md` from the npm package's run.
+`forms/spec.txt` and `github/bare-links.txt` are ours: a change to the dialect is a change there
+first, then to both parsers, in one commit. Each suite also checks its own list of markers against
+the file's table. `scripts/conformance.ts` in the package writes `docs/conformance.md` from the npm
+package's run.
