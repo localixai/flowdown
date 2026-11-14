@@ -312,6 +312,8 @@ const checkTable = (checks: Check[]): string[] => [
 
 const EXTENSION_NAMES: Record<string, string> = {
   table: 'Tables',
+  // GitHub's file marks its task list examples `disabled`: cmark-gfm's own runner skips them.
+  disabled: 'Task lists',
   strikethrough: 'Strikethrough',
   autolink: 'Autolinks',
   tagfilter: 'Disallowed raw HTML',

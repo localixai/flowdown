@@ -31,6 +31,6 @@ suite("cmark-gfm's extension tests", cmarkGfm())
 
 test('the suites are whole', () => {
   expect(commonmark().length).toBe(652)
-  expect(gfm().length).toBe(22)
+  expect(gfm().length).toBe(24)
   expect(cmarkGfm().length).toBe(30)
 })

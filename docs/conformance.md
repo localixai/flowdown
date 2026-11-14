@@ -7,7 +7,7 @@ flowdown reads Markdown with its own parser. This page is what that parser is he
 | Suite | Examples | Pass |
 | --- | ---: | ---: |
 | [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) | 652 | 652 |
-| [GitHub Flavored Markdown](https://github.github.com/gfm/), the extensions | 22 | 22 |
+| [GitHub Flavored Markdown](https://github.github.com/gfm/), the extensions | 24 | 24 |
 | [cmark-gfm](https://github.com/github/cmark-gfm)'s extension tests | 30 | 30 |
 
 ## CommonMark
@@ -51,10 +51,11 @@ The examples of GitHub's specification that are about one of its extensions. (Th
 | Extension | Examples | Pass |
 | --- | ---: | ---: |
 | Tables | 8 | 8 |
+| Task lists | 2 | 2 |
 | Strikethrough | 2 | 2 |
 | Autolinks | 11 | 11 |
 | Disallowed raw HTML | 1 | 1 |
-| **All** | **22** | **22** |
+| **All** | **24** | **24** |
 
 cmark-gfm is GitHub's parser; these are the tests it keeps for its extensions.
 

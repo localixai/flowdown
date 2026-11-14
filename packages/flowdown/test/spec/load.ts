@@ -49,13 +49,13 @@ const examples = (file: string, suite: Example['suite']): Example[] => {
 export const commonmark = (): Example[] => examples('commonmark/spec.txt', 'CommonMark')
 
 /**
- * The examples of GitHub Flavored Markdown's specification that are about an extension. The rest
- * of that file restates an older CommonMark, which the CommonMark suite covers at 0.31.2.
+ * The examples of GitHub Flavored Markdown's specification that are about an extension, task
+ * lists (marked `disabled`) among them. The rest of that file restates an older CommonMark, which
+ * the CommonMark suite covers at 0.31.2. The Rust crate runs the same ones but `tagfilter`, a
+ * filter of the HTML a renderer writes, where the crate writes none.
  */
 export const gfm = (): Example[] =>
-  examples('github/gfm-spec.txt', 'GFM').filter(
-    (example) => example.extension !== '' && example.extension !== 'disabled',
-  )
+  examples('github/gfm-spec.txt', 'GFM').filter((example) => example.extension !== '')
 
 /**
  * The dialect's forms (`spec/forms/spec.txt`): what follows an example's `.` is the forms the text
