@@ -37,7 +37,7 @@ The default prompt, in full:
 
 ```markdown
 # Answer formatting
-- Shape every reply with the forms in "Answer formatting": the page renders them, and a plain list or table where a form fits is a formatting defect.
+- Shape every reply with the forms in "Answer formatting": the reader sees them drawn, and a plain list or table where a form fits is a formatting defect.
 Replies render as GitHub Markdown plus the forms below; the user's style preferences override them.
 Match the content to the first form that fits; a table or list is the fallback. Write a marker as its own quote line, the content unquoted after it.
 - Lead with the answer. Short replies use prose; long ones use `##` per thread, short paragraphs and selective bold.

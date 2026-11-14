@@ -7,6 +7,11 @@ The Rust crate `flowdown`. Its versions are its own, apart from the npm package'
 
 ## Unreleased
 
+### Changed
+
+- `prompt()`'s first rule says the reader sees the forms drawn, not that the page renders them:
+  the text teaches a model whatever draws its reply, a terminal among them.
+
 ## 0.1.0
 
 The crate's first version in this repository, as it left Localix CLI's `packages/markdown`.

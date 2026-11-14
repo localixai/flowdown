@@ -50,7 +50,7 @@ const shown = (lines: readonly string[]) =>
  * list and "worth it?" with prose. Stated among the leading rules, they are part of answering.
  */
 export function answerFormsPrinciple(header = ANSWER_FORMAT_HEADER): string {
-  return `- Shape every reply with the forms in "${header.replace(/^#+\s*/, '')}": the page renders them, and a plain list or table where a form fits is a formatting defect.`
+  return `- Shape every reply with the forms in "${header.replace(/^#+\s*/, '')}": the reader sees them drawn, and a plain list or table where a form fits is a formatting defect.`
 }
 
 /** The section that teaches the dialect, ready to place in a system prompt. */
