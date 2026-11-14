@@ -157,6 +157,10 @@ fn no_marker_is_longer_than_the_longest_looked_for() {
 }
 
 #[test]
+#[expect(
+    clippy::wildcard_enum_match_arm,
+    reason = "a form other than a callout is named by its kind, as the table names it"
+)]
 fn the_markers_read_are_the_specifications() {
     let read: Vec<(String, String)> = FORMS
         .iter()
@@ -168,7 +172,11 @@ fn the_markers_read_are_the_specifications() {
             ((*name).to_owned(), form)
         })
         .collect();
-    assert_eq!(read, markers(), "forms.rs's FORMS against spec/forms/spec.txt's table");
+    assert_eq!(
+        read,
+        markers(),
+        "forms.rs's FORMS against spec/forms/spec.txt's table"
+    );
 }
 
 #[test]
@@ -189,5 +197,10 @@ fn every_case_of_the_forms_reads_as_the_specification_says() {
             })
         })
         .collect();
-    assert!(failed.is_empty(), "{} failed:\n{}", failed.len(), failed.join("\n"));
+    assert!(
+        failed.is_empty(),
+        "{} failed:\n{}",
+        failed.len(),
+        failed.join("\n")
+    );
 }

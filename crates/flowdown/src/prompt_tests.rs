@@ -67,6 +67,9 @@ fn tabs_end_at_the_rule_so_what_follows_is_not_in_the_last_one() {
     let doc = parse(&text);
     let kinds: Vec<Kind> = doc.blocks().map(|block| block.kind()).collect();
     assert_eq!(kinds, [Kind::Tabs, Kind::Paragraph]);
-    let labels = tabs.lines().filter(|line| line.starts_with("#### ")).count();
+    let labels = tabs
+        .lines()
+        .filter(|line| line.starts_with("#### "))
+        .count();
     assert_eq!(doc.blocks().next().unwrap().children().count(), labels);
 }

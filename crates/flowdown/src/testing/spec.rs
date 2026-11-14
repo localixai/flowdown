@@ -53,7 +53,12 @@ pub(crate) fn examples(spec: &str, extensions: bool) -> Vec<Example> {
             let tag = tag.trim();
             if tag.is_empty() != extensions && tag != "tagfilter" {
                 let section = section.clone();
-                found.push(Example { number, section, markdown, html });
+                found.push(Example {
+                    number,
+                    section,
+                    markdown,
+                    html,
+                });
             }
         } else if line.starts_with('#') && line.trim_start_matches('#').starts_with(' ') {
             section = line.trim_start_matches('#').trim().to_owned();
@@ -95,6 +100,10 @@ fn items(node: Node<'_>) -> usize {
         .map_or(0, |list| list.children().count())
 }
 
+#[expect(
+    clippy::wildcard_enum_match_arm,
+    reason = "a form other than a callout is printed by its kind's name, as the file writes it"
+)]
 fn forms_in(node: Node<'_>, depth: usize, out: &mut String) {
     for child in node.children() {
         let kind = child.kind();
@@ -110,7 +119,10 @@ fn forms_in(node: Node<'_>, depth: usize, out: &mut String) {
         if !child.title().is_empty() {
             write!(out, " \"{}\"", child.title()).unwrap();
         }
-        if matches!(kind, Kind::Steps | Kind::Stats | Kind::Pros | Kind::Cons | Kind::Sources) {
+        if matches!(
+            kind,
+            Kind::Steps | Kind::Stats | Kind::Pros | Kind::Cons | Kind::Sources
+        ) {
             write!(out, " {}", items(child)).unwrap();
         }
         out.push('\n');
