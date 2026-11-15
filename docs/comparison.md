@@ -118,23 +118,23 @@ with script alone in brackets. Lower is better.
 
 | Library | Chat, 5k | Answer, 20k | Tables, 20k | Code, 50k | Answer, 100k |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| **flowdown** | **287** (135) | **977** (411) | **700** (349) | **3,113** (647) | **7,731** (2,917) |
-| Streamdown | 556 (474) | 2,611 (2,275) | 16,491 (16,157) | 23,387 (18,754) | 20,875 (19,162) |
-| react-markdown | 1,060 (996) | 11,132 (10,892) | 12,962 (12,687) | 13,061 (10,359) | stopped at 37% |
-| markdown-to-jsx | 327 (208) | 1,604 (1,276) | 2,482 (2,130) | 4,543 (697) | 19,813 (18,153) |
-| markstream | 631 (490) | 2,538 (1,877) | 4,526 (4,017) | 10,202 (6,613) | 28,126 (24,069) |
-| marked-react | 491 (382) | 1,979 (1,626) | 2,650 (2,296) | 3,864 (**527**) | 25,461 (23,789) |
+| **flowdown** | **186** (95) | **745** (314) | **298** (148) | **1,852** (377) | **3,202** (1,156) |
+| Streamdown | 399 (336) | 2,111 (1,833) | 17,214 (16,836) | 24,326 (19,410) | 18,664 (16,339) |
+| react-markdown | 981 (933) | 11,048 (10,829) | 13,667 (13,331) | 13,038 (10,331) | stopped at 33% |
+| markdown-to-jsx | 199 (143) | 1,351 (1,128) | 1,556 (1,222) | 3,923 (562) | 18,441 (16,449) |
+| markstream | 334 (271) | 2,147 (1,618) | 4,822 (4,100) | 10,004 (6,490) | 27,623 (23,415) |
+| marked-react | 298 (233) | 1,650 (1,434) | 1,642 (1,327) | 3,697 (545) | 22,242 (20,828) |
 
 - **The order holds, the gaps are smaller.** A browser lays the page out and paints it for every
-  renderer alike, and that is most of what flowdown has left: on 50k of code it spends 0.6 s in
-  script and 3.1 s in all.
-- **One place flowdown is not first:** script time on one long code block, where marked-react
-  spends less (527 ms against 647). Over the whole main thread flowdown is first in every row.
+  renderer alike, and that is most of what flowdown has left: on 50k of code it spends 0.4 s in
+  script and 1.9 s in all.
+- **Closest on a short chat answer.** There markdown-to-jsx takes 199 ms of the main thread
+  against flowdown's 186. flowdown is first in every cell, in script and over the whole main thread.
 
 How this is measured: Chromium 156 on the same Apple M5, the median of three runs, every renderer
-in turn so a slow minute falls on all of them. The run takes 45 minutes and the machine warms up
-through it: flowdown alone on a rested machine streams the 100k answer in 1.4 to 2.0 s of script,
-so read the rows against each other, not as what a page will take. flowdown is drawn with its
+in turn so a slow minute falls on all of them. The run takes 45 minutes and no two runs agree
+(flowdown's own script time on the 100k answer was a quarter higher in a run an hour before this
+one), so read the rows against each other, not as what a page will take. flowdown is drawn with its
 stylesheet, the others as their components leave them. Every number is in
 [bench/results/browser.md](../bench/results/browser.md).
 
