@@ -105,8 +105,9 @@ fails when it is broken.
 ## Releases
 
 - A change to the package carries a changeset (`bunx changeset`). `demo` and the examples take none.
-- A tag `v<version>` publishes to npm, and a push to `main` that changes `site/`, `docs/` or the
-  library publishes the site. Never tag, publish or push unasked.
+- A tag `v<version>` publishes to npm and makes the GitHub release from the changelog, and a push
+  to `main` that changes `site/`, `docs/` or the library publishes the site. Never tag, publish or
+  push unasked.
 - The crate has versions of its own: a change to it is written under "Unreleased" in
   `crates/flowdown/CHANGELOG.md`, and a tag `rust-v<version>` (the version in its `Cargo.toml`)
   releases it on GitHub (`rust-release.yml`). Programs take it by that tag:

@@ -51,7 +51,8 @@ from a script in [bench](bench). Change the script or rerun it, then copy the fi
 ## Releases
 
 Add a changeset (`bunx changeset`) to a pull request that changes the package. A tag `v<version>`
-publishes that version ([release workflow](.github/workflows/release.yml)).
+publishes that version and makes its GitHub release
+([release workflow](.github/workflows/release.yml)).
 
 The crate's versions are its own: write a change to it under "Unreleased" in
 [crates/flowdown/CHANGELOG.md](crates/flowdown/CHANGELOG.md). A tag `rust-v<version>` releases

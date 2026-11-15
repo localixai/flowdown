@@ -1,7 +1,8 @@
 name: Release
 
 # Push a tag `v<version>`, the version in packages/flowdown/package.json, to publish it to npm
-# as `@localix-ai/flowdown`. The token is the repository secret `NPM_TOKEN`.
+# as `@localix-ai/flowdown` and make its GitHub release, with that version's part of
+# packages/flowdown/CHANGELOG.md. The token is the repository secret `NPM_TOKEN`.
 
 on:
   push:
@@ -21,7 +22,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
-      contents: read
+      # For the GitHub release.
+      contents: write
       # For npm provenance: the package page links the build that published it.
       id-token: write
     steps:
@@ -66,3 +68,15 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
           npm whoami --registry https://registry.npmjs.org
           npm publish --access public --provenance --registry https://registry.npmjs.org
+
+      # After npm has the version: the page of releases names the same one. Left alone when it is
+      # there already, as when this is run by hand for a version whose first run failed.
+      - name: The release, with its changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(jq -r .version packages/flowdown/package.json)"
+          awk -v v="## $version" '$0 == v { on = 1; next } on && /^## / { exit } on' \
+            packages/flowdown/CHANGELOG.md > notes.md
+          gh release view "v$version" > /dev/null 2>&1 ||
+            gh release create "v$version" --title "flowdown $version" --notes-file notes.md --verify-tag
