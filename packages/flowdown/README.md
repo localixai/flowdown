@@ -63,7 +63,7 @@ add `answerFormatPrompt()` from `@localix-ai/flowdown/prompt`
 
 - **Fast.** A 100k-character reply streams in 0.14 s. The next fastest renderer takes 2.4 s, and
   Streamdown takes 6.5 s.
-- **Linear.** A reply four times longer costs 3.5 times more, not sixteen, and no update takes
+- **Linear.** A reply four times longer costs 2.8 times more, not sixteen, and no update takes
   more than 5 ms.
 - **Repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences never
   show their raw syntax.

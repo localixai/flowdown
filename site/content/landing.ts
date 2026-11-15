@@ -62,7 +62,7 @@ const CARDS: Card[] = [
           align: 'lrrr',
           grid: [
             [['dim', 'streaming, ms'], ['dim', 'chat 5k'], ['dim', 'code 50k'], ['dim', 'answer 100k']],
-            [['ok', 'flowdown'], ['ok', '11'], ['ok', '45'], ['ok', '138']],
+            [['ok', 'flowdown'], ['ok', '10'], ['ok', '48'], ['ok', '141']],
             [['hi', 'markdown-to-jsx'], ['', '15'], ['', '63'], ['', '2,393']],
             [['hi', 'markstream'], ['', '41'], ['', '1,076'], ['', '5,714']],
             [['hi', 'Streamdown'], ['', '51'], ['', '5,926'], ['', '6,529']],
