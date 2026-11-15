@@ -253,6 +253,12 @@ the same blocks as `splitBlocks`, and the blocks that did not change are the ver
 last time, so `React.memo` or a `WeakMap` can skip them. Each call scans only the end of the text;
 a text that changed above its end is split afresh.
 
+A text with link reference definitions (`[docs]: https://…`) comes back as one block: a reference
+in one block finds a definition in another only through one parse of the whole. Both take
+`{ refs: true }` from a caller that resolves them itself, and then cut such a text like any other;
+`createDocument({ refs: true })` of `@localix-ai/flowdown/document` does, and hands each block the
+`refs` to parse it with.
+
 In `<Markdown>` every task-list checkbox carries `data-task-key`, where its `[ ]` starts in the
 document: a stable key for storing a tick or rewriting the text it came from.
 

@@ -168,7 +168,9 @@ Two lower entries are what the targets above are built on:
 
 - `@localix-ai/flowdown/document` turns a growing text into blocks. `createDocument().update(text, {
   streaming })` gives `blocks`, and a block that reads the same as at the last update is the same
-  object.
+  object. With `createDocument({ refs: true })` a text with link reference definitions is cut
+  into blocks too: pass each block's `refs` to `parse`, and a block comes back as another object
+  when a definition it refers to arrived or changed. Without it such a text is one block.
 - `@localix-ai/flowdown/engine` is the parser: `parse(markdown)` gives the tree, `toHtml(tree)` writes it.
 
 The dialect marks what a node is, apart from how it is drawn: a quote is
@@ -180,14 +182,15 @@ or a list.
 import { createDocument, formOf, flowdownDialect } from '@localix-ai/flowdown/document'
 import { parse } from '@localix-ai/flowdown/engine'
 
-const doc = createDocument()
+const doc = createDocument({ refs: true })
 
 function draw(text: string, streaming: boolean) {
   const { blocks, closer } = doc.update(text, { streaming })
   blocks.forEach((block, index) => {
     // Keep what you drew for a block: the same object means the same block.
     const source = index === blocks.length - 1 ? block.source + closer : block.source
-    for (const node of parse(source, { extensions: [flowdownDialect] }).children ?? []) {
+    const tree = parse(source, { extensions: [flowdownDialect], refs: block.refs })
+    for (const node of tree.children ?? []) {
       if (formOf(node)?.form === 'callout') {
         // …
       }

@@ -10,7 +10,7 @@ import { createDocument, usesHtml, usesMath, type MarkdownBlock } from '../docum
 import { createCutter, createFenceMemory, growingFence } from '../document/fence'
 import { tableRows } from '../document/table'
 import { parse } from '../engine'
-import type { Extension, Node } from '../engine/types'
+import type { Extension, Node, References } from '../engine/types'
 import { defaultUrlTransform, type UrlTransform } from '../engine/url'
 import type { Props } from './factory'
 import { mergeLabels, type LabelOverrides, type MarkdownLabels } from './labels'
@@ -137,6 +137,8 @@ export function createView(options: ViewOptions = {}): View {
   /** Where the block being drawn starts in the document, and whether it is the fence still growing. */
   let offset = 0
   let growing = false
+  /** The document's link definitions as the block being drawn asks them. */
+  let refs: References | undefined
 
   const host = options.host ?? null
   /** Blocks, by where they start, that a reader's action changed: drawn again at the next render. */
@@ -338,7 +340,7 @@ export function createView(options: ViewOptions = {}): View {
     ids: ReadonlyMap<number, string> | null,
     using: Record<string, VComponent | undefined>,
   ): VNode =>
-    draw(parse(source, { extensions }), {
+    draw(parse(source, { extensions, refs }), {
       components: using,
       urlTransform,
       special,
@@ -401,7 +403,7 @@ export function createView(options: ViewOptions = {}): View {
     return one(source, offset, ids, components)
   }
 
-  const doc = createDocument()
+  const doc = createDocument({ refs: true })
   /** What each block drew last: a block that did not change is not drawn again. */
   const drawn = new WeakMap<MarkdownBlock, Kept>()
 
@@ -443,6 +445,7 @@ export function createView(options: ViewOptions = {}): View {
         ) {
           offset = item.offset
           growing = grows
+          refs = item.refs
           serial = 0
           const nodes = expand(block(item.source, closer, ids && ids.size > 0 ? ids : null))
           made = { stages, closer, growing: grows, offset: item.offset, headingKey, nodes }

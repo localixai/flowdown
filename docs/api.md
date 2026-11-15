@@ -138,11 +138,12 @@ The options of `/static`, `/dom` and `/element` are the props of `<Markdown>` th
 
 | Export                          | What it is                                                                          |
 | ------------------------------- | ----------------------------------------------------------------------------------- |
-| `createDocument()`              | `/document`. `update(text, { streaming, math, headingIds })` gives a `DocumentState`: `blocks`, `closer`, `growing`, `headingIds`. An unchanged block is the same object. |
+| `createDocument(options?)`      | `/document`. `update(text, { streaming, math, headingIds })` gives a `DocumentState`: `blocks`, `closer`, `growing`, `headingIds`. An unchanged block is the same object. With `{ refs: true }` a text with link reference definitions is cut into blocks too, each with the `refs` to pass to `parse`; without it such a text is one block. |
 | `usesMath(blocks)`, `usesHtml(blocks)`, `usesRareEntity(blocks)` | `/document`. Whether the document needs a stage a renderer loads on demand. |
 | `splitBlocks(markdown)`         | `/document`. The top-level blocks.                                                  |
 | `flowdownDialect`, `formOf(node)`    | `/document`. The dialect as an extension for `parse`, and the `Form` it marked a node as: `{ form, kind?, title?, label? }`. |
-| `parse(markdown, options?)`     | `/engine`. The tree of a text.                                                      |
+| `parse(markdown, options?)`     | `/engine`. The tree of a text. `refs` are link definitions from the rest of a document, for a text that is one block of it. |
+| `definitions(markdown)`         | `/engine`. The link reference definitions a text holds, by label: its blocks are read, not what they say. |
 | `toHtml(tree, options?)`        | `/engine`. The tree as HTML text.                                                   |
 | `visit(tree, visitor)`, `toText(node)` | `/engine`. A walk over a tree, and a node's plain text.                      |
 

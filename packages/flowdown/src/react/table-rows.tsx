@@ -1,5 +1,6 @@
 'use client'
 import { createElement, memo, type ReactNode } from 'react'
+import type { References } from '../engine/types'
 import { draw, type BlockOptions } from './draw'
 
 export { tableRows } from '../document/table'
@@ -37,30 +38,46 @@ function partsOf(options: BlockOptions) {
 }
 
 /** A header with some of its rows, read and drawn once for as long as its text is the same. */
-const Piece = memo(function Piece({ source, options }: { source: string; options: BlockOptions }) {
-  return draw(source, 0, null, options)
+const Piece = memo(function Piece({
+  source,
+  options,
+  refs,
+}: {
+  source: string
+  options: BlockOptions
+  refs?: References | undefined
+}) {
+  return draw(source, 0, null, options, refs)
 })
 
 export function TableRows({
   head,
   rows,
   options,
+  refs,
 }: {
   head: string
   rows: string[]
   /** What the block is read and drawn with. One object per document: a piece compares it. */
   options: BlockOptions
+  /** The document's link definitions as the table's block asks them. */
+  refs?: References | undefined
 }) {
   const { head: headParts, body: bodyParts } = partsOf(options)
   const pieces: ReactNode[] = []
   for (let at = 0; at < rows.length; at += ROWS)
     pieces.push(
-      <Piece key={at} source={head + rows.slice(at, at + ROWS).join('\n')} options={bodyParts} />,
+      <Piece
+        key={at}
+        source={head + rows.slice(at, at + ROWS).join('\n')}
+        options={bodyParts}
+        refs={refs}
+      />,
     )
   return createElement(
     options.components.table as never,
     null,
-    <Piece source={head} options={headParts} />,
+    <Piece source={head} options={headParts} refs={refs} />,
     <tbody>{pieces}</tbody>,
   )
 }

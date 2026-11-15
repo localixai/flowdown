@@ -20,21 +20,26 @@ const BUDGET: Record<string, number> = {
   // The parser is the package's own now (it was react-markdown's, 52 KB of dependencies). Counted
   // with the chunk the entry shares with what it loads on demand: 4.5 KB that this script used to
   // leave out, which is why the figure is past the 30 it was held to.
-  '.': 32.5,
+  // A kilobyte more since a document with link definitions is read block by block: collecting
+  // them and handing them to each block (`document/references.ts`, 0.4 KB), and the cut that
+  // joins a paragraph of definitions to the block above it (`core/blocks.ts`, 0.4 KB). Every
+  // entry that cuts a document carries it.
+  '.': 33.5,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
-  './static': 29,
-  './dom': 30.5,
-  './element': 30.5,
+  './static': 30,
+  './dom': 31.5,
+  './element': 31.5,
   // The renderer for a terminal: the parser, the dialect, and rows wrapped by their columns.
-  './tui': 31,
+  './tui': 32,
   // A growing text as blocks with the dialect to parse them by (2.6 KB of the figure, and a page
   // that imports only `createDocument` does not ship it), and the parser alone.
-  './document': 20.5,
+  './document': 21.5,
   './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
-  './remark': 19.5,
-  // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`).
-  './stream': 4.6,
+  './remark': 20.5,
+  // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`);
+  // then 0.4 KB for the cut of a document with link definitions.
+  './stream': 5,
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,

@@ -24,6 +24,7 @@ export {
   splitBlocks,
   type BlockSplitter,
   type MarkdownBlock,
+  type SplitOptions,
 } from './core/blocks'
 export { escapeLiteralDollars, isLiteralDollar } from './core/dollars'
 export { hasHtmlSyntax, hasMathSyntax } from './core/syntax'

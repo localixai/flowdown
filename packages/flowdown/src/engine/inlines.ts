@@ -8,8 +8,11 @@ import { decodeEntity, ENTITY, isEscapable, normalizeUri, unescapeString } from 
 import type { InlineRule, InlineState, Node, Reference } from './types'
 import { toText } from './visit'
 
+/** The definitions a parse knows: what it reads of a map. */
+export type Definitions = Pick<Map<string, Reference>, 'get' | 'has' | 'set'>
+
 export interface InlineContext {
-  refs: Map<string, Reference>
+  refs: Definitions
   /** The footnotes the document defines: normalized label to the label as written. */
   footnotes: Map<string, string>
   /** How many times each footnote has been referred to so far, in the order first referred to. */
@@ -1023,7 +1026,7 @@ export const parseInlines = (source: string, context: InlineContext): Node[] => 
  * Reads one link reference definition from the start of a paragraph's text into `refs`. Returns
  * how many characters it took, or 0 when the text does not start with a definition.
  */
-export const parseReference = (source: string, refs: Map<string, Reference>): number => {
+export const parseReference = (source: string, refs: Definitions): number => {
   subject = source
   pos = 0
   end = source.length

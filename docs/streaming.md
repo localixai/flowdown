@@ -37,9 +37,11 @@ the whole document would read them together:
 - an HTML block whose closing tag comes further down;
 - a `$$` formula with blank lines inside.
 
-A document with footnotes or link reference definitions, which resolve across the whole text, is
-rendered as one block. The test suite renders a corpus both ways, and token by token, and requires
-the same markup.
+Link reference definitions (`[docs]: https://…`) resolve across the whole text, so each block is
+parsed with the definitions of all of them: a paragraph of definitions is drawn with the block
+above it, and when one arrives in a stream only the blocks that refer to it are drawn again. A
+document with footnotes, which are numbered across the whole text, is rendered as one block. The
+test suite renders a corpus both ways, and token by token, and requires the same markup.
 
 Heading ids (`headingIds`) are the one feature that reads the whole document on each change, to
 number repeated headings; leave it off for a reply that streams.

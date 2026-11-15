@@ -4,7 +4,7 @@
  */
 import { expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { linesDocument } from '../../test/lines'
+import { linesDocument, linkedDocument } from '../../test/lines'
 import { html } from '../html'
 import { defaultUrlTransform } from '../engine/url'
 import { buildComponents, draw, Markdown } from '../react/markdown'
@@ -31,12 +31,12 @@ const whole = (source: string) =>
 const split = (source: string) =>
   sameIds(renderToStaticMarkup(<Markdown html={html}>{source}</Markdown>))
 
-test('seeded documents', () => {
+const sweep = (document: (seed: number) => string) => {
   // `FUZZ=60000 bun test blocks-fuzz` for a longer sweep.
   const count = Number(process.env.FUZZ ?? 2000)
   const failures: string[] = []
   for (let seed = 1; seed <= count; seed += 1) {
-    const doc = linesDocument(seed)
+    const doc = document(seed)
     const [one, other] = [split(doc), whole(doc)]
     if (one !== other) {
       failures.push(JSON.stringify(doc))
@@ -54,4 +54,8 @@ test('seeded documents', () => {
     }
   }
   expect(failures).toEqual([])
-})
+}
+
+test('seeded documents', () => sweep(linesDocument))
+
+test('seeded documents with link definitions', () => sweep(linkedDocument))

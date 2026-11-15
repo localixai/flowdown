@@ -6,7 +6,7 @@ import { createDocument, usesHtml, usesMath, usesRareEntity } from '../document'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
-import type { Extension } from '../engine/types'
+import type { Extension, References } from '../engine/types'
 import { Diagram } from '../mermaid/diagram'
 import { setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
 import { Callout } from './callout'
@@ -102,6 +102,8 @@ interface BlockProps {
   headingIds: ReadonlyMap<number, string> | null
   /** The same anchors as text: the memo compares this, since the map is new on every render. */
   headingKey: string
+  /** The document's link definitions as this block asks them: another object when they changed. */
+  refs: References | undefined
   options: BlockOptions
 }
 
@@ -164,7 +166,7 @@ export function buildComponents(overrides: MarkdownComponents | undefined): {
 }
 
 const Block = memo(
-  function Block({ source: open, closer, offset, growing, headingIds, options }: BlockProps) {
+  function Block({ source: open, closer, offset, growing, headingIds, refs, options }: BlockProps) {
     const [memory] = useState(createFenceMemory)
     const fence = growing && !options.ownCode ? growingFence(open, closer, memory) : null
     if (
@@ -179,10 +181,10 @@ const Block = memo(
     // A table that is the whole block is drawn row by row, unless the page reads tables itself
     // (its own elements or extensions see the table whole).
     const table = options.ownTable ? null : tableRows(source)
-    if (table) return <TableRows {...table} options={options} />
+    if (table) return <TableRows {...table} options={options} refs={refs} />
     return (
       <GrowingFence.Provider value={growing}>
-        {draw(source, offset, headingIds, options)}
+        {draw(source, offset, headingIds, options, refs)}
       </GrowingFence.Provider>
     )
   },
@@ -192,6 +194,7 @@ const Block = memo(
     before.offset === after.offset &&
     before.growing === after.growing &&
     before.headingKey === after.headingKey &&
+    before.refs === after.refs &&
     before.options === after.options,
 )
 
@@ -245,6 +248,7 @@ const BlockGroup = memo(
             growing={last && growing}
             headingIds={own && own.size > 0 ? own : null}
             headingKey={headingKeyOf(own)}
+            refs={block.refs}
             options={options}
           />
         </Fragment>,
@@ -267,7 +271,11 @@ const BlockGroup = memo(
       const was = before.blocks[index]!
       const is = after.blocks[index]!
       // The splitter hands back a block that did not change as the same object.
-      if (was !== is && (was.source !== is.source || was.offset !== is.offset)) return false
+      if (
+        was !== is &&
+        (was.source !== is.source || was.offset !== is.offset || was.refs !== is.refs)
+      )
+        return false
       if (after.ids) {
         const had = before.ids![index]
         const has = after.ids[index]
@@ -319,7 +327,7 @@ export function Markdown({
   // One document per `<Markdown>`: it completes the unfinished end of a streaming reply, cuts the
   // text into blocks and remembers them, so on the next token only the end of the reply is read.
   // Blocks that did not change come back as the same objects.
-  const [doc] = useState(createDocument)
+  const [doc] = useState(() => createDocument({ refs: true }))
   const {
     blocks,
     closer,

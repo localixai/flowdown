@@ -8,4 +8,4 @@
  * never to the final text.
  */
 export { closePartialMarkdown, isGrowingFence, openFenceBody } from './core/heal'
-export { splitBlocks, type MarkdownBlock } from './core/blocks'
+export { splitBlocks, type MarkdownBlock, type SplitOptions } from './core/blocks'

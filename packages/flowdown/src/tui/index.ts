@@ -88,7 +88,7 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
   const math = options.math ?? true
   const extensions = [flowdownDialect, ...(math ? [mathSyntax] : []), ...(options.extensions ?? [])]
   const code = createCodeDrawer(options.highlight ?? null)
-  const doc = createDocument()
+  const doc = createDocument({ refs: true })
   let columns = options.width ?? DEFAULT_WIDTH
   let drawn = new WeakMap<MarkdownBlock, { closer: string; rows: Line[]; pieced: boolean }>()
   return {
@@ -108,7 +108,7 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
         // A fence drawn in pieces is drawn whole once nothing more can come to it.
         if (made === undefined || made.closer !== closer || (made.pieced && !growing)) {
           const rows = drawBlock(
-            parse(block.source + closer, { extensions }),
+            parse(block.source + closer, { extensions, refs: block.refs }),
             columns,
             labels,
             code,

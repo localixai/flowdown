@@ -14,8 +14,10 @@
  *   - an image alone in its paragraph and an emphasis-only line under it, its caption;
  *   - an HTML block whose tag is closed further down;
  *   - a `$$` display formula with blank lines inside;
- *   - a document with footnote or link reference definitions, which resolve across blocks, is
- *     not split at all.
+ *   - a document with footnote definitions, which resolve across blocks, is not split at all;
+ *   - nor is one with link reference definitions, unless the caller resolves them across blocks
+ *     (`refs`): then a paragraph of definitions, which one parse leaves nothing of, is joined to
+ *     the block before it, and what it stands between is read as if it were not there.
  *
  * The boundaries are found by a scan of the lines (`step`), not by a Markdown lexer: it follows
  * only what decides where a top-level block can end (a fence, a list, an HTML block that blank
@@ -24,6 +26,7 @@
  * the same markup, at every prefix.
  */
 import { parseContainerMarker, type ContainerKind } from '../dialect'
+import type { References } from '../engine/types'
 import { continues } from './continues'
 
 export interface MarkdownBlock {
@@ -32,6 +35,21 @@ export interface MarkdownBlock {
   /** Where it starts in the document: characters before it, and its 1-based line. */
   offset: number
   line: number
+  /**
+   * The document's link definitions, for a block that may refer to one: what `parse` takes as
+   * `refs`. Only a document made with `refs` hands them out.
+   */
+  refs?: References | undefined
+}
+
+/** How a document is cut. */
+export interface SplitOptions {
+  /**
+   * The caller resolves link reference definitions across blocks (each block is parsed with the
+   * document's, as `createDocument({ refs: true })` hands them out), so a document that has them
+   * is cut like any other. Without it such a document stays one block.
+   */
+  refs?: boolean
 }
 
 const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)$/
@@ -57,7 +75,11 @@ const HTML_LINES = /^ {0,3}<([A-Za-z][\w:-]*)(?=[\s>/])/gm
 const FOOTNOTE_DEFINITION = /\[\^[^\]\s]{1,200}\]:/
 const LINK_DEFINITION = /^ {0,3}\[[^\]]+\]:/
 const OPEN_LABEL = /^ {0,3}\[[^\]]*$/
+/** A line that may open a link definition, its label on one line or over several. */
+const DEFINITION_LINE = /^ {0,3}\[(?:[^\]\\]|\\[^])*\]:/m
 const IMAGE_ONLY = /^!\[[^\]]*\]\([^)]*\)$/
+/** An image alone that a definition may complete: `![alt][label]`, `![alt]`. */
+const IMAGE_BY_REFERENCE = /^!\[[^\]]*\](?:\[[^\]]*\])?$/
 const DOUBLE_DOLLAR = /(?<!\\)\$\$/g
 const VOID_TAGS = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'source', 'wbr'])
 
@@ -154,17 +176,17 @@ function itemColumn(line: string): number {
  * One line through the scan. True when the line starts a new top-level block for certain: after a
  * blank line outside every open construct, or as the fence line of a top-level fence.
  */
-function step(scan: Scan, line: string): boolean {
+function step(scan: Scan, line: string, refs: boolean): boolean {
   const seen = scan.seen
   const closed = scan.closed
   if (!seen && line.trim() !== '') scan.seen = true
-  const cut = advance(scan, line)
+  const cut = advance(scan, line, refs)
   // A line with text right after a fence that did not start a block: the scan was stuck on it.
   if (closed && !scan.closed && !cut) scan.mixed = true
   return cut && seen
 }
 
-function advance(scan: Scan, line: string): boolean {
+function advance(scan: Scan, line: string, refs: boolean): boolean {
   if (scan.stuck || scan.whole) return false
   if (scan.fence) {
     const closing = FENCE.exec(line)
@@ -196,14 +218,18 @@ function advance(scan: Scan, line: string): boolean {
   scan.fresh = false
   scan.closed = false
 
-  if (FOOTNOTE_DEFINITION.test(line) || LINK_DEFINITION.test(line)) return definition(scan)
-  if (scan.label) {
-    const close = line.indexOf(']')
-    if (close !== -1) {
-      if (line[close + 1] === ':') return definition(scan)
-      scan.label = false
-    }
-  } else if (OPEN_LABEL.test(line)) scan.label = true
+  if (FOOTNOTE_DEFINITION.test(line)) return definition(scan)
+  // A link definition keeps the document whole only when nobody resolves it across blocks.
+  if (!refs) {
+    if (LINK_DEFINITION.test(line)) return definition(scan)
+    if (scan.label) {
+      const close = line.indexOf(']')
+      if (close !== -1) {
+        if (line[close + 1] === ':') return definition(scan)
+        scan.label = false
+      }
+    } else if (OPEN_LABEL.test(line)) scan.label = true
+  }
 
   const odd = scan.odd
   if (line.includes('$$') && (line.match(DOUBLE_DOLLAR)?.length ?? 0) % 2 === 1) scan.odd = !odd
@@ -331,15 +357,54 @@ function htmlOpen(raw: string): boolean {
  * The pieces the scan cut (`starts`, offsets into `text`) joined into the blocks that must render
  * together: the offsets where a block starts. Read by the same grammar as the remark pass.
  */
-function group(text: string, starts: readonly number[]): number[] {
+function group(text: string, starts: readonly number[], refs: boolean): number[] {
   const count = starts.length
   const endOf = (piece: number) => (piece + 1 < count ? starts[piece + 1]! : text.length)
   const first = (piece: number) => (piece < count ? lineAt(text, starts[piece]!) : '')
+  /**
+   * Whether a piece may be link definitions and nothing else: a paragraph one parse leaves nothing
+   * of. What it stands between is then next to each other, so every test below of what comes
+   * "right after" looks past it, and it is drawn with the block before it. Read loosely (a line
+   * that looks like a definition, outside a fence): joining more is safe.
+   */
+  const vanishing: Array<boolean | undefined> = []
+  const vanishes = (piece: number): boolean => {
+    if (!refs || piece >= count) return false
+    let known = vanishing[piece]
+    if (known === undefined) {
+      const body = text.slice(starts[piece]!, endOf(piece))
+      known = body.includes(']:') && !FENCE.test(first(piece)) && DEFINITION_LINE.test(body)
+      vanishing[piece] = known
+    }
+    return known
+  }
+  /**
+   * The pieces that may be what comes right after: each one that may vanish, since read loosely
+   * it may also be more than definitions, and the first that cannot.
+   */
+  const ahead = (piece: number): number[] => {
+    const out: number[] = []
+    let at = piece
+    for (; vanishes(at); at += 1) out.push(at)
+    if (at < count) out.push(at)
+    return out
+  }
+  /** A piece's first line as one parse has it: under the definitions it may start with. */
+  const top = (piece: number): string => {
+    if (!vanishes(piece)) return first(piece)
+    for (const line of text.slice(starts[piece]!, endOf(piece)).split('\n'))
+      if (line.trim() !== '' && !LINK_DEFINITION.test(line)) return line
+    return ''
+  }
   const kindOf = (line: string): ContainerKind | null => {
     const quoted = QUOTE.exec(line)
     return quoted ? (parseContainerMarker(quoted[1]!.trimStart())?.kind ?? null) : null
   }
   const isItem = (line: string) => !RULE.test(line) && itemColumn(line) !== 0
+  const quotedDefinition = (line: string): boolean => {
+    const quoted = QUOTE.exec(line)
+    return quoted !== null && LINK_DEFINITION.test(quoted[1]!)
+  }
   /** The piece after the tabs whose first heading is in `holder`, on `line` or underlined. */
   const tabsEnd = (holder: number, line: string, fallback: number): number => {
     if (holder >= count) return fallback
@@ -372,13 +437,19 @@ function group(text: string, starts: readonly number[]): number[] {
     let found: { kind: ContainerKind; end: number } | null = null
     for (let index = 0; index < lines.length; index += 1) {
       const kind = kindOf(lines[index]!)
-      // The marker opens its quote: the line above it is not of the same quote.
-      if (!kind || (index > 0 && QUOTE.test(lines[index - 1]!))) continue
+      if (!kind) continue
+      // The marker opens its quote: the line above it is not of the same quote, or only
+      // definitions are, which one parse leaves nothing of.
+      let above = index - 1
+      if (refs) while (above >= 0 && quotedDefinition(lines[above]!)) above -= 1
+      if (above >= 0 && QUOTE.test(lines[above]!)) continue
       const next = lines[index + 1]
       let end = piece + 1
       if (next === undefined) {
-        if (kind === 'tabs') end = tabsEnd(piece + 1, first(piece + 1), piece + 1)
-        else if (isItem(first(piece + 1))) end = piece + 2
+        for (const after of ahead(piece + 1)) {
+          if (kind === 'tabs') end = Math.max(end, tabsEnd(after, top(after), piece + 1))
+          else if (isItem(top(after))) end = Math.max(end, after + 1)
+        }
       } else if (kind === 'tabs' && !QUOTE.test(next)) end = tabsEnd(piece, next, piece + 1)
       const reach: number = found ? found.end : 0
       found = { kind, end: Math.max(end, reach) }
@@ -386,31 +457,61 @@ function group(text: string, starts: readonly number[]): number[] {
     return found
   }
 
-  const blocks: number[] = []
-  let piece = 0
-  while (piece < count) {
-    const from = piece
-    const found = form(piece)
-    piece = found ? found.end : piece + 1
+  /**
+   * Whether a piece may end in an image alone in its paragraph. Its last line is read: the lines
+   * above may be definitions, or a block the image does not continue (an empty list item).
+   */
+  const imageAlone = (piece: number): boolean => {
+    const body = text.slice(starts[piece]!, endOf(piece)).trimEnd()
+    const image = body.slice(body.lastIndexOf('\n') + 1).trim()
+    return IMAGE_ONLY.test(image) || (refs && IMAGE_BY_REFERENCE.test(image))
+  }
+
+  /** The piece after everything the piece `head` holds to itself: its form, a pair, a caption. */
+  const reach = (head: number): number => {
+    const found = form(head)
+    let end = found ? found.end : head + 1
 
     // A pros right before a cons (or the reverse) is set as one pair.
     if (found && (found.kind === 'pros' || found.kind === 'cons')) {
-      const other = form(piece)
-      if (other && other.kind === (found.kind === 'pros' ? 'cons' : 'pros')) piece = other.end
+      for (const next of ahead(end)) {
+        const other = form(next)
+        if (other && other.kind === (found.kind === 'pros' ? 'cons' : 'pros'))
+          end = Math.max(end, other.end)
+      }
     }
 
     // An image alone in its paragraph takes the emphasis line under it as its caption. Merging is
     // always safe (it is what one parse does anyway), so the test here can be loose.
-    if (
-      piece === from + 1 &&
-      piece < count &&
-      IMAGE_ONLY.test(text.slice(starts[from]!, endOf(from)).trim()) &&
-      /^[*_]/.test(first(piece).trimStart())
-    )
-      piece += 1
+    if (end === head + 1 && imageAlone(head)) {
+      for (const under of ahead(end))
+        if (/^[*_]/.test(top(under).trimStart())) end = Math.max(end, under + 1)
+    }
+    return end
+  }
 
-    // An HTML block whose tag closes further down.
-    while (piece < count && htmlOpen(text.slice(starts[from]!, starts[piece]!))) piece += 1
+  const blocks: number[] = []
+  let piece = 0
+  while (piece < count) {
+    const from = piece
+    piece += 1
+    // Whether the block has anything one parse leaves: definitions alone would be a block of
+    // nothing, and a place between two blocks where one parse has none.
+    let solid = !refs
+    for (let at = from; ;) {
+      // What a piece holds to itself is in its block, and so is what each of those holds: a
+      // list a form governs may end in the marker of the next form.
+      for (; at < piece; at += 1) {
+        piece = Math.max(piece, reach(at))
+        if (!solid) solid = !vanishes(at)
+      }
+      // The definitions after a block are drawn with it; at the very start, where no block is
+      // before them, they open the first one.
+      if (vanishes(piece) || (!solid && piece < count)) piece += 1
+      // An HTML block whose tag closes further down.
+      else if (piece < count && htmlOpen(text.slice(starts[from]!, starts[piece]!))) piece += 1
+      else break
+    }
 
     blocks.push(starts[from]!)
   }
@@ -465,6 +566,7 @@ function pieces(
   from: number,
   progress: Progress | null,
   mark: Mark | null,
+  refs: boolean,
 ): { starts: number[]; progress: Progress; mixed: boolean } | null {
   const scan = mark ? { ...mark.scan } : start()
   const starts = progress && mark ? progress.starts.slice(0, mark.count) : [from]
@@ -475,13 +577,13 @@ function pieces(
   for (let back = 0; back < MARKS && marked > at; back += 1)
     marked = text.lastIndexOf('\n', marked - 1)
   for (let end = text.indexOf('\n', at); end !== -1; end = text.indexOf('\n', at)) {
-    if (step(scan, text.slice(at, end)) && at > from) starts.push(at)
+    if (step(scan, text.slice(at, end), refs) && at > from) starts.push(at)
     at = end + 1
     if (end >= marked) marks.push({ at, scan: { ...scan }, count: starts.length })
   }
   const next: Progress = { from, starts: [...starts], marks: marks.slice(-MARKS) }
   // The last line is still being written: read, but not remembered.
-  if (at < text.length && step(scan, text.slice(at)) && at > from) starts.push(at)
+  if (at < text.length && step(scan, text.slice(at), refs) && at > from) starts.push(at)
   return scan.whole ? null : { starts, progress: next, mixed: scan.mixed }
 }
 
@@ -491,8 +593,9 @@ function build(
   cuts: readonly number[],
   line: number,
   mixed: boolean,
+  refs: boolean,
 ): MarkdownBlock[] {
-  const starts = group(text, cuts)
+  const starts = group(text, cuts, refs)
   const blocks: MarkdownBlock[] = []
   let current = line
   let piece = 0
@@ -518,11 +621,11 @@ function build(
 }
 
 /** The top-level blocks of a document, cut where one parse of the whole would not join them. */
-export function splitBlocks(input: string): MarkdownBlock[] {
+export function splitBlocks(input: string, { refs = false }: SplitOptions = {}): MarkdownBlock[] {
   const markdown = normalizeLineEndings(input)
   if (!markdown) return whole(markdown)
-  const cut = pieces(markdown, 0, null, null)
-  return cut ? build(markdown, cut.starts, 1, cut.mixed) : whole(markdown)
+  const cut = pieces(markdown, 0, null, null, refs)
+  return cut ? build(markdown, cut.starts, 1, cut.mixed, refs) : whole(markdown)
 }
 
 /**
@@ -546,7 +649,7 @@ export interface BlockSplitter {
  * are new. Any other text (a reply that was regenerated, or edited above its end) is split afresh.
  * Each update then costs the new characters, not the reply: a stream is linear in its length.
  */
-export function createBlockSplitter(): BlockSplitter {
+export function createBlockSplitter({ refs = false }: SplitOptions = {}): BlockSplitter {
   let text = ''
   let blocks: MarkdownBlock[] = []
   let progress: Progress | null = null
@@ -582,7 +685,7 @@ export function createBlockSplitter(): BlockSplitter {
         }
       }
       lexed += markdown.length - (mark ? mark.at : from)
-      const cut = pieces(markdown, from, mark ? progress : null, mark)
+      const cut = pieces(markdown, from, mark ? progress : null, mark, refs)
       text = markdown
       if (!cut) {
         // A definition arrived: what was cut before it is one block with it now.
@@ -597,7 +700,7 @@ export function createBlockSplitter(): BlockSplitter {
         for (let at = last.source.indexOf('\n'); at !== -1; at = last.source.indexOf('\n', at + 1))
           line += 1
       }
-      const rest = build(markdown, cut.starts, line, cut.mixed)
+      const rest = build(markdown, cut.starts, line, cut.mixed, refs)
       // A block that reads the same as last time is the same object, with what was worked out
       // from it.
       for (let index = 0; index < rest.length; index += 1) {

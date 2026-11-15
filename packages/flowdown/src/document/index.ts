@@ -24,8 +24,9 @@ import {
 import { createBlockSplitter, normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
 import { createFenceScanner } from '../core/fence-scan'
 import { closePartialProse } from '../core/heal'
+import { createReferences } from './references'
 
-export { splitBlocks, isFenceBlock, type MarkdownBlock } from '../core/blocks'
+export { splitBlocks, isFenceBlock, type MarkdownBlock, type SplitOptions } from '../core/blocks'
 export { growingFence, createFenceMemory, type FenceMemory, type GrowingFence } from './fence'
 export { tableRows, type TableRows } from './table'
 /**
@@ -62,6 +63,15 @@ export interface DocumentState {
   headingIds: ReadonlyArray<ReadonlyMap<number, string>> | null
 }
 
+export interface DocumentOptions {
+  /**
+   * The renderer passes each block's `refs` to `parse`. A document with link reference
+   * definitions is then cut into blocks like any other, each block finding the definitions of the
+   * others; without it such a document is one block, read whole on every update.
+   */
+  refs?: boolean
+}
+
 export interface MarkdownDocument {
   /** The document for `text`. The same text and options give back the same state object. */
   update(text: string, options?: UpdateOptions): DocumentState
@@ -81,11 +91,12 @@ export const usesRareEntity = (blocks: readonly MarkdownBlock[]): boolean =>
  * One document that is drawn more than once: a reply while it streams, a text being edited. It
  * remembers the blocks it cut, so an update costs the end of the text, not the text.
  */
-export function createDocument(): MarkdownDocument {
+export function createDocument({ refs = false }: DocumentOptions = {}): MarkdownDocument {
   // The scan and the split are this document's own: another reply streaming beside it does not
   // make either start over.
   const openFence = createFenceScanner()
-  const splitter = createBlockSplitter()
+  const splitter = createBlockSplitter({ refs })
+  const references = refs ? createReferences() : null
   let last: {
     text: string
     streaming: boolean
@@ -115,7 +126,10 @@ export function createDocument(): MarkdownDocument {
       // from a block is kept beside it.
       const cut = splitter.split(healed)
       // Literal dollars are escaped only where `$` can mean math: elsewhere positions stay exact.
-      const blocks = math ? cut.map(escapedBlock) : cut
+      const escaped = math ? cut.map(escapedBlock) : cut
+      // Each block that may refer to a link definition gets the document's, from the text as it
+      // will be parsed.
+      const blocks = references ? references.resolve(escaped, math) : escaped
       const state: DocumentState = {
         blocks,
         closer,

@@ -91,6 +91,9 @@ describe('splitBlocks', () => {
   test('footnotes and link definitions keep the document whole', () => {
     expect(splitBlocks(CORPUS.footnotes!)).toHaveLength(1)
     expect(splitBlocks(CORPUS.definitions!)).toHaveLength(1)
+    // Link definitions do not, for a caller that resolves them across blocks; footnotes still do.
+    expect(splitBlocks(CORPUS.definitions!, { refs: true }).length).toBeGreaterThan(1)
+    expect(splitBlocks(CORPUS.footnotes!, { refs: true })).toHaveLength(1)
   })
 })
 

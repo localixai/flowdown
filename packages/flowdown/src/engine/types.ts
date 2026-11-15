@@ -145,8 +145,22 @@ export interface Extension {
   transform?: (root: Node, source: string) => void
 }
 
+/**
+ * Link reference definitions from outside the text being read. `get` is asked with a label as it
+ * is matched: without its brackets or its case, its whitespace collapsed.
+ */
+export interface References {
+  get(label: string): Reference | undefined
+}
+
 export interface ParseOptions {
   /** GitHub's extensions: tables, strikethrough, task lists, bare links, footnotes. On by default. */
   gfm?: boolean
   extensions?: Extension[]
+  /**
+   * The definitions of the document the text is one block of: `[text][label]` then finds a
+   * definition written in another block. They come before the text's own, as the first
+   * definition of a label in a document is the one that counts.
+   */
+  refs?: References | undefined
 }

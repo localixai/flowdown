@@ -173,7 +173,12 @@ export interface BlockResult {
 }
 
 /** Parses a whole document into its tree. */
-export const parseBlocks = (input: string, context: InlineContext): BlockResult => {
+export const parseBlocks = (
+  input: string,
+  context: InlineContext,
+  /** Stop once the blocks are read: `context.refs` then holds the text's definitions. */
+  blocksOnly = false,
+): BlockResult => {
   const gfm = context.gfm
   // Where each line starts and ends in the document (its ending left out): a node's position is
   // counted from these, and a line's text is cut from the document only when it is read.
@@ -800,6 +805,8 @@ export const parseBlocks = (input: string, context: InlineContext): BlockResult 
   // oxlint-disable-next-line no-unmodified-loop-condition -- `finalize` moves `tip` up.
   while (tip !== doc) finalize(tip, count)
   finalize(doc, count)
+
+  if (blocksOnly) return { root: { type: 'root', children: [] }, footnotes: [] }
 
   // The second pass: every block's text read into inlines, now that every definition is known.
   // Footnote definitions leave the flow: they are drawn together at the end of the document.

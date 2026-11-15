@@ -3,8 +3,8 @@
  * and whatever a page registers on top, with no dependency.
  */
 import { parseBlocks } from './blocks'
-import { isolated, specialCharacters, type InlineContext } from './inlines'
-import type { Extension, InlineRule, Node, ParseOptions } from './types'
+import { isolated, specialCharacters, type Definitions, type InlineContext } from './inlines'
+import type { Extension, InlineRule, Node, ParseOptions, Reference, References } from './types'
 
 export { toHtml, escapeHtml, type HtmlOptions } from './html'
 export { defaultUrlTransform, type UrlTransform } from './url'
@@ -19,6 +19,7 @@ export type {
   NodeType,
   ParseOptions,
   Reference,
+  References,
 } from './types'
 
 /** A set of extensions made ready once: the lookups the parser uses on every character. */
@@ -75,11 +76,48 @@ const applyFences = (node: Node, extensions: Extension[]): void => {
   }
 }
 
+/**
+ * The definitions a parse reads and asks: its own, behind the ones handed to it from the rest of
+ * the document.
+ */
+const definitionsWith = (outer: References | undefined): Definitions => {
+  const own = new Map<string, Reference>()
+  if (outer === undefined) return own
+  return {
+    get: (label) => outer.get(label) ?? own.get(label),
+    has: (label) => own.has(label),
+    set: (label, reference) => own.set(label, reference),
+  }
+}
+
+/**
+ * The link reference definitions a text holds, by label as it is matched. Only its blocks are
+ * read, not what is written in them: far less work than a parse. `mathFences` says whether `$$`
+ * fences a formula there, as an extension of the parse that will draw the text does.
+ */
+export const definitions = (
+  markdown: string,
+  options: { gfm?: boolean; mathFences?: boolean } = {},
+): Map<string, Reference> => {
+  const refs = new Map<string, Reference>()
+  const context: InlineContext = {
+    refs,
+    footnotes: new Map(),
+    footnoteUses: new Map(),
+    gfm: options.gfm !== false,
+    math: options.mathFences === true,
+    rules: [],
+    special: specialCharacters(''),
+  }
+  isolated(() => parseBlocks(markdown, context, true))
+  return refs
+}
+
 /** Parses Markdown into its tree. */
 export const parse = (markdown: string, options: ParseOptions = {}): Node => {
   const use = preparedFor(options.gfm !== false, options.extensions ?? NO_EXTENSIONS)
   const context: InlineContext = {
-    refs: new Map(),
+    refs: definitionsWith(options.refs),
     footnotes: new Map(),
     footnoteUses: new Map(),
     gfm: use.gfm,

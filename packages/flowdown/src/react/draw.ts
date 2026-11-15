@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { parse } from '../engine'
-import type { Extension } from '../engine/types'
+import type { Extension, References } from '../engine/types'
 import type { UrlTransform } from '../engine/url'
 import { render, type Components, type RenderOptions } from './render'
 
@@ -25,8 +25,10 @@ export function draw(
   offset: number,
   headingIds: ReadonlyMap<number, string> | null,
   options: BlockOptions,
+  /** The link definitions of the document the text is a block of. */
+  refs?: References | undefined,
 ): ReactNode {
-  return render(parse(source, { extensions: options.extensions }), {
+  return render(parse(source, { extensions: options.extensions, refs }), {
     components: options.components,
     urlTransform: options.urlTransform,
     special: options.special,

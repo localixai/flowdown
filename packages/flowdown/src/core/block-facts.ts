@@ -4,8 +4,8 @@
  * The splitter hands back the blocks that did not change as the same objects, so anything
  * computed from a block's text can be kept beside it: on the next token only the reply's end is
  * scanned again. Each answer is the one a scan of the whole document gives, because every
- * construct these scans look for lies inside one top-level block (a document where something
- * resolves across blocks, footnotes or link definitions, is never split).
+ * construct these scans look for lies inside one top-level block (footnotes, which resolve across
+ * blocks, keep a document whole; link definitions are handed to each block, `document/references`).
  */
 import { hasRareEntity } from '../engine/entities'
 import { isFenceBlock, type MarkdownBlock } from './blocks'
