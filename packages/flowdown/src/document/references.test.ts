@@ -89,6 +89,29 @@ describe('link definitions across blocks', () => {
     expect(moved[1]).not.toBe(defined[1]!)
   })
 
+  test('a block that grows keeps its `refs`, until what it refers to changes', () => {
+    const doc = createDocument({ refs: true })
+    const last = (text: string) => {
+      const { blocks } = doc.update(text, { streaming: true })
+      const block = blocks.at(-1)!
+      parse(block.source, { refs: block.refs })
+      return block
+    }
+    // A table that gains a row with each update: a new block every time, the same `refs`, so a
+    // renderer that draws it in pieces draws the last piece only.
+    const head = 'Above.\n\n| a | b |\n| - | - |\n'
+    const first = last(`${head}| 1 | [one] |\n`)
+    const second = last(`${head}| 1 | [one] |\n| 2 | [two] |\n`)
+    expect(second).not.toBe(first)
+    expect(second.refs).toBe(first.refs!)
+    // A definition it asked for arrives in a block below: it is told anew.
+    const defined = doc.update(`${head}| 1 | [one] |\n| 2 | [two] |\n\nBelow.\n\n[two]: /two`)
+    const table = defined.blocks[1]!
+    expect(table.source.startsWith('| a | b |')).toBe(true)
+    expect(table.refs).not.toBe(first.refs!)
+    expect(links(parse(table.source, { refs: table.refs }))).toEqual(['/two'])
+  })
+
   test('the definitions of a text are read without parsing what it says', () => {
     const found = definitions(
       '[A  b]: <one> "t"\n\n> [c]: two\n\n```\n[d]: no\n```\n\n$$\n\n[e]: /e\n\n$$',

@@ -74,12 +74,16 @@ const HTML_LINE = /^ {0,3}<[A-Za-z]/m
 const HTML_LINES = /^ {0,3}<([A-Za-z][\w:-]*)(?=[\s>/])/gm
 const FOOTNOTE_DEFINITION = /\[\^[^\]\s]{1,200}\]:/
 const LINK_DEFINITION = /^ {0,3}\[[^\]]+\]:/
+/** A line of a quote that may be a link definition written in it. */
+const QUOTED_DEFINITION = /^ {0,3}>[ \t]? {0,3}\[[^\]]+\]:/
 const OPEN_LABEL = /^ {0,3}\[[^\]]*$/
-/** A line that may open a link definition, its label on one line or over several. */
-const DEFINITION_LINE = /^ {0,3}\[(?:[^\]\\]|\\[^])*\]:/m
-const IMAGE_ONLY = /^!\[[^\]]*\]\([^)]*\)$/
-/** An image alone that a definition may complete: `![alt][label]`, `![alt]`. */
-const IMAGE_BY_REFERENCE = /^!\[[^\]]*\](?:\[[^\]]*\])?$/
+/**
+ * How a piece that is link definitions starts: with one, its label on one line or over several,
+ * under the blank lines a document may open with.
+ */
+const DEFINITION_OPENS = /^(?:[ \t]*\n)* {0,3}\[(?:[^\]\\]|\\[^])*\]:/
+/** An image alone, written out or as a definition may complete it: `![alt][label]`, `![alt]`. */
+const IMAGE_ONLY = /^!\[[^\]]*\](?:\([^)]*\)|\[[^\]]*\])?$/
 const DOUBLE_DOLLAR = /(?<!\\)\$\$/g
 const VOID_TAGS = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'source', 'wbr'])
 
@@ -364,16 +368,17 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
   /**
    * Whether a piece may be link definitions and nothing else: a paragraph one parse leaves nothing
    * of. What it stands between is then next to each other, so every test below of what comes
-   * "right after" looks past it, and it is drawn with the block before it. Read loosely (a line
-   * that looks like a definition, outside a fence): joining more is safe.
+   * "right after" looks past it, and it is drawn with the block before it. Read loosely (a piece
+   * that opens with what looks like a definition): joining more is safe.
    */
   const vanishing: Array<boolean | undefined> = []
   const vanishes = (piece: number): boolean => {
     if (!refs || piece >= count) return false
     let known = vanishing[piece]
     if (known === undefined) {
-      const body = text.slice(starts[piece]!, endOf(piece))
-      known = body.includes(']:') && !FENCE.test(first(piece)) && DEFINITION_LINE.test(body)
+      // A paragraph of definitions opens with one, so a piece is told by how it starts: a long
+      // one that is still growing (a table, a fence) is not searched on every token.
+      known = DEFINITION_OPENS.test(text.slice(starts[piece]!, endOf(piece)))
       vanishing[piece] = known
     }
     return known
@@ -401,10 +406,7 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
     return quoted ? (parseContainerMarker(quoted[1]!.trimStart())?.kind ?? null) : null
   }
   const isItem = (line: string) => !RULE.test(line) && itemColumn(line) !== 0
-  const quotedDefinition = (line: string): boolean => {
-    const quoted = QUOTE.exec(line)
-    return quoted !== null && LINK_DEFINITION.test(quoted[1]!)
-  }
+
   /** The piece after the tabs whose first heading is in `holder`, on `line` or underlined. */
   const tabsEnd = (holder: number, line: string, fallback: number): number => {
     if (holder >= count) return fallback
@@ -441,7 +443,7 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
       // The marker opens its quote: the line above it is not of the same quote, or only
       // definitions are, which one parse leaves nothing of.
       let above = index - 1
-      if (refs) while (above >= 0 && quotedDefinition(lines[above]!)) above -= 1
+      if (refs) while (above >= 0 && QUOTED_DEFINITION.test(lines[above]!)) above -= 1
       if (above >= 0 && QUOTE.test(lines[above]!)) continue
       const next = lines[index + 1]
       let end = piece + 1
@@ -463,8 +465,7 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
    */
   const imageAlone = (piece: number): boolean => {
     const body = text.slice(starts[piece]!, endOf(piece)).trimEnd()
-    const image = body.slice(body.lastIndexOf('\n') + 1).trim()
-    return IMAGE_ONLY.test(image) || (refs && IMAGE_BY_REFERENCE.test(image))
+    return IMAGE_ONLY.test(body.slice(body.lastIndexOf('\n') + 1).trim())
   }
 
   /** The piece after everything the piece `head` holds to itself: its form, a pair, a caption. */
@@ -483,7 +484,7 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
 
     // An image alone in its paragraph takes the emphasis line under it as its caption. Merging is
     // always safe (it is what one parse does anyway), so the test here can be loose.
-    if (end === head + 1 && imageAlone(head)) {
+    if (end === head + 1 && end < count && imageAlone(head)) {
       for (const under of ahead(end))
         if (/^[*_]/.test(top(under).trimStart())) end = Math.max(end, under + 1)
     }

@@ -82,9 +82,15 @@ async function mount(node: ReactNode) {
   }
 }
 
+/**
+ * A diagram that is drawn. The picture is waited for, not given a fixed time: the first diagram
+ * of a run also loads the renderer's chunks, and on a slow machine that outlasts one `settle`.
+ */
 async function drawn(source = SOURCE) {
   const page = await mount(await diagram(source))
-  expect(page.host.querySelector('.fd-diagram-canvas svg')).not.toBeNull()
+  const picture = () => page.host.querySelector('.fd-diagram-canvas svg')
+  for (let tries = 0; tries < 200 && picture() === null; tries += 1) await settle()
+  expect(picture()).not.toBeNull()
   return page
 }
 

@@ -79,19 +79,26 @@ export function createReferences(): DocumentReferences {
         before = []
         owned = []
       }
-      // What each block defines; only a block that is new is read.
-      const owns: Defined[] = []
-      let moved = blocks.length < before.length
-      for (let index = 0; index < blocks.length; index += 1) {
+      // A reply grows at its end: the blocks up to `from` are the ones of the last update, and
+      // nothing below is asked of them again.
+      const count = blocks.length
+      let from = 0
+      while (from < count && before[from] === blocks[from]) from += 1
+      // What each block defines; only a block that is new is read. Fewer blocks than there were
+      // (a reply written anew): what the document defines is put together again.
+      let moved = count < owned.length
+      if (moved) owned.length = count
+      for (let index = from; index < count; index += 1) {
         const block = blocks[index]!
-        const own = before[index] === block ? owned[index]! : definedIn(block)
+        if (before[index] === block) continue
+        const own = definedIn(block)
         if (own !== (owned[index] ?? NONE)) moved = true
-        owns.push(own)
+        owned[index] = own
       }
       let changed = false
       if (moved) {
         const next = new Map<string, Reference>()
-        for (const own of owns)
+        for (const own of owned)
           for (const [label, reference] of own) if (!next.has(label)) next.set(label, reference)
         changed = next.size !== current.size
         for (const [label, reference] of next) {
@@ -103,31 +110,44 @@ export function createReferences(): DocumentReferences {
         }
         if (changed) current = next
       }
-      const out: MarkdownBlock[] = []
-      for (let index = 0; index < blocks.length; index += 1) {
+      /** Whether everything a block was told is still what the document says. */
+      const holds = (known: Told): boolean => {
+        if (changed)
+          for (const [label, answer] of known.answers)
+            if (current.get(label) !== answer) return false
+        return true
+      }
+      // With no definition changed, what was handed out for the blocks that stand is handed out
+      // again.
+      const out: MarkdownBlock[] = changed ? [] : handed.slice(0, from)
+      for (let index = out.length; index < count; index += 1) {
         const block = blocks[index]!
-        if (!changed && before[index] === block) {
-          out.push(handed[index]!)
+        const stood = before[index]
+        if (!changed && stood === block) {
+          out[index] = handed[index]!
           continue
         }
         // Only a `[` can refer to a definition, and code refers to none.
         if (isFenceBlock(block) || !block.source.includes('[')) {
-          out.push(block)
+          out[index] = block
           continue
         }
         let known = told.get(block)
-        if (known !== undefined && changed) {
-          for (const [label, answer] of known.answers) {
-            if (current.get(label) === answer) continue
-            known = undefined
-            break
-          }
+        if (known !== undefined && !holds(known)) known = undefined
+        if (known === undefined) {
+          // The block that stood here, grown by a token: it keeps the `refs` it had, so a
+          // renderer that compares them (the pieces of a long table) draws only what is new.
+          // What it asked before is remembered with what it asks now: more to check, never less.
+          const was = stood && stood.offset === block.offset ? told.get(stood) : undefined
+          known =
+            was && holds(was)
+              ? { block: { ...block, refs: was.block.refs }, answers: was.answers }
+              : tell(block)
+          told.set(block, known)
         }
-        if (known === undefined) told.set(block, (known = tell(block)))
-        out.push(known.block)
+        out[index] = known.block
       }
       before = blocks
-      owned = owns
       handed = out
       return out
     },
