@@ -111,7 +111,7 @@ fails when it is broken.
   `crates/flowdown/CHANGELOG.md`, and a tag `rust-v<version>` (the version in its `Cargo.toml`)
   releases it on GitHub (`rust-release.yml`). Programs take it by that tag:
   `flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.0" }`. Not on
-  crates.io yet. Localix CLI keeps its own copy (`packages/markdown`) until it takes the crate.
+  crates.io yet. Localix CLI takes it so, and keeps no copy of its own.
 - Localix Studio and Localix Cloud pin the published package: a change here reaches them only
   after a release and a version bump there.
 
