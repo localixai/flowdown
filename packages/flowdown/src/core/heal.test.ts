@@ -211,6 +211,27 @@ describe('closePartialMarkdown', () => {
     expect(closePartialMarkdown('**bold** then *it')).toBe('**bold** then *it*')
   })
 
+  // ── a badge: an image in a link ──
+  test('a badge is drawn as its image while its link is still being written', () => {
+    const badge = 'Build: [![build](https://img.example/b.svg)](https://ci.example/run) ok'
+    // No frame shows a bracket or a bare address, once the badge's `[!` has its second `[`.
+    for (let end = 11; end <= badge.length; end += 1) {
+      const healed = closePartialMarkdown(badge.slice(0, end))
+      const drawn = healed
+        .replace(/\[!\[build\]\(https:\/\/img\.example\/b\.svg\)\]\([^)]*\)/, '')
+        .replace(/!\[build\]\(https:\/\/img\.example\/b\.svg\)/, '')
+      expect(drawn, JSON.stringify(badge.slice(0, end))).not.toMatch(/[[\]()!]/)
+    }
+    expect(closePartialMarkdown('Build: [![build](https://img.example/b.svg)')).toBe(
+      'Build: ![build](https://img.example/b.svg)',
+    )
+    expect(closePartialMarkdown('Build: [![build](https://img.example/b.svg)](https://ci')).toBe(
+      'Build: [![build](https://img.example/b.svg)](https://ci)',
+    )
+    // An exclamation mark that ends a sentence is no image.
+    expect(closePartialMarkdown('Done!')).toBe('Done!')
+  })
+
   // ── partial table rows ──
   test('hides a half-typed trailing table row', () => {
     expect(closePartialMarkdown('| A | B |\n| --- | --- |\n| 1 |')).toBe('| A | B |\n| --- | --- |')

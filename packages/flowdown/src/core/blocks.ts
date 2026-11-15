@@ -371,18 +371,8 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
    * "right after" looks past it, and it is drawn with the block before it. Read loosely (a piece
    * that opens with what looks like a definition): joining more is safe.
    */
-  const vanishing: Array<boolean | undefined> = []
-  const vanishes = (piece: number): boolean => {
-    if (!refs || piece >= count) return false
-    let known = vanishing[piece]
-    if (known === undefined) {
-      // A paragraph of definitions opens with one, so a piece is told by how it starts: a long
-      // one that is still growing (a table, a fence) is not searched on every token.
-      known = DEFINITION_OPENS.test(text.slice(starts[piece]!, endOf(piece)))
-      vanishing[piece] = known
-    }
-    return known
-  }
+  const vanishes = (piece: number): boolean =>
+    refs && piece < count && DEFINITION_OPENS.test(text.slice(starts[piece]!, endOf(piece)))
   /**
    * The pieces that may be what comes right after: each one that may vanish, since read loosely
    * it may also be more than definitions, and the first that cannot.

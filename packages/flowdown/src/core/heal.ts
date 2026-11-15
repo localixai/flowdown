@@ -32,16 +32,22 @@ export function openFenceBody(text: string): string | null {
   return fence ? text.slice(fence.bodyStart) : null
 }
 
-/** A trailing half-written image (`![alt](partial-url` or `![alt`) is hidden — a
- * broken-image flash is worse than a beat of nothing. */
+/** A trailing half-written image (`![alt](partial-url`, `![alt]` or `![alt`) is hidden — a
+ * broken-image flash is worse than a beat of nothing. So is the `[` of the link it stands in,
+ * when it is a badge (`[![alt](src)](href)`); and a badge whose image is written and whose link
+ * is not, `[![alt](src)` or `[![alt](src)]`, is drawn as its image, without the brackets that
+ * make it a link a few tokens later. */
 function dropTrailingPartialImage(tail: string): string {
-  return tail.replace(/!\[[^\]]*(\]\([^)]*)?$/, '')
+  return tail
+    .replace(/\[?!\[[^\]]*(\](\([^)]*)?)?$/, '')
+    .replace(/\[(!\[[^\]]*\]\([^)]*\))\]?$/, '$1')
 }
 
 /** A trailing `[text](partial-url` gets its `)` so the anchor text renders as a
- * link immediately instead of flashing raw syntax until the URL completes. */
+ * link immediately instead of flashing raw syntax until the URL completes. The text may be a
+ * badge's image. */
 function closeTrailingLink(tail: string): string {
-  return /(^|[^!])\[[^\]]*\]\([^)]*$/.test(tail) ? `${tail})` : tail
+  return /(^|[^!])\[(?:[^\]]*|!\[[^\]]*\]\([^)]*\))\]\([^)]*$/.test(tail) ? `${tail})` : tail
 }
 
 /**

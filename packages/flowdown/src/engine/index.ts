@@ -100,31 +100,26 @@ export const definitions = (
   options: { gfm?: boolean; mathFences?: boolean } = {},
 ): Map<string, Reference> => {
   const refs = new Map<string, Reference>()
-  const context: InlineContext = {
-    refs,
-    footnotes: new Map(),
-    footnoteUses: new Map(),
-    gfm: options.gfm !== false,
-    math: options.mathFences === true,
-    rules: [],
-    special: specialCharacters(''),
-  }
-  isolated(() => parseBlocks(markdown, context, true))
+  const use = preparedFor(options.gfm !== false, NO_EXTENSIONS)
+  isolated(() => parseBlocks(markdown, contextOf(use, refs, options.mathFences === true), true))
   return refs
 }
+
+/** What one parse carries: the definitions it reads and asks, and the syntax it reads by. */
+const contextOf = (use: Prepared, refs: Definitions, math: boolean): InlineContext => ({
+  refs,
+  footnotes: new Map(),
+  footnoteUses: new Map(),
+  gfm: use.gfm,
+  math,
+  rules: use.rules,
+  special: use.special,
+})
 
 /** Parses Markdown into its tree. */
 export const parse = (markdown: string, options: ParseOptions = {}): Node => {
   const use = preparedFor(options.gfm !== false, options.extensions ?? NO_EXTENSIONS)
-  const context: InlineContext = {
-    refs: definitionsWith(options.refs),
-    footnotes: new Map(),
-    footnoteUses: new Map(),
-    gfm: use.gfm,
-    math: use.math,
-    rules: use.rules,
-    special: use.special,
-  }
+  const context = contextOf(use, definitionsWith(options.refs), use.math)
   const { root, footnotes } = isolated(() => parseBlocks(markdown, context))
   if (footnotes.length > 0) root.children?.push({ type: 'footnotes', children: footnotes })
   for (const extension of use.extensions) {
