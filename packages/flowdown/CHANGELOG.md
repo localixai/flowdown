@@ -1,5 +1,134 @@
 # @localix-ai/flowdown
 
+## 0.7.0
+
+### Minor Changes
+
+- 654bfee: `@localix-ai/flowdown/tui/diagram`, a new entry, draws Mermaid diagrams in a terminal, with no
+  Mermaid and no dependency. Pass its `drawDiagram` to the terminal target as `diagrams`, as a
+  highlighter is passed: `renderToAnsi(reply, { diagrams: drawDiagram })`.
+  
+  It draws every kind Mermaid has that cells can say honestly:
+  
+  - graphs as boxes, lines and arrows: flowcharts, state, class, entity-relationship, requirement,
+    C4, architecture and block diagrams, mind maps and kanban boards;
+  - a flowchart is a layered layout in any of its four directions, its nodes in the shapes the
+    diagram gives them, its edges routed between them with junctions joined, arrowheads, dotted and
+    thick lines, its edge labels kept clear of the boxes and its subgraphs in titled frames;
+  - a sequence diagram (also written as ZenUML) puts its participants over their lifelines, its
+    messages as arrows with their labels, `autonumber`, notes, and `loop`, `alt`, `opt`, `par`,
+    `critical` and `break` blocks as frames;
+  - time as bars and rails: Gantt charts, timelines, user journeys and git graphs;
+  - charts as bars, plots and grids: pie, XY, quadrant, radar, Sankey, packet and treemap.
+  
+  A diagram too wide for the terminal is written as an outline of what it holds, wrapped to the
+  width. A picture is never cut.
+  
+  While its fence is still being written, a diagram shows its source, as on a page. A diagram that
+  does not read, and every diagram when no drawer is given, shows its source as before.
+- 654bfee: `@localix-ai/flowdown/tui` sets a display formula on rows (`$$`, a `math` fence, or `$$ … $$` alone
+  in a paragraph):
+  
+  - a fraction stands over its rule;
+  - a sum, a product or a limit has its limits above and below it;
+  - a root's bar runs over what it takes;
+  - matrices, `cases` and alignments stand in columns, in brackets as tall as their rows;
+  - brackets around something tall grow to its height, with `\left` and `\right` or without.
+  
+  A script Unicode has small letters for stays small, as before (`x²`, `∫₀¹`). A formula with nothing
+  to set on rows, one inside a sentence, and one too wide for the terminal are written on one row, as
+  before. Nothing is loaded for it; `math: false` still leaves formulas as written.
+
+### Patch Changes
+
+- 654bfee: A selection copied from a reply drawn by `<Markdown>`, `@localix-ai/flowdown/dom` or `<flow-down>`
+  pastes as the reply's own elements, with no class or style. A browser's own copy writes every
+  computed style inline, so a reply copied from a dark page pasted into a light document as grey
+  text on white. A word copied from inside bold text is still bold, and a line copied from a code
+  block is still code. The buttons, icons and labels of code blocks, tabs and trees are left out.
+  Only absolute web addresses are kept, and a task pastes as `☑` or `☐`. A selection that runs out
+  of the reply is left to the browser ([styling](https://flowdown.dev/docs/styling#copying-a-reply)).
+- 654bfee: A block that grows on every token costs its end, not its length, in the targets that had not
+  kept up with `<Markdown>` (figures from `bench/src/growth.ts`, `results/growth-before.md` beside
+  `results/growth.md`):
+  
+  - `@localix-ai/flowdown/static`, `/dom` and `/element` highlight each complete piece of a fence
+    still being written once, and read each complete piece of a growing table once. A 900-line file
+    streamed with a highlighter took 9.7 s of script; it takes 1.0 s, and four times the file costs
+    four times as much. A table of 160 rows streams in under half the time.
+  - `@localix-ai/flowdown/tui` reads a fence still being written without parsing its block and draws
+    it in pieces of 40 lines, with or without a highlighter. It reads a growing table a piece of 16
+    rows at a time and lays a row out again only when the widths of the columns change. The parts of
+    the block that grows (the items of a list above the last, the paragraphs of a quote) keep their
+    rows. A 900-line file draws in a seventh of the time, half with a highlighter; a table of 160
+    rows in a fifth, and four times the rows cost four times as much; a list of 240 items in a third.
+    The rows of what did not change are the same objects from one token to the next.
+  
+  What is drawn is unchanged.
+- 654bfee: A long list or quote that grows costs the part being written, not the block, in every target.
+  A list of more than 16 items is read a piece of 16 items at a time (`document/list.ts`). A piece that
+  is complete is parsed once, and its items are drawn once and kept: on a page they are the same
+  elements, and in a terminal the same rows. A piece is read as the items one parse of the whole list
+  makes, so what is drawn is unchanged. A list is cut only where nothing reaches across its items; a
+  loose list, or one with a lazy line, is read whole as before. A quote of more than 8 blocks, a
+  callout among them, is read 8 blocks at a time in the same way (`document/quote.ts`); a quote with a
+  form that takes what follows its marker, an attribution or a lazy line is read whole.
+  
+  In `@localix-ai/flowdown/tui`, a paragraph that grows is wrapped again from its last rows, its words
+  read from where it changed: a paragraph of 19,000 characters streams in half the time it took.
+  
+  The repair of a reply's unfinished end reads from the item being written, too: a bullet item ends
+  the paragraph above it, so no construct runs across it. Three flashes go with that:
+  
+  - An unclosed `**` or backtick in an earlier item no longer adds its closer at the end of the last
+    one, where it opened nothing.
+  - A `$$` in a paragraph above a list no longer hides the list.
+  - While a fence in a list item is still being written, its closing line is indented under the item.
+    A line at the left edge ended the item and opened an empty code block below the list, which was
+    drawn for every frame until the fence closed.
+  
+  A marker left bare once a half-typed `*` is hidden (`- *`) is held back like one typed so.
+- 654bfee: Two flashes of a reply still arriving are gone:
+  
+  - A last line that is only the marker of a block (`-`, `*`, `+`, `##`, `12.`, `>`, also inside a
+    quote, `> -`) is held back until the first word of what it opens. It used to be an empty item,
+    heading or quote for a frame; and a `-` under a paragraph made the whole paragraph a heading
+    until the item's text came.
+  - A reply that stops at a line break or a space inside `**bold`, `*italic`, `` `code `` and the
+    like is completed where the text ends, before the break. The closing `**` used to go after it,
+    where it closes nothing, so the frame showed `**bold` and a stray `**`.
+  
+  Only frames of a stream change; a finished reply is drawn as before.
+- 654bfee: Raw HTML and formulas are found where the parser finds them. Whether a reply holds HTML, and so
+  whether the `html` stage is loaded, was told by a scan of its lines. The scan did not know what
+  holds a fence. Under a list item, a fence indented four spaces is a fence, not indented code, so
+  the scan took the line that closes it for a line that opens another fence, and everything after
+  it for code. Nor did it know where a block ends: a backtick run in one paragraph and another in
+  an HTML block below it were blanked as one code span, with every line between them. The HTML in
+  442 of the 46,334 blocks of the fuzz corpus was dropped from the page this way.
+  
+  Now the parser's own reading of the blocks says where code is, and a code span is looked for
+  only inside the text of one block. HTML is found in a text that a page with math reads one way and
+  a page without math reads another, in either reading. The escaper of literal dollars reads `$$`
+  fences as a page with math does: a fence inside a formula is its text. It never touched code, and
+  still does not.
+  
+  `markdownProseWithoutCode` (in `/remark`) takes `mathFences`, true by default. Pass `false` to
+  read the text as a page without math does.
+- 654bfee: Four readings of the parser are fixed. A new differential fuzz (`bun run --cwd bench
+  differential`) found them: it compares the parser with micromark on 50,000 seeded documents, and
+  in these four cases micromark and markdown-it agree with each other.
+  
+  - A blank line after indented code in a list item makes the list loose. The code's trailing blank
+    lines were counted as its own, so the gap after them was not seen.
+  - A link reference definition is a block of its list item, so a blank line before it makes the
+    list loose, as CommonMark's example 317 counts it.
+  - A list item that can interrupt a paragraph is read before a table's row of dashes. `b\n- |` is a
+    paragraph and a list, as GitHub's parser reads it, not a table.
+  - A header that is a pipe alone heads no table.
+  
+  The Rust crate reads them the same way.
+
 ## 0.6.2
 
 ### Patch Changes
