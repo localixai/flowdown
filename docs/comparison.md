@@ -49,7 +49,7 @@ in [bench/results/features.json](../bench/results/features.json).
 
 | Library | Download, gzip | Packages installed | Styles | Licence |
 | :--- | ---: | ---: | :--- | :--- |
-| **flowdown** | 33.1 KB | 1 | Own CSS, light and dark | MIT |
+| **flowdown** | 36.3 KB | 1 | Own CSS, light and dark | MIT |
 | Streamdown | 155.5 KB | 118 | Tailwind classes; the page needs Tailwind | Apache-2.0 |
 | react-markdown | 50.0 KB | 82 | None | MIT |
 | markdown-to-jsx | 31.0 KB | 1 | None | MIT |
@@ -87,7 +87,7 @@ better.
 
 | Library | Chat, 5k | Answer, 20k | Code, 50k | Tables, 20k | Answer, 100k | Thread of 30 |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **flowdown** | **10** | **33** | **48** | **23** | **141** | **40** |
+| **flowdown** | **9** | **26** | **42** | **26** | **152** | **43** |
 | Streamdown | 51 | 291 | 5,926 | 4,248 | 6,529 | 137 |
 | react-markdown | 213 | 3,002 | 3,808 | 3,473 | stopped at 65% | 16,506 |
 | markdown-to-jsx | 15 | 127 | 63 | 173 | 2,393 | 591 |
@@ -118,23 +118,26 @@ with script alone in brackets. Lower is better.
 
 | Library | Chat, 5k | Answer, 20k | Tables, 20k | Code, 50k | Answer, 100k |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| **flowdown** | **186** (95) | **745** (314) | **298** (148) | **1,852** (377) | **3,202** (1,156) |
-| Streamdown | 399 (336) | 2,111 (1,833) | 17,214 (16,836) | 24,326 (19,410) | 18,664 (16,339) |
-| react-markdown | 981 (933) | 11,048 (10,829) | 13,667 (13,331) | 13,038 (10,331) | stopped at 33% |
-| markdown-to-jsx | 199 (143) | 1,351 (1,128) | 1,556 (1,222) | 3,923 (562) | 18,441 (16,449) |
-| markstream | 334 (271) | 2,147 (1,618) | 4,822 (4,100) | 10,004 (6,490) | 27,623 (23,415) |
-| marked-react | 298 (233) | 1,650 (1,434) | 1,642 (1,327) | 3,697 (545) | 22,242 (20,828) |
+| **flowdown** | 266 (**139**) | **789** (**298**) | **521** (**266**) | **3,279** (**690**) | **6,353** (**2,417**) |
+| Streamdown | 569 (490) | 2,872 (2,445) | 18,911 (18,531) | 25,263 (20,219) | 19,005 (16,989) |
+| react-markdown | 975 (915) | 13,288 (13,008) | 15,389 (15,041) | 14,315 (11,265) | stopped at 35% |
+| markdown-to-jsx | **217** (147) | 2,058 (1,669) | 2,281 (1,875) | 5,285 (837) | 19,042 (17,314) |
+| markstream | 525 (424) | 2,829 (2,146) | 5,002 (4,312) | 10,382 (6,813) | 28,066 (23,914) |
+| marked-react | 280 (201) | 2,307 (1,967) | 2,179 (1,811) | 4,980 (715) | 25,799 (24,015) |
 
 - **The order holds, the gaps are smaller.** A browser lays the page out and paints it for every
-  renderer alike, and that is most of what flowdown has left: on 50k of code it spends 0.4 s in
-  script and 1.9 s in all.
-- **Closest on a short chat answer.** There markdown-to-jsx takes 199 ms of the main thread
-  against flowdown's 186. flowdown is first in every cell, in script and over the whole main thread.
+  renderer alike, and that is most of what flowdown has left: on 50k of code it spends 0.7 s in
+  script and 3.3 s in all.
+- **Behind on a short chat answer.** There markdown-to-jsx takes less of the whole main thread,
+  217 ms against flowdown's 266, though more script, 147 ms against 139: on a reply that short,
+  laying out and painting flowdown's styled page costs more than the script it saves. flowdown is
+  first in every other cell, in script and over the whole main thread.
 
 How this is measured: Chromium 156 on the same Apple M5, the median of three runs, every renderer
-in turn so a slow minute falls on all of them. The run takes 45 minutes and no two runs agree
-(flowdown's own script time on the 100k answer was a quarter higher in a run an hour before this
-one), so read the rows against each other, not as what a page will take. flowdown is drawn with its
+in turn so a slow minute falls on all of them, all of them measured again in one run. The run takes
+45 minutes and no two runs agree: flowdown's script time on the 100k answer was 1.2 s in the run
+before this one and is 2.4 s in this one, for the same code measured an hour apart, so read the
+rows against each other, not as what a page will take. flowdown is drawn with its
 stylesheet, the others as their components leave them. Every number is in
 [bench/results/browser.md](../bench/results/browser.md).
 
@@ -145,21 +148,21 @@ the benchmark parsed whole. Higher is better.
 
 | Parser | Writes | Bun (JavaScriptCore) | Node (V8) |
 | :--- | :--- | ---: | ---: |
-| **flowdown** | a tree | **187** | **187** |
-| markdown-it | HTML | 51 | 43 |
-| marked | HTML | 33 | 48 |
-| micromark | HTML | 4 | 4 |
-| mdast-util-from-markdown | a tree | 4 | 3 |
+| **flowdown** | a tree | **138** | **182** |
+| markdown-it | HTML | 38 | 39 |
+| marked | HTML | 28 | 46 |
+| micromark | HTML | 3 | 4 |
+| mdast-util-from-markdown | a tree | 3 | 3 |
 
 - **What is compared.** flowdown's parser is the one `<Markdown>` runs.
   mdast-util-from-markdown is remark's, the one react-markdown and Streamdown run; micromark is the
   tokenizer under it. All read GitHub's extensions: tables, task lists, strikethrough, autolinks
   and, except marked, footnotes.
 - **A tree against HTML.** marked and markdown-it write HTML and build no tree. flowdown
-  writing HTML from its tree reads 131 and 139 MB in a second.
+  writing HTML from its tree reads 103 and 129 MB in a second.
 - **Where the trees differ.** mdast gives every node its position in the source; flowdown's
   tree gives positions to blocks only, which is part of the gap.
-- **In a reply's terms.** A 100k-character reply is parsed whole in under 0.6 ms, so the parser is
+- **In a reply's terms.** A 100k-character reply is parsed whole in under 0.9 ms, so the parser is
   a small share of what streaming one costs: the rest is React and the DOM.
 
 How it is measured: the median of three runs on an Apple M5, each parser in a process of its own,
@@ -169,7 +172,7 @@ in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
 ## Which one to pick
 
 - **flowdown.** For an AI chat or assistant whose replies run long, threads that grow, and
-  documentation. It repairs unfinished syntax, comes styled, and is one package of 33 KB with its
+  documentation. It repairs unfinished syntax, comes styled, and is one package of 36 KB with its
   own parser. It does not take remark or rehype plugins.
 - **markdown-to-jsx.** When a small, unstyled renderer for short replies is enough. It is one
   package and 31 KB. It slows down on very long replies and threads, and ships no styles.

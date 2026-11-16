@@ -5,8 +5,8 @@ The parser alone, with no React and no DOM: how long each one takes to read a wh
 measured and [src/parsers.ts](../src/parsers.ts) how each parser is set up. The streaming
 benchmark, React and the DOM included, is [latest.md](latest.md).
 
-- **date:** 2026-11-11T14:11:36.994Z
-- **commit:** f34895b (with uncommitted changes)
+- **date:** 2026-11-16T03:27:44.446Z
+- **commit:** 82bae70 (with uncommitted changes)
 - **cpu:** Apple M5, 10 cores, darwin 25.6.0
 - **runtimes:** bun 1.4.4 (JavaScriptCore), node 25.6.1 (V8)
 - **runs:** 3, one process per parser and run; the median of the runs' median parse
@@ -20,23 +20,23 @@ better.
 
 | Parser | Output | Throughput | flowdown is faster by |
 | --- | --- | ---: | ---: |
-| `flowdown` | tree | 187 MB/s | 1.0× |
-| `flowdown → HTML` | html | 131 MB/s | 1.4× |
-| `markdown-it` | html | 51 MB/s | 3.7× |
-| `marked` | html | 33 MB/s | 5.7× |
-| `micromark` | html | 4 MB/s | 50.2× |
-| `mdast-util-from-markdown` | tree | 4 MB/s | 53.4× |
+| `flowdown` | tree | 138 MB/s | 1.0× |
+| `flowdown → HTML` | html | 103 MB/s | 1.3× |
+| `markdown-it` | html | 38 MB/s | 3.6× |
+| `marked` | html | 28 MB/s | 5.0× |
+| `mdast-util-from-markdown` | tree | 3 MB/s | 52.5× |
+| `micromark` | html | 3 MB/s | 53.2× |
 
 ### node 25.6.1 (V8)
 
 | Parser | Output | Throughput | flowdown is faster by |
 | --- | --- | ---: | ---: |
-| `flowdown` | tree | 187 MB/s | 1.0× |
-| `flowdown → HTML` | html | 139 MB/s | 1.4× |
-| `marked` | html | 48 MB/s | 3.9× |
-| `markdown-it` | html | 43 MB/s | 4.4× |
-| `micromark` | html | 4 MB/s | 49.5× |
-| `mdast-util-from-markdown` | tree | 3 MB/s | 54.1× |
+| `flowdown` | tree | 182 MB/s | 1.0× |
+| `flowdown → HTML` | html | 129 MB/s | 1.4× |
+| `marked` | html | 46 MB/s | 4.0× |
+| `markdown-it` | html | 39 MB/s | 4.6× |
+| `micromark` | html | 4 MB/s | 51.7× |
+| `mdast-util-from-markdown` | tree | 3 MB/s | 58.7× |
 
 ## Each text
 
@@ -46,42 +46,42 @@ The median time of one whole parse.
 
 | Text | Size | `flowdown` | `flowdown → HTML` | `mdast-util-from-markdown` | `micromark` | `marked` | `markdown-it` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| chat-5k | 5 KB | 0.03 ms | 0.03 ms | 1.60 ms | 1.53 ms | 0.21 ms | 0.12 ms |
-| answer-20k | 20 KB | 0.09 ms | 0.12 ms | 5.34 ms | 5.02 ms | 0.53 ms | 0.37 ms |
-| forms-20k | 20 KB | 0.15 ms | 0.18 ms | 6.88 ms | 6.61 ms | 0.91 ms | 0.48 ms |
-| math-20k | 20 KB | 0.12 ms | 0.15 ms | 6.21 ms | 5.74 ms | 0.56 ms | 0.48 ms |
-| code-50k | 48 KB | 0.02 ms | 0.04 ms | 2.57 ms | 2.65 ms | 0.08 ms | 0.10 ms |
-| table-20k | 17 KB | 0.12 ms | 0.19 ms | 6.58 ms | 5.71 ms | 0.42 ms | 0.62 ms |
-| long-100k | 98 KB | 0.52 ms | 0.82 ms | 27.9 ms | 26.0 ms | 2.99 ms | 2.10 ms |
-| crlf-20k | 20 KB | 0.10 ms | 0.12 ms | 4.85 ms | 4.54 ms | 0.47 ms | 0.35 ms |
-| footnotes-20k | 21 KB | 0.11 ms | 0.14 ms | 6.03 ms | 5.57 ms | 0.63 ms | 0.47 ms |
-| answer-10k | 10 KB | 0.05 ms | 0.07 ms | 2.95 ms | 2.75 ms | 0.28 ms | 0.22 ms |
-| answer-40k | 39 KB | 0.16 ms | 0.23 ms | 9.40 ms | 8.65 ms | 0.95 ms | 0.69 ms |
-| commonmark-spec | 200 KB | 1.25 ms | 1.77 ms | 63.8 ms | 61.0 ms | 7.41 ms | 3.93 ms |
+| chat-5k | 5 KB | 0.03 ms | 0.04 ms | 2.14 ms | 1.81 ms | 0.24 ms | 0.17 ms |
+| answer-20k | 20 KB | 0.12 ms | 0.15 ms | 7.75 ms | 6.22 ms | 0.67 ms | 0.62 ms |
+| forms-20k | 20 KB | 0.18 ms | 0.23 ms | 9.10 ms | 9.19 ms | 1.07 ms | 0.63 ms |
+| math-20k | 20 KB | 0.15 ms | 0.22 ms | 8.71 ms | 8.49 ms | 0.68 ms | 0.63 ms |
+| code-50k | 48 KB | 0.02 ms | 0.04 ms | 3.87 ms | 3.83 ms | 0.09 ms | 0.13 ms |
+| table-20k | 17 KB | 0.17 ms | 0.24 ms | 9.49 ms | 8.22 ms | 0.52 ms | 0.88 ms |
+| long-100k | 98 KB | 0.82 ms | 1.01 ms | 37.8 ms | 36.5 ms | 3.45 ms | 2.56 ms |
+| crlf-20k | 20 KB | 0.18 ms | 0.15 ms | 8.06 ms | 7.75 ms | 0.55 ms | 0.51 ms |
+| footnotes-20k | 21 KB | 0.14 ms | 0.20 ms | 7.62 ms | 7.94 ms | 0.72 ms | 0.91 ms |
+| answer-10k | 10 KB | 0.07 ms | 0.09 ms | 4.01 ms | 3.83 ms | 0.32 ms | 0.28 ms |
+| answer-40k | 39 KB | 0.23 ms | 0.30 ms | 12.9 ms | 12.2 ms | 1.12 ms | 0.89 ms |
+| commonmark-spec | 200 KB | 1.55 ms | 2.25 ms | 80.5 ms | 88.4 ms | 8.67 ms | 4.95 ms |
 
 ### node 25.6.1
 
 | Text | Size | `flowdown` | `flowdown → HTML` | `mdast-util-from-markdown` | `micromark` | `marked` | `markdown-it` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| chat-5k | 5 KB | 0.03 ms | 0.03 ms | 1.33 ms | 1.17 ms | 0.13 ms | 0.12 ms |
-| answer-20k | 20 KB | 0.09 ms | 0.11 ms | 4.85 ms | 4.38 ms | 0.37 ms | 0.41 ms |
-| forms-20k | 20 KB | 0.13 ms | 0.16 ms | 6.38 ms | 5.65 ms | 0.55 ms | 0.53 ms |
-| math-20k | 20 KB | 0.11 ms | 0.14 ms | 6.36 ms | 5.38 ms | 0.45 ms | 0.60 ms |
-| code-50k | 48 KB | 0.02 ms | 0.02 ms | 2.33 ms | 2.49 ms | 0.05 ms | 0.11 ms |
-| table-20k | 17 KB | 0.12 ms | 0.17 ms | 7.14 ms | 5.72 ms | 0.54 ms | 0.88 ms |
-| long-100k | 98 KB | 0.51 ms | 0.61 ms | 30.9 ms | 27.4 ms | 2.05 ms | 2.38 ms |
-| crlf-20k | 20 KB | 0.09 ms | 0.11 ms | 4.58 ms | 4.06 ms | 0.34 ms | 0.41 ms |
-| footnotes-20k | 21 KB | 0.11 ms | 0.13 ms | 5.54 ms | 4.87 ms | 0.44 ms | 0.52 ms |
-| answer-10k | 10 KB | 0.05 ms | 0.07 ms | 2.72 ms | 2.35 ms | 0.21 ms | 0.26 ms |
-| answer-40k | 39 KB | 0.17 ms | 0.20 ms | 9.20 ms | 8.32 ms | 0.66 ms | 0.73 ms |
-| commonmark-spec | 200 KB | 1.25 ms | 1.89 ms | 64.7 ms | 61.8 ms | 4.63 ms | 4.90 ms |
+| chat-5k | 5 KB | 0.03 ms | 0.04 ms | 1.41 ms | 1.25 ms | 0.14 ms | 0.13 ms |
+| answer-20k | 20 KB | 0.10 ms | 0.12 ms | 5.15 ms | 4.67 ms | 0.41 ms | 0.45 ms |
+| forms-20k | 20 KB | 0.14 ms | 0.17 ms | 6.99 ms | 6.59 ms | 0.58 ms | 0.56 ms |
+| math-20k | 20 KB | 0.12 ms | 0.15 ms | 6.45 ms | 6.21 ms | 0.49 ms | 0.65 ms |
+| code-50k | 48 KB | 0.02 ms | 0.02 ms | 2.44 ms | 2.57 ms | 0.06 ms | 0.12 ms |
+| table-20k | 17 KB | 0.12 ms | 0.17 ms | 7.70 ms | 5.95 ms | 0.58 ms | 0.95 ms |
+| long-100k | 98 KB | 0.52 ms | 0.65 ms | 32.2 ms | 29.4 ms | 2.16 ms | 2.54 ms |
+| crlf-20k | 20 KB | 0.09 ms | 0.11 ms | 4.70 ms | 4.46 ms | 0.35 ms | 0.43 ms |
+| footnotes-20k | 21 KB | 0.11 ms | 0.14 ms | 5.94 ms | 5.51 ms | 0.46 ms | 0.54 ms |
+| answer-10k | 10 KB | 0.06 ms | 0.07 ms | 2.88 ms | 2.70 ms | 0.22 ms | 0.28 ms |
+| answer-40k | 39 KB | 0.17 ms | 0.21 ms | 10.1 ms | 9.82 ms | 0.71 ms | 0.81 ms |
+| commonmark-spec | 200 KB | 1.29 ms | 2.06 ms | 77.0 ms | 64.4 ms | 4.88 ms | 5.41 ms |
 
 ## The parsers
 
 | Parser | Version | Output | What it reads, set up as here |
 | --- | --- | --- | --- |
-| `flowdown` | 0.4.2 | tree | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
-| `flowdown → HTML` | 0.4.2 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
+| `flowdown` | 0.6.2 | tree | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
+| `flowdown → HTML` | 0.6.2 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
 | `mdast-util-from-markdown` | 2.1.0 | tree | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
 | `micromark` | 4.0.3 | html | CommonMark, tables, task lists, strikethrough, bare links, footnotes |
 | `marked` | 18.1.3 | html | CommonMark, tables, task lists, strikethrough, bare links (no footnotes) |
