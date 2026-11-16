@@ -109,3 +109,29 @@ fn a_bare_address_lets_go_of_what_trails_it_as_cmark_gfm_does() {
         failed.join("\n")
     );
 }
+
+/// What the npm package's differential fuzz found both parsers reading wrongly
+/// (`bench/src/differential.ts`), where micromark and markdown-it agree with each other.
+#[test]
+fn what_the_differential_fuzz_found_reads_as_micromark_and_markdown_it_do() {
+    let cases = [
+        // A blank line after indented code in an item: the list is loose.
+        (
+            "+     _\n\n  t",
+            "<ul>\n<li>\n<pre><code>_\n</code></pre>\n<p>t</p>\n</li>\n</ul>\n",
+        ),
+        // A definition is a block of the item: a blank line before it loosens the list.
+        ("- a\n\n  [r]: /u", "<ul>\n<li>\n<p>a</p>\n</li>\n</ul>\n"),
+        // A list item that can interrupt the paragraph comes before a row of dashes.
+        ("b\n- |", "<p>b</p>\n<ul>\n<li>|</li>\n</ul>\n"),
+        // A header that is a pipe alone heads no table.
+        ("|\n-|", "<p>|\n-|</p>\n"),
+    ];
+    for (markdown, expected) in cases {
+        assert_eq!(
+            html(&parse_as(markdown, Dialect::Github)),
+            expected,
+            "{markdown:?}"
+        );
+    }
+}

@@ -477,3 +477,35 @@ describe('loaders written inline, a new function on every render', () => {
     })
   })
 })
+
+describe('copying', () => {
+  test('a selection in the reply is copied as its elements, with nothing of the page', async () => {
+    const { Markdown } = await import('../index')
+    await mounted(
+      <Markdown>
+        {'Some **bold words** and a [link](https://example.com/a).\n\n```ts\nlet a\n```'}
+      </Markdown>,
+      async (host) => {
+        const root = host.querySelector('.flowdown')!
+        const range = document.createRange()
+        range.selectNodeContents(root)
+        const selection = document.getSelection()!
+        selection.removeAllRanges()
+        selection.addRange(range)
+        const data = new DataTransfer()
+        const event = new ClipboardEvent('copy', {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true,
+        })
+        root.querySelector('strong')!.dispatchEvent(event)
+        selection.removeAllRanges()
+        expect(event.defaultPrevented).toBe(true)
+        const html = data.getData('text/html')
+        expect(html).toContain('<strong>bold words</strong>')
+        expect(html).toContain('<a href="https://example.com/a">link</a>')
+        expect(html).not.toMatch(/\s(?:class|style)=|<(?:button|svg)\b/)
+      },
+    )
+  })
+})

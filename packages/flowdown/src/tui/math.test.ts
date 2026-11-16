@@ -107,7 +107,8 @@ describe('where a formula is drawn', () => {
 
   test('on rows of its own, set in: a `$$` block, a `math` fence, `$$ … $$` on one line', () => {
     const formula = String.raw`\bar{r} = \frac{1}{k} \sum_{i=1}^{k} r_i`
-    const drawn = 'The mean is\n\n  r̄ = 1/k ∑ᵢ₌₁ᵏ rᵢ\n\nDone.'
+    // A fraction over its rule, a sum with its limits above and below (`formula.ts`).
+    const drawn = 'The mean is\n\n      1  k\n  r̄ = ─  ∑  rᵢ\n      k i=1\n\nDone.'
     expect(text(`The mean is\n\n$$\n${formula}\n$$\n\nDone.`)).toBe(drawn)
     expect(text(`The mean is\n\n\`\`\`math\n${formula}\n\`\`\`\n\nDone.`)).toBe(drawn)
     expect(text(`The mean is\n\n$$ ${formula} $$\n\nDone.`)).toBe(drawn)
@@ -119,7 +120,7 @@ describe('where a formula is drawn', () => {
       text(String.raw`$$
 f(x) = \begin{cases} 1 & x > 0 \\ 0 & \text{otherwise} \end{cases}
 $$`),
-    ).toBe('  f(x) = { 1, x > 0\n  0, otherwise')
+    ).toBe('  f(x) = ⎰1  x > 0\n         ⎱0  otherwise')
   })
 
   test('inside a callout, a list and a table', () => {
@@ -262,7 +263,16 @@ It costs $5 today.
     }
     expect(seen.slice(0, 3)).toEqual([])
     expect(toAnsi(view.render(reply), false)).toBe(
-      'The mean is r̄ = 1/k here, and\n\n  x = (-b ± √(b² - 4ac))/2a\n\nIt costs $5 today.',
+      [
+        'The mean is r̄ = 1/k here, and',
+        '',
+        '            ________',
+        '      -b ± √b² - 4ac',
+        '  x = ──────────────',
+        '            2a',
+        '',
+        'It costs $5 today.',
+      ].join('\n'),
     )
   })
 

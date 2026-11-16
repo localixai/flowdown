@@ -150,3 +150,17 @@ restyle it, see [Components](components.md).
 You can leave `styles.css` out and style the classes yourself; the markup is the same. The tabs
 and the tree still work, since their behaviour is in the components, but nothing lays out the
 forms: steps are a plain list, stats a list of bold values.
+
+## Copying a reply
+
+A browser's own copy of rich text writes every element's computed style inline: copied from a dark
+page, a reply pastes into a light document as grey text on white, in the page's font. A selection
+inside a reply drawn by `<Markdown>`, `@localix-ai/flowdown/dom` or `<flow-down>` is copied as the
+reply's own elements instead (paragraphs, lists, bold, links, code) with no class or style, so the
+paste takes the style of the document it goes to. A word copied from inside bold text is still
+bold, and a line copied from a code block is still code. The buttons, icons and labels of code
+blocks, tabs and trees are left out. A link keeps its address only when it is an absolute web
+address, and a task pastes as `☑` or `☐`. The plain text is the browser's own.
+
+A selection that runs out of the reply onto the page is left to the browser, as is a copy that an
+element inside the reply already handled (`event.preventDefault()`).

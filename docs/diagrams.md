@@ -120,6 +120,14 @@ import { answerFormatPrompt } from '@localix-ai/flowdown/prompt'
 const system = answerFormatPrompt({ diagrams: true })
 ```
 
+## In a terminal
+
+`drawDiagram` of `@localix-ai/flowdown/tui/diagram`, passed to the terminal target as `diagrams`,
+draws every kind of diagram itself, with no Mermaid and no package: graphs in boxes and lines, time
+in bars and rails, charts in bars, plots and grids. A diagram too wide for the terminal is written
+as an outline of what it holds, and one that does not read shows its source.
+[Other targets](targets.md#a-terminal) shows what it draws.
+
 ## Safety and cost
 
 - Mermaid runs with `securityLevel: 'strict'`: labels are sanitized and click handlers are off, so a

@@ -22,11 +22,29 @@
  */
 import { mathSyntax } from '../core/math-syntax'
 import { flowdownDialect } from '../core/remark-answer-blocks'
+import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE } from '../dialect'
 import { createDocument, type MarkdownBlock } from '../document'
+import { createCutter, createFenceMemory, growingFence, type GrowingFence } from '../document/fence'
+import { createListReader } from '../document/list'
+import { createQuoteReader } from '../document/quote'
+import { TABLE_ROWS, tableRows, type TableRows } from '../document/table'
 import { parse } from '../engine'
-import type { Extension } from '../engine/types'
-import { createCodeDrawer, type Highlighter } from './code'
-import { DEFAULT_LABELS, drawBlock, type TerminalLabels } from './render'
+import type { Extension, References } from '../engine/types'
+import { codeRows, createCodeDrawer, type Highlighter } from './code'
+import {
+  createRowMemo,
+  DEFAULT_LABELS,
+  drawBlock,
+  drawCodeRows,
+  drawFenceTitle,
+  lastFence,
+  type DiagramDrawer,
+  MIN_WIDTH,
+  tableCells,
+  turnRowMemo,
+  type TerminalLabels,
+} from './render'
+import { createTableMemo, drawTable } from './table'
 import { toAnsi, type Line } from './style'
 
 export { toAnsi, lineText, sgr, type Colour, type Line, type Span, type Style } from './style'
@@ -34,7 +52,7 @@ export type { Highlighter } from './code'
 export { printable } from './printable'
 export { width as textWidth } from './width'
 export { lineWidth } from './wrap'
-export { DEFAULT_LABELS, MIN_WIDTH, type TerminalLabels } from './render'
+export { DEFAULT_LABELS, MIN_WIDTH, type DiagramDrawer, type TerminalLabels } from './render'
 export type { Extension, Node } from '../engine/types'
 
 /** The words the renderer adds, any of them replaced. */
@@ -59,6 +77,13 @@ export interface TerminalOptions {
    * `\frac{a}{b}` as `a/b`. On by default; `false` leaves them as the text they were written as.
    */
   math?: boolean
+  /**
+   * Draw ```` ```mermaid ```` diagrams once their fence is closed: `drawDiagram` of
+   * `@localix-ai/flowdown/tui/diagram` draws flowcharts and sequence diagrams in boxes and lines,
+   * or as an outline when the picture would not fit. Off by default: a diagram is its source under
+   * a `Diagram` label.
+   */
+  diagrams?: DiagramDrawer | null
 }
 
 export interface RenderOptions {
@@ -86,20 +111,129 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
     callouts: { ...DEFAULT_LABELS.callouts, ...options.labels?.callouts },
   }
   const math = options.math ?? true
+  const diagrams = options.diagrams ?? null
   const extensions = [flowdownDialect, ...(math ? [mathSyntax] : []), ...(options.extensions ?? [])]
-  const code = createCodeDrawer(options.highlight ?? null)
+  const highlight = options.highlight ?? null
+  const code = createCodeDrawer(highlight)
   const doc = createDocument({ refs: true })
   let columns = options.width ?? DEFAULT_WIDTH
   let drawn = new WeakMap<MarkdownBlock, { closer: string; rows: Line[]; pieced: boolean }>()
+
+  // A block that is one fence still being written (an agent writing a file) is read without its
+  // block being parsed, and drawn in the pieces `document/fence.ts` cuts: a piece that is complete
+  // keeps its rows, so a token costs the last piece, not the file.
+  const memory = createFenceMemory()
+  const cut = createCutter()
+  /** The pieces drawn last: `text` is a piece's code, without the line break a complete one ends in. */
+  let pieces: Array<{ text: string; run: number; key: string; code: Line[]; rows: Line[] }> = []
+  const fenceRows = (fence: GrowingFence): Line[] => {
+    // A fence's code is drawn without its last line breaks, as `drawBlock` draws it.
+    let end = fence.body.length
+    while (end > 0 && fence.body.charCodeAt(end - 1) === 10) end -= 1
+    const { parts, run } = cut(end === fence.body.length ? fence.body : fence.body.slice(0, end))
+    const key = `${fence.language ?? ''}\u0000${columns}`
+    const kept = pieces
+    pieces = parts.map((part, index) => {
+      const was = kept[index]
+      const done = index < parts.length - 1
+      const text = done ? part.slice(0, -1) : part
+      // A complete piece of the same run has the same code; the last one is compared, so the
+      // piece that a line break has just completed keeps the rows it had as the last.
+      if (
+        was !== undefined &&
+        was.key === key &&
+        ((done && index < kept.length - 1 && was.run === run) || was.text === text)
+      )
+        return was.run === run ? was : { ...was, run }
+      const lines = codeRows(text, fence.language, highlight)
+      return { text, run, key, code: lines, rows: drawCodeRows(lines, columns) }
+    })
+    // The drawer holds them too: a fence it draws next with this code (closed, but still the
+    // end of the reply) is not highlighted again, and one of one piece is drawn whole from them.
+    if (fence.language) code.keep(pieces, fence.language)
+    const out = fence.title ? drawFenceTitle(fence.title, columns, labels) : []
+    for (const piece of pieces) for (const row of piece.rows) out.push(row)
+    return out
+  }
+  // The block that grows is drawn again on every token: its parts that did not change (the items
+  // of a list above the last, the paragraphs of a quote) keep their rows, by text and place.
+  let memo = createRowMemo()
+  /** A number for each set of link definitions: a part is kept with the definitions it was read with. */
+  const scopes = new WeakMap<object, string>()
+  let scopeCount = 0
+  const scopeOf = (refs: object | undefined): string => {
+    if (refs === undefined) return ''
+    let id = scopes.get(refs)
+    if (id === undefined) {
+      id = String(++scopeCount)
+      scopes.set(refs, id)
+    }
+    return id
+  }
+
+  // A table that grows a row at a time (an agent printing results) is read in the pieces of rows
+  // `document/table.ts` cuts, each under the table's header: a piece that is complete is parsed
+  // once. A terminal lays a table out by its widest cells, so the rows are measured whole; a row
+  // is laid out again only when the widths of the columns changed.
+  const tableMemo = createTableMemo()
+  type Piece = NonNullable<ReturnType<typeof tableCells>>
+  let read = new Map<string, Piece>()
+  let readBefore = new Map<string, Piece>()
+  const tableBlock = (table: TableRows, refs: References | undefined): Line[] | null => {
+    const scope = scopeOf(refs)
+    const rows: Line[][] = []
+    let aligns: Piece['aligns'] = []
+    for (let at = 0; at < table.rows.length; at += TABLE_ROWS) {
+      const own = table.rows.slice(at, at + TABLE_ROWS)
+      const text = table.head + own.join('\n')
+      const key = `${scope}\u0000${text}`
+      const piece =
+        read.get(key) ??
+        readBefore.get(key) ??
+        tableCells(parse(text, { extensions, refs }), own.length)
+      if (piece === null) return null
+      read.set(key, piece)
+      if (at === 0) {
+        rows.push(piece.head)
+        aligns = piece.aligns
+      }
+      for (const row of piece.body) rows.push(row)
+    }
+    return drawTable(rows, aligns, Math.max(MIN_WIDTH, Math.floor(columns)), [], [], tableMemo)
+  }
+
+  const lists = createListReader()
+  const quotes = createQuoteReader()
+  /** The page's extensions may read a list whole: a long list is then parsed whole. */
+  const ownList = (options.extensions?.length ?? 0) > 0
+
+  /** The languages an extension reads fences of itself: such a fence is drawn by its block. */
+  const ruled = new Set(extensions.flatMap((extension) => Object.keys(extension.fences ?? {})))
+
+  /** Whether a fence is drawn as its code: a diagram, a file tree or a formula is drawn by its block. */
+  const asCode = (fence: GrowingFence | null): fence is GrowingFence =>
+    fence !== null &&
+    fence.language !== DIAGRAM_FENCE_LANGUAGE &&
+    fence.language !== TREE_FENCE_LANGUAGE &&
+    !(math && fence.language === 'math') &&
+    !ruled.has(fence.language ?? '') &&
+    // A language or a title the parser would read escapes or references in is read by the parser.
+    !/[\\&]/.test(fence.language ?? '') &&
+    !/[\\&]/.test(fence.title)
+
   return {
     render(text, { streaming = false, width } = {}) {
       if (width !== undefined && width !== columns) {
         columns = width
         drawn = new WeakMap()
+        memo = createRowMemo()
       }
       const state = doc.update(text, { streaming, math })
       const last = state.blocks.length - 1
       const out: Line[] = []
+      // Whether the block that grows was drawn now: the caches for it are turned only then, so a
+      // token that left it as it was (a row held back until its line ends) keeps them.
+      let redrawn = false
       state.blocks.forEach((block, index) => {
         const closer = index === last ? state.closer : ''
         // The end of a reply still arriving: its last fence may gain code with the next token.
@@ -107,14 +241,37 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
         let made = drawn.get(block)
         // A fence drawn in pieces is drawn whole once nothing more can come to it.
         if (made === undefined || made.closer !== closer || (made.pieced && !growing)) {
-          const rows = drawBlock(
-            parse(block.source + closer, { extensions, refs: block.refs }),
-            columns,
-            labels,
-            code,
-            growing,
-          )
-          made = { closer, rows, pieced: code.pieced() }
+          if (growing) redrawn = true
+          const fence = growing && state.growing ? growingFence(block.source, closer, memory) : null
+          const source = block.source + closer
+          const table = growing && !closer ? tableRows(source) : null
+          const tabled = table ? tableBlock(table, block.refs) : null
+          if (asCode(fence)) made = { closer, rows: fenceRows(fence), pieced: true }
+          else if (tabled) made = { closer, rows: tabled, pieced: true }
+          else {
+            const parsed = (piece: string) => parse(piece, { extensions, refs: block.refs })
+            // A long list is read a piece of items at a time: a token reads the last piece.
+            const scope = scopeOf(block.refs)
+            const tree =
+              (ownList
+                ? null
+                : (lists.read(block.source, closer, parsed, scope) ??
+                  quotes.read(block.source, closer, parsed, scope))) ?? parsed(source)
+            const rows = drawBlock(
+              tree,
+              columns,
+              labels,
+              code,
+              growing,
+              growing ? { source, memo, scope: scopeOf(block.refs) } : null,
+              diagrams,
+            )
+            // A diagram still being written is its source: drawn again once its block is not the
+            // end of the reply, it is its picture.
+            const diagram =
+              growing && diagrams !== null && lastFence(tree)?.lang === DIAGRAM_FENCE_LANGUAGE
+            made = { closer, rows, pieced: code.pieced() || diagram }
+          }
           drawn.set(block, made)
         }
         if (made.rows.length === 0) return
@@ -123,6 +280,11 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
         for (const row of made.rows) out.push(row)
       })
       code.turn()
+      if (redrawn) {
+        turnRowMemo(memo)
+        readBefore = read
+        read = new Map()
+      }
       return out
     },
   }

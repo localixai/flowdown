@@ -14,11 +14,15 @@ import { prefixes, type Pattern } from '../../test/chunks'
 import { FAMILIES, namedDocuments } from '../../test/golden'
 import { PAYLOADS, WRAPS } from '../../test/security'
 import { formOf } from '../core/forms'
+import { TABLE_ROWS } from '../document/table'
+import { closePartialMarkdown } from '../core/heal'
 import { mathSyntax } from '../core/math-syntax'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { createDocument } from '../document'
 import { parse } from '../engine'
-import type { Node } from '../engine/types'
+import type { Extension, Node } from '../engine/types'
+import { drawDiagram } from './diagram'
+import { formulaRows } from './formula'
 import { mathText } from './math'
 import {
   createTerminalView,
@@ -469,13 +473,29 @@ describe('layouts', () => {
     expect(renderToLines('```PATCH\n+a\n```\n', { width: 40 })[0]![0]!.style).toEqual({
       color: 'green',
     })
+    // With a drawer, a flowchart or a sequence diagram is drawn; its name stands over it.
+    const flow = '```mermaid title="flow.mmd"\ngraph TD\n  A --> B\n```\n'
+    expect(renderToLines(flow, { width: 40, diagrams: drawDiagram }).map(lineText)).toEqual([
+      'flow.mmd',
+      '┌───┐',
+      '│ A │',
+      '└─┬─┘',
+      '  ▼',
+      '┌───┐',
+      '│ B │',
+      '└───┘',
+    ])
+    // Without one, or of another kind, it is its source under a row that says what it is.
     expect(shown('```mermaid\ngraph TD\n  A --> B\n```\n', 40)).toBe(
       rows('Diagram', 'graph TD', '  A --> B'),
     )
+    const info = '```mermaid\ninfo\n```\n'
+    expect(renderToLines(info, { width: 40, diagrams: drawDiagram }).map(lineText)).toEqual([
+      'Diagram',
+      'info',
+    ])
     // A fence with a name of its own keeps it, and an empty one says nothing.
-    expect(shown('```mermaid title="flow.mmd"\ngraph TD\n```\n', 40)).toBe(
-      rows('flow.mmd', 'graph TD'),
-    )
+    expect(shown('```mermaid title="flow.mmd"\npie\n```\n', 40)).toBe(rows('flow.mmd', 'pie'))
     expect(shown('```mermaid\n```\n', 40)).toBe('')
   })
 
@@ -664,6 +684,11 @@ describe('on the corpus', () => {
     // A source's host repeats its address, which is printed; a tree fence is drawn from its rows.
     if (form === 'source-host') return
     if (node.type === 'code' && node.lang === 'tree') return
+    // A display formula set on rows is read across them, not along: `formula.test.ts` says what
+    // it is drawn as. Only the text around it is held to its order here.
+    const only = node.type === 'paragraph' && node.children?.length === 1 ? node.children[0] : null
+    const display = node.type === 'math' ? node : only?.type === 'inlineMath' ? only : null
+    if (display && formulaRows(display.value ?? '', Number.POSITIVE_INFINITY) !== null) return
     // A formula is on the screen as the terminal writes it: `math.test.ts` says what that is.
     if (node.type === 'inlineMath' || node.type === 'math') {
       out.push(printable(mathText(node.value ?? '').replace(/\s/g, '')))
@@ -769,6 +794,125 @@ describe('a reply while it arrives', () => {
     view.render(text)
     same(view.render(text, { width: 20 }), renderToLines(text, { width: 20 }))
     same(view.render(text), renderToLines(text, { width: 20 }))
+  })
+
+  test('a fence being written is drawn in pieces as one parse draws it closed, and its block is not parsed', () => {
+    const line = (at: number): string =>
+      [
+        `const value${at} = await stream(value, ${at}) // note`,
+        '',
+        `\tindented\twith tabs ${at}`,
+        `- removed ${at}`,
+        `+ added ${at} with a line long enough to be cut at the edge of a narrow terminal row`,
+        `中文 ${at} 字符`,
+      ][at % 6]!
+    const body = Array.from({ length: 130 }, (_, at) => line(at)).join('\n')
+    const fences = [
+      `\`\`\`ts title="src/app.ts"\n${body}\n\n\n`,
+      `\`\`\`diff\n${body}`,
+      `~~~~\n${body}`,
+      `Before.\n\n\`\`\`sh\n${body}`,
+    ]
+    let parsed = 0
+    const spy = { name: 'spy', transform: () => void parsed++ }
+    let steps = 0
+    fences.forEach((markdown, index) => {
+      const width = [80, 30, 12][index % 3]!
+      const view = createTerminalView({ width, extensions: [spy] })
+      const marker = markdown.includes('~~~~') ? '~~~~' : '```'
+      parsed = 0
+      const all = prefixes(markdown, 'frame', index + 1)
+      all.forEach((prefix, at) => {
+        const drawn = view.render(prefix, { streaming: true })
+        if (at % 5 === 0 || at === all.length - 1) {
+          const closed = `${prefix}${prefix.endsWith('\n') ? '' : '\n'}${marker}\n`
+          expect(toAnsi(drawn)).toBe(toAnsi(renderToLines(closed, { width })))
+          steps++
+        }
+      })
+      // A parse for the text before the fence and its opening line, not one for each token.
+      expect(parsed).toBeLessThan(12)
+    })
+    expect(steps).toBeGreaterThan(100)
+  })
+
+  test('the items of a list that grows keep their rows, and only the last is drawn again', () => {
+    const items = Array.from(
+      { length: 12 },
+      (_, at) => `- **Item ${at}** is long enough to wrap onto a second row of a narrow terminal.`,
+    )
+    const view = createTerminalView({ width: 40 })
+    const before = view.render(items.join('\n'), { streaming: true })
+    const after = view.render(`${items.join('\n')}\n- And one more`, { streaming: true })
+    // Every row of the items above the last is the very row drawn before.
+    const kept = before.length - 3
+    expect(kept).toBeGreaterThan(20)
+    for (let at = 0; at < kept; at++) expect(after[at]).toBe(before[at]!)
+    expect(lineText(after.at(-1)!)).toBe('• And one more')
+  })
+
+  test('a table that grows is drawn as one parse of it draws, its pieces and widths and all', () => {
+    // Cells of every length, so a row that arrives late widens a column, or wraps and rules the
+    // table apart; links, code and formulas in them; past three pieces of rows.
+    const word = (seed: number, at: number) =>
+      ['ok', 'a much longer cell that wraps', '`code()`', '[link](https://example.com/x)', '$x^2$'][
+        (seed * 7 + at * 3) % 5
+      ]!
+    const table = (seed: number, count: number) =>
+      `| name | status | :note: | time |\n| --- | :---: | --- | ---: |\n${Array.from(
+        { length: count },
+        (_, at) =>
+          // Row 37, long after the first pieces are complete, widens the first column.
+          `| ${at === 37 ? 'a late row with a long name' : `row ${at}`} | ${word(seed, at)} | ${at % 11 === 0 ? word(seed + 1, at) : '-'} | ${at * 13} ms |`,
+      ).join('\n')}\n`
+    let steps = 0
+    for (let seed = 1; seed <= 9; seed++) {
+      const markdown = `Results:\n\n${table(seed, 40 + seed * 3)}`
+      const width = [80, 44, 26][seed % 3]!
+      const view = createTerminalView({ width })
+      const all = prefixes(markdown, seed % 2 ? 'token' : 'frame', seed)
+      all.forEach((prefix, at) => {
+        const drawn = view.render(prefix, { streaming: true })
+        if (at % 3 === 0 || at === all.length - 1) {
+          // One parse of the text as completed for this frame, with nothing growing in it.
+          same(drawn, renderToLines(closePartialMarkdown(prefix), { width }))
+          steps++
+        }
+      })
+      same(view.render(markdown), renderToLines(markdown, { width }))
+    }
+    expect(steps).toBeGreaterThan(500)
+  })
+
+  test('a table that grows reads each complete piece of its rows once', () => {
+    // Every parse the view makes, by the text it read.
+    const read: string[] = []
+    const spy: Extension = { name: 'spy', transform: (_root, source) => void read.push(source) }
+    const markdown = `| a | b |\n| --- | --- |\n${Array.from({ length: TABLE_ROWS * 4 + 5 }, (_, at) => `| ${at} | cell ${at} |`).join('\n')}\n`
+    const view = createTerminalView({ width: 50, extensions: [spy] })
+    for (const prefix of prefixes(markdown, 'token', 9)) view.render(prefix, { streaming: true })
+    // The header's two lines and a piece's rows: the texts of complete pieces.
+    const complete = read.filter((text) => text.split('\n').length === 2 + TABLE_ROWS)
+    expect(complete.length).toBeGreaterThanOrEqual(4)
+    expect(new Set(complete).size).toBe(complete.length)
+  })
+
+  test('a diagram is its source while its fence is written, and its picture once closed', () => {
+    const reply =
+      'Before.\n\n```mermaid\nflowchart TD\n  A[Ask] --> B{Known?}\n  B -->|yes| C[Answer]\n```\n\nAfter **all**.\n'
+    for (const width of [80, 24]) {
+      const view = createTerminalView({ width, diagrams: drawDiagram })
+      const all = prefixes(reply, 'token', width)
+      all.forEach((prefix) =>
+        same(
+          view.render(prefix, { streaming: true }),
+          renderToLines(prefix, { width, streaming: true, diagrams: drawDiagram }),
+        ),
+      )
+      const done = view.render(reply)
+      same(done, renderToLines(reply, { width, diagrams: drawDiagram }))
+      expect(done.map(lineText).join('\n')).not.toContain('flowchart')
+    }
   })
 
   test('a fence left open is drawn as code from its first line', () => {

@@ -1,12 +1,17 @@
 'use client'
 import { DEFAULT_CATCH_UP_MS, useSmoothText } from './use-smooth-text'
 import { useContext, Fragment, memo, useMemo, useState, type ReactNode } from 'react'
+import { copySelection } from '../browser/clipboard'
 import { normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
 import { createDocument, usesHtml, usesMath, usesRareEntity } from '../document'
+import { createListReader } from '../document/list'
+import { createQuoteReader } from '../document/quote'
+import type { KeptNode } from '../render/tree'
+import { parse } from '../engine'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
-import type { Extension, References } from '../engine/types'
+import type { Extension, Node, References } from '../engine/types'
 import { Diagram } from '../mermaid/diagram'
 import { setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
 import { Callout } from './callout'
@@ -22,7 +27,7 @@ import {
 import { FileTree } from './file-tree'
 import { LabelsContext, mergeLabels, type LabelOverrides } from './labels'
 import { defaultUrlTransform, type UrlTransform } from '../engine/url'
-import { draw, type BlockOptions } from './draw'
+import { draw, drawTree, type BlockOptions } from './draw'
 import type { Components, RenderOptions } from './render'
 import { useStage, type StageOption } from './use-stage'
 import { Table } from './table'
@@ -166,8 +171,32 @@ export function buildComponents(overrides: MarkdownComponents | undefined): {
 }
 
 const Block = memo(
-  function Block({ source: open, closer, offset, growing, headingIds, refs, options }: BlockProps) {
-    const [memory] = useState(createFenceMemory)
+  function Block({
+    source: open,
+    closer,
+    offset,
+    growing,
+    headingIds,
+    headingKey,
+    refs,
+    options,
+  }: BlockProps) {
+    // What the block keeps between its renders, in one place: a growing fence's last reading, the
+    // readers of a long list or quote, and what they drew, for as long as it is drawn the same way.
+    const [kept] = useState(() => ({
+      memory: createFenceMemory(),
+      lists: createListReader(),
+      quotes: createQuoteReader(),
+      scope: { options, refs },
+      offset,
+      headingKey,
+      drawn: new WeakMap<Node, KeptNode<ReactNode>>(),
+    }))
+    if (kept.scope.options !== options || kept.scope.refs !== refs)
+      Object.assign(kept, { scope: { options, refs }, drawn: new WeakMap() })
+    if (kept.offset !== offset || kept.headingKey !== headingKey)
+      Object.assign(kept, { offset, headingKey, drawn: new WeakMap() })
+    const memory = kept.memory
     const fence = growing && !options.ownCode ? growingFence(open, closer, memory) : null
     if (
       fence &&
@@ -182,6 +211,22 @@ const Block = memo(
     // (its own elements or extensions see the table whole).
     const table = options.ownTable ? null : tableRows(source)
     if (table) return <TableRows {...table} options={options} refs={refs} />
+    // A long list or quote is read a piece at a time: a token reads the last piece, not the block.
+    // Only a block that opens as one is asked.
+    const opens = PIECED.test(open) ? open.trimStart()[0] : undefined
+    const parsed = (text: string) => parse(text, { extensions: options.extensions, refs })
+    const list =
+      options.ownList || opens === undefined
+        ? null
+        : opens === '>'
+          ? kept.quotes.read(open, closer, parsed, kept.scope)
+          : kept.lists.read(open, closer, parsed, kept.scope)
+    if (list)
+      return (
+        <GrowingFence.Provider value={growing}>
+          {drawTree(list, offset, headingIds, options, kept.drawn)}
+        </GrowingFence.Provider>
+      )
     return (
       <GrowingFence.Provider value={growing}>
         {draw(source, offset, headingIds, options, refs)}
@@ -199,6 +244,13 @@ const Block = memo(
 )
 
 const NO_EXTENSIONS: Extension[] = []
+
+/** How a block that may be a long list or quote starts: an item's marker, or a quote's `>`. */
+const PIECED = /^ {0,3}(?:[-*+>]|\d)/
+
+/** A copy of a selection in the reply takes the reply's elements, not the page's styles. */
+const copyFromReply = (event: { currentTarget: HTMLDivElement; nativeEvent: ClipboardEvent }) =>
+  copySelection(event.currentTarget, event.nativeEvent)
 
 /**
  * How many blocks a group holds. Small enough that the group a reply is growing in is cheap to
@@ -361,6 +413,7 @@ export function Markdown({
       ownTable: Boolean(
         components?.table || components?.thead || components?.tbody || extensions.length,
       ),
+      ownList: extensions.length > 0,
     }),
     // `entities` is here so that blocks are read again once every name can be decoded.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
@@ -395,6 +448,7 @@ export function Markdown({
           className={unstyled ? className : className ? `flowdown ${className}` : 'flowdown'}
           data-streaming={streaming || undefined}
           data-caret={(streaming && caret) || undefined}
+          onCopy={copyFromReply}
         >
           {groups}
         </div>

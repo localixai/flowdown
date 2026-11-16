@@ -110,6 +110,8 @@ bun run bench:check    # holds results/latest.json to budgets.json
 bun run bench:quick    # one run, `frame` only, for a quick look; writes no `latest`
 bun run browser        # the same streams in Chromium: results/browser.md (3 minutes)
 bun run browser --all  # every renderer again in Chromium (45 minutes)
+bun run growth         # one block that grows, in each target: results/growth.md (1 minute)
+bun run differential   # the parser against micromark, 50,000 seeded texts: results/differential.md (2 minutes)
 ```
 
 ### The other renderers are measured once
@@ -192,6 +194,8 @@ bench/
     parse.ts        the parser alone, against other parsers: results/parse.md
     parse-cell.ts   one parser through the corpus, in a process of its own
     parsers.ts      how each parser is set up
+    growth.ts       one block that grows (a fence, a table, a list), in each target
+    differential.ts the parser against micromark on seeded texts; exits 1 on a new kind of difference
   results/
     latest.md
     latest.json
@@ -200,6 +204,9 @@ bench/
     browser.json
     parse.md
     parse.json
+    growth.md
+    growth.json
+    differential.md
     <date>-<label>.json
 ```
 

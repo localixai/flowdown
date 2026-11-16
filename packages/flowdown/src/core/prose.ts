@@ -7,41 +7,43 @@
  * backslash at a position found in the mask — and a mask that dropped code lines (as the first
  * version here did) would shift every position after the first code block.
  */
-export function markdownProseWithoutCode(markdown: string): string {
+import { codeRanges } from '../engine/code-ranges'
+
+export function markdownProseWithoutCode(markdown: string, mathFences = true): string {
   // Nothing here can be code: no backtick or tilde run, no line indented four.
   if (!CODE_HINT.test(markdown)) return markdown
-  const prose: string[] = []
-  let fence: { character: string; length: number } | null = null
-  const blank = (line: string) => ' '.repeat(line.length)
-
-  for (const line of markdown.split('\n')) {
-    const marker = FENCE_MARKER.exec(line)
-    if (fence) {
-      if (
-        marker &&
-        marker[1]![0] === fence.character &&
-        marker[1]!.length >= fence.length &&
-        marker[2]!.trim() === ''
-      ) {
-        fence = null
-      }
-      prose.push(blank(line))
-      continue
-    }
-    // A backtick fence has no backtick in its info string: ```` ```a``` ```` is inline code.
-    if (marker && !(marker[1]![0] === '`' && marker[2]!.includes('`'))) {
-      fence = { character: marker[1]![0]!, length: marker[1]!.length }
-      prose.push(blank(line))
-      continue
-    }
-
-    // Four-space/tab-indented CommonMark code is as inert as a fenced block.
-    prose.push(INDENTED.test(line) ? blank(line) : line)
+  // The blocks as the parser reads them. A scan of lines alone does not know what holds a fence:
+  // under a list item a fence indented four is a fence, not indented code, and the scan took the
+  // line that closes it for one that opens another, and all the text after it for code. Nor does
+  // it know where a block ends: a backtick run in one paragraph and one in an HTML block below
+  // it are not a code span, and were blanked as one with every line between them.
+  // `mathFences`: read as a page that typesets math reads it, where `$$` fences a formula.
+  const { code, inline } = codeRanges(markdown, mathFences)
+  let out = ''
+  let kept = 0
+  // Both lists are in the order of the text, and a code block and a run of text never share a
+  // line: walked together, each range is taken once, in order.
+  for (let c = 0, i = 0; c < code.length || i < inline.length;) {
+    const isCode = i >= inline.length || (c < code.length && code[c]! < inline[i]!)
+    const from = Math.max(kept, isCode ? code[c]! : inline[i]!)
+    const to = isCode ? code[c + 1]! : inline[i + 1]!
+    if (isCode) c += 2
+    else i += 2
+    if (to <= from) continue
+    const own = markdown.slice(from, to)
+    out += markdown.slice(kept, from) + (isCode ? own.replace(NOT_NEWLINE, ' ') : withoutSpans(own))
+    kept = to
   }
+  return kept === 0 ? out + markdown : out + markdown.slice(kept)
+}
 
-  // Inline code spans may cross line breaks. Blank only complete spans; an
-  // unmatched backtick stays prose, matching CommonMark's literal treatment.
-  const source = prose.join('\n')
+/**
+ * The text of one block with its code spans blanked. A span may cross line breaks inside the
+ * block; only complete spans are blanked, and an unmatched backtick stays prose, as CommonMark
+ * reads it.
+ */
+function withoutSpans(source: string): string {
+  if (source.indexOf('`') === -1) return source
   let visible = ''
   let copied = 0
   for (let index = source.indexOf('`'); index !== -1; index = source.indexOf('`', index)) {
@@ -75,8 +77,6 @@ export function markdownProseWithoutCode(markdown: string): string {
 }
 
 const CODE_HINT = /`|~~~|^(?: {4}|\t)/m
-const FENCE_MARKER = /^ {0,3}(`{3,}|~{3,})(.*)$/
-const INDENTED = /^(?: {4}|\t)/
 const NOT_NEWLINE = /[^\n]/g
 
 /** Whether the character at `index` is backslash-escaped (an odd run of `\` before it). */

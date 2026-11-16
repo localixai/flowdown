@@ -23,6 +23,19 @@ export interface RenderOptions<E, C> {
   special: (language: string, source: string) => E | undefined
   /** The names of a task list's boxes; the English ones when left out. */
   labels?: Pick<MarkdownLabels, 'taskDone' | 'taskOpen'> | undefined
+  /**
+   * What was drawn last, by node: a block or an item that is the very same node as when it was
+   * drawn (an item in a list as loose or tight) is drawn as it was. A list or a quote read in
+   * pieces hands what its complete pieces hold back as the same nodes; whoever keeps this empties
+   * it when anything above changes how the tree is drawn.
+   */
+  kept?: WeakMap<Node, KeptNode<E>> | undefined
+}
+
+/** A node drawn: what it drew, and whether it was an item of a loose list. */
+export interface KeptNode<E> {
+  loose: boolean
+  out: readonly E[]
 }
 
 /** The prefix on every id content makes, so it cannot stand in for one of the page's own. */
@@ -110,7 +123,14 @@ export const createRenderer =
         // Text among blocks is what raw HTML left there, with its own line breaks.
         if (index > 0 && node.type !== 'text' && (nodes[index - 1] as Node).type !== 'text')
           out.push(NEWLINE)
+        const was = options.kept?.get(node)
+        if (was !== undefined && !was.loose) {
+          for (const drawn of was.out) out.push(drawn)
+          continue
+        }
+        const from = out.length
         one(node, out, false)
+        options.kept?.set(node, { loose: false, out: out.slice(from) })
       }
       if (around && nodes.length > 0) out.push(NEWLINE)
       return out
@@ -319,9 +339,18 @@ export const createRenderer =
             props.start = node.start
           if (tasks) props.className = 'contains-task-list'
           const rows: E[] = [NEWLINE]
+          const kept = options.kept
           for (let index = 0; index < children.length; index++) {
             if (index > 0) rows.push(NEWLINE)
-            rows.push(item(children[index] as Node, loose))
+            const child = children[index] as Node
+            const was = kept?.get(child)
+            if (was !== undefined && was.loose === loose && was.out.length === 1)
+              rows.push(was.out[0]!)
+            else {
+              const drawn = item(child, loose)
+              kept?.set(child, { loose, out: [drawn] })
+              rows.push(drawn)
+            }
           }
           if (children.length > 0) rows.push(NEWLINE)
           out.push(element(node, node.ordered ? 'ol' : 'ul', props, rows))

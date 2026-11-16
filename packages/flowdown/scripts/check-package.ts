@@ -38,6 +38,7 @@ const reactFree = [
   './dom',
   './element',
   './tui',
+  './tui/diagram',
 ]
 for (const path of reactFree) {
   const { packages } = reach(manifest.exports[path]!)
@@ -52,6 +53,7 @@ for (const path of [
   './dom',
   './element',
   './tui',
+  './tui/diagram',
 ]) {
   const { packages } = reach(manifest.exports[path]!)
   if (packages.size > 0) failures.push(`${path} imports ${[...packages].join(', ')}`)

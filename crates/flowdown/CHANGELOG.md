@@ -12,6 +12,19 @@ The Rust crate `flowdown`. Its versions are its own, apart from the npm package'
 - `prompt()`'s first rule says the reader sees the forms drawn, not that the page renders them:
   the text teaches a model whatever draws its reply, a terminal among them.
 
+### Fixed
+
+Four readings the npm package's differential fuzz found (`bench/src/differential.ts`), where
+micromark and markdown-it agree with each other, fixed in both parsers:
+
+- A blank line after indented code in a list item makes the list loose: the code's trailing blank
+  lines were counted as its own lines, and the gap after them was not seen.
+- A link reference definition is a block of its list item, so a blank line before it makes the
+  list loose (CommonMark's example 317 counts it so).
+- A list item that can interrupt a paragraph is read before a table's row of dashes: `b\n- |` is a
+  paragraph and a list, as GitHub's parser reads it, not a table.
+- A header that is a pipe alone heads no table.
+
 ## 0.1.0
 
 The crate's first version in this repository, as it left Localix CLI's `packages/markdown`.

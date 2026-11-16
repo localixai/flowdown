@@ -1,0 +1,162 @@
+{
+  "version": "0.6.2",
+  "machine": "Apple M5, darwin, bun 1.4.4",
+  "rows": [
+    {
+      "shape": "code",
+      "target": "tui",
+      "chars": [
+        11503,
+        46603
+      ],
+      "ms": [
+        14.6,
+        210.6
+      ],
+      "exponent": 1.92
+    },
+    {
+      "shape": "code",
+      "target": "tui + highlight",
+      "chars": [
+        11503,
+        46603
+      ],
+      "ms": [
+        163.1,
+        1200.6
+      ],
+      "exponent": 1.44
+    },
+    {
+      "shape": "code",
+      "target": "dom",
+      "chars": [
+        11503,
+        46603
+      ],
+      "ms": [
+        3.9,
+        27.9
+      ],
+      "exponent": 1.42
+    },
+    {
+      "shape": "code",
+      "target": "dom + highlight",
+      "chars": [
+        11503,
+        46603
+      ],
+      "ms": [
+        736.2,
+        9654.7
+      ],
+      "exponent": 1.86
+    },
+    {
+      "shape": "table",
+      "target": "tui",
+      "chars": [
+        4235,
+        16912
+      ],
+      "ms": [
+        9.3,
+        100.6
+      ],
+      "exponent": 1.71
+    },
+    {
+      "shape": "table",
+      "target": "dom",
+      "chars": [
+        4235,
+        16912
+      ],
+      "ms": [
+        3.9,
+        44
+      ],
+      "exponent": 1.75
+    },
+    {
+      "shape": "list",
+      "target": "tui",
+      "chars": [
+        5629,
+        22689
+      ],
+      "ms": [
+        52.2,
+        726.3
+      ],
+      "exponent": 1.9
+    },
+    {
+      "shape": "list",
+      "target": "dom",
+      "chars": [
+        5629,
+        22689
+      ],
+      "ms": [
+        19.6,
+        218.8
+      ],
+      "exponent": 1.74
+    },
+    {
+      "shape": "quote",
+      "target": "tui",
+      "chars": [
+        3311,
+        13271
+      ],
+      "ms": [
+        14.6,
+        188.8
+      ],
+      "exponent": 1.84
+    },
+    {
+      "shape": "quote",
+      "target": "dom",
+      "chars": [
+        3311,
+        13271
+      ],
+      "ms": [
+        4.3,
+        48.5
+      ],
+      "exponent": 1.74
+    },
+    {
+      "shape": "paragraph",
+      "target": "tui",
+      "chars": [
+        4739,
+        18959
+      ],
+      "ms": [
+        21.6,
+        338.5
+      ],
+      "exponent": 1.98
+    },
+    {
+      "shape": "paragraph",
+      "target": "dom",
+      "chars": [
+        4739,
+        18959
+      ],
+      "ms": [
+        3.7,
+        45.9
+      ],
+      "exponent": 1.81
+    }
+  ]
+}

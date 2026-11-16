@@ -8,13 +8,15 @@ import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { createDocument, usesHtml, usesMath, type MarkdownBlock } from '../document'
 import { createCutter, createFenceMemory, growingFence } from '../document/fence'
-import { tableRows } from '../document/table'
+import { createListReader } from '../document/list'
+import { createQuoteReader } from '../document/quote'
+import { TABLE_ROWS, tableRows } from '../document/table'
 import { parse } from '../engine'
 import type { Extension, Node, References } from '../engine/types'
 import { defaultUrlTransform, type UrlTransform } from '../engine/url'
 import type { Props } from './factory'
 import { mergeLabels, type LabelOverrides, type MarkdownLabels } from './labels'
-import { createRenderer } from './tree'
+import { type KeptNode, createRenderer } from './tree'
 import * as views from './views'
 import { expand, vnode, type Drawn, type DrawnElement, type VComponent, type VNode } from './vnode'
 
@@ -103,9 +105,6 @@ const draw = createRenderer(vnode)
 const NOTHING: VComponent = () => []
 const CHILDREN: VComponent = (_props, children) => children
 
-/** How many body rows one piece of a table holds: the same pieces `<Markdown>` draws. */
-const ROWS = 16
-
 const headingKeyOf = (own: ReadonlyMap<number, string> | null): string =>
   own ? [...own].map(([at, id]) => `${at}:${id}`).join(';') : ''
 
@@ -126,11 +125,14 @@ export function createView(options: ViewOptions = {}): View {
   // not pay for, exactly as `<Markdown>` leaves them out: set for each `render`.
   let extensions: Extension[] = [flowdownDialect]
   let math: Extension | null = null
+  /** Which of those passes this render has: what a kept drawing was made with is compared to it. */
+  let stages = ''
   const urlTransform = options.urlTransform ?? defaultUrlTransform
   const ownCode = Boolean(own?.pre || own?.code)
   const ownTable = Boolean(
     own?.table || own?.thead || own?.tbody || (options.extensions?.length ?? 0) > 0,
   )
+  const ownList = (options.extensions?.length ?? 0) > 0
   const prefix = options.idPrefix ?? 'fd-'
   const { diagram: pageDiagram, tree: pageTree } = options
 
@@ -334,27 +336,74 @@ export function createView(options: ViewOptions = {}): View {
     return views.fileTree(vnode, { rows, collapsed: new Set(), focused: null }, labels)
   }
 
-  const one = (
-    source: string,
+  const drawTree = (
+    tree: Node,
     at: number,
     ids: ReadonlyMap<number, string> | null,
     using: Record<string, VComponent | undefined>,
+    kept?: WeakMap<Node, KeptNode<VNode>>,
   ): VNode =>
-    draw(parse(source, { extensions, refs }), {
+    draw(tree, {
       components: using,
       urlTransform,
       special,
       labels,
       offset: at,
       headingIds: ids,
+      kept,
     })
+  const one = (
+    source: string,
+    at: number,
+    ids: ReadonlyMap<number, string> | null,
+    using: Record<string, VComponent | undefined>,
+  ): VNode => drawTree(parse(source, { extensions, refs }), at, ids, using)
+
+  // A long list is read a piece of items at a time, as `<Markdown>` reads it.
+  const lists = createListReader()
+  const quotes = createQuoteReader()
+  /** What the pieces were read with: another object when the passes or the definitions changed. */
+  let scope: { stages: string; refs: References | undefined } = { stages: '', refs: undefined }
+  const scopeNow = () =>
+    scope.stages === stages && scope.refs === refs ? scope : (scope = { stages, refs })
+  let listed: {
+    scope: typeof scope
+    offset: number
+    ids: ReadonlyMap<number, string> | null
+    kept: WeakMap<Node, KeptNode<VNode>>
+  } = { scope, offset: -1, ids: null, kept: new WeakMap() }
 
   // A table's own shell taken off: a piece yields its rows alone.
   const headParts = { ...components, table: CHILDREN, tbody: NOTHING }
   const bodyParts = { ...components, table: CHILDREN, thead: NOTHING, tbody: CHILDREN }
 
+  /**
+   * The pieces of the table drawn last, by place: a piece whose text, passes and definitions are
+   * the same is not read again. Without this a token of a table of 160 rows read all ten pieces.
+   */
+  let tablePieces: Array<{
+    text: string
+    stages: string
+    refs: References | undefined
+    node: VNode
+  }> = []
+  const tablePiece = (index: number, text: string, using: ViewComponents): VNode => {
+    const was = tablePieces[index]
+    if (was && was.text === text && was.stages === stages && was.refs === refs) return was.node
+    const node = one(text, 0, null, using)
+    tablePieces[index] = { text, stages, refs, node }
+    return node
+  }
+
   const memory = createFenceMemory()
   const cut = createCutter()
+  /**
+   * The pieces of the fence being written, each highlighted once: a piece that is complete keeps
+   * its markup for as long as its run lasts, and a token highlights only the last piece. Without
+   * this a file of 900 lines was highlighted whole on every token.
+   */
+  let codePieces: Array<{ text: string; run: number; language: string | undefined; node: VNode }> =
+    []
 
   /** A code fence still being written, in the pieces it is highlighted by. */
   const growingCode = (language: string | undefined, title: string, body: string): VNode => {
@@ -363,10 +412,27 @@ export function createView(options: ViewOptions = {}): View {
     const className = [language ? `language-${language}` : null, known ? 'fd-highlighted' : null]
       .filter(Boolean)
       .join(' ')
-    const pieces: VNode[] = cut(body).parts.map((text) => {
-      const html = known ? highlight!(text, language!) : null
-      return html === null ? text : vnode.element('span', { innerHTML: html }, [])
+    const { parts, run } = cut(body)
+    const kept = codePieces
+    const lang = known ? language : undefined
+    codePieces = parts.map((text, index) => {
+      const was = kept[index]
+      // A complete piece of the same run has the same text; the last one is compared.
+      const same =
+        was !== undefined &&
+        was.language === lang &&
+        ((index < parts.length - 1 && index < kept.length - 1 && was.run === run) ||
+          was.text === text)
+      if (same) return was
+      const html = lang ? highlight!(text, lang) : null
+      return {
+        text,
+        run,
+        language: lang,
+        node: html === null ? text : vnode.element('span', { innerHTML: html }, []),
+      }
     })
+    const pieces: VNode[] = codePieces.map((piece) => piece.node)
     // A finished block's text ends in a newline unless it is highlighted; so does this.
     if (!known && body) pieces.push('\n')
     return views.codeFrame(
@@ -393,12 +459,31 @@ export function createView(options: ViewOptions = {}): View {
     const rows = ownTable ? null : tableRows(source)
     if (rows) {
       const pieces: VNode[] = []
-      for (let at = 0; at < rows.rows.length; at += ROWS)
-        pieces.push(one(rows.head + rows.rows.slice(at, at + ROWS).join('\n'), 0, null, bodyParts))
+      for (let at = 0; at < rows.rows.length; at += TABLE_ROWS)
+        pieces.push(
+          tablePiece(
+            1 + at / TABLE_ROWS,
+            rows.head + rows.rows.slice(at, at + TABLE_ROWS).join('\n'),
+            bodyParts,
+          ),
+        )
       return vnode.element(components.table!, null, [
-        one(rows.head, 0, null, headParts),
+        tablePiece(0, rows.head, headParts),
         vnode.element('tbody', null, pieces),
       ])
+    }
+    const parsed = (text: string) => parse(text, { extensions, refs })
+    const list = ownList
+      ? null
+      : (lists.read(open, closer, parsed, scopeNow()) ??
+        quotes.read(open, closer, parsed, scopeNow()))
+    if (list) {
+      // The items of its complete pieces are the same nodes, drawn as they were: the page keeps
+      // their elements, and a token draws the last piece.
+      const now = scopeNow()
+      if (listed.scope !== now || listed.offset !== offset || listed.ids !== ids)
+        listed = { scope: now, offset, ids, kept: new WeakMap() }
+      return drawTree(list, offset, ids, components, listed.kept)
     }
     return one(source, offset, ids, components)
   }
@@ -425,7 +510,7 @@ export function createView(options: ViewOptions = {}): View {
         // Raw HTML is made into elements last, so every pass before it sees the text as written.
         ...(html ? [html] : []),
       ]
-      const stages = `${math ? 'm' : ''}${html ? 'h' : ''}`
+      stages = `${math ? 'm' : ''}${html ? 'h' : ''}`
       const children: Drawn[] = []
       const last = state.blocks.length - 1
       state.blocks.forEach((item, index) => {

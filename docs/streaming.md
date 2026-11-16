@@ -54,6 +54,7 @@ finished:
 | Arriving                      | Renders as                                    |
 | ----------------------------- | --------------------------------------------- |
 | `**bo`                        | **bo**                                        |
+| `**bold` and a line break     | **bold**, the line break after it             |
 | `*ital`, `~~stri`             | _ital_, ~~stri~~                              |
 | `` `cod ``                    | `cod`                                         |
 | ` ```ts ` and lines of code   | a code block, growing                         |
@@ -63,6 +64,8 @@ finished:
 | a half-typed table row        | the rows that are complete                    |
 | `> [!WARN`                    | nothing until the `]`                         |
 | `> [!STEPS]` with no list yet | nothing until the list starts                 |
+| `-`, `##`, `1.` or `>` alone  | nothing until the first word after it         |
+| a `-` under a paragraph       | the paragraph, not a heading, until the item  |
 
 The completion is conservative: it closes what is clearly open and never guesses. A `*` in `*.ts` or
 `a * b`, an `_` in `snake_case`, a `$` in `$5` or `$HOME` are not emphasis or math, and are left
@@ -87,6 +90,26 @@ one parse draws, element for element.
 
 A page that passes its own `table`, `thead` or `tbody` element, or its own extensions, gets each
 table whole, as its code expects.
+
+## Lists and quotes while streaming
+
+A list is one block too, and a reply that lists files, steps or findings grows it item by item. A
+long list (more than 16 items) is read in pieces of 16 items: a complete piece is parsed once, its
+items are drawn once and kept, and a token reads and draws only the last piece. Each piece is read
+as the items one parse of the whole list makes, places and task boxes included, so the list is the
+one one parse draws.
+
+A list is cut so only where nothing in it reaches across its items: every line at the left edge
+starts an item with the list's own marker, and no blank line, link definition or footnote is in it.
+A loose list, or one with a lazy line, is read whole.
+
+A long quote, a callout among them, is read the same way, in pieces of 8 of its blocks, cut where a
+blank line of the quote is followed by a block at its left edge. A quote with a lazy line, raw
+HTML, a form that takes what follows its marker (`[!STEPS]`, `[!TABS]`) or an attribution
+(`— Name`) is read whole. So is every list and quote on a page that passes its own extensions.
+
+In a terminal, a paragraph that grows is wrapped again from its last rows: the rows above the word
+being written are the rows it had.
 
 ## The caret
 

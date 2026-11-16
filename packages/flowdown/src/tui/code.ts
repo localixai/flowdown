@@ -220,6 +220,12 @@ export interface CodeDrawer {
   pieced(): boolean
   /** A render is over: the fences it did not draw are forgotten. */
   turn(): void
+  /**
+   * The pieces of a fence still being written that a view drew itself (`text` without the line
+   * break a complete piece ends in, `rows` its code rows): kept as if this had drawn them, so the
+   * same fence drawn here next, growing or closed, is not highlighted again.
+   */
+  keep(drawn: ReadonlyArray<{ text: string; code: Line[] }>, language: string): void
 }
 
 interface Piece {
@@ -231,7 +237,12 @@ interface Piece {
 /** The drawer of a view with this highlighter. Without one there is nothing to keep. */
 export function createCodeDrawer(highlight: Highlighter | null): CodeDrawer {
   if (!highlight)
-    return { rows: (source, language) => plain(source, language), pieced: () => false, turn() {} }
+    return {
+      rows: (source, language) => plain(source, language),
+      pieced: () => false,
+      turn() {},
+      keep() {},
+    }
   // The pieces of the fence being written that have all their lines, in order; and its last one,
   // which a token that changed nothing in it, or that only began the next, finds as it was.
   const pieces: Piece[] = []
@@ -286,6 +297,13 @@ export function createCodeDrawer(highlight: Highlighter | null): CodeDrawer {
     turn() {
       before = now
       now = new Map()
+    },
+    keep(drawn, language) {
+      const made = drawn.map((own) => ({ language, text: own.text, rows: own.code }))
+      tail = made.pop() ?? null
+      pieces.length = 0
+      pieces.push(...made)
+      only = made.length === 0 ? tail : null
     },
   }
 }

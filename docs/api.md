@@ -10,23 +10,24 @@ Every entry point and export of flowdown, and every prop of `<Markdown>`.
 
 ## Entry points
 
-| Import                    | Holds                                                         | Needs                       |
-| ------------------------- | ------------------------------------------------------------- | --------------------------- |
-| `@localix-ai/flowdown` | `<Markdown>`, its components, types and labels. No dependencies. | `react` 18.2 or 19        |
-| `@localix-ai/flowdown/styles.css` | The stylesheet and its `--fd-*` tokens.                      |                             |
-| `@localix-ai/flowdown/static`     | `renderToHtml`: the same HTML as text. No React.              |                             |
-| `@localix-ai/flowdown/dom`        | `mount`: a page with no framework. No React.                  | a browser                   |
-| `@localix-ai/flowdown/element`    | `defineMarkdownElement`: a custom element. No React.          | a browser                   |
-| `@localix-ai/flowdown/tui`        | `renderToAnsi`: the rows of a terminal. No React.             |                             |
-| `@localix-ai/flowdown/document`   | A growing text as blocks, for a target of your own.           |                             |
-| `@localix-ai/flowdown/engine`     | The parser alone: `parse` and `toHtml`.                       |                             |
-| `@localix-ai/flowdown/remark`     | The dialect as a remark plugin, blocks, headings, helpers. No React. |                    |
-| `@localix-ai/flowdown/stream`     | Completing a partial reply, without React.                    |                             |
-| `@localix-ai/flowdown/prompt`     | The instructions that teach a model the dialect. Plain text.  |                             |
-| `@localix-ai/flowdown/html`       | The raw HTML stage (reader and sanitizer).                    |                             |
-| `@localix-ai/flowdown/math`       | The math stage.                                               | `katex` 0.16 or later       |
-| `@localix-ai/flowdown/highlight`  | A highlighter for fenced code.                                | `highlight.js` 11           |
-| `@localix-ai/flowdown/mermaid`    | The diagram renderer, for a page that draws ` ```mermaid ` fences itself. | `mermaid`, loaded by you |
+| Import                             | Holds                                                                     | Needs                    |
+| ---------------------------------- | ------------------------------------------------------------------------- | ------------------------ |
+| `@localix-ai/flowdown`             | `<Markdown>`, its components, types and labels. No dependencies.          | `react` 18.2 or 19       |
+| `@localix-ai/flowdown/styles.css`  | The stylesheet and its `--fd-*` tokens.                                   |                          |
+| `@localix-ai/flowdown/static`      | `renderToHtml`: the same HTML as text. No React.                          |                          |
+| `@localix-ai/flowdown/dom`         | `mount`: a page with no framework. No React.                              | a browser                |
+| `@localix-ai/flowdown/element`     | `defineMarkdownElement`: a custom element. No React.                      | a browser                |
+| `@localix-ai/flowdown/tui`         | `renderToAnsi`: the rows of a terminal. No React.                         |                          |
+| `@localix-ai/flowdown/tui/diagram` | `drawDiagram`: Mermaid in a terminal. No React.                           |                          |
+| `@localix-ai/flowdown/document`    | A growing text as blocks, for a target of your own.                       |                          |
+| `@localix-ai/flowdown/engine`      | The parser alone: `parse` and `toHtml`.                                   |                          |
+| `@localix-ai/flowdown/remark`      | The dialect as a remark plugin, blocks, headings, helpers. No React.      |                          |
+| `@localix-ai/flowdown/stream`      | Completing a partial reply, without React.                                |                          |
+| `@localix-ai/flowdown/prompt`      | The instructions that teach a model the dialect. Plain text.              |                          |
+| `@localix-ai/flowdown/html`        | The raw HTML stage (reader and sanitizer).                                |                          |
+| `@localix-ai/flowdown/math`        | The math stage.                                                           | `katex` 0.16 or later    |
+| `@localix-ai/flowdown/highlight`   | A highlighter for fenced code.                                            | `highlight.js` 11        |
+| `@localix-ai/flowdown/mermaid`     | The diagram renderer, for a page that draws ` ```mermaid ` fences itself. | `mermaid`, loaded by you |
 
 The package is ESM only. Every module that uses React hooks starts with `'use client'`.
 Only `@localix-ai/flowdown` itself imports React. `/static`, `/tui`, `/document`, `/engine`, `/remark`,
@@ -117,17 +118,18 @@ load that fails leaves the document readable without it.
 
 See [Other targets](targets.md).
 
-| Export                                   | What it does                                                                |
-| ---------------------------------------- | --------------------------------------------------------------------------- |
-| `renderToHtml(markdown, options?)`       | `/static`. The HTML `<Markdown>` draws, as text. `options.streaming` completes an unfinished end. |
-| `mount(target, options?)`                | `/dom`. A `Mounted`: `update(markdown, { streaming })`, `destroy()`, `element`. |
-| `defineMarkdownElement(name?, options?)` | `/element`. Registers `<flow-down>`: a `markdown` property and a `streaming` attribute. |
+| Export                                   | What it does                                                                                             |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `renderToHtml(markdown, options?)`       | `/static`. The HTML `<Markdown>` draws, as text. `options.streaming` completes an unfinished end.        |
+| `mount(target, options?)`                | `/dom`. A `Mounted`: `update(markdown, { streaming })`, `destroy()`, `element`.                          |
+| `defineMarkdownElement(name?, options?)` | `/element`. Registers `<flow-down>`: a `markdown` property and a `streaming` attribute.                  |
 | `renderToAnsi(markdown, options?)`       | `/tui`. Text for a terminal; `width`, `color`, `streaming`, `highlight`, `math`, `labels`, `extensions`. |
-| `renderToLines(markdown, options?)`      | `/tui`. The same as rows: `Line[]`, each a list of `{ text, style }`.       |
-| `createTerminalView(options?)`           | `/tui`. A view for a reply that streams: `render(text, { streaming, width })`. |
-| `toAnsi(lines, color?)`                  | `/tui`. Rows as text with escape sequences, or without.                     |
-| `textWidth(text)`, `lineWidth(line)`     | `/tui`. The columns a text or a row takes.                                  |
-| `printable(text)`                        | `/tui`. The text with what a terminal would act on written out as text.     |
+| `renderToLines(markdown, options?)`      | `/tui`. The same as rows: `Line[]`, each a list of `{ text, style }`.                                    |
+| `createTerminalView(options?)`           | `/tui`. A view for a reply that streams: `render(text, { streaming, width })`.                           |
+| `toAnsi(lines, color?)`                  | `/tui`. Rows as text with escape sequences, or without.                                                  |
+| `textWidth(text)`, `lineWidth(line)`     | `/tui`. The columns a text or a row takes.                                                               |
+| `printable(text)`                        | `/tui`. The text with what a terminal would act on written out as text.                                  |
+| `drawDiagram(source, columns)`           | `/tui/diagram`. A Mermaid diagram as rows, or null: `diagrams`.                                           |
 
 The options of `/static`, `/dom` and `/element` are the props of `<Markdown>` that are not React's:
 `extensions`, `headingIds`, `html`, `math`, `highlight`, `labels`, `urlTransform`, `className`,
@@ -164,7 +166,7 @@ See [Extensions and remark](remark.md). The entry has no dependencies: unified i
 | `escapeLiteralDollars(markdown)`                    | The text with every `$` that is not a math delimiter escaped.                   |
 | `isLiteralDollar(text, index)`                      | Whether one `$` is a price or a shell variable.                                 |
 | `hasMathSyntax(markdown)`, `hasHtmlSyntax(markdown)` | Whether the text holds math, or raw HTML, outside code.                        |
-| `markdownProseWithoutCode(markdown)`                | The text with code blanked out, same length.                                    |
+| `markdownProseWithoutCode(markdown, mathFences?)`   | The text with code blanked out, same length, code read as the parser reads it.  |
 | `parseFileTree(source)`                             | `TreeRow[]` from a ` ```tree ` fence body.                                      |
 | `parseCalloutMarker(text)`                          | `{ kind, title, consumed }` for a `[!NOTE]`-style marker, or `null`.            |
 | `parseContainerMarker(text)`                        | The same for `[!STEPS]`, `[!TABS]`, `[!STATS]`, `[!PROS]`, `[!CONS]`, `[!DETAILS]`, `[!SOURCES]`. |

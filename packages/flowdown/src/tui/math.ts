@@ -26,21 +26,21 @@ lvert | rvert | vert | lVert ‖ rVert ‖ Vert ‖ ell ℓ hbar ℏ Re ℜ Im �
 top ⊤ bot ⊥ vdash ⊢ models ⊨ therefore ∴ because ∵ triangle △ square □ checkmark ✓ lbrace {
 rbrace } colon :`
 
-const SYMBOLS = new Map<string, string>()
+export const SYMBOLS = new Map<string, string>()
 {
   const words = NAMED.split(/\s+/)
   for (let at = 0; at + 1 < words.length; at += 2) SYMBOLS.set(words[at]!, words[at + 1]!)
 }
 
 /** Names that are written upright, as themselves. */
-const FUNCTIONS = new Set(
+export const FUNCTIONS = new Set(
   'sin cos tan cot sec csc arcsin arccos arctan sinh cosh tanh log ln lg exp lim limsup liminf max min sup inf det dim ker gcd deg arg Pr hom mod bmod'.split(
     ' ',
   ),
 )
 
 /** A mark over or under a letter, as the combining character that draws it. */
-const ACCENTS: Record<string, number> = {
+export const ACCENTS: Record<string, number> = {
   bar: 0x304,
   overline: 0x305,
   hat: 0x302,
@@ -55,14 +55,14 @@ const ACCENTS: Record<string, number> = {
 }
 
 /** Commands that change how their argument looks and not what it says. */
-const TRANSPARENT = new Set(
+export const TRANSPARENT = new Set(
   'text textrm textit textbf textsf texttt mathrm mathit mathbf mathsf mathtt mathcal mathfrak mathscr boldsymbol bm mbox operatorname boxed underbrace overbrace substack'.split(
     ' ',
   ),
 )
 
 /** Commands about size and placement, which a terminal has one of. */
-const DROPPED = new Set(
+export const DROPPED = new Set(
   'left right big Big bigg Bigg bigl bigr Bigl Bigr biggl biggr middle displaystyle textstyle scriptstyle limits nolimits nonumber notag'.split(
     ' ',
   ),
@@ -76,16 +76,18 @@ const small = (pairs: string): Map<string, string> => {
   return table
 }
 
-const SUPER = small(
+export const SUPER = small(
   '0⁰1¹2²3³4⁴5⁵6⁶7⁷8⁸9⁹+⁺-⁻−⁻=⁼(⁽)⁾aᵃbᵇcᶜdᵈeᵉfᶠgᵍhʰiⁱjʲkᵏlˡmᵐnⁿoᵒpᵖrʳsˢtᵗuᵘvᵛwʷxˣyʸzᶻAᴬBᴮDᴰEᴱGᴳHᴴIᴵJᴶKᴷLᴸMᴹNᴺOᴼPᴾRᴿTᵀUᵁVⱽWᵂ∘°′′',
 )
-const SUB = small('0₀1₁2₂3₃4₄5₅6₆7₇8₈9₉+₊-₋−₋=₌(₍)₎aₐeₑhₕiᵢjⱼkₖlₗmₘnₙoₒpₚrᵣsₛtₜuᵤvᵥxₓβᵦγᵧρᵨφᵩχᵪ')
+export const SUB = small(
+  '0₀1₁2₂3₃4₄5₅6₆7₇8₈9₉+₊-₋−₋=₌(₍)₎aₐeₑhₕiᵢjⱼkₖlₗmₘnₙoₒpₚrᵣsₛtₜuᵤvᵥxₓβᵦγᵧρᵨφᵩχᵪ',
+)
 
 /** The sets of numbers, the letters `\mathbb` is asked for that every font has. */
-const DOUBLE = small('CℂHℍNℕPℙQℚRℝZℤ')
+export const DOUBLE = small('CℂHℍNℕPℙQℚRℝZℤ')
 
 /** A script in the small letters of `table`; where one is missing, as written after `mark`. */
-function script(text: string, table: Map<string, string>, mark: string): string {
+export function script(text: string, table: Map<string, string>, mark: string): string {
   const body = text.replace(/\s+/g, ' ').trim()
   if (body === '') return ''
   let out = ''
@@ -111,7 +113,7 @@ const atom = (text: string): string => {
   return WORD.test(body) ? body : `(${body})`
 }
 
-function accented(text: string, code: number): string {
+export function accented(text: string, code: number): string {
   const mark = String.fromCharCode(code)
   let out = ''
   for (const char of text.trim()) out += char === ' ' || MARK.test(char) ? char : char + mark
@@ -119,9 +121,9 @@ function accented(text: string, code: number): string {
 }
 
 /** Groups and arguments nested deeper than this are read as text: no formula is, and no stack is that deep. */
-const MAX_DEPTH = 16
+export const MAX_DEPTH = 16
 
-const LETTERS = /[a-zA-Z]+/y
+export const LETTERS = /[a-zA-Z]+/y
 
 class Reader {
   private at = 0

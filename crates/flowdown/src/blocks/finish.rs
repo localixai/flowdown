@@ -14,16 +14,20 @@ impl Blocks<'_> {
         info.end_line = line;
         let data = info.data;
         if matches!(kind, Kind::Paragraph) {
-            if !self.definitions(node) {
+            // A paragraph that was only definitions draws nothing, but in a list item it was a
+            // block: it stays until the list is judged loose or tight (CommonMark's example 317).
+            let in_item = above != NONE && matches!(self.kind(above), Kind::Item(_));
+            if !self.definitions(node) && !in_item {
                 self.doc.unlink(node);
             }
         } else if matches!(data, Data::Indented) {
-            self.trim_code(node);
+            self.trim_code(node, line);
         } else if let Data::Fence { mark, .. } = data {
             self.formula(node, mark);
         } else if let Kind::List { ordered, .. } = kind {
             let tight = self.tight(node);
             self.doc.raw_mut(node).kind = Kind::List { ordered, tight };
+            self.unlink_emptied(node);
             if last != NONE {
                 self.info(node).end_line = self.info[at(last)].end_line;
             }
@@ -82,22 +86,43 @@ impl Blocks<'_> {
         raw.span.end = end;
     }
 
-    /// An indented code block ends at its last line that is not blank.
-    fn trim_code(&mut self, node: u32) {
+    /// An indented code block ends at its last line that is not blank, in its lines as in its text:
+    /// a list judged by the blank lines between its blocks must see the ones after it.
+    fn trim_code(&mut self, node: u32, line: u32) {
         let span = self.doc.raw(node).span;
         let text = self.doc.text(span).as_bytes();
         let mut end = text.len();
+        let mut blank = 0;
         while end > 0 {
-            let line = text[..end - 1]
+            let start = text[..end - 1]
                 .iter()
                 .rposition(|byte| *byte == b'\n')
                 .map_or(0, |at| at + 1);
-            if text[line..end].iter().any(|byte| !is_blank(*byte)) {
+            if text[start..end].iter().any(|byte| !is_blank(*byte)) {
                 break;
             }
-            end = line;
+            end = start;
+            blank += 1;
         }
         self.doc.raw_mut(node).span.end = span.start + pos(end);
+        let first = self.info[at(node)].start_line;
+        self.info(node).end_line = line.saturating_sub(blank).max(first);
+    }
+
+    /// The paragraphs of `list`'s items that were only definitions, taken out once it is judged.
+    fn unlink_emptied(&mut self, list: u32) {
+        let mut item = self.doc.raw(list).first;
+        while item != NONE {
+            let mut block = self.doc.raw(item).first;
+            while block != NONE {
+                let next = self.doc.raw(block).next;
+                if matches!(self.kind(block), Kind::Paragraph) && !self.info[at(block)].filled {
+                    self.doc.unlink(block);
+                }
+                block = next;
+            }
+            item = self.doc.raw(item).next;
+        }
     }
 
     /// Whether a blank line parts `first` from the sibling after it.

@@ -12,6 +12,7 @@ export default defineConfig({
     'dom/index': 'src/dom/index.ts',
     'element/index': 'src/element/index.ts',
     'tui/index': 'src/tui/index.ts',
+    'tui/diagram/index': 'src/tui/diagram/index.ts',
     'document/index': 'src/document/index.ts',
     'engine/index': 'src/engine/index.ts',
     remark: 'src/remark.ts',

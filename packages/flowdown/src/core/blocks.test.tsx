@@ -38,6 +38,7 @@ function whole(markdown: string, { streaming = false, withMath = false, headingI
           urlTransform: defaultUrlTransform,
           ownCode: false,
           ownTable: false,
+          ownList: false,
         })}
       </div>,
     ),

@@ -51,7 +51,12 @@ impl Blocks<'_> {
         let shaped = rest
             .iter()
             .all(|byte| matches!(byte, b'-' | b':' | b'|') || is_space(*byte));
-        if !shaped || !rest.contains(&b'|') {
+        // A list item that can interrupt the paragraph is one before it is a row of dashes:
+        // GitHub's parser tries a table after every block of CommonMark's.
+        let item = rest.first() == Some(&b'-')
+            && rest.get(1).is_some_and(|byte| is_space(*byte))
+            && rest[1..].iter().any(|byte| !is_space(*byte));
+        if !shaped || item || !rest.contains(&b'|') {
             return Start::None;
         }
         let first = self.doc.aligns.len();
@@ -70,7 +75,10 @@ impl Blocks<'_> {
             .map_or(0, |at| at + 1);
         let mut headers = 0;
         cells(&body[line..], |_, _| headers += 1);
-        if !valid || headers != columns {
+        // A header that is a pipe alone has no cell to head a column with.
+        let (start, end) = trimmed(&body[line..], 0, body.len() - line);
+        let lone = &body[line..][start..end] == b"|";
+        if !valid || lone || headers != columns {
             self.doc.aligns.truncate(first);
             return Start::None;
         }

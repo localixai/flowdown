@@ -2,6 +2,12 @@
  * A block that is one table, read without parsing it: what a renderer needs to draw a long table
  * in pieces, a token costing only its last rows.
  */
+/**
+ * How many rows a piece of a growing table holds: a piece that is complete is read once, and a
+ * token reads the last one again.
+ */
+export const TABLE_ROWS = 16
+
 const ROW = /^ {0,3}\|/
 const DELIMITER_CELL = /^[ \t]*:?-+:?[ \t]*$/
 

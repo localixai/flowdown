@@ -15,6 +15,7 @@
  * It is also what a binding for a framework is made of: mount into the element the framework
  * gives you, call `update` when the text changes, `destroy` when the element goes.
  */
+import { copySelection } from '../browser/clipboard'
 import { codeFileName, copyText, downloadFile } from '../browser/file-actions'
 import { mergeLabels, type MarkdownLabels } from '../render/labels'
 import { createView, type ViewOptions } from '../render/view'
@@ -157,6 +158,12 @@ export function mount(target: Element, options: MountOptions = {}): Mounted {
     }
   }
 
+  // A copy of a selection in the document takes the reply's elements, not the page's styles.
+  const copied = (event: Event): void => {
+    if (root !== null) copySelection(root, event as ClipboardEvent)
+  }
+  target.addEventListener('copy', copied)
+
   draw()
 
   return {
@@ -172,6 +179,7 @@ export function mount(target: Element, options: MountOptions = {}): Mounted {
       if (gone) return
       gone = true
       observer?.disconnect()
+      target.removeEventListener('copy', copied)
       view.dispose()
       root?.remove()
     },

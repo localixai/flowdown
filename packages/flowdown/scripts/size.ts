@@ -24,22 +24,60 @@ const BUDGET: Record<string, number> = {
   // them and handing them to each block (`document/references.ts`, 0.4 KB), and the cut that
   // joins a paragraph of definitions to the block above it (`core/blocks.ts`, 0.4 KB). Every
   // entry that cuts a document carries it.
-  '.': 33.5,
+  // 0.2 KB more since the healer holds a bare block marker (`-`, `##`, `1.`) back until its first
+  // word, and completes `**bold` where the text stops rather than after the line break it ends in
+  // (`core/heal.ts`). Every entry that heals a reply carries it.
+  // 0.3 KB more since the sniffers for HTML and math and the escaper of dollars find code where
+  // the parser finds it (`engine/code-ranges.ts`): a scan of lines alone missed the HTML of 442 in
+  // 46,334 blocks of the fuzz corpus, and dropped it from the page. Every entry that cuts one.
+  // 0.7 KB more since a copy of a selection takes the reply's elements and none of the page's
+  // styles (`browser/clipboard.ts`): a browser's own copy pasted a dark page's reply as grey on
+  // white. Every entry that draws on a page carries it.
+  // 1.2 KB more since a long list is read a piece of items at a time and its items kept as they
+  // were drawn (`document/list.ts`, `render/tree.ts`): a token of a 240-item list reads its last
+  // piece, not the list. Every entry that cuts a document carries it. 0.6 KB more for a long
+  // quote, a callout among them, read in pieces the same way (`document/quote.ts`).
+  '.': 36.8,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
-  './static': 30,
-  './dom': 31.5,
-  './element': 31.5,
+  // The code ranges of the sniffers, and on a page the copy of a selection, as for `.`.
+  // And the pieces of a long list and a long quote, as for `.`.
+  './static': 32.3,
+  './dom': 34.4,
+  './element': 34.6,
   // The renderer for a terminal: the parser, the dialect, and rows wrapped by their columns.
-  './tui': 32,
+  // 2.4 KB more since a block that grows costs its end: a fence still being written is read
+  // without parsing its block and drawn in pieces (`document/fence.ts`, 0.7 KB of it); a table is
+  // read a piece of rows at a time, and a row laid out again only when the columns change
+  // (`tui/table.ts`); and the parts of a list or a quote that grows keep their rows
+  // (`tui/render.ts`). A 900-line file streams in a seventh of the time it took, a 160-row table in
+  // a fifth, a 240-item list in a third (`bench/results/growth.md`).
+  // 3.6 KB more since a display formula is set on rows (`tui/formula.ts`): fractions over their
+  // rule, limits above and below, roots, matrices and brackets as tall as what they hold.
+  // And 1.6 KB for the pieces of a long list and a long quote, as for `.`; 0.6 KB more since a
+  // paragraph that grows is wrapped again from its last rows (`tui/wrap.ts`).
+  './tui': 40.8,
+  // Mermaid flowcharts and sequence diagrams drawn in a terminal, parsed, laid out and routed with
+  // no dependency (`tui/diagram/`). An entry of its own, as `./highlight` is: a terminal that does
+  // not draw diagrams does not load them. 31 KB more since it draws every kind Mermaid has that
+  // cells can say: state, class, ER, requirement, C4, architecture and block diagrams on the same
+  // layered layout; Gantt charts, timelines, journeys, git graphs, kanban boards, mind maps and
+  // ZenUML; pie, XY, quadrant, Sankey, packet, radar and treemap charts. 4.5 KB more for git graphs
+  // across and up, activations on lifelines, notes beside their states, C4 placement hints, and
+  // architecture services on a grid by the sides their edges name.
+  './tui/diagram': 51,
   // A growing text as blocks with the dialect to parse them by (2.6 KB of the figure, and a page
-  // that imports only `createDocument` does not ship it), and the parser alone.
-  './document': 21.5,
+  // that imports only `createDocument` does not ship it), and the parser alone. 0.2 KB more for
+  // what the healer holds back and where it completes, 0.3 KB for the code ranges (see `.`), and
+  // the parser's four readings the differential fuzz found (`engine/blocks.ts`).
+  './document': 22.2,
   './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
   './remark': 20.5,
   // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`);
   // then 0.4 KB for the cut of a document with link definitions.
-  './stream': 5,
+  // 0.1 KB more since the repair of an unfinished end reads from the item being written, and holds
+  // a marker left bare once a half-typed `*` is hidden (`core/heal.ts`).
+  './stream': 5.1,
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,

@@ -117,7 +117,40 @@ Each form is drawn the way a terminal draws that kind of thing:
 | A table              | In columns, aligned as written, cells wrapped inside their column                 |
 | A `tree` fence       | With branches (`├─`, `└─`), folders bold, what is said of the names in one column |
 | A `diff` fence       | Green where it adds, red where it removes, with or without a highlighter          |
-| A `mermaid` fence    | Its source under a `Diagram` label: a terminal cannot draw it                     |
+| A `mermaid` fence    | With `/tui/diagram`, in boxes and lines, bars or rails; else its source            |
+
+A Mermaid diagram is drawn once its fence is closed, when the terminal is given the drawer, an
+entry of its own as a highlighter is:
+
+```ts
+import { renderToAnsi } from '@localix-ai/flowdown/tui'
+import { drawDiagram } from '@localix-ai/flowdown/tui/diagram'
+
+renderToAnsi(reply, { width: process.stdout.columns, diagrams: drawDiagram })
+```
+
+It draws every kind Mermaid has that cells can say honestly. Graphs are boxes, lines and arrows:
+flowcharts, state, class, entity-relationship, requirement, C4, architecture and block diagrams,
+mind maps and kanban boards. A sequence diagram (ZenUML too) puts its participants over their
+lifelines, and its `loop`, `alt` and `opt` blocks stand as frames. Time is bars and rails: Gantt
+charts, timelines, user journeys and git graphs. Charts are bars, plots and grids: pie, XY,
+quadrant, radar, Sankey, packet and treemap. Boxes are in the shape the diagram gives them, edges
+routed between them with their labels, and a label wraps inside its box. A diagram too wide for the
+terminal is written as an outline of what it holds, never cut:
+
+```text
+┌───────┐  ╭──no──────╮ ╱───────────╲                 • Draft
+│ Draft │◀─╯          ╰─< Approved? >       ┌──────┐  • Approved?
+│       ├─────review───▶<           >──yes─▶│ Ship │  • Ship
+└───────┘               ╲───────────╱       └──────┘  Draft ──review──▶
+                                                        Approved?
+                                                      Approved? ──yes──▶ Ship
+                                                      Approved? ──no──▶ Draft
+```
+
+While its fence is still being written, a diagram shows its source, as on a page. A diagram that
+does not read shows its source under a `Diagram` label, and so does every diagram when no drawer
+is given. No Mermaid is loaded, and no package.
 
 Other fenced code is one colour until the terminal is given a highlighter, the same one a page
 takes:
@@ -134,12 +167,26 @@ comments dim, function names bold. Those
 are the terminal theme's own colours, so they follow a light or a dark one. Highlighting changes
 colours only: every row has the text, the width and the breaks it has without it.
 
-A formula is written in Unicode, since a terminal has one size of letter on one line:
+A formula inside a sentence stays on the sentence's row, written in Unicode:
 `$\bar{r} = \frac{1}{k} \sum_{i=1}^{k} r_i$` is drawn as `r̄ = 1/k ∑ᵢ₌₁ᵏ rᵢ`. A command with a symbol
 becomes the symbol, a fraction a slash, a script the small letters Unicode has (`x^2` is `x²`) or
 the script as written where it has none (`e^(iπ)`); a command the terminal does not know stays as
-it was written. A formula inside a sentence stays inside it, and one on lines of its own (`$$`, a
-`math` fence) is set in on rows of its own. A `$` that is money or a shell variable is text, by the
+it was written.
+
+A formula on lines of its own (`$$`, a `math` fence, `$$ … $$` alone in a paragraph) is set on rows:
+a fraction over its rule, a sum or a limit with its limits above and below it, a root's bar over what
+it takes, matrices and `cases` in brackets as tall as their rows, and brackets around something tall
+grown to its height:
+
+```text
+      1  k            ⎛    1⎞ⁿ        ⎧x   x ≥ 0
+  r̄ = ─  ∑  rᵢ        ⎜1 + ─⎟   |x| = ⎨-x  x < 0
+      k i=1           ⎝    n⎠         ⎩0   else
+```
+
+A script Unicode has small letters for stays small (`x²`, `∫₀¹`). A formula with nothing to set on
+rows, or one too wide for the terminal, is written on one row and wrapped, as inside a sentence.
+A `$` that is money or a shell variable is text, by the
 [rule a page follows](math.md#dollar-signs-that-are-not-math). No KaTeX is loaded; `math: false`
 leaves formulas as the text they were written as.
 

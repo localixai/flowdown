@@ -11,9 +11,15 @@ import { continues } from './continues'
 export interface OpenFence {
   marker: string
   bodyStart: number
+  /**
+   * The spaces before the opening marker. The line that closes the fence takes them: a fence in
+   * a list item is indented under it, and a closing line at the left edge would end the item and
+   * open another fence below the list.
+   */
+  indent: string
 }
 
-const FENCE_LINE_RE = /^\s{0,3}(`{3,}|~{3,})(.*)$/
+const FENCE_LINE_RE = /^(\s{0,3})(`{3,}|~{3,})(.*)$/
 
 interface ScanState {
   /** Text through the end of the last complete line (ends with `\n`, or is empty). */
@@ -35,11 +41,11 @@ function step(
   if (!m) return open
   if (open === null) {
     // A backtick fence has no backtick in its info string: ```` ```a``` ```` is inline code.
-    if (m[1]![0] === '`' && m[2]!.includes('`')) return null
-    return { marker: m[1]!, bodyStart: Math.min(lineEnd, textLength) }
+    if (m[2]![0] === '`' && m[3]!.includes('`')) return null
+    return { marker: m[2]!, bodyStart: Math.min(lineEnd, textLength), indent: m[1]! }
   }
   const closes =
-    m[1]![0] === open.marker[0] && m[1]!.length >= open.marker.length && m[2]!.trim() === ''
+    m[2]![0] === open.marker[0] && m[2]!.length >= open.marker.length && m[3]!.trim() === ''
   return closes ? null : open
 }
 

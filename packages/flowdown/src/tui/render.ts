@@ -11,6 +11,7 @@ import { formOf, type Form } from '../core/forms'
 import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE, type CalloutKind } from '../dialect'
 import type { Node } from '../engine/types'
 import { createCodeDrawer, type CodeDrawer } from './code'
+import { formulaRows } from './formula'
 import { mathRows, mathText } from './math'
 import { printable } from './printable'
 import {
@@ -23,6 +24,7 @@ import {
   merged,
   patch,
   PLAIN,
+  sgr,
   WAITING,
   type Line,
   type Span,
@@ -31,6 +33,12 @@ import {
 import { drawTable } from './table'
 import { fit, lineWidth, NO_BREAK, span, untabbed, wrap } from './wrap'
 import { width as columnsOf } from './width'
+
+/**
+ * What draws a Mermaid diagram's source as rows no wider than `columns`, or null to show the
+ * source: `drawDiagram` of `@localix-ai/flowdown/tui/diagram`, or a drawer of your own.
+ */
+export type DiagramDrawer = (source: string, columns: number) => Line[] | null
 
 /** The words the renderer adds, for a terminal in another language. */
 export interface TerminalLabels {
@@ -198,6 +206,80 @@ function inline(nodes: Node[], style: Style = PLAIN): Line {
   )
 }
 
+/** A table's rows as their cells, each cell its inlines on one line. */
+const cellsOf = (table: Node): Line[][] =>
+  children(table).map((row) => children(row).map((cell) => inline(children(cell))))
+
+/**
+ * The cells of a parsed text that is one table with `count` rows under its header, as a view
+ * reads a table that grows a piece of rows at a time; null for anything else.
+ */
+export function tableCells(
+  root: Node,
+  count: number,
+): { head: Line[]; body: Line[][]; aligns: NonNullable<Node['align']> } | null {
+  const parts = children(root)
+  const table = parts[0]
+  if (parts.length !== 1 || table?.type !== 'table' || formOf(table)) return null
+  const rows = cellsOf(table)
+  if (rows.length !== count + 1) return null
+  return { head: rows[0]!, body: rows.slice(1), aligns: table.align ?? [] }
+}
+
+/**
+ * The rows parts of blocks drew, kept between the renders of one view. A part (a paragraph in a
+ * list item, a paragraph in a quote, a nested list) whose text, form and place are the same as
+ * last time draws the same rows: a list or a quote that grows on every token draws its last part
+ * again, and takes the rows of the others as they were.
+ */
+export interface RowMemo {
+  /** Parts drawn in this render, and in the last: a part not drawn in either is forgotten. */
+  now: Map<string, Line[]>
+  before: Map<string, Line[]>
+}
+
+export const createRowMemo = (): RowMemo => ({ now: new Map(), before: new Map() })
+
+/** A render is over: what it did not draw goes at the next. */
+export function turnRowMemo(memo: RowMemo): void {
+  memo.before = memo.now
+  memo.now = new Map()
+}
+
+/** A node as text, to key it by; null for one an extension made that cannot be written out. */
+function serialized(node: Node): string | null {
+  // A node of a list's complete piece is the same object on every token: written out once.
+  const kept = WRITTEN.get(node)
+  if (kept !== undefined) return kept
+  let written: string | null
+  try {
+    written = JSON.stringify(node)
+  } catch {
+    written = null
+  }
+  WRITTEN.set(node, written)
+  return written
+}
+
+/** Nodes written out, by the node: a tree is not changed once it is parsed. */
+const WRITTEN = new WeakMap<Node, string | null>()
+
+/** Rows already merged, kept by a view: they are handed out as they are. */
+const MERGED = new WeakSet<Line>()
+
+/** A row's text and styles, as a key: two prefixes that draw alike read alike. */
+const signature = (line: Line | null): string =>
+  line === null ? '-' : line.map((run) => `${run.text}\u0002${sgr(run.style)}`).join('\u0003')
+
+/** What a view gives `drawBlock` to keep rows by: the block's text, and where to keep them. */
+export interface Keeping {
+  /** The text the block was parsed from: a part that reaches its end is still being written. */
+  source: string
+  memo: RowMemo
+  /** What else the text was read with (its link definitions): a part read with other ones differs. */
+  scope: string
+}
+
 class Renderer {
   rows: Line[] = []
   /** The prefix of the next row alone: a list marker, a step's number. */
@@ -215,15 +297,86 @@ class Renderer {
     private readonly code: CodeDrawer,
     /** The fence that may still be written to, in the last block of a reply that streams. */
     private readonly open: Node | null,
-  ) {}
+    private readonly keeping: Keeping | null = null,
+    /** What draws a Mermaid fence as its diagram; without one, the fence is its source. */
+    private readonly diagrams: DiagramDrawer | null = null,
+  ) {
+    this.tail = keeping ? keeping.source.trimEnd().length : 0
+  }
 
-  /** A formula on rows of its own: set in from the text, a row for each of its lines. */
+  /** Where the text ends, its last line breaks aside: a part that reaches it is still growing. */
+  private readonly tail: number
+
+  /** `node`, drawn; or the rows it drew last time it stood in the same place. */
+  private part(node: Node): void {
+    const key = this.keyOf(node)
+    if (key === null) return this.block(node)
+    const memo = this.keeping!.memo
+    const kept = memo.now.get(key) ?? memo.before.get(key)
+    if (kept !== undefined) {
+      memo.now.set(key, kept)
+      for (const row of kept) this.rows.push(row)
+      this.gap = null
+      this.first = null
+      return
+    }
+    const from = this.rows.length
+    this.block(node)
+    // Only a part that drew rows and owes nothing after them is kept: one that drew nothing
+    // leaves its marker and its blank row to whatever comes next.
+    if (this.rows.length > from && this.gap === null && this.first === null) {
+      // Kept as `drawBlock` hands them out, so taking them again costs no merging.
+      const rows = this.rows.slice(from).map(merged)
+      for (const row of rows) MERGED.add(row)
+      this.rows.splice(from, rows.length, ...rows)
+      memo.now.set(key, rows)
+    }
+  }
+
+  /** What `node` draws as, where it stands now; null when it is drawn each time. */
+  private keyOf(node: Node): string | null {
+    const keeping = this.keeping
+    const end = node.position?.end.offset
+    if (keeping === null || end === undefined) return null
+    // A part that reaches the end of the text is the one the next token changes: not kept.
+    if (end >= this.tail) return null
+    // The fence still being written grows, and is drawn in pieces of its own.
+    const open = this.open?.position?.start.offset
+    const start = node.position?.start.offset
+    if (open !== undefined && start !== undefined && open >= start && open < end) return null
+    // The node as the dialect left it, not its text: a form takes lines from its neighbours (an
+    // image its caption), so the text a node was parsed from is not all it draws.
+    const tree = serialized(node)
+    // A footnote is numbered by the whole block, which this node does not see.
+    if (tree === null || tree.includes('"footnote')) return null
+    return [
+      keeping.scope,
+      this.depth,
+      this.rows.length > 0 ? 1 : 0,
+      signature(this.first),
+      signature(this.rest),
+      signature(this.gap),
+      tree,
+    ].join('\u0001')
+  }
+
+  /**
+   * A formula on rows of its own, set in from the text: its fractions, limits and matrices set on
+   * rows where they fit (`formula.ts`), else written on one row for each of its lines, wrapped.
+   */
   private formula(node: Node): void {
-    const rows = mathRows(node.value ?? '')
-    if (rows.length === 0) return
+    const source = node.value ?? ''
     const inset = span('  ', PLAIN)
+    const set = formulaRows(source, this.room() - columnsOf(inset.text))
+    const rows = set ?? mathRows(source)
+    if (rows.length === 0) return
     this.within(inset, inset, () => {
-      for (const row of rows) this.put([span(printable(row), MATH)])
+      for (const row of rows) {
+        // A row set apart inside the formula (between a matrix's rows) is a blank row.
+        if (set && !row.trim()) this.blank()
+        else if (set) this.exact([span(printable(row), MATH)])
+        else this.put([span(printable(row), MATH)])
+      }
     })
   }
 
@@ -297,7 +450,7 @@ class Renderer {
           formOf(node)?.form === 'quote-source'
         if (!tight) asked = this.blank()
       }
-      this.block(node)
+      this.part(node)
       before = node
     }
     // A blank asked for here and never drawn is not owed to whatever comes after this container.
@@ -557,9 +710,25 @@ class Renderer {
     row((figure) => figure.label)
   }
 
+  /** The row over a fence that names its file. */
+  titled(title: string): void {
+    this.put([span(flat(title), DIM)])
+  }
+
   private fence(node: Node, form: Form | undefined): void {
     const source = node.value ?? ''
-    if (form?.title) this.put([span(flat(form.title), DIM)])
+    // A diagram whose fence is closed is drawn (`diagram/`); one still being written, or of a
+    // kind not drawn, is its source under a row that says what the source is of.
+    const drawn =
+      this.diagrams && node.lang === DIAGRAM_FENCE_LANGUAGE && node !== this.open
+        ? this.diagrams(source, this.room())
+        : null
+    if (drawn) {
+      if (form?.title) this.titled(form.title)
+      for (const row of drawn) this.exact(row)
+      return
+    }
+    if (form?.title) this.titled(form.title)
     // A diagram is its source here: the row over it says what the source is of.
     else if (node.lang === DIAGRAM_FENCE_LANGUAGE && source.trim())
       this.put([span(this.labels.diagram, DIM)])
@@ -624,9 +793,9 @@ class Renderer {
   }
 
   private table(node: Node): void {
-    const rows = children(node).map((row) => children(row).map((cell) => inline(children(cell))))
     const [first, rest] = this.edges()
-    for (const row of drawTable(rows, node.align ?? [], this.width, first, rest)) this.emit(row)
+    for (const row of drawTable(cellsOf(node), node.align ?? [], this.width, first, rest))
+      this.emit(row)
   }
 }
 
@@ -635,7 +804,7 @@ class Renderer {
  * arriving may be writing. (A fence with no code is passed over: closing a fence left open inside
  * a list leaves an empty one after it.)
  */
-function lastFence(node: Node): Node | null {
+export function lastFence(node: Node): Node | null {
   const parts = children(node)
   for (let at = parts.length - 1; at >= 0; at--) {
     const found = lastFence(parts[at]!)
@@ -648,6 +817,28 @@ function lastFence(node: Node): Node | null {
 const PLAIN_CODE = createCodeDrawer(null)
 
 /**
+ * The rows `drawBlock` draws over a fence that is a block of its own and names its file: what a
+ * view draws above a fence still being written, which it draws without parsing its block.
+ */
+export function drawFenceTitle(title: string, columns: number, labels: TerminalLabels): Line[] {
+  const renderer = new Renderer(Math.max(MIN_WIDTH, Math.floor(columns)), labels, PLAIN_CODE, null)
+  renderer.titled(title)
+  return renderer.rows.map((row) => (MERGED.has(row) ? row : merged(row)))
+}
+
+/**
+ * Rows of code (a fence's, one per line) cut to `columns`, as `drawBlock` draws a fence that is a
+ * block of its own. A line of code is drawn by itself, so lines drawn apart are the rows of the
+ * lines drawn together.
+ */
+export function drawCodeRows(code: Line[], columns: number): Line[] {
+  const width = Math.max(MIN_WIDTH, Math.floor(columns))
+  const out: Line[] = []
+  for (const line of code) for (const row of fit(line, width)) out.push(merged(row))
+  return out
+}
+
+/**
  * A parsed block (its `root`) as terminal rows no wider than `columns`. `code` colours its fences;
  * `growing` says the block is the end of a reply still arriving: its last fence may gain code.
  */
@@ -657,13 +848,17 @@ export function drawBlock(
   labels: TerminalLabels,
   code: CodeDrawer = PLAIN_CODE,
   growing = false,
+  keeping: Keeping | null = null,
+  diagrams: DiagramDrawer | null = null,
 ): Line[] {
   const renderer = new Renderer(
     Math.max(MIN_WIDTH, Math.floor(columns)),
     labels,
     code,
     growing ? lastFence(root) : null,
+    keeping,
+    diagrams,
   )
   renderer.blocks(children(root))
-  return renderer.rows.map(merged)
+  return renderer.rows.map((row) => (MERGED.has(row) ? row : merged(row)))
 }

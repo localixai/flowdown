@@ -63,6 +63,7 @@
     "./dom": "./dist/dom/index.js",
     "./element": "./dist/element/index.js",
     "./tui": "./dist/tui/index.js",
+    "./tui/diagram": "./dist/tui/diagram/index.js",
     "./document": "./dist/document/index.js",
     "./engine": "./dist/engine/index.js",
     "./remark": "./dist/remark.js",

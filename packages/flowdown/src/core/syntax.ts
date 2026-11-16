@@ -28,5 +28,11 @@ export function hasMathSyntax(markdown: string): boolean {
 /** Raw HTML only matters in prose. Tags shown inside fenced/indented/inline code
  * stay literal, so they must not enable the full rehype-raw + sanitize pipeline. */
 export function hasHtmlSyntax(markdown: string): boolean {
-  return /<[a-zA-Z][\w-]*[\s/>]/.test(markdownProseWithoutCode(markdown))
+  const tag = /<[a-zA-Z][\w-]*[\s/>]/
+  // Whether a `$$` line fences a formula moves where code is, and the page may typeset math or
+  // not: a tag that is prose in either reading is HTML. Only a text with `$$` reads two ways.
+  return (
+    tag.test(markdownProseWithoutCode(markdown)) ||
+    (markdown.includes('$$') && tag.test(markdownProseWithoutCode(markdown, false)))
+  )
 }

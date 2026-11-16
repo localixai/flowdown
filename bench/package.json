@@ -10,6 +10,8 @@
     "bench:check": "bun src/check.ts",
     "browser": "bun run --cwd ../packages/flowdown build && bun src/browser.ts",
     "parse": "bun src/parse.ts",
+    "differential": "NODE_ENV=production bun src/differential.ts",
+    "growth": "bun run --cwd ../packages/flowdown build && NODE_ENV=production bun src/growth.ts",
     "size": "bun src/size.ts",
     "features": "NODE_ENV=production bun src/features.tsx",
     "deps": "bun src/install.ts",

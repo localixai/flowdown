@@ -214,13 +214,48 @@ function dropTrailingBareFormMarker(text: string): string {
   return nl === -1 ? '' : trimmed.slice(0, nl + 1)
 }
 
+/**
+ * A last line that is so far only the marker of a block (`-`, `*`, `+`, `##`, `12.`, `>`), or a run
+ * of `-` or `=`, is held back until the first word of what it opens. Drawn at once it is an empty
+ * list item, heading or quote for a frame; and a `-` under a paragraph is read as the line that
+ * makes the paragraph a heading, so the paragraph flashes as one until the item's text arrives.
+ * The marker is shown with that word, a token later.
+ */
+// Inside a quote too (`> -`): the dialect's forms are quotes, and their lists and headings are in them.
+const BARE_BLOCK_MARKER = /^[ \t]*(?:>[ \t]?)*(?:[-*+=]+|#{1,6}|\d{1,9}[.)]?|>)[ \t]*$/
+
+function dropTrailingBareBlockMarker(text: string): string {
+  const nl = text.lastIndexOf('\n')
+  // A marker is short: a long last line is read no further.
+  if (text.length - nl > 16) return text
+  return BARE_BLOCK_MARKER.test(text.slice(nl + 1)) ? text.slice(0, nl + 1) : text
+}
+
+/** A bullet item's first line: one ends the paragraph above it, whatever that paragraph holds. */
+const BULLET_LINE = /^ {0,3}[-*+][ \t]+\S/
+
+/**
+ * Where the last paragraph of `text` starts: after its last blank line, or at its last line that
+ * starts a bullet item, which no inline construct runs across. A long list with no blank line in
+ * it is one run of lines; read from the item being written, a token costs that item, not the list.
+ */
+function lastParagraph(text: string): number {
+  const blank = text.lastIndexOf('\n\n')
+  const from = blank === -1 ? 0 : blank + 2
+  for (let at = text.lastIndexOf('\n'); at >= from; at = text.lastIndexOf('\n', at - 1)) {
+    if (BULLET_LINE.test(text.slice(at + 1, at + 16))) return at + 1
+    if (at === 0) break
+  }
+  return from
+}
+
 export function closePartialMarkdown(text: string): string {
   if (!text) return text
 
   // Inside an unterminated fence: close it and skip inline fixes — everything
   // after the opener is code, where emphasis/link syntax has no meaning.
   const fence = openFence(text)
-  if (fence) return `${text}${text.endsWith('\n') ? '' : '\n'}${fence.marker}`
+  if (fence) return `${text}${text.endsWith('\n') ? '' : '\n'}${fence.indent}${fence.marker}`
   return closePartialProse(text)
 }
 
@@ -240,13 +275,23 @@ export function closePartialProse(text: string): string {
   if (unmarked !== text) return unmarked
   const bare = dropTrailingBareFormMarker(text)
   if (bare !== text) return bare
+  // The text above a marker held back may itself end mid-construct (`**bold` on the line before).
+  const held = dropTrailingBareBlockMarker(text)
+  if (held !== text) return closePartialProse(held)
 
   // Inline constructs cannot span a blank line, so only the last paragraph can
   // be dangling — operate on it alone and keep the rest byte-identical.
-  const splitAt = text.lastIndexOf('\n\n')
-  const head = splitAt === -1 ? '' : text.slice(0, splitAt + 2)
-  let tail = splitAt === -1 ? text : text.slice(splitAt + 2)
+  const splitAt = lastParagraph(text)
+  const head = text.slice(0, splitAt)
+  let tail = text.slice(splitAt)
   if (!tail) return text
+  // What is completed goes where the text stops, before the line break or the space it may end
+  // in: `**` after a line break opens nothing and closes nothing, and shows, with the `**` it was
+  // to close (`A **long bold⏎`).
+  let end = tail.length
+  while (end > 0 && /\s/.test(tail[end - 1]!)) end -= 1
+  const after = end === tail.length ? '' : tail.slice(end)
+  if (after) tail = tail.slice(0, end)
 
   tail = dropTrailingPartialImage(tail)
   tail = withholdPartialMath(tail)
@@ -256,7 +301,9 @@ export function closePartialProse(text: string): string {
   tail = balanceDoubleDelimiter(tail, '~~')
   tail = balanceSingleEmphasis(tail, '*')
   tail = balanceSingleEmphasis(tail, '_')
+  tail += after
   // Nothing to complete: the very text, so a long reply is not copied on every token.
   if (head.length + tail.length === text.length && text.endsWith(tail)) return text
-  return head + tail
+  // What was hidden may leave a marker bare (`- *` is `- `): it is held back as one typed so.
+  return dropTrailingBareBlockMarker(head + tail)
 }

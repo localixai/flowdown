@@ -192,8 +192,28 @@ describe('closePartialMarkdown', () => {
     expect(closePartialMarkdown('match *.ts files')).toBe('match *.ts files')
   })
 
-  test('does not touch a trailing bullet marker', () => {
-    expect(closePartialMarkdown('list:\n\n* ')).toBe('list:\n\n* ')
+  test('holds back a block marker until the first word of what it opens', () => {
+    // Alone on the last line, each is an empty item, heading or quote for a frame.
+    for (const marker of ['* ', '-', '+', '##', '#', '1.', '12)', '3', '>', '> -', '> > ', '   -'])
+      expect(closePartialMarkdown(`list:\n\n${marker}`)).toBe('list:\n\n')
+    // A `-` or `=` under a paragraph would make it a heading until the item's text came.
+    expect(closePartialMarkdown('Some paragraph text.\n-')).toBe('Some paragraph text.\n')
+    expect(closePartialMarkdown('Some paragraph text.\n===')).toBe('Some paragraph text.\n')
+    // The text above it is completed as any end of a text is.
+    expect(closePartialMarkdown('Some **bold\n-')).toBe('Some **bold**\n')
+    // Once a word follows the marker, it is drawn.
+    expect(closePartialMarkdown('list:\n\n* a')).toBe('list:\n\n* a')
+    expect(closePartialMarkdown('# T')).toBe('# T')
+    expect(closePartialMarkdown('#hashtag')).toBe('#hashtag')
+    expect(closePartialMarkdown('2024 was')).toBe('2024 was')
+  })
+
+  test('completes a construct where the text stops, before a line break or a space it ends in', () => {
+    // After the line break, `**` would close nothing and show with the `**` it was to close.
+    expect(closePartialMarkdown('A **long bold\n')).toBe('A **long bold**\n')
+    expect(closePartialMarkdown('Some *it ')).toBe('Some *it* ')
+    expect(closePartialMarkdown('Run `npm i\n')).toBe('Run `npm i`\n')
+    expect(closePartialMarkdown('plain text\n')).toBe('plain text\n')
   })
 
   test('does not touch intraword underscores', () => {

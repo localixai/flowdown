@@ -120,7 +120,7 @@ export function createDocument({ refs = false }: DocumentOptions = {}): Markdown
       // Inside a fence left open, the reply is read as it is and the line that closes the fence
       // goes to the last block beside its text: joined here, every token would copy the reply.
       const fence = streaming ? openFence(text) : null
-      const closer = fence ? `${text.endsWith('\n') ? '' : '\n'}${fence.marker}` : ''
+      const closer = fence ? `${text.endsWith('\n') ? '' : '\n'}${fence.indent}${fence.marker}` : ''
       const healed = streaming && !fence ? closePartialProse(text) : text
       // Blocks that did not change come back as the same objects, and everything worked out
       // from a block is kept beside it.

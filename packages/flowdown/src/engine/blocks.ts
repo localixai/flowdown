@@ -170,14 +170,22 @@ export interface BlockResult {
   root: Node
   /** The footnotes defined, in the order they are first referred to. */
   footnotes: Node[]
+  /**
+   * With `stop` 'code': where each code block starts and ends in the document, and each run of
+   * text read into inlines (a paragraph, a heading, a row of a table), in pairs of offsets.
+   */
+  code?: { code: number[]; inline: number[] }
 }
 
 /** Parses a whole document into its tree. */
 export const parseBlocks = (
   input: string,
   context: InlineContext,
-  /** Stop once the blocks are read: `context.refs` then holds the text's definitions. */
-  blocksOnly = false,
+  /**
+   * Stop once the blocks are read: `context.refs` then holds the text's definitions. With 'code',
+   * the result also says where the code blocks are.
+   */
+  blocksOnly: boolean | 'code' = false,
 ): BlockResult => {
   const gfm = context.gfm
   // Where each line starts and ends in the document (its ending left out): a node's position is
@@ -347,15 +355,23 @@ export const parseBlocks = (
     switch (closing.type) {
       case 'paragraph':
         takeReferences(closing)
-        // A paragraph that was only definitions leaves nothing behind.
-        if (/^[ \t\n]*$/.test(closing.text)) removeChild(closing)
+        // A paragraph that was only definitions draws nothing, but it was a block: a blank line
+        // before it in a list item makes the list loose (CommonMark's example 317).
+        if (/^[ \t\n]*$/.test(closing.text)) closing.type = 'definitions'
         break
       case 'code':
         if (closing.fenced) {
           const newline = closing.text.indexOf('\n')
           closing.label = unescapeString(closing.text.slice(0, newline).trim())
           closing.text = closing.text.slice(newline + 1)
-        } else closing.text = closing.text.replace(/(?:\n *)+$/, '\n')
+        } else {
+          // Its trailing blank lines are not its own: a list judged by its gaps must see them.
+          const trailing = /(?:\n *)+$/.exec(closing.text)?.[0] ?? ''
+          let after = -1
+          for (const char of trailing) if (char === '\n') after++
+          closing.text = closing.text.slice(0, closing.text.length - trailing.length) + '\n'
+          if (after > 0) closing.endLine = Math.max(closing.startLine, endLine - after)
+        }
         break
       case 'list': {
         const items = closing.children
@@ -588,13 +604,21 @@ export const parseBlocks = (
 
     if (container.type === 'paragraph') {
       // A table: the paragraph's last line is its header, this line the row of dashes under it.
-      if (gfm && (first === C_PIPE || first === C_DASH || first === C_COLON)) {
-        const align = parseDelimiterRow(line.slice(nextNonspace))
+      // A list item that can interrupt the paragraph is one before it is a row of dashes: GitHub's
+      // parser tries a table after every block of CommonMark's.
+      const rest = line.slice(nextNonspace)
+      if (
+        gfm &&
+        (first === C_PIPE || first === C_DASH || first === C_COLON) &&
+        !(first === C_DASH && /^-[ \t]+\S/.test(rest))
+      ) {
+        const align = parseDelimiterRow(rest)
         if (align !== null) {
           const content = container.text
           const cut = content.lastIndexOf('\n', content.length - 2)
           const header = content.slice(cut + 1, -1)
-          if (splitRow(header).length === align.length) {
+          // A header that is a pipe alone has no cell to head a column with.
+          if (header.trim() !== '|' && splitRow(header).length === align.length) {
             closeUnmatchedBlocks()
             if (cut === -1) {
               tip = container.parent as Block
@@ -806,6 +830,28 @@ export const parseBlocks = (
   while (tip !== doc) finalize(tip, count)
   finalize(doc, count)
 
+  if (blocksOnly === 'code') {
+    // Each code block from the start of its first line to the end of its last, fence lines and
+    // the markers of what holds it on them included: no prose shares a line with code.
+    const code: number[] = []
+    const inline: number[] = []
+    const lines = (from: Block, into: number[], each = false): void => {
+      const last = Math.min(Math.max(from.endLine, from.startLine), starts.length)
+      if (!each) into.push(starts[from.startLine - 1] ?? 0, ends[last - 1] ?? input.length)
+      else
+        for (let at = from.startLine; at <= last; at++)
+          into.push(starts[at - 1] ?? 0, ends[at - 1] ?? input.length)
+    }
+    const walk = (from: Block): void => {
+      if (from.type === 'code' && from.fenceChar !== C_DOLLAR) lines(from, code)
+      else if (from.type === 'paragraph' || from.type === 'heading') lines(from, inline)
+      // A code span never runs from one cell to the next, nor from row to row.
+      else if (from.type === 'table') lines(from, inline, true)
+      else for (const child of from.children) walk(child)
+    }
+    walk(doc)
+    return { root: { type: 'root', children: [] }, footnotes: [], code: { code, inline } }
+  }
   if (blocksOnly) return { root: { type: 'root', children: [] }, footnotes: [] }
 
   // The second pass: every block's text read into inlines, now that every definition is known.
@@ -818,7 +864,7 @@ export const parseBlocks = (
       if (child.type === 'footnoteDefinition') {
         const key = normalizeLabel(`[${child.label}]`)
         if (!definitions.has(key)) definitions.set(key, child)
-      } else out.push(build(child))
+      } else if (child.type !== 'definitions') out.push(build(child))
     }
     return out
   }

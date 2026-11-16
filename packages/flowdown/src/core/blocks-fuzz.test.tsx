@@ -24,12 +24,16 @@ const whole = (source: string) =>
           urlTransform: defaultUrlTransform,
           ownCode: false,
           ownTable: false,
+          ownList: false,
         })}
       </div>,
     ),
   )
 const split = (source: string) =>
   sameIds(renderToStaticMarkup(<Markdown html={html}>{source}</Markdown>))
+
+/** A long sweep (`FUZZ=…`) takes longer than a test is given by default. */
+const timeout = process.env.FUZZ ? 600_000 : undefined
 
 const sweep = (document: (seed: number) => string) => {
   // `FUZZ=60000 bun test blocks-fuzz` for a longer sweep.
@@ -56,6 +60,6 @@ const sweep = (document: (seed: number) => string) => {
   expect(failures).toEqual([])
 }
 
-test('seeded documents', () => sweep(linesDocument))
+test('seeded documents', () => sweep(linesDocument), timeout)
 
-test('seeded documents with link definitions', () => sweep(linkedDocument))
+test('seeded documents with link definitions', () => sweep(linkedDocument), timeout)
