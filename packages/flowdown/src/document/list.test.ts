@@ -88,7 +88,8 @@ test('a list read in pieces is the list one parse reads, at every step of a stre
   }
   // The pieces are what most steps of a long list are read as.
   expect(cut).toBeGreaterThan(steps / 3)
-})
+  // 120 lists streamed token by token: two seconds here, past bun's five on a shared CI runner.
+}, 30_000)
 
 test('what keeps a list from being cut', () => {
   const items = (count: number, marker = '-') =>
