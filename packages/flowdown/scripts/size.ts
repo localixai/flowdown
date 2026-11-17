@@ -37,7 +37,9 @@ const BUDGET: Record<string, number> = {
   // were drawn (`document/list.ts`, `render/tree.ts`): a token of a 240-item list reads its last
   // piece, not the list. Every entry that cuts a document carries it. 0.6 KB more for a long
   // quote, a callout among them, read in pieces the same way (`document/quote.ts`).
-  '.': 36.8,
+  // 0.1 KB more since a `---` between two tabs parts them rather than ending the tabs
+  // (`core/blocks.ts`) and a formula may start with a number, `$2 + 2 = 4$` (`core/dollars.ts`).
+  '.': 37,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
   // The code ranges of the sniffers, and on a page the copy of a selection, as for `.`.
   // And the pieces of a long list and a long quote, as for `.`.
@@ -68,16 +70,18 @@ const BUDGET: Record<string, number> = {
   // A growing text as blocks with the dialect to parse them by (2.6 KB of the figure, and a page
   // that imports only `createDocument` does not ship it), and the parser alone. 0.2 KB more for
   // what the healer holds back and where it completes, 0.3 KB for the code ranges (see `.`), and
-  // the parser's four readings the differential fuzz found (`engine/blocks.ts`).
-  './document': 22.2,
+  // the parser's four readings the differential fuzz found (`engine/blocks.ts`). 0.1 KB more for
+  // tabs parted by a `---` and a formula that starts with a number, as for `.`.
+  './document': 22.4,
   './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
   './remark': 20.5,
   // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`);
   // then 0.4 KB for the cut of a document with link definitions.
   // 0.1 KB more since the repair of an unfinished end reads from the item being written, and holds
-  // a marker left bare once a half-typed `*` is hidden (`core/heal.ts`).
-  './stream': 5.1,
+  // a marker left bare once a half-typed `*` is hidden (`core/heal.ts`). Then a few bytes for a
+  // formula that starts with a number, which the repair reads as the renderer does.
+  './stream': 5.2,
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,
