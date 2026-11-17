@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react';
 import { renderMarkdown } from '@/entities/doc';
+import { consentMarkup } from '@/features/consent';
 import { InstallCommand } from '@/features/install-command';
 import { Stream } from '@/features/stream';
+import { SITE } from '@/shared/config';
 import { rich } from '@/shared/lib/rich';
 import { Action, Check, Copy, GitHubIcon, Panel, SectionHead } from '@/shared/ui';
 import { LoopCard } from '@/widgets/loop';
-import { BLOCKS, CARD, ONE_WAY, PROSE, THREE_WAYS } from './samples';
+import { BLOCKS, CARD, CONSENT, ONE_WAY, PROSE, THREE_WAYS } from './samples';
 
 /** A component shown as it is: its name, where it lives, when to use it, and the thing itself. */
 function Specimen({ id, title, from, children, note }: { id: string; title: string; from: string; note: string; children: ReactNode }) {
@@ -122,6 +124,15 @@ export function Components() {
             <span aria-hidden="true">→</span>
           </a>
         </footer>
+      </Specimen>
+
+      <Specimen
+        id="consent-card"
+        title="Usage statistics card"
+        from="features/consent"
+        note="Shown only with `analytics` in `content/site.ts`, to a visitor who has not answered, over the page's lower corner. Its two answers are one variant: no is as easy as yes. The footer's Cookie settings opens it again."
+      >
+        <div dangerouslySetInnerHTML={{ __html: consentMarkup(SITE.analytics ?? CONSENT, true) }} />
       </Specimen>
 
       <Specimen id="prose" title="Prose" from="entities/doc" note="A docs page's text, written in markdown: headings with anchors, lists, code blocks with a Copy, tables that scroll inside their frame on a phone.">
