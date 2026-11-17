@@ -10,7 +10,7 @@ const site: SiteConfig = {
   name: 'flowdown',
   title: 'flowdown — streaming Markdown for React and AI replies',
   description: DESCRIPTION,
-  url: 'https://flowdown.dev',
+  url: 'https://flowdown.localix.ai',
   github: GITHUB,
   install: [
     ['npm', 'npm install @localix-ai/flowdown'],

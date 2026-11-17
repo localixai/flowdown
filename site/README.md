@@ -1,4 +1,4 @@
-# flowdown.dev
+# flowdown.localix.ai
 
 The landing page and the documentation of flowdown. The docs it shows are the repository's
 [`docs/`](../docs), the releases are the package's [changelog](../packages/flowdown/CHANGELOG.md),

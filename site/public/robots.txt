@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /kit
 Disallow: /og-card.html
-Sitemap: https://flowdown.dev/sitemap.xml
+Sitemap: https://flowdown.localix.ai/sitemap.xml

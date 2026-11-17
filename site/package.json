@@ -31,5 +31,5 @@
     "vite": "^8.0.0",
     "@localix-ai/flowdown": "workspace:*"
   },
-  "description": "The landing page and the docs of flowdown, at flowdown.dev."
+  "description": "The landing page and the docs of flowdown, at flowdown.localix.ai."
 }

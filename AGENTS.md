@@ -22,7 +22,7 @@ a person: read it before a change to either. This file says where things are and
 - `bench/`: the benchmarks, their budgets (`budgets.json`), and the scripts every published figure
   comes from.
 - `docs/`: the documentation, each file a page of the site.
-- `site/`: flowdown.dev, with its own guide ([site/AGENTS.md](site/AGENTS.md)) and its own
+- `site/`: flowdown.localix.ai, with its own guide ([site/AGENTS.md](site/AGENTS.md)) and its own
   toolchain (npm). Read that guide before a change there.
 - `demo/`: the pages the screenshots are taken from (`bun run shots`). `examples/tui`: a reply
   streamed into a terminal.

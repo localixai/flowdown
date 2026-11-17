@@ -20,12 +20,12 @@
 </p>
 
 <p align="center">
-  <a href="https://flowdown.dev"><b>flowdown.dev</b></a> ·
-  <a href="https://flowdown.dev/docs/getting-started">Get started</a> ·
-  <a href="https://flowdown.dev/docs/syntax">Syntax</a> ·
-  <a href="https://flowdown.dev/docs/api">API</a> ·
-  <a href="https://flowdown.dev/docs/comparison">Comparison</a> ·
-  <a href="https://flowdown.dev/docs/rust">Rust</a>
+  <a href="https://flowdown.localix.ai"><b>flowdown.localix.ai</b></a> ·
+  <a href="https://flowdown.localix.ai/docs/getting-started">Get started</a> ·
+  <a href="https://flowdown.localix.ai/docs/syntax">Syntax</a> ·
+  <a href="https://flowdown.localix.ai/docs/api">API</a> ·
+  <a href="https://flowdown.localix.ai/docs/comparison">Comparison</a> ·
+  <a href="https://flowdown.localix.ai/docs/rust">Rust</a>
 </p>
 
 <p align="center">
@@ -57,7 +57,7 @@ export function Reply({ text, done }: { text: string; done: boolean }) {
 
 `<Markdown>` needs React 18 or 19. A model writes the forms once its system prompt teaches them:
 add `answerFormatPrompt()` from `@localix-ai/flowdown/prompt`
-([prompting](https://flowdown.dev/docs/prompting)).
+([prompting](https://flowdown.localix.ai/docs/prompting)).
 
 ## Why
 
@@ -68,16 +68,16 @@ add `answerFormatPrompt()` from `@localix-ai/flowdown/prompt`
 - **Repairs a reply mid-stream.** Unfinished `**bold`, half-typed links and open code fences never
   show their raw syntax.
 - **Complete.** Its parser passes every example of CommonMark and of GitHub's extensions
-  ([conformance](https://flowdown.dev/docs/conformance)).
+  ([conformance](https://flowdown.localix.ai/docs/conformance)).
 - **Light.** One package with no dependencies, 36 KB gzipped, styled without Tailwind.
 - **Safe.** Raw HTML from a reply is sanitized, and links are held to safe protocols.
 
 <p align="center">
-  <a href="https://flowdown.dev/docs/comparison"><img alt="flowdown beside five other React Markdown renderers: time to stream six kinds of reply, download size, packages installed, and the cost of a four times longer reply" src="bench/results/charts/compare.png" width="878"></a>
+  <a href="https://flowdown.localix.ai/docs/comparison"><img alt="flowdown beside five other React Markdown renderers: time to stream six kinds of reply, download size, packages installed, and the cost of a four times longer reply" src="bench/results/charts/compare.png" width="878"></a>
 </p>
 
 Every figure, how it was measured, and the cases where another renderer suits better are in
-[the comparison](https://flowdown.dev/docs/comparison).
+[the comparison](https://flowdown.localix.ai/docs/comparison).
 
 ## Beyond React
 
@@ -92,10 +92,10 @@ React.
 | `@localix-ai/flowdown/element` | `<flow-down>`, for Vue, Svelte, Solid or Angular   |
 | `@localix-ai/flowdown/tui`     | the rows of a terminal                             |
 
-Each target's options are in [other targets](https://flowdown.dev/docs/targets). Further entries
+Each target's options are in [other targets](https://flowdown.localix.ai/docs/targets). Further entries
 give you the pieces for a renderer of your own: the parser (`/engine`), a growing reply as blocks
 (`/document`), a remark plugin (`/remark`), the prompt (`/prompt`), and code, math and diagrams
-(`/highlight`, `/math`, `/mermaid`). [The API](https://flowdown.dev/docs/api) lists them all.
+(`/highlight`, `/math`, `/mermaid`). [The API](https://flowdown.localix.ai/docs/api) lists them all.
 
 ## In Rust
 
@@ -115,31 +115,31 @@ let doc = flowdown::parse("> [!STEPS] Cut a release\n1. **Run the checks**\n2. *
 
 It builds its tree faster than `pulldown-cmark` pulls its events. What it reads, how fast and how
 it is made: [crates/flowdown](crates/flowdown/README.md) and
-[the Rust crate](https://flowdown.dev/docs/rust) page of the docs.
+[the Rust crate](https://flowdown.localix.ai/docs/rust) page of the docs.
 
 ## Documentation
 
-Everything is at **[flowdown.dev](https://flowdown.dev/docs)**:
+Everything is at **[flowdown.localix.ai](https://flowdown.localix.ai/docs)**:
 
-- **Start:** [introduction](https://flowdown.dev/docs/introduction) ·
-  [getting started](https://flowdown.dev/docs/getting-started) ·
-  [comparison](https://flowdown.dev/docs/comparison)
-- **Writing:** [syntax](https://flowdown.dev/docs/syntax) ·
-  [prompting](https://flowdown.dev/docs/prompting) ·
-  [conformance](https://flowdown.dev/docs/conformance)
-- **Rendering:** [streaming](https://flowdown.dev/docs/streaming) ·
-  [styling](https://flowdown.dev/docs/styling) ·
-  [components](https://flowdown.dev/docs/components) ·
-  [math](https://flowdown.dev/docs/math) · [diagrams](https://flowdown.dev/docs/diagrams) ·
-  [highlighting](https://flowdown.dev/docs/highlighting) ·
-  [security](https://flowdown.dev/docs/security)
-- **Beyond React:** [other targets](https://flowdown.dev/docs/targets) ·
-  [extensions and remark](https://flowdown.dev/docs/remark) ·
-  [the Rust crate](https://flowdown.dev/docs/rust)
-- **Recipes:** [Vercel AI SDK](https://flowdown.dev/docs/recipes/ai-sdk) ·
-  [a documentation site](https://flowdown.dev/docs/recipes/docs-site) ·
-  [migrating](https://flowdown.dev/docs/recipes/migrating)
-- **Reference:** [API](https://flowdown.dev/docs/api) · releases of the
+- **Start:** [introduction](https://flowdown.localix.ai/docs/introduction) ·
+  [getting started](https://flowdown.localix.ai/docs/getting-started) ·
+  [comparison](https://flowdown.localix.ai/docs/comparison)
+- **Writing:** [syntax](https://flowdown.localix.ai/docs/syntax) ·
+  [prompting](https://flowdown.localix.ai/docs/prompting) ·
+  [conformance](https://flowdown.localix.ai/docs/conformance)
+- **Rendering:** [streaming](https://flowdown.localix.ai/docs/streaming) ·
+  [styling](https://flowdown.localix.ai/docs/styling) ·
+  [components](https://flowdown.localix.ai/docs/components) ·
+  [math](https://flowdown.localix.ai/docs/math) · [diagrams](https://flowdown.localix.ai/docs/diagrams) ·
+  [highlighting](https://flowdown.localix.ai/docs/highlighting) ·
+  [security](https://flowdown.localix.ai/docs/security)
+- **Beyond React:** [other targets](https://flowdown.localix.ai/docs/targets) ·
+  [extensions and remark](https://flowdown.localix.ai/docs/remark) ·
+  [the Rust crate](https://flowdown.localix.ai/docs/rust)
+- **Recipes:** [Vercel AI SDK](https://flowdown.localix.ai/docs/recipes/ai-sdk) ·
+  [a documentation site](https://flowdown.localix.ai/docs/recipes/docs-site) ·
+  [migrating](https://flowdown.localix.ai/docs/recipes/migrating)
+- **Reference:** [API](https://flowdown.localix.ai/docs/api) · releases of the
   [npm package](packages/flowdown/CHANGELOG.md) and of the
   [Rust crate](crates/flowdown/CHANGELOG.md)
 
@@ -160,7 +160,7 @@ crates/flowdown/scripts/check   # the Rust crate: fmt, clippy, tests, docs, the 
 | [`crates/flowdown`](crates/flowdown/README.md) | The Rust crate, with its own benchmarks. |
 | [`spec/`](spec/README.md) | What both parsers are held to: CommonMark's and GitHub's specifications, and the dialect's forms. |
 | [`docs/`](docs) | The documentation, each file a page of the site. |
-| [`site/`](site/README.md) | flowdown.dev. |
+| [`site/`](site/README.md) | flowdown.localix.ai. |
 | [`bench/`](bench/README.md) | The benchmarks every published figure comes from. |
 
 How to work on it: [CONTRIBUTING.md](CONTRIBUTING.md).

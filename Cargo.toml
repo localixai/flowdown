@@ -11,7 +11,7 @@ edition = "2024"
 rust-version = "1.89"
 license = "MIT"
 repository = "https://github.com/localixai/flowdown"
-homepage = "https://flowdown.dev"
+homepage = "https://flowdown.localix.ai"
 
 # The lints are hard (AGENTS.md, rule R4): denied, never turned off here. An exception is an
 # `expect` with its `reason`, on the smallest item. Their configuration is clippy.toml.

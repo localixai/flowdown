@@ -104,4 +104,4 @@ What sets it apart:
 
 - [Getting started](getting-started.md) — install, render, stream.
 - [Syntax](syntax.md) — every form, with its source.
-- [flowdown.dev](https://flowdown.dev) — a reply streaming live, in a page.
+- [flowdown.localix.ai](https://flowdown.localix.ai) — a reply streaming live, in a page.

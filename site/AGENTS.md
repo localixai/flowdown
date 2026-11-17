@@ -2,7 +2,7 @@
 
 Instructions for AI coding agents working on this repository.
 
-This is flowdown's site: the landing and the documentation at flowdown.dev. It began as a copy of
+This is flowdown's site: the landing and the documentation at flowdown.localix.ai. It began as a copy of
 llx-sitekit and is now this repository's own: there is no template to merge from.
 
 ## Rules
