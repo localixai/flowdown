@@ -4,11 +4,11 @@ import type { SiteConfig } from '@/shared/config';
 const GITHUB = 'https://github.com/localixai/flowdown';
 const CHANGELOG = `${GITHUB}/blob/main/packages/flowdown/CHANGELOG.md`;
 const DESCRIPTION =
-  'flowdown is streaming Markdown for React and AI replies: its own parser, no dependencies, and a dialect of steps, tabs, figures, diagrams and math, drawn while the text arrives.';
+  'Streaming Markdown for React and AI replies: its own parser, no dependencies, and steps, tabs, diagrams and math drawn while the text arrives.';
 
 const site: SiteConfig = {
   name: 'flowdown',
-  title: 'flowdown — streaming Markdown for React and AI replies',
+  title: 'flowdown: streaming Markdown for React and AI replies',
   description: DESCRIPTION,
   url: 'https://flowdown.localix.ai',
   github: GITHUB,
