@@ -63,7 +63,7 @@ later, and for `wasm32-unknown-unknown`.
 
 ```toml
 [dependencies]
-flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.0" }
+flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.1" }
 ```
 
 Its versions are its own, apart from the npm package's: [CHANGELOG.md](CHANGELOG.md).

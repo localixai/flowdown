@@ -7,6 +7,8 @@ The Rust crate `flowdown`. Its versions are its own, apart from the npm package'
 
 ## Unreleased
 
+## 0.1.1
+
 ### Changed
 
 - A `---` right before a heading of the tabs' level parts two tabs instead of ending `[!TABS]`,
