@@ -47,6 +47,12 @@ const site: SiteConfig = {
     programmingLanguage: 'TypeScript',
     license: 'https://opensource.org/license/mit',
   },
+  // Usage statistics: Google Analytics 4, only after a visitor's yes (the lab's one property).
+  analytics: {
+    ga4: 'G-Q8WCW7ZLDD',
+    notice: 'We count visits with Google Analytics, only with your yes, to see which pages help.',
+    privacy: 'https://localix.ai/privacy',
+  },
   llms: '> flowdown is a Markdown renderer for React and AI replies: GitHub Markdown plus a dialect of steps, tabs, figures, callouts, sources, diagrams and math, drawn while the text streams.',
 };
 
