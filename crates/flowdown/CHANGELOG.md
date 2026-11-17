@@ -9,6 +9,11 @@ The Rust crate `flowdown`. Its versions are its own, apart from the npm package'
 
 ### Changed
 
+- A `---` right before a heading of the tabs' level parts two tabs instead of ending `[!TABS]`,
+  and is dropped: models write one between variants (`spec/forms/spec.txt`).
+- A formula may start with a number: `$2 + 2 = 4$` is one. A price-looking `$` opens a formula
+  only when it closes with no other `$` inside and holds `=`, `^`, `_`, `\`, `{`, `}`, `<` or `>`,
+  so `$5 and $10` and `pay $5 now and 7$ later` stay text.
 - The crate's homepage is https://flowdown.localix.ai; flowdown.dev redirects there.
 - `prompt()`'s first rule says the reader sees the forms drawn, not that the page renders them:
   the text teaches a model whatever draws its reply, a terminal among them.

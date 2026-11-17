@@ -21,12 +21,30 @@ const VARIABLE = /^[A-Z_][A-Z0-9_]+(?=[/:.,;)\]'"`]|$)/
 /** A longer upper-case name also ends at a space (`$PATH before`); `$AB = CD$` stays math. */
 const LONG_VARIABLE = /^[A-Z_][A-Z0-9_]{2,}(?=\s)/
 
+/** A sign only math writes: what a formula that starts with a number shows itself by. */
+const MATH_SIGN = /[=^_\\{}<>]/
+
 /**
- * Whether the `$` at `index` is a dollar sign by its own look: a price or a shell variable. A `$`
- * that pairs with no other (`$ x`, the shell line `$(seq 1 12) … $i`) is text as well, but that
- * takes the whole paragraph to tell: `literalDollars` asks both.
+ * Whether the `$` at `index` is a dollar sign: a price or a shell variable by its own look. A
+ * formula may start with a number too (`$2 + 2 = 4$`): a price-looking `$` still opens one when
+ * a `$` of no such look closes it in its paragraph and what lies between holds a sign only math
+ * writes and no other `$`, which "$5 and $10", "pay $5 now and 7$ later" and "from $5 for $n^2$"
+ * do not. A `$` that pairs with no other
+ * (`$ x`, the shell line `$(seq 1 12) … $i`) is text as well, but that takes the whole paragraph
+ * to tell: `literalDollars` asks both.
  */
 export function isLiteralDollar(text: string, index: number): boolean {
+  if (!looksLiteral(text, index)) return false
+  if (!CURRENCY.test(text.slice(index + 1, index + 48)) || !opensInlineMath(text, index))
+    return true
+  const close = inlineMathClose(text, index)
+  if (close === -1) return true
+  const inner = text.slice(index + 1, close)
+  return inner.includes('$') || !MATH_SIGN.test(inner)
+}
+
+/** A dollar sign by its own look: a price or a variable, whatever follows in the paragraph. */
+function looksLiteral(text: string, index: number): boolean {
   if (text[index] !== '$' || isEscaped(text, index)) return false
   // `$$` is display math, never a dollar sign.
   if (text[index - 1] === '$' || text[index + 1] === '$') return false
@@ -50,7 +68,7 @@ function paragraphEnd(text: string, index: number): number {
 
 /**
  * The single `$` that closes the formula opened at `open`, or -1 when none in its paragraph does.
- * A dollar sign (`$5`) is skipped: it is text, so it closes nothing.
+ * A dollar sign by its look (`$5`) is skipped: it is text, so it closes nothing.
  */
 export function inlineMathClose(text: string, open: number): number {
   const end = paragraphEnd(text, open)
@@ -59,8 +77,7 @@ export function inlineMathClose(text: string, open: number): number {
     at !== -1 && at < end;
     at = text.indexOf('$', at + 1)
   ) {
-    if (isSingleDollar(text, at) && !isLiteralDollar(text, at) && closesInlineMath(text, at))
-      return at
+    if (isSingleDollar(text, at) && !looksLiteral(text, at) && closesInlineMath(text, at)) return at
   }
   return -1
 }

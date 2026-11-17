@@ -78,6 +78,7 @@ dollars are dollar signs by their look, and escapes them before the parser sees 
 | ------------------------------ | ------------------------------------------------------------------------------------- |
 | `$5`, `$1,200`, `$3.5k`, `$2M` | A price: digits, an optional `k`, `m` or `b`, then a space, punctuation or the end.   |
 | `$5–$10`, `costs $5 and $10`   | Prices.                                                                               |
+| `$2 + 2 = 4$`, `$3 \cdot 4$`   | Math: a price-looking dollar opens a formula that closes with no other `$` inside and holds `= ^ _ \ { } < >`. |
 | `$HOME/bin`, `$PATH:`          | A shell variable: an upper-case name followed by `/ : . , ; ) ]`, a quote or the end. |
 | `$PATH before`                 | A shell variable: an upper-case name of three or more characters before a space.      |
 | `$AB = CD$`                    | Math: a name of two characters before a space does not count as a variable.           |

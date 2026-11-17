@@ -1,7 +1,8 @@
 //! When a single `$` opens or closes a formula: pandoc's rule, which GitHub follows, and a dollar
 //! sign by its own look (a price, a shell variable) never does. So `$x$` is a formula, and
 //! `$ x $`, `$a$5`, `costs $5 and $10`, `$HOME/bin and $PATH` and a shell line's
-//! `$(seq 1 12) ... $i` are text.
+//! `$(seq 1 12) ... $i` are text. A formula may start with a number (`$2 + 2 = 4$`): a `$` that
+//! looks like a price opens one when it closes and holds a sign only math writes (`math_sign`).
 
 use crate::scan::is_blank;
 
@@ -23,6 +24,19 @@ pub(super) fn closes(text: &[u8], at: usize) -> bool {
     }
     let slashes = text[..at].iter().rev().take_while(|b| **b == b'\\').count();
     slashes % 2 == 0 && !literal(text, at)
+}
+
+/// Whether the single `$` at `at` looks like a price yet may open a formula: a number follows it.
+/// It does when the formula closes and holds a sign only math writes (`math_sign`).
+pub(super) fn opens_priced(text: &[u8], at: usize) -> bool {
+    let after = text.get(at + 1..).unwrap_or_default();
+    amount(after.get(..WINDOW).unwrap_or(after))
+}
+
+/// Whether a formula opened by a price-looking `$` holds a sign only math writes and no other
+/// `$`, which "$5 and 7$" and "from $5 for $n^2$" do not.
+pub(super) fn math_sign(inner: &[u8]) -> bool {
+    !inner.contains(&b'$') && inner.iter().any(|byte| b"=^_\\{}<>".contains(byte))
 }
 
 /// Whether the `$` at `at` is a dollar sign by what follows it: an amount (`$5`, `$1.5M`,

@@ -175,6 +175,33 @@ tabs
   tab "Two"
 ````````````````````````````````
 
+A rule right before a heading of the first one's depth parts two tabs rather than ending them:
+models write one between variants. It is not drawn.
+
+```````````````````````````````` example
+> [!TABS]
+#### npm
+`npm i jq`
+
+---
+
+#### bun
+`bun add jq`
+
+---
+#### pnpm
+`pnpm add jq`
+
+---
+
+After the tabs.
+.
+tabs
+  tab "npm"
+  tab "bun"
+  tab "pnpm"
+````````````````````````````````
+
 A tab holds forms of its own: a compared option, its sides.
 
 ```````````````````````````````` example

@@ -27,7 +27,8 @@ models write these forms, and the renderer reads it by grammar:
 - `[!STEPS]`, `[!STATS]`, `[!PROS]`, `[!CONS]` and `[!SOURCES]` take the **one list** right after
   the marker.
 - `[!TABS]` takes the sections that start with the heading right after it, up to a shallower
-  heading, a `---` line, or the end of the text.
+  heading, a `---` line, or the end of the text. A `---` right before the next tab's heading parts
+  two tabs instead.
 
 ```markdown
 > [!STEPS]
@@ -159,7 +160,9 @@ Both put `llx` on your `PATH`.
 
 - The tabs use the level of the first heading after the marker; `####` is the convention, any level
   works. A heading of that level opens the next tab, a deeper one stays inside the tab.
-- The tabs end at a shallower heading, a `---` line, or the end of the text.
+- The tabs end at a shallower heading, a `---` line, or the end of the text. A `---` right before a
+  heading of the tabs' level parts two tabs rather than ending them, and is not drawn: models
+  often write one between variants.
 - A label keeps the heading's text without its formatting: `` #### **macOS** `arm64` `` is labelled
   "macOS arm64".
 - Every panel stays in the page, hidden but present, so find-in-page, copy and print reach it.
@@ -358,7 +361,8 @@ $$
 \sum_{i=1}^{n} i = \frac{n(n+1)}{2}
 $$
 
-Prices and variables stay text: `$5 and $10`, `$HOME/bin` and `$PATH` are not formulas.
+Prices and variables stay text: `$5 and $10`, `$HOME/bin` and `$PATH` are not formulas. A formula
+may still start with a number: `$2 + 2 = 4$` is one.
 
 ## Task lists
 

@@ -125,8 +125,10 @@ fn plain(doc: &Document<'_>, node: u32, out: &mut String) {
 
 /// The sections of a `Tabs` node made its tabs: each heading of the first one's level opens a
 /// tab and names it. Quoted with the marker, they are the node's children; else they follow it,
-/// up to a shallower heading, a rule (which only ends them) or the end. `sections` and `label`
-/// are the caller's to keep from one node to the next: what they hold is not read.
+/// up to a shallower heading, a rule (which only ends them) or the end. A rule right before a
+/// heading of that level parts two tabs instead (models write one between variants) and is
+/// dropped. `sections` and `label` are the caller's to keep from one node to the next: what they
+/// hold is not read.
 pub(crate) fn tabs(doc: &mut Document<'_>, node: u32, sections: &mut Vec<u32>, label: &mut String) {
     let quoted = doc.raw(node).first != NONE;
     let mut next = if quoted {
@@ -148,6 +150,9 @@ pub(crate) fn tabs(doc: &mut Document<'_>, node: u32, sections: &mut Vec<u32>, l
         }
         doc.unlink(block);
         if !quoted && matches!(kind, Kind::Rule) {
+            if next != NONE && doc.raw(next).kind == Kind::Heading(level) {
+                continue;
+            }
             break;
         }
         sections.push(block);

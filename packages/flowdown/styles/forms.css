@@ -27,7 +27,11 @@
   margin: 0.8rem 0;
   padding-left: 0;
 }
+/* Each row of a form says `list-style: none` itself, as its list does: a page that numbers and
+   bullets its lists outside the layer these rules are in wins on the list, but a row's own value
+   beats the marker it would inherit, so the page's number never stands beside the form's mark. */
 .flowdown .fd-steps > li {
+  list-style: none;
   --fd-mark: 1.5rem;
   position: relative;
   margin: 0;
@@ -187,6 +191,7 @@
   list-style: none;
 }
 .flowdown .fd-stats > li {
+  list-style: none;
   min-width: 0;
   margin: 0;
   border-radius: var(--fd-radius);
@@ -244,6 +249,7 @@
   list-style: none;
 }
 .flowdown .fd-verdict-list > li {
+  list-style: none;
   position: relative;
   margin: 0.2rem 0;
   padding-left: 1.35rem;
@@ -357,6 +363,7 @@
   counter-reset: fd-source;
 }
 .flowdown .fd-sources > li {
+  list-style: none;
   --fd-mark: 1.25rem;
   position: relative;
   margin: 0.45rem 0;
@@ -470,6 +477,7 @@
   list-style: none;
 }
 .flowdown li.task-list-item {
+  list-style: none;
   position: relative;
   padding-left: 1.6rem;
 }

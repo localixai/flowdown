@@ -407,11 +407,18 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
     let end = holder + 1
     for (; end < count; end += 1) {
       const next = first(end)
-      if (RULE.test(next)) break
+      // A rule right before a heading of this depth parts two tabs; any other ends them.
+      if (RULE.test(next) && HEADING.exec(belowRule(end))?.[1]!.length !== depth) break
       const heading = HEADING.exec(next)
       if (heading && heading[1]!.length < depth) break
     }
     return end
+  }
+  /** The line under a piece's opening rule: its own next line, or the next piece's first. */
+  const belowRule = (piece: number): string => {
+    const own = text.slice(starts[piece]!, endOf(piece)).split('\n')[1]
+    if (own !== undefined && own.trim() !== '') return own
+    return piece + 1 < count ? top(piece + 1) : ''
   }
   /**
    * The form a piece holds a marker line for, and the piece after everything it governs. A list

@@ -88,6 +88,17 @@ fn prices_and_shell_variables_stay_text() {
 }
 
 #[test]
+fn a_formula_may_start_with_a_number_when_it_holds_a_sign_only_math_writes() {
+    assert_eq!(formulas("Sum: $2 + 2 = 4$."), ["2 + 2 = 4"]);
+    assert_eq!(formulas(r"A step: $3 \cdot 4$ here."), [r"3 \cdot 4"]);
+    // A price stays one: no closing dollar of its own look, or no sign only math writes.
+    assert_eq!(formulas("From $5 for $n^2$ rows"), ["n^2"]);
+    for text in ["$5 and $10 = cheap", "pay $5 now and 7$ later"] {
+        assert_eq!(read(text), text, "{text:?}");
+    }
+}
+
+#[test]
 fn single_dollars_pair_by_pandocs_rule() {
     let shell = "for i in $(seq 1 12); do printf 'line %s' $i; done";
     assert_eq!(read(shell), shell);

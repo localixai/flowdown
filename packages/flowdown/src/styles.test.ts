@@ -36,3 +36,25 @@ test('a dark or light page still sets the pair itself, after the default', () =>
   expect(dark).toBeGreaterThan(lowered.search(/:where\(:root\)\{--lightningcss-dark/))
   expect(light).toBeGreaterThan(dark)
 })
+
+/** The rules a stylesheet gives `selector`, as written: its block's text, '' when it has none. */
+const block = (css: string, selector: string): string => {
+  const at = css.indexOf(`${selector} {`)
+  return at === -1 ? '' : css.slice(at, css.indexOf('}', at))
+}
+
+test("a page's own list markers never show beside a form's rows", () => {
+  // A page that numbers and bullets its lists does it on `ul` and `ol`, often outside the layer
+  // these rules sit in, where it wins over them. A row inherits that marker unless it declares
+  // its own, and a declared value beats an inherited one from any layer: so each row says none.
+  const forms = readFileSync(join(import.meta.dir, '..', 'styles', 'forms.css'), 'utf8')
+  for (const row of [
+    '.flowdown .fd-steps > li',
+    '.flowdown .fd-stats > li',
+    '.flowdown .fd-verdict-list > li',
+    '.flowdown .fd-sources > li',
+    '.flowdown li.task-list-item',
+  ]) {
+    expect(block(forms, row), row).toContain('list-style: none;')
+  }
+})

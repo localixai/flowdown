@@ -269,7 +269,7 @@ document: a stable key for storing a tick or rewriting the text it came from.
 | `hasMathSyntax(markdown)`                  | Whether the text holds a formula, without counting prices, shell variables or code. |
 | `hasHtmlSyntax(markdown)`                  | Whether the text holds raw HTML outside code.                                    |
 | `escapeLiteralDollars(markdown)`           | The text with every `$` that is not a math delimiter escaped, so `remark-math` pairs what `<Markdown>` pairs. |
-| `isLiteralDollar(text, index)`             | Whether the `$` at `index` is a price or a shell variable, by its look alone.    |
+| `isLiteralDollar(text, index)`             | Whether the `$` at `index` is a price or a shell variable: by its look, unless it opens a formula such as `$2 + 2 = 4$`. |
 | `markdownProseWithoutCode(markdown)`       | The text with code blanked out, same length, code read as the parser reads it.   |
 | `parseFileTree(source)`                    | The rows of a ` ```tree ` fence body, as `TreeRow` objects.                      |
 | `parseCalloutMarker`, `parseContainerMarker` | Read a `[!WARNING]` or `[!STEPS]` marker at the start of a quote.              |

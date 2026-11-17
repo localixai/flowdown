@@ -89,6 +89,14 @@ describe('splitBlocks', () => {
     expect(pair).toHaveLength(2)
   })
 
+  test('a rule before a heading of the tabs depth parts two tabs: one block holds them', () => {
+    const doc =
+      '> [!TABS]\n#### A\nOne.\n\n---\n\n#### B\nTwo.\n\n---\n#### C\nThree.\n\n---\n\nAfter.'
+    const blocks = splitBlocks(doc)
+    expect(blocks[0]!.source).toContain('#### C')
+    expect(blocks.at(-1)!.source.trim()).toBe('After.')
+  })
+
   test('footnotes and link definitions keep the document whole', () => {
     expect(splitBlocks(CORPUS.footnotes!)).toHaveLength(1)
     expect(splitBlocks(CORPUS.definitions!)).toHaveLength(1)

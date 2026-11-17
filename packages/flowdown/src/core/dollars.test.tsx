@@ -20,6 +20,15 @@ describe('isLiteralDollar', () => {
 })
 
 describe('escapeLiteralDollars', () => {
+  test('a formula may start with a number: it closes and holds a sign only math writes', () => {
+    expect(render('Sum: $2 + 2 = 4$.', { math }).match(/class="katex"/g)).toHaveLength(1)
+    expect(render('A step: $3 \\cdot 4$ here.', { math }).match(/class="katex"/g)).toHaveLength(1)
+    // A price stays one: no closing dollar of its own look, or no sign only math writes.
+    expect(escapeLiteralDollars('$5 and $10 = cheap')).toBe('\\$5 and \\$10 = cheap')
+    expect(escapeLiteralDollars('pay $5 now and 7$ later')).toBe('pay \\$5 now and 7\\$ later')
+    expect(escapeLiteralDollars('From $5 for $n^2$ rows')).toBe('From \\$5 for $n^2$ rows')
+  })
+
   test('a price per unit is a price, not a formula', () => {
     expect(escapeLiteralDollars('$50/month or $500/year')).toBe('\\$50/month or \\$500/year')
     expect(escapeLiteralDollars('$5/GB')).toBe('\\$5/GB')

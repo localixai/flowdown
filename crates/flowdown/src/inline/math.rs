@@ -3,7 +3,7 @@
 //! pandoc's rule (`dollars.rs`). One that finds no closer is text.
 
 use super::Inline;
-use super::dollars::{closes, opens};
+use super::dollars::{closes, math_sign, opens, opens_priced};
 use super::runs::{closer, run_at};
 use crate::scan::{find, is_space};
 use crate::tree::{Kind, Span};
@@ -23,6 +23,10 @@ impl Inline<'_, '_, '_> {
             )
         } else if opens(self.bytes, self.pos) {
             self.single(start)
+        } else if opens_priced(self.bytes, self.pos) {
+            let bytes = self.bytes;
+            self.single(start)
+                .filter(|end| math_sign(&bytes[start..*end]))
         } else {
             None
         };

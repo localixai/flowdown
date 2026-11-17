@@ -263,7 +263,9 @@ function shape(kind: ContainerKind, title: string, content: QuoteContent): Quote
 /**
  * The blocks a marker-only quote governs, read by grammar, not guessed: a list form takes the ONE
  * list right after it; tabs take the run of sections that starts with a heading right after it,
- * up to a shallower heading, a `---`, or the end of the reply. Anything else governs nothing.
+ * up to a shallower heading, a `---`, or the end of the reply. A `---` right before a heading of
+ * the first one's depth parts two tabs instead (models write one between variants): it is in the
+ * run, so the form spans it, and `tabSections` leaves it out. Anything else governs nothing.
  */
 function following(kind: ContainerKind, siblings: Parents['children']): QuoteContent {
   const first = siblings[0]
@@ -272,13 +274,20 @@ function following(kind: ContainerKind, siblings: Parents['children']): QuoteCon
   if (kind !== 'tabs') return first?.type === 'list' ? [first] : []
   if (first?.type !== 'heading') return []
   const run: QuoteContent = []
-  for (const node of siblings) {
-    if (node.type === 'thematicBreak') break
+  for (const [at, node] of siblings.entries()) {
+    if (node.type === 'thematicBreak') {
+      const next = siblings[at + 1]
+      if (next?.type !== 'heading' || next.depth !== first.depth) break
+    }
     if (node.type === 'heading' && node.depth < first.depth) break
     run.push(node as QuoteContent[number])
   }
   return run
 }
+
+/** The run `following` took for tabs, its parting rules left out: they are not drawn. */
+const tabSections = (run: QuoteContent): QuoteContent =>
+  run.filter((node) => node.type !== 'thematicBreak')
 
 /**
  * A container quote, shaped in place. True when it was one: the caller revisits the index, so
@@ -309,7 +318,8 @@ export function applyContainer(quote: Blockquote, index: number, parent: Parents
   // or a list, so read literally the marker governed nothing and its content rendered as prose.
   const inside = quote.children.slice(1)
   const after = inside.length === 0 ? following(marker.kind, parent.children.slice(index + 1)) : []
-  const nodes = shape(marker.kind, marker.title, inside.length > 0 ? inside : after)
+  const taken = marker.kind === 'tabs' ? tabSections(after) : after
+  const nodes = shape(marker.kind, marker.title, inside.length > 0 ? inside : taken)
   if (!nodes) return false
   // ONE node in the quote's place, spanning the form's whole source, marker included. A block's
   // actions copy their markdown by its position (`rehypeContentActions`), and the shaped list
