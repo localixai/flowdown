@@ -16,10 +16,7 @@
 </p>
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/steps-dark.svg">
-    <img src="assets/steps-light.svg" alt="Steps and a warning, as Localix CLI draws them in a terminal" width="580">
-  </picture>
+  <img src="assets/steps-dark.svg" alt="Steps and a warning, as Localix CLI draws them in a terminal" width="580">
 </p>
 
 A Rust parser for what a language model answers with: all of CommonMark, GitHub's tables,
@@ -54,10 +51,7 @@ program's, not the crate's.
   case of the dialect's forms as the npm package reads it.
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/compare-dark.png">
-    <img src="assets/compare-light.png" alt="flowdown compared with pulldown-cmark and comrak: the time to read a short answer, an answer with forms, a long report and the CommonMark specification, a reply read again as it streams, and the allocations, memory and crates each parser brings" width="840">
-  </picture>
+  <img src="assets/compare-dark.png" alt="flowdown compared with pulldown-cmark and comrak: the time to read a short answer, an answer with forms, a long report and the CommonMark specification, a reply read again as it streams, and the allocations, memory and crates each parser brings" width="840">
 </p>
 
 How these are measured, and where the lead is small, is under [Measured](#measured).
@@ -140,10 +134,7 @@ forms nest (a tab may hold steps):
 > ```
 ````
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/tabs-dark.svg">
-  <img src="assets/tabs-light.svg" alt="Tabs and a tip, as Localix CLI draws them in a terminal" width="580">
-</picture>
+<img src="assets/tabs-dark.svg" alt="Tabs and a tip, as Localix CLI draws them in a terminal" width="580">
 
 A terminal folds nothing and switches nothing: tabs are drawn one under another, each under a
 rule that holds its label, and a folded section under its title. The tree says only what a form
@@ -153,10 +144,7 @@ puts figures side by side, each number over what it counts (a list where no row 
 gives a step's name and a source's address a row of their own, and keeps a code span on one row
 where a row holds it.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/report-dark.svg">
-  <img src="assets/report-light.svg" alt="Figures, a table, a task list, the case for and against, details and sources" width="580">
-</picture>
+<img src="assets/report-dark.svg" alt="Figures, a table, a task list, the case for and against, details and sources" width="580">
 
 What is not a form is drawn as what it is too: a fence that names its file (` ```rust src/lib.rs `,
 or `title="…"`) under the name, a `diff` by what its lines add and take away, a ` ```tree ` fence
@@ -165,10 +153,7 @@ as a file tree, what is said of the names in one column; a formula as the Unicod
 own; a footnote as its number where it is named and its text at the end; a quote's last line
 that opens with a dash as its source.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/files-dark.svg">
-  <img src="assets/files-light.svg" alt="A file tree, code under its file's name, a diff, a formula, a footnote and a quote with its source" width="580">
-</picture>
+<img src="assets/files-dark.svg" alt="A file tree, code under its file's name, a diff, a formula, a footnote and a quote with its source" width="580">
 
 ### Telling the model
 

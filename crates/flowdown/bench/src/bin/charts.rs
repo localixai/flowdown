@@ -1,8 +1,8 @@
 //! The chart of the README, drawn from what `run.sh` just wrote (`results/parse.json`,
 //! `results/stream.json`, `results/crates.txt`): each parser's time on a text and on a stream,
-//! and what a project takes on with it. Panels three to a row, each with its own scale; an SVG
-//! for a light page and one for a dark page, and each as a PNG at twice the size, which the
-//! README shows: an SVG's text is set in the reader's own fonts, a PNG's is the same everywhere.
+//! and what a project takes on with it. Panels three to a row, each with its own scale; dark, as
+//! the lab shows every demo whatever the page's theme; an SVG and a PNG at twice the size, which
+//! the README shows: an SVG's text is set in the reader's own fonts, a PNG's is the same everywhere.
 
 use std::fmt::Write as _;
 use std::fs;
@@ -22,23 +22,15 @@ struct Theme {
     theirs: &'static str,
 }
 
-const LIGHT: Theme = Theme {
-    name: "light",
-    paper: "#ffffff",
-    edge: "#d8dee4",
-    ink: "#1f2328",
-    quiet: "#59636e",
-    ours: "#6e56cf",
-    theirs: "#d0d7de",
-};
+/// The lab's neutral dark: greys with no blue cast.
 const DARK: Theme = Theme {
     name: "dark",
-    paper: "#0d1117",
-    edge: "#30363d",
-    ink: "#e6edf3",
-    quiet: "#9198a1",
+    paper: "#0b0b0b",
+    edge: "#2e2e2c",
+    ink: "#f4f4f2",
+    quiet: "#b0b0ad",
     ours: "#a594f9",
-    theirs: "#3d444d",
+    theirs: "#3d3d3a",
 };
 
 /// The parsers drawn, as the results name them. `pulldown-cmark` with its events dropped: the
@@ -363,15 +355,14 @@ fn main() {
     fs::create_dir_all("../assets").unwrap();
     let mut options = Options::default();
     options.fontdb_mut().load_system_fonts();
-    for theme in [&LIGHT, &DARK] {
-        let drawn = png(&chart(&sections, &notes, theme, DRAWN), &options);
-        fs::write(format!("../assets/compare-{}.png", theme.name), drawn).unwrap();
-        fs::write(
-            format!("../assets/compare-{}.svg", theme.name),
-            chart(&sections, &notes, theme, PAGE),
-        )
-        .unwrap();
-    }
+    let theme = &DARK;
+    let drawn = png(&chart(&sections, &notes, theme, DRAWN), &options);
+    fs::write(format!("../assets/compare-{}.png", theme.name), drawn).unwrap();
+    fs::write(
+        format!("../assets/compare-{}.svg", theme.name),
+        chart(&sections, &notes, theme, PAGE),
+    )
+    .unwrap();
 }
 
 /// The chart as a PNG, two pixels to a unit, in the fonts of the machine that draws it.
