@@ -1,14 +1,14 @@
 {
   "flowdown": {
-    "atOnce": 36.5,
+    "atOnce": 36.8,
     "onDemand": 19.9
   },
   "flowdown + highlight": {
-    "atOnce": 74.1,
+    "atOnce": 74.4,
     "onDemand": 19.9
   },
   "@localix-ai/flowdown/stream": {
-    "atOnce": 5.2,
+    "atOnce": 5.4,
     "onDemand": 0
   },
   "react-markdown + remark-gfm": {

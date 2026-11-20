@@ -62,9 +62,12 @@ finished:
 | `![alt](https://exa`          | nothing until the URL is complete             |
 | `$\frac{a}{`                  | nothing from the `$` until the formula closes |
 | a half-typed table row        | the rows that are complete                    |
+| `\|--` under a header row     | the header until its row of dashes ends       |
+| `See[^1`                      | nothing from the `[^` until the `]`           |
 | `> [!WARN`                    | nothing until the `]`                         |
 | `> [!STEPS]` with no list yet | nothing until the list starts                 |
 | `-`, `##`, `1.` or `>` alone  | nothing until the first word after it         |
+| `- [x` or `- [ ]` alone       | nothing until the first word of the task      |
 | a `-` under a paragraph       | the paragraph, not a heading, until the item  |
 
 The completion is conservative: it closes what is clearly open and never guesses. A `*` in `*.ts` or
