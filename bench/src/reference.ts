@@ -14,7 +14,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cpus } from 'node:os'
 import { join } from 'node:path'
 import { hash } from '../../packages/flowdown/test/random'
-import { type Scenario, scaling, scenarios } from '../../packages/flowdown/test/replies'
+import { codeScaling, type Scenario, scaling, scenarios } from '../../packages/flowdown/test/replies'
 import { RENDERERS } from './renderers'
 import type { Row } from './report'
 
@@ -36,7 +36,7 @@ const cpu = cpus()[0]?.model ?? 'unknown'
 const runtime = `bun ${Bun.version}`
 const budgetMs = Number(process.argv.find((a) => a.startsWith('--budget='))?.split('=')[1] ?? 30_000)
 const others = RENDERERS.filter((r) => !r.name.startsWith('flowdown'))
-const replies: Scenario[] = [...scenarios(), ...scaling()]
+const replies: Scenario[] = [...scenarios(), ...scaling(), ...codeScaling()]
 const corpus = Object.fromEntries(
   replies.map((s) => [s.name, hash(s.text + (s.history ?? []).join(''))]),
 )

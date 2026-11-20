@@ -8,7 +8,7 @@ import { describe, expect, test } from 'bun:test'
 import { prefixes } from '../../test/chunks'
 import { CORPUS } from '../../test/corpus'
 import { heavyDescribe } from '../../test/heavy'
-import { scaling, scenarios } from '../../test/replies'
+import { codeScaling, scaling, scenarios } from '../../test/replies'
 import { createBlockSplitter, splitBlocks } from './blocks'
 import { closePartialMarkdown } from './heal'
 
@@ -17,6 +17,7 @@ const replies = [
   ...scenarios()
     .filter((s) => !s.history)
     .map((s) => ({ name: s.name, text: s.text.slice(0, 12_000) })),
+  { name: 'react-10k', text: codeScaling()[0].text },
 ]
 
 heavyDescribe('a remembered split is a fresh split', () => {

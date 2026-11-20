@@ -8,7 +8,7 @@
  */
 import { GlobalRegistrator } from '@happy-dom/global-registrator'
 import { type Pattern, prefixes } from '../../packages/flowdown/test/chunks'
-import { scaling, scenarios } from '../../packages/flowdown/test/replies'
+import { codeScaling, scaling, scenarios } from '../../packages/flowdown/test/replies'
 import { installIdleTracking } from './idle'
 
 GlobalRegistrator.register({ url: 'https://bench.test/' })
@@ -19,7 +19,7 @@ const { RENDERERS } = await import('./renderers')
 const { measure } = await import('./measure')
 
 const [name, pattern, rendererName, runs, budgetMs] = process.argv.slice(2)
-const scenario = [...scenarios(), ...scaling()].find((s) => s.name === name)
+const scenario = [...scenarios(), ...scaling(), ...codeScaling()].find((s) => s.name === name)
 const renderer = RENDERERS.find((r) => r.name === rendererName)
 if (!scenario || !renderer) {
   console.error(`unknown scenario or renderer: ${name}, ${rendererName}`)
