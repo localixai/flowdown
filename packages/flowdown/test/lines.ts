@@ -103,6 +103,22 @@ export const LINKED_LINES = [
   '| [ref] | [missing] |',
 ]
 
+/**
+ * The lines above, and lines that are markup only in code: a render prop (its `=>` is no tag's
+ * end), an element the HTML parser closes by itself, a list item opened and left. A sweep of
+ * their own, so the documents the golden digest holds stay the same.
+ */
+export const CODE_TAG_LINES = [
+  ...LINES,
+  '<List',
+  '  renderItem={(x) => (',
+  '/>',
+  '<li>one',
+  '<ul>',
+  '-',
+  '1.',
+]
+
 /** The seeded document of `seed`: 2 to 14 of `lines`, the same on every machine. */
 export function linesDocument(seed: number, lines: readonly string[] = LINES): string {
   const r = seeded(seed)
@@ -115,11 +131,11 @@ export function linesDocument(seed: number, lines: readonly string[] = LINES): s
  * A seeded document of the lines with definitions, a blank line after about every other one: the
  * blocks are many, so what refers to a definition is seldom in the block that holds it.
  */
-export function linkedDocument(seed: number): string {
+export function linkedDocument(seed: number, lines: readonly string[] = LINKED_LINES): string {
   const r = seeded(seed)
   let out = ''
   for (let n = r.int(2, 14); n > 0; n -= 1) {
-    out += LINKED_LINES[r.int(0, LINKED_LINES.length - 1)]!
+    out += lines[r.int(0, lines.length - 1)]!
     if (n > 1) out += r.next() < 0.5 ? '\n\n' : '\n'
   }
   return out

@@ -58,7 +58,8 @@ export function GrowingCode({
   const { parts, run } = useMemo(() => cut(body), [cut, body])
   return (
     <CodeFrame language={language} title={title} text={body}>
-      <code className={className || undefined}>
+      {/* The file a finished block names is on its `<code>` too, for a page's own styles. */}
+      <code className={className || undefined} data-title={title || undefined}>
         {parts.map((text, index) => (
           <Piece
             key={index}

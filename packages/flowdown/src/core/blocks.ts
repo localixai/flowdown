@@ -89,6 +89,21 @@ const VOID_TAGS = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', '
 
 const whole = (markdown: string): MarkdownBlock[] => [{ source: markdown, offset: 0, line: 1 }]
 
+/** The run of marks a fence line opens with, or null: a backtick fence has no backtick after it. */
+const fenceRun = (fence: RegExpExecArray | null): string | null =>
+  fence && !(fence[1]![0] === '`' && fence[2]!.includes('`')) ? fence[1]! : null
+
+/** Whether `line` closes the fence `run` opened: as many of its marks or more, and nothing else. */
+const closesFence = (line: string, run: string, pattern = FENCE): boolean => {
+  const closing = pattern.exec(line)
+  return (
+    closing !== null &&
+    closing[1]![0] === run[0] &&
+    closing[1]!.length >= run.length &&
+    closing[2]!.trim() === ''
+  )
+}
+
 /** What the scan knows after a line: only what decides where a top-level block can end. */
 interface Scan {
   /** The opening run of the top-level fence the text is inside. */
@@ -99,6 +114,13 @@ interface Scan {
   list: number
   /** The list may already be over: a line left of the item that was a lazy continuation or not. */
   unsure: boolean
+  /**
+   * The open item has no text yet: its marker line had nothing after it. Such an item holds at
+   * most one blank line, so a blank line now ends it (`ended`), and the next line, however far it
+   * is indented, is not in it: the next item, or a block after the list.
+   */
+  empty: boolean
+  ended: boolean
   /** The lines since the last blank one may be an HTML block, where a fence line is not a fence. */
   markup: boolean
   /** The next line starts a block: the last one was blank or closed a fence, or there was none. */
@@ -132,6 +154,8 @@ const start = (): Scan => ({
   html: null,
   list: 0,
   unsure: false,
+  empty: false,
+  ended: false,
   markup: false,
   fresh: true,
   odd: false,
@@ -193,13 +217,7 @@ function step(scan: Scan, line: string, refs: boolean): boolean {
 function advance(scan: Scan, line: string, refs: boolean): boolean {
   if (scan.stuck || scan.whole) return false
   if (scan.fence) {
-    const closing = FENCE.exec(line)
-    if (
-      closing &&
-      closing[1]![0] === scan.fence[0] &&
-      closing[1]!.length >= scan.fence.length &&
-      closing[2]!.trim() === ''
-    ) {
+    if (closesFence(line, scan.fence)) {
       scan.fence = null
       scan.fresh = true
       scan.closed = true
@@ -215,6 +233,7 @@ function advance(scan: Scan, line: string, refs: boolean): boolean {
     scan.fresh = true
     scan.markup = false
     scan.label = false
+    if (scan.list > 0 && scan.empty) scan.ended = true
     return false
   }
   const fresh = scan.fresh
@@ -238,27 +257,21 @@ function advance(scan: Scan, line: string, refs: boolean): boolean {
   const odd = scan.odd
   if (line.includes('$$') && (line.match(DOUBLE_DOLLAR)?.length ?? 0) % 2 === 1) scan.odd = !odd
 
-  const fence = FENCE.exec(line)
   // A backtick fence has no backtick in its info string: ```` ```a``` ```` is inline code.
-  const opensFence = fence !== null && !(fence[1]![0] === '`' && fence[2]!.includes('`'))
+  const run = fenceRun(FENCE.exec(line))
+  const opensFence = run !== null
   // Inside a formula or an HTML block a fence line is text, and which of the two it is here
   // cannot be told from the lines alone.
   if (opensFence && (odd || scan.markup)) return stick(scan)
 
   if (scan.list > 0) {
-    if (indent >= scan.list) {
+    if (indent >= scan.list && !scan.ended) {
+      scan.empty = false
       // In the item, if the list is still open; a top-level fence if it is not.
       if (opensFence && scan.unsure) return stick(scan)
-      const inner = INNER_FENCE.exec(line)
       if (scan.inner) {
-        if (
-          inner &&
-          inner[1]![0] === scan.inner[0] &&
-          inner[1]!.length >= scan.inner.length &&
-          inner[2]!.trim() === ''
-        )
-          scan.inner = null
-      } else if (inner && !(inner[1]![0] === '`' && inner[2]!.includes('`'))) scan.inner = inner[1]!
+        if (closesFence(line, scan.inner, INNER_FENCE)) scan.inner = null
+      } else scan.inner = fenceRun(INNER_FENCE.exec(line))
       return false
     }
     // A fence in the item that a line left of the item ends: where its last blank lines go
@@ -269,6 +282,7 @@ function advance(scan: Scan, line: string, refs: boolean): boolean {
     if (column > 0) {
       // The next item of the list (or of a new one right after it).
       scan.list = column
+      openItem(scan, line)
       if (fresh) scan.unsure = false
       return false
     }
@@ -284,6 +298,8 @@ function advance(scan: Scan, line: string, refs: boolean): boolean {
       // list is over, and the line is read as a top-level one below.
       scan.list = 0
       scan.unsure = false
+      scan.empty = false
+      scan.ended = false
     } else {
       // A lazy continuation of the item's paragraph, or, if the item did not end in a paragraph,
       // the first line after the list.
@@ -304,7 +320,7 @@ function advance(scan: Scan, line: string, refs: boolean): boolean {
     return cut
   }
   if (opensFence) {
-    scan.fence = fence![1]!
+    scan.fence = run
     // A fence starts a block wherever it is written, and is one whatever follows it.
     return !odd
   }
@@ -315,11 +331,18 @@ function advance(scan: Scan, line: string, refs: boolean): boolean {
   if (column > 0 && indented && !INTERRUPTING_ITEM.test(line)) return stick(scan)
   if (column > 0) {
     scan.list = column
+    openItem(scan, line)
     scan.unsure = scan.markup || (!fresh && !INTERRUPTING_ITEM.test(line))
     return cut
   }
   if (HTML_START.test(line)) scan.markup = true
   return cut
+}
+
+/** A list item opens on `line`: whether it has text yet. */
+function openItem(scan: Scan, line: string): void {
+  scan.empty = ITEM.exec(line)![3]!.trim() === ''
+  scan.ended = false
 }
 
 function stick(scan: Scan): false {
@@ -348,11 +371,15 @@ function htmlOpen(raw: string): boolean {
     const tag = opener[1]!.toLowerCase()
     if (tried.has(tag) || VOID_TAGS.has(tag)) continue
     tried.add(tag)
-    const rest = raw.slice(opener.index)
-    const openers = rest.match(new RegExp(`<${tag}(?=[\\s>/])[^>]*>`, 'gi')) ?? []
-    const opened = openers.filter((found) => !found.endsWith('/>')).length
-    const closed = rest.match(new RegExp(`</${tag}\\s*>`, 'gi'))?.length ?? 0
-    if (opened > closed) return true
+    // In order: a closing tag with nothing open is dropped, as the HTML parser drops it, and does
+    // not close the tag opened after it (`<p>a</p></p><p>` leaves one open).
+    let open = 0
+    for (const [found, closing] of raw
+      .slice(opener.index)
+      .matchAll(new RegExp(`<(/?)${tag}(?=[\\s>/])[^>]*>`, 'gi')))
+      if (closing) open = Math.max(0, open - 1)
+      else if (!found.endsWith('/>')) open += 1
+    if (open > 0) return true
   }
   return false
 }
@@ -390,6 +417,30 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
     for (const line of text.slice(starts[piece]!, endOf(piece)).split('\n'))
       if (line.trim() !== '' && !LINK_DEFINITION.test(line)) return line
     return ''
+  }
+  /**
+   * A piece's text as HTML can be in it. A piece that opens with a fence line is that fence: the
+   * scan cuts before a top-level fence only where it is one, so what the fence holds is code, and
+   * a tag in it (`<li>` left to the parser to close, a render prop whose `=>` reads as the end of
+   * a tag) neither opens an HTML block nor closes one. What follows its closing line, when the
+   * scan got stuck there, is read as it is; a fence still open at the end is code to the end.
+   */
+  const markupOf = (piece: number): string => {
+    const body = text.slice(starts[piece]!, endOf(piece))
+    const lines = body.split('\n')
+    let at = 0
+    while (at < lines.length && lines[at]!.trim() === '') at += 1
+    const run = fenceRun(FENCE.exec(lines[at] ?? ''))
+    if (run === null) return body
+    while (++at < lines.length)
+      if (closesFence(lines[at]!, run)) return lines.slice(at + 1).join('\n')
+    return ''
+  }
+  /** The text of the pieces `from` up to `to` as HTML can be in it. */
+  const markup = (from: number, to: number): string => {
+    let out = ''
+    for (let piece = from; piece < to; piece += 1) out += markupOf(piece)
+    return out
   }
   const kindOf = (line: string): ContainerKind | null => {
     const quoted = QUOTE.exec(line)
@@ -442,7 +493,12 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
       let above = index - 1
       if (refs) while (above >= 0 && QUOTED_DEFINITION.test(lines[above]!)) above -= 1
       if (above >= 0 && QUOTE.test(lines[above]!)) continue
-      const next = lines[index + 1]
+      // What the marker governs starts at its next line with text: a blank line ends the marker's
+      // quote but not the form, and is in the same piece when the scan did not cut there (a `$$`
+      // left odd above it).
+      let below = index + 1
+      while (below < lines.length && lines[below]!.trim() === '') below += 1
+      const next = lines[below]
       let end = piece + 1
       if (next === undefined) {
         for (const after of ahead(piece + 1)) {
@@ -507,7 +563,7 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
       // before them, they open the first one.
       if (vanishes(piece) || (!solid && piece < count)) piece += 1
       // An HTML block whose tag closes further down.
-      else if (piece < count && htmlOpen(text.slice(starts[from]!, starts[piece]!))) piece += 1
+      else if (piece < count && htmlOpen(markup(from, piece))) piece += 1
       else break
     }
 
@@ -607,8 +663,7 @@ function build(
     // cuts before a top-level fence and after the line that closes it.
     // (When the scan got stuck after a fence, the last piece holds more than that fence.)
     if ((cuts[piece + 1] ?? text.length) === end && !(mixed && end === text.length)) {
-      const opening = FENCE.exec(lineAt(text, offset))
-      if (opening && !(opening[1]![0] === '`' && opening[2]!.includes('`'))) fenced.add(block)
+      if (fenceRun(FENCE.exec(lineAt(text, offset)))) fenced.add(block)
     }
     blocks.push(block)
     // The last block's lines place nothing: a fence that grows is not counted on every token.
