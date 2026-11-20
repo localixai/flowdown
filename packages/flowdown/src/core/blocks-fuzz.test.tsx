@@ -4,7 +4,7 @@
  */
 import { expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { linesDocument, linkedDocument } from '../../test/lines'
+import { CODE_TAG_LINES, LINKED_LINES, linesDocument, linkedDocument } from '../../test/lines'
 import { html } from '../html'
 import { defaultUrlTransform } from '../engine/url'
 import { buildComponents, draw, Markdown } from '../react/markdown'
@@ -63,3 +63,15 @@ const sweep = (document: (seed: number) => string) => {
 test('seeded documents', () => sweep(linesDocument), timeout)
 
 test('seeded documents with link definitions', () => sweep(linkedDocument), timeout)
+
+test(
+  'seeded documents with tags that are markup only in code',
+  () => sweep((seed) => linesDocument(seed, CODE_TAG_LINES)),
+  timeout,
+)
+
+test(
+  'seeded documents with link definitions and empty items',
+  () => sweep((seed) => linkedDocument(seed, [...LINKED_LINES, '-', '1.', '/>'])),
+  timeout,
+)

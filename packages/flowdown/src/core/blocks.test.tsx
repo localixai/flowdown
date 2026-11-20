@@ -97,6 +97,36 @@ describe('splitBlocks', () => {
     expect(blocks.at(-1)!.source.trim()).toBe('After.')
   })
 
+  test('a tag inside a fenced code block is code: one it leaves open joins nothing after it', () => {
+    const after = '\n\n## Next\n\nOne.\n\n## Last\n\nTwo.\n'
+    const fences = [
+      // A render prop: the `>` of its arrow is not the end of the tag, which closes with `/>`.
+      '```jsx\n<List\n  renderItem={(x) => (\n    <Item>{x}</Item>\n  )}\n/>\n```',
+      // HTML that leaves an element to the parser to close, as `<li>` may.
+      '```html\n<ul>\n  <li>one\n  <li>two\n</ul>\n```',
+      // A snippet of a page, cut where the answer needs it.
+      '```html\n<div class="card">\n  …\n```',
+      '~~~html\n<section>\n~~~',
+      // A comment opened in code, as a template might show.
+      '```html\n<!-- the header goes here\n```',
+    ]
+    for (const fence of fences) {
+      const blocks = splitBlocks(fence + after)
+      expect(
+        blocks.map((block) => block.source.trim()),
+        fence,
+      ).toEqual([fence, '## Next', 'One.', '## Last', 'Two.'])
+    }
+  })
+
+  test('an HTML block that a fence stands inside still holds the fence and its closing tag', () => {
+    const blocks = splitBlocks('<div>\n\n```html\n<p>code\n```\n\n</div>\n\nAfter.')
+    expect(blocks.map((block) => block.source.trim())).toEqual([
+      '<div>\n\n```html\n<p>code\n```\n\n</div>',
+      'After.',
+    ])
+  })
+
   test('footnotes and link definitions keep the document whole', () => {
     expect(splitBlocks(CORPUS.footnotes!)).toHaveLength(1)
     expect(splitBlocks(CORPUS.definitions!)).toHaveLength(1)
@@ -113,6 +143,57 @@ describe('drawn block by block, a document is what one parse of it draws', () =>
       expect(split(markdown, { headingIds: true })).toBe(whole(markdown, { headingIds: true }))
       if (name === 'math')
         expect(split(markdown, { withMath: true })).toBe(whole(markdown, { withMath: true }))
+    })
+  }
+})
+
+/** Tags in code, and code in HTML: where the cut must tell markup from code. */
+const CODE_AND_MARKUP: Record<string, string> = {
+  'a render prop in a fence': [
+    'Use it like this:',
+    '',
+    '```jsx',
+    '<List',
+    '  renderItem={(x) => (',
+    '    <Item>{x}</Item>',
+    '  )}',
+    '/>',
+    '```',
+    '',
+    '## Then',
+    '',
+    'Text **after** it.',
+  ].join('\n'),
+  'an element left open in a fence': '```html\n<ul>\n  <li>one\n</ul>\n```\n\nAfter.\n\n- a\n- b',
+  'a fence inside an HTML block': '<div>\n\n```html\n<p>code\n```\n\n</div>\n\nAfter.',
+  'an open HTML block, then a fence that closes it in code':
+    '<details>\n<summary>More</summary>\n\n```html\n</details>\n```\n\nStill inside.\n\n</details>\n\nAfter.',
+  // An item that opens with a blank line holds at most one: after it, the item is over, and the
+  // indented line is code of its own, the fence under it a top-level one.
+  'an empty item, a blank line, then indented code and a fence':
+    '- \n\n    ```\n   ```\n```ts title="a.ts"\nconst a = 1',
+  'an empty item, a blank line, then text indented to the item': '-\n\n  foo\n\nAfter.',
+  // `$$` left odd keeps a blank line from cutting: the tabs and their heading are one piece, the
+  // heading under a blank line, and the fence after them is still in the last tab.
+  'tabs over a blank line, inside what may be a formula':
+    'a $$ b\n> [!TABS]\n\n## Next\na $$ b\n```',
+  // A closing tag with nothing open to close is dropped: it does not close the one opened after it.
+  'a stray closing tag, then the tag opened again': '<div>text</div>\n</div>\n<div>\n\n## Next',
+  // A fence still being written is drawn by a path of its own: it names its file as a finished one.
+  'a titled fence still being written':
+    'Intro.\n\n```ts title="src/a.ts"\nconst a = 1\nconst b = 2',
+}
+
+describe('tags in code and code in HTML, drawn block by block, are what one parse draws', () => {
+  for (const [name, markdown] of Object.entries(CODE_AND_MARKUP)) {
+    test(name, () => {
+      expect(split(markdown)).toBe(whole(markdown))
+      for (let end = 1; end <= markdown.length; end += 1) {
+        const frame = markdown.slice(0, end)
+        expect(split(frame, { streaming: true }), `${name} @${end}`).toBe(
+          whole(frame, { streaming: true }),
+        )
+      }
     })
   }
 })

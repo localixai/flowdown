@@ -440,7 +440,14 @@ export function createView(options: ViewOptions = {}): View {
       language,
       views.codeBar(vnode, language, title, buttons(body, title, language)),
       host?.table ? { ref: host.table } : null,
-      [vnode.element('code', { className: className || undefined }, pieces)],
+      // The file a finished block names is on its `<code>` too, for a page's own styles.
+      [
+        vnode.element(
+          'code',
+          { className: className || undefined, 'data-title': title || undefined },
+          pieces,
+        ),
+      ],
     )
   }
 

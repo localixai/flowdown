@@ -39,13 +39,20 @@ const BUDGET: Record<string, number> = {
   // quote, a callout among them, read in pieces the same way (`document/quote.ts`).
   // 0.1 KB more since a `---` between two tabs parts them rather than ending the tabs
   // (`core/blocks.ts`) and a formula may start with a number, `$2 + 2 = 4$` (`core/dollars.ts`).
-  '.': 37,
+  // 0.2 KB more since a fence's code is code to the cut (`core/blocks.ts`): a render prop's `=>`
+  // or an `<li>` in a snippet read as a tag left open and made the rest of a reply one block, an
+  // update cost the whole reply, and 80,000 characters after one such fence streamed in seconds
+  // where they took a fraction of one. With it, an item that opens empty holds one blank line,
+  // and the healer holds back a row of dashes, a `[^1` and a task's box until they mean something
+  // (`core/heal.ts`). Every entry that cuts and heals a reply carries it.
+  '.': 37.2,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
   // The code ranges of the sniffers, and on a page the copy of a selection, as for `.`.
   // And the pieces of a long list and a long quote, as for `.`.
-  './static': 32.3,
-  './dom': 34.4,
-  './element': 34.6,
+  // And a fence's code read as code to the cut, as for `.`.
+  './static': 32.6,
+  './dom': 34.8,
+  './element': 35,
   // The renderer for a terminal: the parser, the dialect, and rows wrapped by their columns.
   // 2.4 KB more since a block that grows costs its end: a fence still being written is read
   // without parsing its block and drawn in pieces (`document/fence.ts`, 0.7 KB of it); a table is
@@ -57,7 +64,8 @@ const BUDGET: Record<string, number> = {
   // rule, limits above and below, roots, matrices and brackets as tall as what they hold.
   // And 1.6 KB for the pieces of a long list and a long quote, as for `.`; 0.6 KB more since a
   // paragraph that grows is wrapped again from its last rows (`tui/wrap.ts`).
-  './tui': 40.8,
+  // 0.1 KB for a fence's code read as code to the cut, as for `.`.
+  './tui': 40.9,
   // Mermaid flowcharts and sequence diagrams drawn in a terminal, parsed, laid out and routed with
   // no dependency (`tui/diagram/`). An entry of its own, as `./highlight` is: a terminal that does
   // not draw diagrams does not load them. 31 KB more since it draws every kind Mermaid has that
@@ -71,17 +79,21 @@ const BUDGET: Record<string, number> = {
   // that imports only `createDocument` does not ship it), and the parser alone. 0.2 KB more for
   // what the healer holds back and where it completes, 0.3 KB for the code ranges (see `.`), and
   // the parser's four readings the differential fuzz found (`engine/blocks.ts`). 0.1 KB more for
-  // tabs parted by a `---` and a formula that starts with a number, as for `.`.
-  './document': 22.4,
+  // tabs parted by a `---` and a formula that starts with a number, as for `.`. 0.2 KB more for a
+  // fence's code read as code to the cut and what the healer holds back, as for `.`.
+  './document': 22.6,
   './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
-  './remark': 20.5,
+  // 0.1 KB more for a fence's code read as code to the cut, as for `.`.
+  './remark': 20.7,
   // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`);
   // then 0.4 KB for the cut of a document with link definitions.
   // 0.1 KB more since the repair of an unfinished end reads from the item being written, and holds
   // a marker left bare once a half-typed `*` is hidden (`core/heal.ts`). Then a few bytes for a
   // formula that starts with a number, which the repair reads as the renderer does.
-  './stream': 5.2,
+  // 0.2 KB more for a fence's code read as code to the cut, an item that opens empty, and the row
+  // of dashes, `[^1` and task box the repair holds back (see `.`).
+  './stream': 5.4,
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,

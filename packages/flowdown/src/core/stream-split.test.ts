@@ -83,6 +83,26 @@ describe('the work of a stream grows with its length', () => {
     expect(lexed(large.text)).toBeLessThan(whole / 10)
   })
 
+  test('code that looks like an open tag does not make the rest of the reply one block', () => {
+    // The block a renderer draws again on every token is the last one: it must stay the size of
+    // the end of the reply, whatever code came before. A render prop's arrow (`=>`) once read as
+    // the end of an open `<List` tag, and every later block was joined to the fence.
+    const [, large] = scaling()
+    const fence = '```jsx\n<List\n  renderItem={(x) => (\n    <Item>{x}</Item>\n  )}\n/>\n```\n\n'
+    const text = `Here is the component:\n\n${fence}${large.text}`
+    const splitter = createBlockSplitter()
+    let longest = 0
+    for (const prefix of prefixes(text, 'frame')) {
+      const last = splitter.split(prefix).at(-1)!
+      longest = Math.max(longest, last.source.length)
+    }
+    const plain = createBlockSplitter()
+    let plainLongest = 0
+    for (const prefix of prefixes(large.text, 'frame'))
+      plainLongest = Math.max(plainLongest, plain.split(prefix).at(-1)!.source.length)
+    expect(longest).toBeLessThanOrEqual(Math.max(plainLongest, fence.length) + 200)
+  })
+
   test('a reply with Windows line endings is remembered as well as one with \\n', () => {
     const [, large] = scaling()
     const crlf = large.text.replace(/\n/g, '\r\n')
