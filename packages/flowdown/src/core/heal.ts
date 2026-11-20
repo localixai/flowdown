@@ -43,6 +43,18 @@ function dropTrailingPartialImage(tail: string): string {
     .replace(/\[(!\[[^\]]*\]\([^)]*\))\]?$/, '$1')
 }
 
+/**
+ * A footnote reference still being typed (`[^`, `[^note`) is hidden until its `]`: `[^` opens
+ * nothing but a reference, so the text it hides was never prose. Inside an open code span it is
+ * code, and stays.
+ */
+function dropTrailingPartialFootnote(tail: string): string {
+  const open = /\[\^[^\]\s]*$/.exec(tail)
+  const before = open ? tail.slice(0, open.index) : tail
+  // An odd number of backticks before it: an open code span.
+  return before.split('`').length % 2 ? before : tail
+}
+
 /** A trailing `[text](partial-url` gets its `)` so the anchor text renders as a
  * link immediately instead of flashing raw syntax until the URL completes. The text may be a
  * badge's image. */
@@ -188,6 +200,21 @@ function dropTrailingPartialTableRow(text: string): string {
   return text
 }
 
+/** A row of dashes under a header still being typed: pipes, colons, dashes and space, one pipe. */
+const PARTIAL_DELIMITER = /^ {0,3}[|:\- \t]*\|[|:\- \t]*$/
+
+/**
+ * The row of dashes under a table's header (`|--`, `| --- | -`) is held back while it is the line
+ * being typed: drawn as it comes it prints under the header as text, and a token later both turn
+ * into a table. Only under a line with a pipe in it: a row of dashes is never prose.
+ */
+function dropTrailingPartialDelimiterRow(text: string): string {
+  const nl = text.lastIndexOf('\n')
+  if (nl <= 0 || !PARTIAL_DELIMITER.test(text.slice(nl + 1))) return text
+  const header = text.slice(text.lastIndexOf('\n', nl - 1) + 1, nl)
+  return header.includes('|') && !PARTIAL_DELIMITER.test(header) ? text.slice(0, nl + 1) : text
+}
+
 /**
  * A quote line that is still typing its callout marker (`> [`, `> [!`, `> [!WARN`) is hidden
  * until the `]` arrives: it would otherwise print as a grey quote reading "[!WARN" and a beat
@@ -222,7 +249,10 @@ function dropTrailingBareFormMarker(text: string): string {
  * The marker is shown with that word, a token later.
  */
 // Inside a quote too (`> -`): the dialect's forms are quotes, and their lists and headings are in them.
-const BARE_BLOCK_MARKER = /^[ \t]*(?:>[ \t]?)*(?:[-*+=]+|#{1,6}|\d{1,9}[.)]?|>)[ \t]*$/
+// A task's box before its first word (`- [`, `- [x`, `1. [ ]`) is the item's marker too: drawn, it
+// is an item reading "[x" a token before it is a checkbox.
+const BARE_BLOCK_MARKER =
+  /^[ \t]*(?:>[ \t]?)*(?:(?:[-*+]|\d{1,9}[.)])[ \t]+\[[ xX]?\]?|[-*+=]+|#{1,6}|\d{1,9}[.)]?|>)[ \t]*$/
 
 function dropTrailingBareBlockMarker(text: string): string {
   const nl = text.lastIndexOf('\n')
@@ -270,6 +300,9 @@ export function closePartialProse(text: string): string {
   // is that row, so there's nothing else to stabilize this frame.
   const detabled = dropTrailingPartialTableRow(text)
   if (detabled !== text) return detabled
+  // The row of dashes that would make a table of the line above it, still being typed.
+  const delimited = dropTrailingPartialDelimiterRow(text)
+  if (delimited !== text) return closePartialProse(delimited)
   // Same for a callout marker still being typed on its quote line.
   const unmarked = dropTrailingPartialCalloutMarker(text)
   if (unmarked !== text) return unmarked
@@ -294,6 +327,7 @@ export function closePartialProse(text: string): string {
   if (after) tail = tail.slice(0, end)
 
   tail = dropTrailingPartialImage(tail)
+  tail = dropTrailingPartialFootnote(tail)
   tail = withholdPartialMath(tail)
   tail = closeTrailingLink(tail)
   tail = balanceInlineCode(tail)

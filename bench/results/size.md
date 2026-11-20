@@ -4,9 +4,9 @@ What a page downloads for each library, without React. `bun run size` in bench/ 
 
 | | At once (gzip) | On demand (gzip) | Minified, all |
 | --- | --- | --- | --- |
-| flowdown | 36.5 KB (budget 88 KB) | 19.9 KB | 134 KB |
-| flowdown + highlight | 74.1 KB | 19.9 KB | 251 KB |
-| @localix-ai/flowdown/stream | 5.2 KB | — | 13 KB |
+| flowdown | 36.8 KB (budget 88 KB) | 19.9 KB | 134 KB |
+| flowdown + highlight | 74.4 KB | 19.9 KB | 252 KB |
+| @localix-ai/flowdown/stream | 5.4 KB | — | 13 KB |
 | react-markdown + remark-gfm | 50.0 KB | — | 167 KB |
 | streamdown | 155.5 KB | 0.4 KB | 522 KB |
 | markdown-to-jsx | 31.0 KB | — | 85 KB |

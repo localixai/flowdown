@@ -270,6 +270,46 @@ describe('closePartialMarkdown', () => {
     const text = '| A | B |\n| --- | --- |\n| 1 | 2 |\n'
     expect(closePartialMarkdown(text)).toBe(text)
   })
+
+  test('holds back the row of dashes under a header until it is one', () => {
+    // Drawn as it comes, `|--` prints under the header as text, and a token later both turn
+    // into a table.
+    for (const partial of ['|', '| -', '|--', '| --- | ', '|:-', '| :--: |', '---|', ':-- |'])
+      expect(closePartialMarkdown(`| A | B |\n${partial}`), partial).toBe('| A | B |\n')
+    expect(closePartialMarkdown('A | B\n--|')).toBe('A | B\n')
+    // Ended by its newline, it makes the table: nothing is held.
+    const table = '| A | B |\n| --- | --- |\n'
+    expect(closePartialMarkdown(table)).toBe(table)
+    expect(closePartialMarkdown('A | B\n--|-\n')).toBe('A | B\n--|-\n')
+  })
+
+  test('a line of dashes under prose, or prose after a pipe line, is left alone', () => {
+    // Under a line with no pipe it is no table's: the bare marker rule holds `-` back, and text
+    // with a pipe in it shows.
+    expect(closePartialMarkdown('Text\n| -')).toBe('Text\n| -')
+    expect(closePartialMarkdown('| A | B |\n| and so on')).toBe('| A | B |\n| and so on')
+    expect(closePartialMarkdown('| A | B |\nnext line')).toBe('| A | B |\nnext line')
+  })
+})
+
+describe('closePartialMarkdown footnotes and tasks', () => {
+  test('hides a footnote reference still being typed', () => {
+    expect(closePartialMarkdown('As shown[^')).toBe('As shown')
+    expect(closePartialMarkdown('As shown[^1')).toBe('As shown')
+    expect(closePartialMarkdown('As shown[^long-label')).toBe('As shown')
+    expect(closePartialMarkdown('As shown[^1] here')).toBe('As shown[^1] here')
+    // Code is code; a link's text is the link's.
+    expect(closePartialMarkdown('Write `[^1')).toBe('Write `[^1`')
+    expect(closePartialMarkdown('See [the do')).toBe('See [the do')
+  })
+
+  test('holds back a task box until the first word of its item', () => {
+    for (const box of ['- [', '- [ ', '- [ ]', '- [x', '- [X]', '* [x] ', '1. [ ]'])
+      expect(closePartialMarkdown(`Tasks:\n\n- [ ] one\n${box}`), box).toBe('Tasks:\n\n- [ ] one\n')
+    expect(closePartialMarkdown('- [ ] one\n- [x] two')).toBe('- [ ] one\n- [x] two')
+    // A link item is not a box: it shows from its first letter.
+    expect(closePartialMarkdown('- [A')).toBe('- [A')
+  })
 })
 
 describe('openFenceBody incremental scan', () => {
