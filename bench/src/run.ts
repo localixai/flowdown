@@ -21,7 +21,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cpus, platform, release } from 'node:os'
 import { join } from 'node:path'
 import type { Pattern } from '../../packages/flowdown/test/chunks'
-import { type Scenario, scaling, scenarios } from '../../packages/flowdown/test/replies'
+import { codeScaling, type Scenario, scaling, scenarios } from '../../packages/flowdown/test/replies'
 import { hash } from '../../packages/flowdown/test/random'
 import type { RunResult } from './measure'
 import { across, report, type Row, summarize } from './report'
@@ -113,7 +113,9 @@ const cell = (scenario: string, pattern: Pattern, renderer: string): RunResult[]
 }
 
 const [small, large] = scaling()
-const all: Scenario[] = [...scenarios(), small, large].filter((s) => !only || only.includes(s.name))
+const all: Scenario[] = [...scenarios(), small, large, ...codeScaling()].filter(
+  (s) => !only || only.includes(s.name),
+)
 /** Each cell's row from every pass, in the order of the table; a kept row stands alone. */
 const measured: Row[][] = []
 for (let pass = 1; pass <= passes; pass++) {

@@ -29,6 +29,16 @@
       "maxExponent": 1.25
     },
     {
+      "id": "linear-code",
+      "about": "The same with JSX in the code: a render prop or an element a snippet leaves open is code, and does not make the rest of the reply one block. The exponent stays under 1.25.",
+      "renderer": "flowdown",
+      "scaling": [
+        "react-10k",
+        "react-40k"
+      ],
+      "maxExponent": 1.25
+    },
+    {
       "id": "reference",
       "about": "Not slower than Streamdown, the closest reference, by more than 25% over a whole stream.",
       "renderer": "flowdown",

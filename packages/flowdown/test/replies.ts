@@ -40,6 +40,42 @@ const code = (r: Random, lines = r.int(6, 30)) => {
   return `\`\`\`${language}\n${body.join('\n')}\n\`\`\``
 }
 
+/**
+ * Code an answer about React writes, which a scan of the lines could take for markup: a usage
+ * example whose render prop has its `=>` inside the tag, a component with the same deeper in, and
+ * an HTML snippet with an `<li>` left to the parser to close.
+ */
+const jsx = (r: Random) => {
+  const name = r.pick(WORDS)
+  const field = r.pick(WORDS)
+  const shapes = [
+    [
+      '```tsx',
+      '<List',
+      `  items={items.filter((x) => x.${field} > ${r.int(0, 99)})}`,
+      '  renderItem={(item) => (',
+      `    <Item key={item.id} title={item.${field}} />`,
+      '  )}',
+      '/>',
+      '```',
+    ],
+    [
+      '```tsx',
+      `export function ${name[0]!.toUpperCase()}${name.slice(1)}List({ items }: Props) {`,
+      '  return (',
+      '    <List',
+      '      items={items}',
+      '      renderItem={(item) => <Item key={item.id}>{item.label}</Item>}',
+      '    />',
+      '  )',
+      '}',
+      '```',
+    ],
+    ['```html', '<ul>', `  <li>${sentence(r).slice(0, 30)}`, `  <li>${name}`, '</ul>', '```'],
+  ]
+  return r.pick(shapes).join('\n')
+}
+
 const table = (r: Random, rows = r.int(3, 8)) => {
   const head = '| Name | Status | Time | Note |\n| --- | --- | --- | --- |'
   const body = Array.from(
@@ -175,6 +211,25 @@ export function scenarios(): Scenario[] {
       about: 'Thirty finished replies above the one streaming, all on the page.',
       history: Array.from({ length: 30 }, (_, i) => reply(100 + i, 3_000, MIXED)),
       text: reply(10, 10_000, MIXED),
+    },
+  ]
+}
+
+/**
+ * Replies about React, at two sizes four times apart: the same parts as `answer`, and components
+ * whose code a scan could take for open tags. Streaming them must stay as linear as `scaling()`.
+ */
+export function codeScaling(): [Scenario, Scenario] {
+  return [
+    {
+      name: 'react-10k',
+      about: 'Scaling with JSX in code, small.',
+      text: reply(12, 10_000, [...MIXED, jsx, jsx]),
+    },
+    {
+      name: 'react-40k',
+      about: 'Scaling with JSX in code, four times larger.',
+      text: reply(12, 40_000, [...MIXED, jsx, jsx]),
     },
   ]
 }

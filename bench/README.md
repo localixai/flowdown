@@ -62,6 +62,7 @@ stream the same replies, so a speed-up that changes what is drawn fails there fi
 | `footnotes-20k` | Footnotes, which resolve across the whole document. |
 | `thread-30` | The last reply of a 30-message thread, with the 29 before it on the page. |
 | `answer-10k`, `answer-40k` | The same reply at two sizes, four times apart, for scaling. |
+| `react-10k`, `react-40k` | The same, with React components in its code (render props, a `<li>` left open), at two sizes for scaling. |
 
 Chunk patterns ([`test/chunks.ts`](../packages/flowdown/test/chunks.ts)):
 
@@ -95,7 +96,8 @@ highlighter, math or diagrams, so each parses the same Markdown:
   characters.
 - **Linear in the reply.** Streaming a reply four times longer should cost about four times
   more (exponent 1). A renderer that reparses the whole text on every token costs about sixteen
-  times more (exponent 2). The `linear` rule keeps flowdown under 1.25.
+  times more (exponent 2). The `linear` rule keeps flowdown under 1.25, and `linear-code` does
+  the same for replies whose code holds JSX, which a scan could read as tags left open.
 - **No leak.** Streaming the same reply again keeps less than 1 MB more: what is cached is
   bounded, and nothing grows with use. The `no-leak` rule.
 
