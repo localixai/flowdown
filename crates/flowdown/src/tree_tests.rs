@@ -232,3 +232,32 @@ fn a_backtick_run_closes_at_the_next_run_of_its_length_whatever_was_tried_before
         r#"p("```` a " code"b `` c" " d")"#
     );
 }
+
+#[test]
+fn a_wide_table_takes_room_for_what_its_text_holds() {
+    // A row's cells are made before their text is read. Reckoned from them, the first cell, one
+    // byte in, made the rest of the document thousands of nodes a byte: 500 columns over 20 KB
+    // asked room for millions, and the table of `bench/`'s worst texts at 112 KB for 69 GB.
+    let text = format!(
+        "{}\n{}\n|x\n\n{}",
+        "|x".repeat(500),
+        "|-".repeat(500),
+        "Some words of prose. ".repeat(1_000)
+    );
+    let doc = parse_as(&text, Dialect::Github);
+    assert!(
+        doc.nodes.capacity() < text.len() * 4,
+        "room for {} nodes from {} bytes",
+        doc.nodes.capacity(),
+        text.len()
+    );
+    let n = 320_000 / 20;
+    let worst = format!(
+        "{}\n{}\n{}",
+        "|x".repeat(n),
+        "|-".repeat(n),
+        "|x\n".repeat(n)
+    );
+    let doc = parse_as(&worst, Dialect::Github);
+    assert!(doc.nodes.capacity() < worst.len() * 4);
+}

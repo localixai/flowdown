@@ -233,10 +233,15 @@ impl<'s> Walk<'s, '_, '_> {
                 found += 1;
             }
         });
+        // The cells are the block pass's work, not their text's: what the inlines make is
+        // reckoned without them, and from where each cell is in the row.
+        self.pace.blocks += found;
+        let read = self.pace.read;
         let mut cell = self.doc.raw(node).first;
         while cell != NONE {
             let raw = std::mem::take(&mut self.doc.raw_mut(cell).span);
             let (start, end) = (at(raw.start), at(raw.end));
+            self.pace.read = read + start;
             let text = text.get(start..end).unwrap_or_default();
             if text.contains("\\|") {
                 // A pipe written `\|` is the cell's text: read from a copy that has it so.
@@ -249,11 +254,13 @@ impl<'s> Walk<'s, '_, '_> {
             }
             cell = self.doc.raw(cell).next;
         }
+        self.pace.read = read;
         for column in found..columns {
             if self.spare == 0 {
                 break;
             }
             self.spare -= 1;
+            self.pace.blocks += 1;
             self.doc.push(
                 node,
                 Kind::Cell(self.doc.aligns[first + column]),

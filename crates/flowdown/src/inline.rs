@@ -84,6 +84,8 @@ struct Pace {
 /// Room for these beside what a text is reckoned to take, and how few left ask for more.
 const SLACK: usize = 32;
 const SPARE: usize = 8;
+/// The most nodes `Inline::fit` reckons a byte still to read may make.
+const MOST: usize = 2;
 
 /// Room in a stack the first time it is used: a block's inlines seldom nest deeper.
 const STACK: usize = 16;
@@ -133,11 +135,17 @@ impl Inline<'_, '_, '_> {
     /// Room for the nodes still to come, by how many the text read so far took: prose and a
     /// text full of marks each get about what they need, in a few moves of the nodes, where
     /// doubling them would take up to twice that.
+    ///
+    /// However few bytes were read, the rest is reckoned at no more than `MOST` nodes a byte: a
+    /// guess from a short start (one byte, and a node already made for it) would otherwise ask
+    /// room for the whole text at thousands of nodes a byte. Asking too little costs one more
+    /// move; the count is a usize product, saturated, so it cannot wrap where usize is 32 bits.
     #[cold]
     fn fit(&mut self) {
         let read = self.pace.read + self.pos;
-        let made = self.doc.nodes.len() - self.pace.blocks;
-        let rest = made * self.pace.total.saturating_sub(read) / read.max(1);
+        let made = self.doc.nodes.len().saturating_sub(self.pace.blocks);
+        let left = self.pace.total.saturating_sub(read);
+        let rest = (made.saturating_mul(left) / read.max(1)).min(left.saturating_mul(MOST));
         self.doc
             .nodes
             .reserve_exact(rest + rest / 8 + made / 4 + SLACK);

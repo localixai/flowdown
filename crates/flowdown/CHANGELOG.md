@@ -7,6 +7,17 @@ The Rust crate `flowdown`. Its versions are its own, apart from the npm package'
 
 ## Unreleased
 
+### Fixed
+
+- A wide table no longer asks for room for millions of nodes, and a long one no longer stops the
+  program. A row's cells are made before their text is read, and the room for the nodes still to
+  come was reckoned from them as if the text had made them: 500 columns over 20 KB asked room for
+  12 million nodes, and a 112 KB table with rows short of its columns (`bench/`'s worst texts, at
+  sixteen times) for 69 GB, which aborts. The cells now count as the block pass's own, each cell's
+  inlines are reckoned from where it is in its row, the guess is held to two nodes a byte still to
+  read, and the product is saturated so it cannot wrap where `usize` is 32 bits (R1, R7). That
+  table grows 3.9 times at four times its length, where it grew 8.5.
+
 ## 0.1.1
 
 ### Changed
