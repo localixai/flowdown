@@ -7,6 +7,8 @@ The Rust crate `flowdown`. Its versions are its own, apart from the npm package'
 
 ## Unreleased
 
+## 0.1.2
+
 ### Fixed
 
 - A wide table no longer asks for room for millions of nodes, and a long one no longer stops the
