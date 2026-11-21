@@ -1,14 +1,14 @@
 {
   "browserMs": {
-    "@localix-ai/diagram": 27.299999999813735,
-    "mermaid": 803.8000000002794
+    "@localix-ai/diagram": 30.5,
+    "mermaid": 714.3000000000466
   },
   "mermaidFailed": 0,
-  "vsMermaid": 29.443223443434565,
+  "vsMermaid": 23.419672131149067,
   "gzipKB": {
     "@localix-ai/diagram": 56.2529296875,
     "mermaid": 1575.65625
   },
-  "exponent": 0.605978109417785,
-  "retainedKB": 122.990234375
+  "exponent": 0.5387867740396246,
+  "retainedKB": 152.587890625
 }
