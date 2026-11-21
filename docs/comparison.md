@@ -73,7 +73,7 @@ From each library's documentation, not measured.
 
 | Library | Code highlighting | Math | Diagrams |
 | :--- | :--- | :--- | :--- |
-| **flowdown** | highlight.js, `@localix-ai/flowdown/highlight` | KaTeX | Mermaid |
+| **flowdown** | Built in, `@localix-ai/flowdown/highlight` | KaTeX | Mermaid |
 | Streamdown | Shiki plugin | KaTeX plugin | Mermaid plugin |
 | react-markdown | rehype plugin | remark and rehype plugins | Your component |
 | markdown-to-jsx | Your component | — | Your component |
@@ -172,7 +172,7 @@ in Bun 1.4.4 and Node 25.6.1. Every text, and what each parser read in it, is in
 ## Which one to pick
 
 - **flowdown.** For an AI chat or assistant whose replies run long, threads that grow, and
-  documentation. It repairs unfinished syntax, comes styled, and is one package of 36 KB with its
+  documentation. It repairs unfinished syntax, comes styled, and is one package of 37 KB with its
   own parser. It does not take remark or rehype plugins.
 - **markdown-to-jsx.** When a small, unstyled renderer for short replies is enough. It is one
   package and 31 KB. It slows down on very long replies and threads, and ships no styles.

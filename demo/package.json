@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@localix-ai/flowdown": "workspace:*",
-    "highlight.js": "11.12.0",
     "katex": "0.19.1",
     "mermaid": "12.3.0",
     "react": "19.3.1",

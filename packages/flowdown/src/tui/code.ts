@@ -16,6 +16,7 @@
  * again while its code is the same, and the fence still being written is coloured in pieces, of
  * which only the last is new.
  */
+import type { LineHighlighter } from '../document/fence'
 import { printable } from './printable'
 import { CODE, DIM, DONE, FAILED, PLAIN, patch, type Line, type Style } from './style'
 import { span, tabPads, untabbed } from './wrap'
@@ -24,7 +25,10 @@ import { span, tabPads, untabbed } from './wrap'
  * Highlighted HTML for `code`, or null for a language it does not know: the shape `<Markdown
  * highlight>` and the other targets take.
  */
-export type Highlighter = (code: string, language: string) => string | null
+export type Highlighter = ((code: string, language: string) => string | null) & {
+  /** A highlighter that reads a line at a time: a growing fence is coloured a line once. */
+  lines?: ((language: string) => LineHighlighter | null) | undefined
+}
 
 /** How each kind of token is drawn; a kind not listed is drawn as what holds it. */
 const KINDS: Record<string, Style> = {
@@ -156,13 +160,22 @@ export function codeRows(
   highlight: Highlighter | null,
 ): Line[] {
   if (!highlight || !language) return plain(source, language)
-  let read: ReturnType<typeof tokens>
+  let html: string | null
   try {
-    const html = highlight(source, language)
-    if (html === null) return plain(source, language)
-    read = tokens(html)
+    html = highlight(source, language)
   } catch {
     // A grammar that fails on this code costs the colours, not the reply.
+    return plain(source, language)
+  }
+  return html === null ? plain(source, language) : codeRowsOfHtml(source, language, html)
+}
+
+/** The rows of `source` from the HTML a highlighter made of it (a piece's, coloured by its lines). */
+export function codeRowsOfHtml(source: string, language: string, html: string): Line[] {
+  let read: ReturnType<typeof tokens>
+  try {
+    read = tokens(html)
+  } catch {
     return plain(source, language)
   }
   // Colours from classes this module does not know (a highlighter with a scheme of its own) are

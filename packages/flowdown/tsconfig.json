@@ -13,7 +13,10 @@
     "isolatedDeclarations": false,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["bun"]
+    "types": ["bun"],
+    // The highlighter is this repository's own package, read from its source: a test, the types and
+    // the build take it as it is, with no build of it first.
+    "paths": { "@localix-ai/highlight": ["../highlight/src/index.ts"] }
   },
   "include": ["src", "scripts", "test"]
 }

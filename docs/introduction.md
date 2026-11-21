@@ -9,7 +9,7 @@ description:
 # Introduction
 
 Ultrafast, lightweight streaming Markdown for React and AI replies: its own parser, no
-dependencies, 36 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
+dependencies, 37 KB gzipped, and [the fastest to stream](comparison.md) of six React renderers. It renders GitHub Markdown, plus a small dialect
 of forms a model can write and a reader can scan: steps, tabs, headline figures, the case for and
 against, callouts, folded sections, sources, file trees, diagrams and math. It renders while the text is still arriving,
 without flicker or raw syntax showing.
@@ -90,8 +90,9 @@ What sets it apart:
   code, a half-typed `> [!STE` is hidden) so nothing flashes. Every frame is tested to render
   exactly what one parse of that frame would. See [Streaming](streaming.md).
 - **Heavy parts load when needed.** The HTML parser is fetched the first time a document holds HTML;
-  KaTeX, Mermaid and highlight.js are optional and yours to load. See [Math](math.md),
-  [Diagrams](diagrams.md) and [Highlighting](highlighting.md).
+  KaTeX and Mermaid are optional and yours to load; the highlighter is built in and colours code
+  that streams a line at a time. See [Math](math.md), [Diagrams](diagrams.md) and
+  [Highlighting](highlighting.md).
 - **Plain CSS.** One stylesheet on `--fd-*` custom properties, light and dark built in, no Tailwind
   required. See [Styling](styling.md).
 - **Safe by default.** Raw HTML is sanitized, unsafe URLs are dropped and diagrams run in Mermaid's

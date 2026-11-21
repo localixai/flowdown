@@ -41,7 +41,6 @@
       "name": "flowdown-demo",
       "dependencies": {
         "@localix-ai/flowdown": "workspace:*",
-        "highlight.js": "11.12.0",
         "katex": "0.19.1",
         "mermaid": "12.3.0",
         "react": "19.3.1",
@@ -58,7 +57,6 @@
       "name": "flowdown-example-tui",
       "dependencies": {
         "@localix-ai/flowdown": "workspace:*",
-        "highlight.js": "11.12.0",
       },
       "devDependencies": {
         "@types/bun": "1.4.3",
@@ -70,6 +68,7 @@
       "devDependencies": {
         "@arethetypeswrong/cli": "0.18.5",
         "@happy-dom/global-registrator": "21.0.4",
+        "@localix-ai/highlight": "workspace:*",
         "@types/bun": "1.4.3",
         "@types/mdast": "^4.0.4",
         "@types/react": "^19.3.0",
@@ -92,12 +91,10 @@
         "unified": "11.0.5",
       },
       "peerDependencies": {
-        "highlight.js": "^11.0.0",
         "katex": ">=0.16.0",
         "react": "^18.2.0 || ^19.0.0",
       },
       "optionalPeers": [
-        "highlight.js",
         "katex",
         "react",
       ],

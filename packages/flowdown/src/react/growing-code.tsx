@@ -1,6 +1,6 @@
 'use client'
 import { memo, useMemo, useState } from 'react'
-import { createCutter } from '../document/fence'
+import { createCutter, createLineColourer } from '../document/fence'
 import { CodeFrame } from './code-block'
 import { useRenderContext, type Highlighter } from './context'
 
@@ -36,6 +36,14 @@ const Piece = memo(
     ((before.done && after.done && before.run === after.run) || before.text === after.text),
 )
 
+/** A piece coloured line by line: its HTML is drawn again only when it changed. */
+const Coloured = memo(
+  function Coloured({ html }: { html: string }) {
+    return <span dangerouslySetInnerHTML={{ __html: html }} />
+  },
+  (before, after) => before.html === after.html,
+)
+
 export function GrowingCode({
   language,
   title,
@@ -55,21 +63,40 @@ export function GrowingCode({
     .filter(Boolean)
     .join(' ')
   const [cut] = useState(createCutter)
-  const { parts, run } = useMemo(() => cut(body), [cut, body])
+  const [colour] = useState(createLineColourer)
+  // A highlighter that reads a line at a time colours each line once, from the state above it.
+  const reader = known && language && highlight?.lines ? highlight.lines(language) : null
+  const coloured = useMemo(
+    () => (reader && language ? colour(body, reader, language) : null),
+    [colour, reader, body, language],
+  )
+  const { parts, run } = useMemo(() => coloured ?? cut(body), [coloured, cut, body])
   return (
     <CodeFrame language={language} title={title} text={body}>
       {/* The file a finished block names is on its `<code>` too, for a page's own styles. */}
       <code className={className || undefined} data-title={title || undefined}>
-        {parts.map((text, index) => (
-          <Piece
-            key={index}
-            text={text}
-            done={index < parts.length - 1}
-            run={run}
-            language={known ? language : undefined}
-            highlight={highlight}
-          />
-        ))}
+        {coloured
+          ? [
+              ...coloured.html
+                .slice(0, -1)
+                .map((html, index) => <Coloured key={index} html={html} />),
+              // The last piece as its complete lines and the open one: a line's HTML is set once,
+              // and a token sets only the open line's again.
+              ...coloured.lines.map((html, index) => (
+                <Coloured key={`line ${index}`} html={html} />
+              )),
+              <Coloured key="open" html={coloured.open} />,
+            ]
+          : parts.map((text, index) => (
+              <Piece
+                key={index}
+                text={text}
+                done={index < parts.length - 1}
+                run={run}
+                language={known ? language : undefined}
+                highlight={highlight}
+              />
+            ))}
         {/* A finished block's text ends in a newline unless it is highlighted; so does this. */}
         {!known && body ? '\n' : null}
       </code>

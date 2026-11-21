@@ -1,10 +1,10 @@
 {
   "flowdown": {
-    "atOnce": 36.8,
+    "atOnce": 37.1,
     "onDemand": 19.9
   },
   "flowdown + highlight": {
-    "atOnce": 74.4,
+    "atOnce": 47.9,
     "onDemand": 19.9
   },
   "@localix-ai/flowdown/stream": {

@@ -9,7 +9,7 @@
 
 <p align="center">
   <strong>Ultrafast, lightweight streaming Markdown for React and AI replies</strong><br>
-  Its own parser · 0 dependencies · 36 KB gzipped · 16× faster on a long stream
+  Its own parser · 0 dependencies · 37 KB gzipped · 16× faster on a long stream
 </p>
 
 <p align="center">
@@ -69,7 +69,7 @@ add `answerFormatPrompt()` from `@localix-ai/flowdown/prompt`
   show their raw syntax.
 - **Complete.** Its parser passes every example of CommonMark and of GitHub's extensions
   ([conformance](https://flowdown.localix.ai/docs/conformance)).
-- **Light.** One package with no dependencies, 36 KB gzipped, styled without Tailwind.
+- **Light.** One package with no dependencies, 37 KB gzipped, styled without Tailwind.
 - **Safe.** Raw HTML from a reply is sanitized, and links are held to safe protocols.
 
 <p align="center">

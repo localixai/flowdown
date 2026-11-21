@@ -49,7 +49,7 @@ const MAY_NAME: Record<string, string[]> = {
   react: ['react', 'mermaid'],
   mermaid: ['react', 'mermaid'],
   math: ['katex'],
-  highlight: ['highlight.js'],
+  highlight: ['@localix-ai/highlight'],
 }
 
 /** The parts that run where there may be no page: a server, a worker, a terminal. */

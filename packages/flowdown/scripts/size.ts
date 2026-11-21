@@ -45,14 +45,19 @@ const BUDGET: Record<string, number> = {
   // where they took a fraction of one. With it, an item that opens empty holds one blank line,
   // and the healer holds back a row of dashes, a `[^1` and a task's box until they mean something
   // (`core/heal.ts`). Every entry that cuts and heals a reply carries it.
-  '.': 37.2,
+  // 0.2 KB more since a fence still being written is coloured a line at a time by a highlighter
+  // that reads lines (`createLineColourer`, `document/fence.ts`): a token costs its line, not its
+  // piece, and a comment opened in one piece is still one in the next. Every entry that draws a
+  // growing fence carries it.
+  '.': 37.6,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
   // The code ranges of the sniffers, and on a page the copy of a selection, as for `.`.
   // And the pieces of a long list and a long quote, as for `.`.
   // And a fence's code read as code to the cut, as for `.`.
-  './static': 32.6,
-  './dom': 34.8,
-  './element': 35,
+  // And a growing fence coloured a line at a time, as for `.`.
+  './static': 33,
+  './dom': 35.1,
+  './element': 35.3,
   // The renderer for a terminal: the parser, the dialect, and rows wrapped by their columns.
   // 2.4 KB more since a block that grows costs its end: a fence still being written is read
   // without parsing its block and drawn in pieces (`document/fence.ts`, 0.7 KB of it); a table is
@@ -64,8 +69,9 @@ const BUDGET: Record<string, number> = {
   // rule, limits above and below, roots, matrices and brackets as tall as what they hold.
   // And 1.6 KB for the pieces of a long list and a long quote, as for `.`; 0.6 KB more since a
   // paragraph that grows is wrapped again from its last rows (`tui/wrap.ts`).
-  // 0.1 KB for a fence's code read as code to the cut, as for `.`.
-  './tui': 40.9,
+  // 0.1 KB for a fence's code read as code to the cut, as for `.`. 0.2 KB for a growing fence
+  // coloured a line at a time, as for `.`.
+  './tui': 41.3,
   // Mermaid flowcharts and sequence diagrams drawn in a terminal, parsed, laid out and routed with
   // no dependency (`tui/diagram/`). An entry of its own, as `./highlight` is: a terminal that does
   // not draw diagrams does not load them. 31 KB more since it draws every kind Mermaid has that
@@ -98,8 +104,10 @@ const BUDGET: Record<string, number> = {
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,
   './math': 1.5,
-  // Past 0.8 KB since a shell line shows its command, flags and numbers (highlight.ts).
-  './highlight': 1.1,
+  // The highlighter itself, `@localix-ai/highlight`, built in: 26 languages read a line at a
+  // time. It was a 1.1 KB setup of highlight.js, an optional peer that added 37.6 KB on demand
+  // (`flowdown + highlight` in `bench`); there is nothing to install now, and less to load.
+  './highlight': 11.8,
   // Past 5 KB since a drawn diagram has a toolbar and an enlarged viewer (`diagram.css`).
   './styles.css': 5.5,
 }

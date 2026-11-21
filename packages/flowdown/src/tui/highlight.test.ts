@@ -81,7 +81,8 @@ describe('colours', () => {
     const rows = renderToLines(fence('sh', 'bun test --watch # again'), { width: 40, highlight })
     expect(drawn(rows)).toEqual([
       [
-        ['bun', CYAN],
+        // The command is drawn as a call is: bold.
+        ['bun', BOLD],
         [' test ', {}],
         ['--watch', YELLOW],
         [' ', {}],
@@ -525,18 +526,24 @@ describe('what a token costs', () => {
     expect(spy.calls).toEqual([body])
   })
 
-  test('a construct cut by a piece is coloured right once its fence closes', () => {
+  test('a construct that runs over two pieces is coloured right while its fence is written', () => {
     const body = `${code(PIECE_LINES - 1)}\n/* opens here\n${code(3, 100)}\ncloses here */\nlet done = 1`
     const open = `\`\`\`js\n${body}`
     const closed = `${open}\n\`\`\`\n`
     const view = createTerminalView({ width: 60, highlight })
     const comment = (rows: Line[]): Style[] =>
       rows.slice(PIECE_LINES - 1, PIECE_LINES + 4).map((row) => row[0]!.style)
-    // Written: the comment's first line ends a piece, and the next piece does not know of it.
+    // Written: the comment's first line ends a piece, and the next piece starts inside it, as the
+    // highlighter reads each line from the state the line above ended in.
     const growing = view.render(open, { streaming: true })
-    expect(comment(growing)[0]).toEqual(DIM)
-    expect(comment(growing)[1]).not.toEqual(DIM)
+    expect(comment(growing)).toEqual([DIM, DIM, DIM, DIM, DIM])
     expect(toAnsi(growing, false)).toBe(toAnsi(renderToLines(closed, { width: 60 }), false))
+    // A highlighter that reads a piece at a time still colours each piece on its own until then.
+    const pieces = createTerminalView({
+      width: 60,
+      highlight: (text, language) => highlight(text, language),
+    })
+    expect(comment(pieces.render(open, { streaming: true }))[1]).not.toEqual(DIM)
     // Closed: every line of it is a comment's.
     expect(comment(view.render(closed))).toEqual([DIM, DIM, DIM, DIM, DIM])
     // And a fresh render of the growing text draws the same pieces: the two never part.

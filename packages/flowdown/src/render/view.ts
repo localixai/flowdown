@@ -7,7 +7,12 @@ import { parseFileTree, type TreeRow } from '../core/file-tree-parse'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { createDocument, usesHtml, usesMath, type MarkdownBlock } from '../document'
-import { createCutter, createFenceMemory, growingFence } from '../document/fence'
+import {
+  createCutter,
+  createFenceMemory,
+  createLineColourer,
+  growingFence,
+} from '../document/fence'
 import { createListReader } from '../document/list'
 import { createQuoteReader } from '../document/quote'
 import { TABLE_ROWS, tableRows } from '../document/table'
@@ -397,13 +402,19 @@ export function createView(options: ViewOptions = {}): View {
 
   const memory = createFenceMemory()
   const cut = createCutter()
+  const colour = createLineColourer()
   /**
    * The pieces of the fence being written, each highlighted once: a piece that is complete keeps
    * its markup for as long as its run lasts, and a token highlights only the last piece. Without
    * this a file of 900 lines was highlighted whole on every token.
    */
-  let codePieces: Array<{ text: string; run: number; language: string | undefined; node: VNode }> =
-    []
+  let codePieces: Array<{
+    text: string
+    run: number
+    language: string | undefined
+    html?: string
+    node: VNode
+  }> = []
 
   /** A code fence still being written, in the pieces it is highlighted by. */
   const growingCode = (language: string | undefined, title: string, body: string): VNode => {
@@ -412,26 +423,44 @@ export function createView(options: ViewOptions = {}): View {
     const className = [language ? `language-${language}` : null, known ? 'fd-highlighted' : null]
       .filter(Boolean)
       .join(' ')
-    const { parts, run } = cut(body)
-    const kept = codePieces
     const lang = known ? language : undefined
-    codePieces = parts.map((text, index) => {
-      const was = kept[index]
-      // A complete piece of the same run has the same text; the last one is compared.
-      const same =
-        was !== undefined &&
-        was.language === lang &&
-        ((index < parts.length - 1 && index < kept.length - 1 && was.run === run) ||
-          was.text === text)
-      if (same) return was
-      const html = lang ? highlight!(text, lang) : null
-      return {
-        text,
-        run,
-        language: lang,
-        node: html === null ? text : vnode.element('span', { innerHTML: html }, []),
-      }
-    })
+    // A highlighter that reads a line at a time colours each line once, from the state above it.
+    const reader = lang && highlight?.lines ? highlight.lines(lang) : null
+    const coloured = reader && lang ? colour(body, reader, lang) : null
+    const { parts, run } = coloured ?? cut(body)
+    const kept = codePieces
+    /** A piece's HTML as a node, the one drawn last when its HTML is the same. */
+    const node = (was: (typeof codePieces)[number] | undefined, text: string, html: string) =>
+      was?.html === html
+        ? was
+        : { text, run, language: lang, html, node: vnode.element('span', { innerHTML: html }, []) }
+    if (coloured) {
+      // The complete pieces, then the last as its complete lines and its open line: a token
+      // sets only the open line's HTML again.
+      const last = parts.length - 1
+      codePieces = parts
+        .slice(0, last)
+        .map((text, index) => node(kept[index], text, coloured.html[index]!))
+      for (const html of coloured.lines) codePieces.push(node(kept[codePieces.length], '', html))
+      codePieces.push(node(kept[codePieces.length], parts[last]!, coloured.open))
+    } else
+      codePieces = parts.map((text, index) => {
+        const was = kept[index]
+        // A complete piece of the same run has the same text; the last one is compared.
+        const same =
+          was !== undefined &&
+          was.language === lang &&
+          ((index < parts.length - 1 && index < kept.length - 1 && was.run === run) ||
+            was.text === text)
+        if (same) return was
+        const html = lang ? highlight!(text, lang) : null
+        return {
+          text,
+          run,
+          language: lang,
+          node: html === null ? text : vnode.element('span', { innerHTML: html }, []),
+        }
+      })
     const pieces: VNode[] = codePieces.map((piece) => piece.node)
     // A finished block's text ends in a newline unless it is highlighted; so does this.
     if (!known && body) pieces.push('\n')
