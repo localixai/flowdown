@@ -79,9 +79,12 @@ alone. When `streaming` turns off, the final text is rendered exactly as written
 - A Mermaid diagram above the end of the reply is complete, so it is drawn at once.
 - The diagram still being written keeps showing its source, which grows, and is drawn when its fence
   closes. A diagram never re-renders on every token.
-- Code is highlighted as it is written. A fence still being written is drawn in pieces of 40 lines:
-  a token redraws and highlights only the last piece, so a file of a thousand lines streams as fast
-  as a short one. When the fence closes, the block is highlighted whole.
+- Code is highlighted as it is written. The built-in highlighter colours a fence still being
+  written a line at a time, from the state the line above ended in: a line is coloured once, a
+  token redraws only the line being written, and a comment opened above is still one there. A file
+  of a thousand lines streams as fast as a short one, coloured as the finished block will be. A
+  highlighter of your own is given the fence in pieces of 40 lines (see
+  [Highlighting](highlighting.md#while-a-reply-streams)).
 
 ## Tables while streaming
 

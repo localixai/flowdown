@@ -60,8 +60,8 @@
       "stream": "1a0bb92d6gm",
       "remark": "36ae4b9a1ja",
       "tui": "1455e9a81lg",
-      "rich": "74ab65ae49u",
-      "tui-rich": "937c9becsv"
+      "rich": "dd5a46af4a1",
+      "tui-rich": "ec5323ecsu"
     },
     "figures": {
       "tree": "b643ba8319v",
@@ -321,8 +321,8 @@
       "stream": "20f1f77d4cs",
       "remark": "f1adbe4d7a",
       "tui": "aea9d1075x",
-      "rich": "6677b74b3gk",
-      "tui-rich": "29c03f3737"
+      "rich": "791f63aa3gr",
+      "tui-rich": "7f15e28536"
     },
     "nested: tree and diagram": {
       "tree": "f9ca2413ac",
@@ -420,8 +420,8 @@
       "stream": "89b301bbcdb",
       "remark": "67da226al7",
       "tui": "d6cbd6e317o",
-      "rich": "fbe063b661l",
-      "tui-rich": "36ed19aenl"
+      "rich": "c29624ed5ye",
+      "tui-rich": "e80357fbnd"
     },
     "demo/scenes/diagram.md": {
       "tree": "07fe3d4fuz",
@@ -447,7 +447,7 @@
       "stream": "2d4149ae3ij",
       "remark": "d2752ae814o",
       "tui": "0fffa7851y6",
-      "rich": "16755856231",
+      "rich": "000a214a22z",
       "tui-rich": "b761cf6fro"
     },
     "demo/scenes/steps.md": {
@@ -456,8 +456,8 @@
       "stream": "83ae5bff4a2",
       "remark": "bf70340dox",
       "tui": "504085c0y8",
-      "rich": "048766671vn",
-      "tui-rich": "0e80a824fv"
+      "rich": "1cb28fdb1x0",
+      "tui-rich": "601b47b1g2"
     },
     "demo/scenes/viewer.md": {
       "tree": "91668a47uj",
@@ -474,8 +474,8 @@
       "stream": "ebc486646zl",
       "remark": "48baebd91x7",
       "tui": "0099ba443nz",
-      "rich": "f7c5489eaze",
-      "tui-rich": "f00b2f751ek"
+      "rich": "cac73c81awl",
+      "tui-rich": "6b27fc511eb"
     },
     "demo/review/folded.md": {
       "tree": "9bb311919a0",
@@ -483,8 +483,8 @@
       "stream": "8883b9cea6g",
       "remark": "b99e01ae1tq",
       "tui": "12c4edb438o",
-      "rich": "dc63d6a05du",
-      "tui-rich": "c2fb424c1jo"
+      "rich": "f5215f275ef",
+      "tui-rich": "8257d6601jl"
     },
     "demo/review/forms.md": {
       "tree": "d36001729ya",
@@ -492,8 +492,8 @@
       "stream": "59ab03d66pp",
       "remark": "d8b149981vi",
       "tui": "7cc3576423h",
-      "rich": "51a87e474ft",
-      "tui-rich": "ed78c039zt"
+      "rich": "dd43a81a4g0",
+      "tui-rich": "470b0927zs"
     },
     "reply: chat-5k": {
       "tree": "52dc4a16ea4",
@@ -510,8 +510,8 @@
       "stream": "5cd07ff31ene",
       "remark": "8bad2530if1",
       "tui": "4f565d9e1yhg",
-      "rich": "1ba0eba615hd",
-      "tui-rich": "356bff8bofs"
+      "rich": "ef68a74e15ak",
+      "tui-rich": "7ebe6760orh"
     },
     "reply: forms-20k": {
       "tree": "88ea7e3b1vqw",
@@ -519,8 +519,8 @@
       "stream": "481c5d2038wo",
       "remark": "94390da4n6d",
       "tui": "3c78141c16f3",
-      "rich": "94197d6e2frk",
-      "tui-rich": "5ff3062dltq"
+      "rich": "805588712g64",
+      "tui-rich": "60bc4a02m42"
     },
     "reply: math-20k": {
       "tree": "f31de1791mit",
@@ -528,8 +528,8 @@
       "stream": "a13d9a781880",
       "remark": "d3c2115fiyu",
       "tui": "7ffd84b82tg8",
-      "rich": "d01e52781vu5",
-      "tui-rich": "c4ebf9cft8i"
+      "rich": "c2b40c0a1x5z",
+      "tui-rich": "91a88e75ti4"
     },
     "reply: code-50k": {
       "tree": "ae240d39j3t",
@@ -537,8 +537,8 @@
       "stream": "d553e32913o9",
       "remark": "850c7c13ijx",
       "tui": "c3e45ca11dkd",
-      "rich": "1fd973221j88",
-      "tui-rich": "e8a755beobn"
+      "rich": "0e41d6be1hjm",
+      "tui-rich": "b8d27c88ren"
     },
     "reply: table-20k": {
       "tree": "47a3de351vjt",
@@ -555,8 +555,8 @@
       "stream": "9cc6dc1515o6",
       "remark": "4df229aaku7",
       "tui": "4cd515bb1x5z",
-      "rich": "faec0cbe1g9q",
-      "tui-rich": "0185d2c1s8j"
+      "rich": "1aaf93551hpm",
+      "tui-rich": "1deb5c08sf7"
     },
     "reply: crlf-20k": {
       "tree": "b62ff4e818o8",
@@ -564,8 +564,8 @@
       "stream": "76da2450p64",
       "remark": "7a078540huz",
       "tui": "d1f0e1a01yqs",
-      "rich": "218317e710qm",
-      "tui-rich": "503f2003olf"
+      "rich": "ffe82fbc12r2",
+      "tui-rich": "d7cf9abfoxs"
     },
     "reply: footnotes-20k": {
       "tree": "bc6480f01l7e",
@@ -573,8 +573,8 @@
       "stream": "5d5a58751gaj",
       "remark": "a98b491djdv",
       "tui": "5bd9f30a2683",
-      "rich": "400cb508ytp",
-      "tui-rich": "92618741puc"
+      "rich": "f0a545a1yle",
+      "tui-rich": "6215023fq3n"
     }
   },
   "seeded": {

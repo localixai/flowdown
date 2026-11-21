@@ -7,6 +7,7 @@
  * draws the element as it first appears.
  */
 import type { TreeRow } from '../core/file-tree-parse'
+import type { LineHighlighter } from '../document/fence'
 import { CALLOUT_KINDS, type CalloutKind } from '../dialect'
 import type { Factory, Props } from './factory'
 import type { MarkdownLabels } from './labels'
@@ -137,7 +138,13 @@ export function callout<E, C>(
  * the page as is, so a highlighter must escape the code it was given (highlight.js and Shiki do);
  * `@localix-ai/flowdown/highlight` is one.
  */
-export type Highlighter = (code: string, language: string) => string | null
+export type Highlighter = ((code: string, language: string) => string | null) & {
+  /**
+   * A highlighter that reads a line at a time offers it: a fence still being written is then
+   * coloured a line once, exactly as the finished block will be.
+   */
+  lines?: ((language: string) => LineHighlighter | null) | undefined
+}
 
 /**
  * Code, inline or in a fence. A fenced block is highlighted when the page gave a highlighter and

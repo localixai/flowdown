@@ -1,8 +1,8 @@
 ---
 title: Highlighting
 description:
-  Colour fenced code with the bundled highlight.js setup or a highlighter of your own, styled by the
-  `--fd-code-*` tokens.
+  Colour fenced code with the built-in highlighter, which colours code that streams a line at a
+  time, or with one of your own, styled by the `--fd-code-*` tokens.
 ---
 
 # Highlighting
@@ -17,9 +17,11 @@ import { highlight } from '@localix-ai/flowdown/highlight'
 ;<Markdown highlight={highlight}>{text}</Markdown>
 ```
 
-`@localix-ai/flowdown/highlight` is built on highlight.js, an optional peer dependency: install
-`highlight.js` (version 11) to use it. A page that highlights some other way, or not at all, bundles
-none of it.
+`@localix-ai/flowdown/highlight` is [`@localix-ai/highlight`](https://github.com/localixai/flowdown/tree/main/packages/highlight),
+built in: there is nothing to install, and a page that highlights some other way, or not at all,
+bundles none of it. It is made for code that streams: it reads each line from the state the line
+above ended in (inside a comment, a string, a template), so a fence an agent is still writing is
+coloured a line once, exactly as the finished block will be.
 
 ## Languages
 
@@ -27,18 +29,20 @@ The bundled highlighter knows the languages replies and READMEs mostly contain:
 
 | Language | Fence names |
 | --- | --- |
-| Bash | `bash`, `sh`, `shell`, `zsh` |
+| Bash | `bash`, `sh`, `shell`, `zsh`, `shellscript` |
+| Shell session | `console`, `shell-session`, `terminal` |
 | C | `c`, `h` |
 | C++ | `cpp`, `c++`, `hpp` |
 | C# | `csharp`, `cs`, `c#` |
 | CSS | `css` |
+| SCSS, Less | `scss`, `sass`, `less` |
 | Diff | `diff`, `patch` |
 | Dockerfile | `dockerfile`, `docker` |
 | Go | `go`, `golang` |
-| HTML, XML | `xml`, `html`, `svg` |
+| HTML, XML | `xml`, `html`, `svg`, `vue`, `svelte` |
 | Java | `java` |
 | JavaScript | `javascript`, `js`, `jsx`, `mjs`, `cjs` |
-| JSON | `json` |
+| JSON | `json`, `jsonc`, `jsonl` |
 | Kotlin | `kotlin`, `kt` |
 | Markdown | `markdown`, `md` |
 | PHP | `php` |
@@ -47,14 +51,16 @@ The bundled highlighter knows the languages replies and READMEs mostly contain:
 | Rust | `rust`, `rs` |
 | SQL | `sql` |
 | Swift | `swift` |
-| TOML, INI | `toml`, `ini` |
-| TypeScript | `typescript`, `ts`, `tsx` |
+| TOML | `toml` |
+| INI, `.env` | `ini`, `cfg`, `conf`, `properties`, `env` |
+| TypeScript | `typescript`, `ts`, `tsx`, `mts`, `cts` |
 | YAML | `yaml`, `yml` |
 
 In a shell fence the highlighter colours what a reader looks for in an install line: the command
-(the first word of each command, after a `$ ` prompt, a `|`, `&&` or `;`), its flags, numbers,
-strings, variables and comments. `bun add @localix-ai/flowdown --dev` shows `bun` and `--dev`; the `test` of
-`bun test` is an argument and stays plain.
+(the first word of each command, after a `$ ` prompt, a `|`, `&&` or `;`), drawn as a call is, its
+flags, numbers, strings, variables, heredocs and comments. `bun add @localix-ai/flowdown --dev`
+shows `bun` and `--dev`; the `test` of `bun test` is an argument and stays plain. A `console` fence
+is a session: the lines after a prompt are commands, and what they printed stays plain.
 
 Only the language the fence names is highlighted. A fence without a language, or with one the
 highlighter does not know, is printed as plain text: guessing the language mislabels as often as
@@ -85,11 +91,17 @@ but the tokens are the way that follows the page's light and dark scheme.
 A highlighter is a function:
 
 ```ts
-type Highlighter = (code: string, language: string) => string | null
+type Highlighter = ((code: string, language: string) => string | null) & {
+  lines?: (language: string) => LineHighlighter | null
+}
 ```
 
 It is called for a fenced block whose fence names a language, with the code and that language. It
 returns HTML for the inside of the `<code>` element, or `null` to leave the code as plain text.
+
+`lines` is optional. A highlighter that reads a line at a time offers it, and a fence still being
+written is then coloured a line once: `line(text, state)` colours one line from the state the line
+above ended in and returns `{ html, end }`, `start` is a file's first state.
 
 > [!WARNING] Escape the code
 > The returned HTML is inserted as it is. A highlighter must escape the code it is given (`<`, `>`,
@@ -114,10 +126,15 @@ Highlighted code gets the class `fd-highlighted` beside its `language-*` class.
 
 ## While a reply streams
 
-The fence being written is highlighted in pieces of 40 lines, and only its last piece again on each
-update, so its colours appear as it grows. A construct that spans two pieces (a block comment, a
-template string) can be coloured wrongly until the fence closes; then the block is highlighted
-whole. Blocks above it are not highlighted again. A page that draws code itself (`components.pre`
+With the built-in highlighter, or any that offers `lines`, the fence being written is coloured a
+line at a time: a complete line once, and the line still being written again on each update, from
+the state the line above ended in. A comment opened twenty lines up is still a comment on the line
+being written, and what streams is coloured as the finished block is. Blocks above it are not
+highlighted again.
+
+A highlighter without `lines` is given the fence in pieces of 40 lines, only its last piece again
+on each update. A construct that spans two pieces (a block comment, a template string) can then be
+coloured wrongly until the fence closes, when the block is highlighted whole. A page that draws code itself (`components.pre`
 or `components.code`) receives the growing fence whole, as before. Keep the highlighter's reference stable (a module-level
 function, as above): a new function on every render makes every code block highlight again.
 
@@ -130,11 +147,9 @@ tokens are a page's and do not apply. A highlighter that names its colours anoth
 inline styles) leaves code in its one colour. The tokens are drawn only when together they are the
 code that was given, so a highlighter can change a row's colours and never its text.
 
-A view streams code as a page does: the fence being written is highlighted in pieces of 40 lines,
-only the last of them again on each token, and whole once it closes. A fence that is finished is
-highlighted once, however long the reply goes on.
-
-While a reply streams, the fence being written is highlighted whole on each update.
+A view streams code as a page does: the fence being written is coloured a line at a time by a
+highlighter that offers `lines` (in pieces of 40 lines by one that does not), and whole once it
+closes. A fence that is finished is highlighted once, however long the reply goes on.
 
 ## Without the renderer
 

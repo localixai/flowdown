@@ -68,6 +68,46 @@ describe('a fence that grows while the reply streams', () => {
     expect(counter.chars).toBeLessThan(whole / 10)
   })
 
+  test('a highlighter that reads lines colours each line once, as the finished block has it', async () => {
+    const { highlight } = await import('../highlight')
+    let read = 0
+    const counting = Object.assign((code: string, language: string) => highlight(code, language), {
+      lines: (language: string) => {
+        const reader = highlight.lines(language)
+        return (
+          reader && {
+            start: reader.start,
+            line: (text: string, state?: string) => {
+              read += text.length
+              return reader.line(text, state)
+            },
+          }
+        )
+      },
+    })
+    // A comment opened at the end of the first piece goes on into the second.
+    const body = `${LINES.slice(0, 39).join('\n')}\n/* opens here\n${LINES.slice(39).join('\n')}`
+    const text = `\`\`\`ts\n${body}`
+    const page = await mount()
+    const frames = prefixes(text, 'frame')
+    for (const frame of frames)
+      await page.render(
+        <Markdown streaming highlight={counting}>
+          {frame}
+        </Markdown>,
+      )
+    // Each line once, and the line being written again on each frame: about the code's length,
+    // where a piece at a time read its last piece on every frame.
+    expect(read).toBeGreaterThan(body.length - LINES.length)
+    expect(read).toBeLessThan(text.length * 3)
+    const code = page.host.querySelector('pre code')!
+    expect(code.textContent).toBe(body)
+    // Every line under the opened comment is the comment's, while it is still being written.
+    const comment = [...code.querySelectorAll('.hljs-comment')].map((node) => node.textContent)
+    expect(comment.at(-1)).toBe(LINES.at(-1))
+    await page.close()
+  })
+
   test('shows every line that has arrived, highlighted, under its language', async () => {
     const { highlight } = countingHighlighter()
     const page = await mount()

@@ -26,7 +26,7 @@ Every entry point and export of flowdown, and every prop of `<Markdown>`.
 | `@localix-ai/flowdown/prompt`      | The instructions that teach a model the dialect. Plain text.              |                          |
 | `@localix-ai/flowdown/html`        | The raw HTML stage (reader and sanitizer).                                |                          |
 | `@localix-ai/flowdown/math`        | The math stage.                                                           | `katex` 0.16 or later    |
-| `@localix-ai/flowdown/highlight`   | A highlighter for fenced code.                                            | `highlight.js` 11        |
+| `@localix-ai/flowdown/highlight`   | A highlighter for fenced code, built in.                                  |                          |
 | `@localix-ai/flowdown/mermaid`     | The diagram renderer, for a page that draws ` ```mermaid ` fences itself. | `mermaid`, loaded by you |
 
 The package is ESM only. Every module that uses React hooks starts with `'use client'`.
@@ -228,10 +228,10 @@ Import `katex/dist/katex.min.css` on the page.
 
 | Export                            | What it is                                                                 |
 | --------------------------------- | -------------------------------------------------------------------------- |
-| `highlight` (and default)         | A `Highlighter` on highlight.js: HTML, or `null` for a language it does not know. |
+| `highlight` (and default)         | A `Highlighter` that reads a line at a time (`lines`): HTML, or `null` for a language it does not know. |
 | `highlightCode(code, language?)`  | The same, returning escaped plain text instead of `null`.                  |
 
-Languages: Bash, CSS, JavaScript, JSON, Markdown, SQL, TypeScript, HTML/XML and YAML; see
+Languages: 26, from shell sessions and diffs to Rust and SQL; see
 [Highlighting](highlighting.md#languages).
 
 ## `@localix-ai/flowdown/mermaid`

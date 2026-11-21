@@ -24,13 +24,19 @@ import { mathSyntax } from '../core/math-syntax'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE } from '../dialect'
 import { createDocument, type MarkdownBlock } from '../document'
-import { createCutter, createFenceMemory, growingFence, type GrowingFence } from '../document/fence'
+import {
+  createCutter,
+  createFenceMemory,
+  createLineColourer,
+  growingFence,
+  type GrowingFence,
+} from '../document/fence'
 import { createListReader } from '../document/list'
 import { createQuoteReader } from '../document/quote'
 import { TABLE_ROWS, tableRows, type TableRows } from '../document/table'
 import { parse } from '../engine'
 import type { Extension, References } from '../engine/types'
-import { codeRows, createCodeDrawer, type Highlighter } from './code'
+import { codeRows, codeRowsOfHtml, createCodeDrawer, type Highlighter } from './code'
 import {
   createRowMemo,
   DEFAULT_LABELS,
@@ -124,29 +130,51 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
   // keeps its rows, so a token costs the last piece, not the file.
   const memory = createFenceMemory()
   const cut = createCutter()
+  const colour = createLineColourer()
   /** The pieces drawn last: `text` is a piece's code, without the line break a complete one ends in. */
-  let pieces: Array<{ text: string; run: number; key: string; code: Line[]; rows: Line[] }> = []
+  let pieces: Array<{
+    text: string
+    run: number
+    key: string
+    html?: string | undefined
+    code: Line[]
+    rows: Line[]
+  }> = []
   const fenceRows = (fence: GrowingFence): Line[] => {
     // A fence's code is drawn without its last line breaks, as `drawBlock` draws it.
     let end = fence.body.length
     while (end > 0 && fence.body.charCodeAt(end - 1) === 10) end -= 1
-    const { parts, run } = cut(end === fence.body.length ? fence.body : fence.body.slice(0, end))
+    const body = end === fence.body.length ? fence.body : fence.body.slice(0, end)
+    // A highlighter that reads a line at a time colours each line once, from the state above it.
+    const reader = fence.language && highlight?.lines ? highlight.lines(fence.language) : null
+    const coloured = reader && fence.language ? colour(body, reader, fence.language) : null
+    const { parts, run } = coloured ?? cut(body)
     const key = `${fence.language ?? ''}\u0000${columns}`
     const kept = pieces
     pieces = parts.map((part, index) => {
       const was = kept[index]
       const done = index < parts.length - 1
       const text = done ? part.slice(0, -1) : part
+      const html = coloured
+        ? done
+          ? coloured.html[index]!.slice(0, -1)
+          : coloured.html[index]
+        : undefined
       // A complete piece of the same run has the same code; the last one is compared, so the
       // piece that a line break has just completed keeps the rows it had as the last.
       if (
         was !== undefined &&
         was.key === key &&
-        ((done && index < kept.length - 1 && was.run === run) || was.text === text)
+        (html !== undefined
+          ? was.html === html
+          : (done && index < kept.length - 1 && was.run === run) || was.text === text)
       )
         return was.run === run ? was : { ...was, run }
-      const lines = codeRows(text, fence.language, highlight)
-      return { text, run, key, code: lines, rows: drawCodeRows(lines, columns) }
+      const lines =
+        html !== undefined && fence.language
+          ? codeRowsOfHtml(text, fence.language, html)
+          : codeRows(text, fence.language, highlight)
+      return { text, run, key, html, code: lines, rows: drawCodeRows(lines, columns) }
     })
     // The drawer holds them too: a fence it draws next with this code (closed, but still the
     // end of the reply) is not highlighted again, and one of one piece is drawn whole from them.

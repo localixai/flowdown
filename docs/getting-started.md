@@ -125,7 +125,7 @@ import 'katex/dist/katex.min.css'
 </Markdown>
 ```
 
-Install the engines you use: `katex`, `mermaid`, `highlight.js`. See [Math](math.md),
+Install the engines you use: `katex`, `mermaid`. The highlighter is built in. See [Math](math.md),
 [Diagrams](diagrams.md) and [Highlighting](highlighting.md).
 
 > [!TIP] Next.js and other server components

@@ -1,19 +1,15 @@
 /**
- * `@localix-ai/flowdown/highlight`: a highlighter for `<Markdown highlight={…}>`, built on highlight.js
- * with the languages replies and READMEs mostly hold and their usual aliases: shell, JavaScript and
- * TypeScript, Python, Go, Rust, Java, Kotlin, Swift, C, C++, C#, PHP, Ruby, SQL, JSON, YAML, TOML,
- * Dockerfile, CSS, HTML, Markdown and diffs.
+ * `@localix-ai/flowdown/highlight`: a highlighter for `<Markdown highlight={…}>`, with the languages
+ * replies, READMEs and agents mostly write and their usual aliases: shell and shell sessions,
+ * JavaScript and TypeScript, Python, Go, Rust, Java, Kotlin, Swift, C, C++, C#, PHP, Ruby, SQL,
+ * JSON, YAML, TOML, INI, Dockerfile, CSS, SCSS, HTML, Markdown and diffs.
  *
- * It is its own entry, and highlight.js an optional peer, so a page that highlights with Shiki or
- * not at all bundles none of it. Colours come from the `--fd-code-*` tokens in `styles.css`.
+ * It is `@localix-ai/highlight`, built in: no dependency to install. A page that highlights with
+ * Shiki or not at all imports none of it. Colours come from the `--fd-code-*` tokens in
+ * `styles.css`.
  */
-import { highlightCode } from './highlight'
+import { highlight } from './highlight'
 
-export { highlightCode } from './highlight'
-
-/** The `Highlighter` shape: highlighted HTML, or null for a language it does not know. */
-export function highlight(code: string, language: string): string | null {
-  return highlightCode(code, language, { unknown: 'null' })
-}
+export { highlight, highlightCode } from './highlight'
 
 export default highlight

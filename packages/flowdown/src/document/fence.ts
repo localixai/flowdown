@@ -139,3 +139,77 @@ export function createCutter(): (body: string) => Cut {
     return { parts, run }
   }
 }
+
+/**
+ * A highlighter that reads a line at a time (`@localix-ai/flowdown/highlight` is one): a line is
+ * read from the state the line above ended in, inside a comment, a string or a template, and gives
+ * the state it ends in. So a fence that grows is coloured as the finished one is, a line once.
+ */
+export interface LineHighlighter {
+  start: string
+  line(text: string, state?: string): { html: string; end: string }
+}
+
+/** The pieces of a body the cutter's way, each with its HTML. */
+export interface ColouredCut extends Cut {
+  /** The HTML of each part: a complete one ends in its newline, as its text does. */
+  html: string[]
+  /**
+   * The last part as its complete lines (each ending in its newline) and the line still being
+   * written: a page that draws them apart sets the HTML of a line once, and only the open line's
+   * again on a token.
+   */
+  lines: readonly string[]
+  open: string
+}
+
+/**
+ * Colours a body that grows at its end, in the cutter's pieces: each complete line is read once
+ * and kept, the line still being written is read again on each call from the state above it, and a
+ * complete piece keeps its HTML. A token costs its line, not its piece; and a comment opened in
+ * the first piece is still one in the last.
+ */
+export function createLineColourer(): (
+  body: string,
+  reader: LineHighlighter,
+  language: string,
+) => ColouredCut {
+  let text = ''
+  let read = ''
+  let run = 0
+  /** Where the complete lines end, and the state the next line starts in. */
+  let done = 0
+  let state = ''
+  /** The complete pieces: where each ends, and its HTML. */
+  let ends: number[] = []
+  let pieces: string[] = []
+  /** The HTML of the complete lines of the last piece, each ending in its newline. */
+  let lines: string[] = []
+  return (body, reader, language) => {
+    if (language !== read || (done > 0 && !continues(body, text, done))) {
+      if (done > 0) run += 1
+      read = language
+      done = 0
+      state = reader.start
+      ends = []
+      pieces = []
+      lines = []
+    }
+    for (let end = body.indexOf('\n', done); end !== -1; end = body.indexOf('\n', done)) {
+      const line = reader.line(body.slice(done, end), state)
+      lines.push(`${line.html}\n`)
+      state = line.end
+      done = end + 1
+      if (lines.length === LINES) {
+        pieces.push(lines.join(''))
+        ends.push(done)
+        lines = []
+      }
+    }
+    text = body
+    const open = reader.line(body.slice(done), state).html
+    const parts = ends.map((end, index) => body.slice(ends[index - 1] ?? 0, end))
+    parts.push(body.slice(ends.at(-1) ?? 0))
+    return { parts, run, html: [...pieces, lines.join('') + open], lines, open }
+  }
+}
