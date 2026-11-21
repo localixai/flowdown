@@ -4,7 +4,7 @@ on:
   push:
     branches: [spike/math]
 permissions:
-  contents: read
+  contents: write
 jobs:
   shots:
     strategy:
@@ -30,5 +30,11 @@ jobs:
       - run: node build.mjs
       - run: node shot.mjs
         env: { ENGINES: '${{ matrix.engines }}', TAG: '${{ matrix.tag }}' }
-      - uses: actions/upload-artifact@v4
-        with: { name: 'shots-${{ matrix.tag }}', path: 'spike/math/out/shot-*.png' }
+      # Each system's shots on a branch of their own: a session behind a proxy reads git, not
+      # artifact storage.
+      - name: Push the shots
+        shell: bash
+        run: |
+          mkdir /tmp/shots && cp out/shot-*.png /tmp/shots/ && cd /tmp/shots
+          git init -q -b main && git add . && git -c user.name=ci -c user.email=ci@localix.ai commit -qm shots
+          git push -fq "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/spike/math-shots-${{ matrix.tag }}
