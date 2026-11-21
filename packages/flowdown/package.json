@@ -78,7 +78,7 @@
   },
   "scripts": {
     "build": "tsdown && bun scripts/build-css.ts",
-    "test": "bun test",
+    "test": "bun test --randomize",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "check": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints styles.css && bun scripts/check-package.ts",
     "size": "bun scripts/size.ts",

@@ -1,0 +1,24 @@
+{
+  // What every package of this repository compiles under: the strictest TypeScript has, so a type
+  // says what a value can be (an index can miss, an optional field is absent, not undefined).
+  // A package's own tsconfig.json extends this and adds only its `include` and, for one that draws
+  // on a page, the DOM's types. `scripts/packages.test.ts` holds every package to it.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["bun"]
+  }
+}

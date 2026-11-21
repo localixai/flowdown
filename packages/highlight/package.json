@@ -37,7 +37,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "test": "bun test",
+    "test": "bun test --randomize",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "check": "publint --strict && attw --pack . --profile esm-only",
     "size": "bun scripts/size.ts",
