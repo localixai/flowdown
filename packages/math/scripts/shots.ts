@@ -49,18 +49,27 @@ const engines = argument('engines', 'chromium').split(',')
 const tag = argument('tag', process.platform)
 const { chromium, firefox, webkit } = await import('playwright-core')
 const launchers = { chromium, firefox, webkit } as const
-const server = Bun.serve({ port: 0, fetch: async (request) => {
-  const file = Bun.file(join(out, new URL(request.url).pathname))
-  return (await file.exists()) ? new Response(file) : new Response('', { status: 404 })
-} })
+const server = Bun.serve({
+  port: 0,
+  fetch: async (request) => {
+    const file = Bun.file(join(out, new URL(request.url).pathname))
+    return (await file.exists()) ? new Response(file) : new Response('', { status: 404 })
+  },
+})
 for (const engine of engines) {
   const launcher = launchers[engine as keyof typeof launchers]
   const executablePath = engine === 'chromium' ? process.env.CHROMIUM_PATH : undefined
   const browser = await launcher.launch(executablePath ? { executablePath } : {})
-  const page = await browser.newPage({ viewport: { width: 1000, height: 800 }, deviceScaleFactor: 2 })
+  const page = await browser.newPage({
+    viewport: { width: 1000, height: 800 },
+    deviceScaleFactor: 2,
+  })
   // The corpus beside KaTeX, and the probe: one construct written several ways, to see which way
   // each engine draws right.
-  for (const [file, name] of [['page.html', ''], ['probe.html', '-probe']] as const) {
+  for (const [file, name] of [
+    ['page.html', ''],
+    ['probe.html', '-probe'],
+  ] as const) {
     await page.goto(`http://localhost:${server.port}/${file}`)
     await page.evaluate('document.fonts.ready')
     await page.waitForTimeout(200)

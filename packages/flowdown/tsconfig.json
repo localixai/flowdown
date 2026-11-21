@@ -6,7 +6,12 @@
     "jsx": "react-jsx",
     // The repository's own packages, read from their source: a test, the types and the build take
     // them as they are, with no build of them first.
-    "paths": { "@localix-ai/highlight": ["../highlight/src/index.ts"] }
+    "paths": {
+      "@localix-ai/highlight": ["../highlight/src/index.ts"],
+      "@localix-ai/math": ["../math/src/index.ts"],
+      "@localix-ai/diagram": ["../diagram/src/index.ts"],
+      "@localix-ai/diagram/terminal": ["../diagram/src/terminal.ts"]
+    }
   },
   "include": ["src", "scripts", "test"]
 }

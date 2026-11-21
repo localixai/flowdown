@@ -30,12 +30,12 @@ import { widest } from './text'
 import { DIM, PLAIN, type Line, type Span } from '../style'
 import { span } from '../wrap'
 
-interface Slice {
+export interface Slice {
   label: string
   value: number
 }
 
-interface Pie {
+export interface Pie {
   title: string
   showData: boolean
   slices: Slice[]
@@ -51,14 +51,14 @@ const MOST_BAR = 40
 export const pieDiagram: DiagramKind = {
   matches: (header) => /^pie\b/i.test(header),
   draw(lines, columns) {
-    const pie = parse(lines)
+    const pie = parsePie(lines)
     if (!pie) return null
     const picture = bars(pie, columns)
     return bounded(picture && fits(picture, columns) ? picture : list(pie, columns))
   },
 }
 
-function parse(lines: readonly string[]): Pie | null {
+export function parsePie(lines: readonly string[]): Pie | null {
   const header = HEADER.exec(lines[0] ?? '')
   if (!header) return null
   const pie: Pie = { title: oneLabel(header[2] ?? ''), showData: !!header[1], slices: [] }

@@ -64,13 +64,28 @@
         "@types/bun": "1.4.3",
       },
     },
+    "packages/diagram": {
+      "name": "@localix-ai/diagram",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@arethetypeswrong/cli": "0.18.5",
+        "@types/bun": "1.4.3",
+        "mermaid": "12.3.0",
+        "playwright-core": "1.64.1",
+        "publint": "0.3.25",
+        "tsdown": "0.23.7",
+        "typescript": "7.0.2",
+      },
+    },
     "packages/flowdown": {
       "name": "@localix-ai/flowdown",
       "version": "0.8.0",
       "devDependencies": {
         "@arethetypeswrong/cli": "0.18.5",
         "@happy-dom/global-registrator": "21.0.4",
+        "@localix-ai/diagram": "workspace:*",
         "@localix-ai/highlight": "workspace:*",
+        "@localix-ai/math": "workspace:*",
         "@types/bun": "1.4.3",
         "@types/mdast": "^4.0.4",
         "@types/react": "^19.3.0",
@@ -231,6 +246,8 @@
     "@iconify/utils": ["@iconify/utils@3.1.7", "", { "dependencies": { "@antfu/install-pkg": "^2.0.1", "@iconify/types": "^2.0.0", "import-meta-resolve": "^4.2.0" } }, "sha512-JZHlwdID+dy+lTgbYC8NEC4zeugqeYsc6jewvzb4c58kHauJn+X7rNwQjxz5p2qSjqaEeQoLkCIQ9v/H4PK0/w=="],
 
     "@loaderkit/resolve": ["@loaderkit/resolve@1.0.6", "", { "dependencies": { "@braidai/lang": "^1.0.0" } }, "sha512-G8FdIoF5CypfwmD9rl8BXod5HDn8JqB0CCNBXDTaRZ+yRYhARrrSToX1zg1zy9jX3zLqigsELwhT4gNtkdQAUg=="],
+
+    "@localix-ai/diagram": ["@localix-ai/diagram@workspace:packages/diagram"],
 
     "@localix-ai/flowdown": ["@localix-ai/flowdown@workspace:packages/flowdown"],
 

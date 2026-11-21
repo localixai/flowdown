@@ -49,7 +49,8 @@ describe('toRows', () => {
     for (const [, tex] of CORPUS) {
       for (let at = 0; at <= tex.length; at += 3) {
         for (const row of toRows(tex.slice(0, at), 60)) {
-          if (cells(row) > 60 && toRows(tex.slice(0, at), 60).length > 1) throw new Error(`${tex.slice(0, at)}: ${row}`)
+          if (cells(row) > 60 && toRows(tex.slice(0, at), 60).length > 1)
+            throw new Error(`${tex.slice(0, at)}: ${row}`)
         }
       }
     }

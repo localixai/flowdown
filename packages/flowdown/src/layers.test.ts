@@ -50,6 +50,8 @@ const MAY_NAME: Record<string, string[]> = {
   mermaid: ['react', 'mermaid'],
   math: ['katex'],
   highlight: ['@localix-ai/highlight'],
+  // A terminal draws diagrams with the package that draws them for pages too.
+  tui: ['@localix-ai/diagram'],
 }
 
 /** The parts that run where there may be no page: a server, a worker, a terminal. */

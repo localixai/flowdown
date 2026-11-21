@@ -1,0 +1,13 @@
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  entry: { index: 'src/index.ts', terminal: 'src/terminal.ts' },
+  format: 'esm',
+  platform: 'neutral',
+  target: 'es2022',
+  dts: true,
+  sourcemap: true,
+  clean: true,
+  exports: false,
+  publint: false,
+})

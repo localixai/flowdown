@@ -6,7 +6,15 @@
  * Every construct read has a bound (`MOST_DEPTH`, `MOST_SOURCE`): no text makes it take time or
  * room beyond its size.
  */
-import { ACCENTS, DELIMITERS, FUNCTION_TEXT, FUNCTIONS, SPACES, SYMBOLS, type MathSymbol } from './symbols'
+import {
+  ACCENTS,
+  DELIMITERS,
+  FUNCTION_TEXT,
+  FUNCTIONS,
+  SPACES,
+  SYMBOLS,
+  type MathSymbol,
+} from './symbols'
 import { EMPTY, row, type MathNode, type OperatorKind, type Variant } from './tree'
 
 /** Past this nesting the rest of a group is read as text: no formula a model writes goes deeper. */
@@ -15,26 +23,99 @@ const MOST_DEPTH = 48
 export const MOST_SOURCE = 20_000
 
 const VARIANTS: Record<string, Variant> = {
-  mathbf: 'bold', textbf: 'bold', bm: 'bold-italic', boldsymbol: 'bold-italic', mathbfit: 'bold-italic',
-  mathit: 'italic', textit: 'italic', mathbb: 'double-struck', Bbb: 'double-struck', mathcal: 'script',
-  mathscr: 'script', mathfrak: 'fraktur', mathsf: 'sans-serif', textsf: 'sans-serif',
-  mathtt: 'monospace', texttt: 'monospace', mathrm: 'normal', textrm: 'normal', mathup: 'normal',
-  mathnormal: 'italic', mathbfcal: 'bold-script', mathbfsf: 'bold-sans-serif',
+  mathbf: 'bold',
+  textbf: 'bold',
+  bm: 'bold-italic',
+  boldsymbol: 'bold-italic',
+  mathbfit: 'bold-italic',
+  mathit: 'italic',
+  textit: 'italic',
+  mathbb: 'double-struck',
+  Bbb: 'double-struck',
+  mathcal: 'script',
+  mathscr: 'script',
+  mathfrak: 'fraktur',
+  mathsf: 'sans-serif',
+  textsf: 'sans-serif',
+  mathtt: 'monospace',
+  texttt: 'monospace',
+  mathrm: 'normal',
+  textrm: 'normal',
+  mathup: 'normal',
+  mathnormal: 'italic',
+  mathbfcal: 'bold-script',
+  mathbfsf: 'bold-sans-serif',
 }
-const TEXTS = new Set(['text', 'textrm', 'textnormal', 'mbox', 'textbf', 'textit', 'textsf', 'texttt', 'textup', 'hbox'])
+const TEXTS = new Set([
+  'text',
+  'textrm',
+  'textnormal',
+  'mbox',
+  'textbf',
+  'textit',
+  'textsf',
+  'texttt',
+  'textup',
+  'hbox',
+])
 const SIZES: Record<string, number> = { big: 1.2, Big: 1.8, bigg: 2.4, Bigg: 3 }
-const ESCAPED: Record<string, string> = { '{': '{', '}': '}', '$': '$', '%': '%', '&': '&', '#': '#', '_': '_', '|': '‖' }
-const CHAR_OPERATORS: Record<string, [string, OperatorKind]> = {
-  '+': ['+', 'bin'], '-': ['−', 'bin'], '*': ['∗', 'bin'], '=': ['=', 'rel'], '<': ['<', 'rel'],
-  '>': ['>', 'rel'], ':': [':', 'rel'], ',': [',', 'punct'], ';': [';', 'punct'], '(': ['(', 'open'],
-  ')': [')', 'close'], '[': ['[', 'open'], ']': [']', 'close'], '|': ['|', 'fence'], '/': ['/', 'ord'],
-  '!': ['!', 'close'], '?': ['?', 'close'], '.': ['.', 'ord'], '@': ['@', 'ord'], '"': ['"', 'ord'],
+const ESCAPED: Record<string, string> = {
+  '{': '{',
+  '}': '}',
+  $: '$',
+  '%': '%',
+  '&': '&',
+  '#': '#',
+  _: '_',
+  '|': '‖',
 }
-const IGNORED = new Set(['label', 'nonumber', 'notag', 'limits', 'nolimits', 'displaylimits', 'relax', 'allowbreak', 'nobreak', 'strut', 'mathstrut', 'centering', 'left.', 'right.'])
+const CHAR_OPERATORS: Record<string, [string, OperatorKind]> = {
+  '+': ['+', 'bin'],
+  '-': ['−', 'bin'],
+  '*': ['∗', 'bin'],
+  '=': ['=', 'rel'],
+  '<': ['<', 'rel'],
+  '>': ['>', 'rel'],
+  ':': [':', 'rel'],
+  ',': [',', 'punct'],
+  ';': [';', 'punct'],
+  '(': ['(', 'open'],
+  ')': [')', 'close'],
+  '[': ['[', 'open'],
+  ']': [']', 'close'],
+  '|': ['|', 'fence'],
+  '/': ['/', 'ord'],
+  '!': ['!', 'close'],
+  '?': ['?', 'close'],
+  '.': ['.', 'ord'],
+  '@': ['@', 'ord'],
+  '"': ['"', 'ord'],
+}
+const IGNORED = new Set([
+  'label',
+  'nonumber',
+  'notag',
+  'limits',
+  'nolimits',
+  'displaylimits',
+  'relax',
+  'allowbreak',
+  'nobreak',
+  'strut',
+  'mathstrut',
+  'centering',
+  'left.',
+  'right.',
+])
 /** Environments and what they are: matrix delimiters, and how cells align. */
 const MATRICES: Record<string, [string, string]> = {
-  matrix: ['', ''], pmatrix: ['(', ')'], bmatrix: ['[', ']'], Bmatrix: ['{', '}'], vmatrix: ['|', '|'],
-  Vmatrix: ['‖', '‖'], smallmatrix: ['', ''],
+  matrix: ['', ''],
+  pmatrix: ['(', ')'],
+  bmatrix: ['[', ']'],
+  Bmatrix: ['{', '}'],
+  vmatrix: ['|', '|'],
+  Vmatrix: ['‖', '‖'],
+  smallmatrix: ['', ''],
 }
 
 type Stop = '}' | '&' | '\\\\' | 'end' | 'right' | 'middle' | ']'
@@ -73,7 +154,10 @@ class Reader {
   /** Whether the next command is `name` (consumed when it is). */
   lookCommand(name: string): boolean {
     this.skipSpace()
-    if (this.text.startsWith(`\\${name}`, this.at) && !/[a-zA-Z]/.test(this.text[this.at + name.length + 1] ?? '')) {
+    if (
+      this.text.startsWith(`\\${name}`, this.at) &&
+      !/[a-zA-Z]/.test(this.text[this.at + name.length + 1] ?? '')
+    ) {
       this.at += name.length + 1
       return true
     }
@@ -133,14 +217,25 @@ export function parse(source: string): MathNode {
   }
   // Lines broken with `\\` outside an environment: a gathered display, one line under the other.
   if (lines.length === 1) return lines[0]!
-  return { type: 'table', rows: lines.map((line) => [line]), align: ['center'], kind: 'gather', open: '', close: '', display: true }
+  return {
+    type: 'table',
+    rows: lines.map((line) => [line]),
+    align: ['center'],
+    kind: 'gather',
+    open: '',
+    close: '',
+    display: true,
+  }
 }
 
 /**
  * Atoms up to a stop the caller names (a `}` of its group, a cell's `&`, a row's `\\`, `\end`,
  * `\right`), scripts attached to what they follow and `\over` splitting what it divides.
  */
-function expression(reader: Reader, stops: readonly Stop[]): { nodes: MathNode[]; stop: Stop | null } {
+function expression(
+  reader: Reader,
+  stops: readonly Stop[],
+): { nodes: MathNode[]; stop: Stop | null } {
   const nodes: MathNode[] = []
   let over: { kind: 'over' | 'choose' | 'atop'; before: MathNode[] } | null = null
   reader.depth++
@@ -149,8 +244,20 @@ function expression(reader: Reader, stops: readonly Stop[]): { nodes: MathNode[]
     if (!over) return { nodes, stop }
     const numerator = row(over.before)
     const denominator = row(nodes)
-    const fraction: MathNode = { type: 'fraction', numerator, denominator, rule: over.kind === 'over' }
-    return { nodes: [over.kind === 'choose' ? { type: 'fenced', open: '(', close: ')', body: fraction } : fraction], stop }
+    const fraction: MathNode = {
+      type: 'fraction',
+      numerator,
+      denominator,
+      rule: over.kind === 'over',
+    }
+    return {
+      nodes: [
+        over.kind === 'choose'
+          ? { type: 'fenced', open: '(', close: ')', body: fraction }
+          : fraction,
+      ],
+      stop,
+    }
   }
   if (reader.depth > MOST_DEPTH) {
     nodes.push({ type: 'text', text: reader.text.slice(reader.at) })
@@ -194,7 +301,8 @@ function expression(reader: Reader, stops: readonly Stop[]): { nodes: MathNode[]
       if (name === 'limits' || name === 'nolimits') {
         const last = nodes.at(-1)
         const target = last?.type === 'scripts' ? last.base : last
-        if (target?.type === 'operator' || target?.type === 'function') target.limits = name === 'limits'
+        if (target?.type === 'operator' || target?.type === 'function')
+          target.limits = name === 'limits'
         continue
       }
       reader.at = mark
@@ -212,7 +320,11 @@ function expression(reader: Reader, stops: readonly Stop[]): { nodes: MathNode[]
       }
       // A prime sits after its letter at the letter's own height, as the font draws it: set as a
       // superscript it would ride a second time above the line.
-      nodes.push({ type: 'operator', text: ['′', '″', '‴', '⁗'][Math.min(primes, 4) - 1]!, kind: 'ord' })
+      nodes.push({
+        type: 'operator',
+        text: ['′', '″', '‴', '⁗'][Math.min(primes, 4) - 1]!,
+        kind: 'ord',
+      })
       continue
     }
     const atom = readAtom(reader, stops)
@@ -242,7 +354,12 @@ function attach(nodes: MathNode[], place: 'sup' | 'sub', script: MathNode): void
     return
   }
   const base = last ?? EMPTY
-  const limits = base.type === 'operator' || base.type === 'function' ? base.limits : base.type === 'accent' && base.stretchy && /[⏞⏟⏜⏝⎴⎵]/.test(base.char) ? true : undefined
+  const limits =
+    base.type === 'operator' || base.type === 'function'
+      ? base.limits
+      : base.type === 'accent' && base.stretchy && /[⏞⏟⏜⏝⎴⎵]/.test(base.char)
+        ? true
+        : undefined
   const scripts: MathNode = { type: 'scripts', base, [place]: script }
   if (limits !== undefined && scripts.type === 'scripts') scripts.limits = limits
   nodes.push(scripts)
@@ -303,7 +420,11 @@ function readAtom(reader: Reader, stops: readonly Stop[]): MathNode | null {
   }
   if (/[0-9]/.test(char)) {
     const start = reader.at
-    while (/[0-9]/.test(reader.peek()) || (reader.peek() === '.' && /[0-9]/.test(reader.text[reader.at + 1] ?? ''))) reader.at++
+    while (
+      /[0-9]/.test(reader.peek()) ||
+      (reader.peek() === '.' && /[0-9]/.test(reader.text[reader.at + 1] ?? ''))
+    )
+      reader.at++
     return { type: 'number', text: reader.text.slice(start, reader.at) }
   }
   reader.at++
@@ -323,14 +444,29 @@ function readAtom(reader: Reader, stops: readonly Stop[]): MathNode | null {
 function readCommand(reader: Reader, name: string, stops: readonly Stop[]): MathNode | null {
   if (name === '') return null
   const escaped = ESCAPED[name]
-  if (escaped !== undefined) return escaped === '‖' ? { type: 'operator', text: '‖', kind: 'fence' } : { type: 'operator', text: escaped, kind: escaped === '{' ? 'open' : escaped === '}' ? 'close' : 'ord' }
+  if (escaped !== undefined)
+    return escaped === '‖'
+      ? { type: 'operator', text: '‖', kind: 'fence' }
+      : {
+          type: 'operator',
+          text: escaped,
+          kind: escaped === '{' ? 'open' : escaped === '}' ? 'close' : 'ord',
+        }
   const space = SPACES[name]
   if (space !== undefined) return { type: 'space', width: space }
   const symbol = SYMBOLS.get(name)
   if (symbol) return symbolNode(symbol)
-  if (FUNCTIONS.has(name)) return { type: 'function', text: FUNCTION_TEXT[name] ?? name, limits: FUNCTIONS.get(name)! }
+  if (FUNCTIONS.has(name))
+    return { type: 'function', text: FUNCTION_TEXT[name] ?? name, limits: FUNCTIONS.get(name)! }
   const accent = ACCENTS[name]
-  if (accent) return { type: 'accent', base: argument(reader), char: accent.char, stretchy: accent.stretchy, under: accent.under === true }
+  if (accent)
+    return {
+      type: 'accent',
+      base: argument(reader),
+      char: accent.char,
+      stretchy: accent.stretchy,
+      under: accent.under === true,
+    }
   const variant = VARIANTS[name]
   if (variant && !TEXTS.has(name)) return { type: 'variant', variant, body: argument(reader) }
   if (TEXTS.has(name)) {
@@ -381,8 +517,11 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
     case 'mathop': {
       const inside = parse(reader.rawGroup())
       const text = plainText(inside)
-      if (text !== null && name !== 'mathop') return { type: 'function', text, limits: name.endsWith('*') }
-      return name === 'mathop' && text !== null ? { type: 'operator', text, kind: 'op', limits: true } : inside
+      if (text !== null && name !== 'mathop')
+        return { type: 'function', text, limits: name.endsWith('*') }
+      return name === 'mathop' && text !== null
+        ? { type: 'operator', text, kind: 'op', limits: true }
+        : inside
     }
     case 'overset':
     case 'stackrel': {
@@ -404,8 +543,13 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
     case 'xtwoheadrightarrow': {
       const under = optional(reader)
       const over = argument(reader)
-      const arrow = SYMBOLS.get(name.slice(1).replace(/^(.)/, (first) => first))?.char ?? ARROWS[name] ?? '→'
-      const stack: MathNode = { type: 'stack', base: { type: 'operator', text: arrow, kind: 'rel', stretchy: true }, over }
+      const arrow =
+        SYMBOLS.get(name.slice(1).replace(/^(.)/, (first) => first))?.char ?? ARROWS[name] ?? '→'
+      const stack: MathNode = {
+        type: 'stack',
+        base: { type: 'operator', text: arrow, kind: 'rel', stretchy: true },
+        over,
+      }
       if (under && stack.type === 'stack') stack.under = under
       return stack
     }
@@ -439,23 +583,40 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
       const { nodes, stop } = expression(reader, stops)
       if (stop === '}' || stop === '&') reader.at--
       else if (stop === '\\\\') reader.at -= 2
-      return { type: 'style', style: name === 'displaystyle' ? 'display' : name === 'textstyle' ? 'text' : 'script', body: row(nodes) }
+      return {
+        type: 'style',
+        style: name === 'displaystyle' ? 'display' : name === 'textstyle' ? 'text' : 'script',
+        body: row(nodes),
+      }
     }
     case 'not': {
       const next = argument(reader)
-      if (next.type === 'operator' || next.type === 'identifier') return { ...next, text: `${next.text}\u0338` }
+      if (next.type === 'operator' || next.type === 'identifier')
+        return { ...next, text: `${next.text}\u0338` }
       return next
     }
     case 'pmod':
-      return row([{ type: 'space', width: 1 }, { type: 'operator', text: '(', kind: 'open' }, { type: 'function', text: 'mod', limits: false }, argument(reader), { type: 'operator', text: ')', kind: 'close' }])
+      return row([
+        { type: 'space', width: 1 },
+        { type: 'operator', text: '(', kind: 'open' },
+        { type: 'function', text: 'mod', limits: false },
+        argument(reader),
+        { type: 'operator', text: ')', kind: 'close' },
+      ])
     case 'bmod':
       return { type: 'operator', text: 'mod', kind: 'bin' }
     case 'mod':
-      return row([{ type: 'space', width: 1 }, { type: 'function', text: 'mod', limits: false }])
+      return row([
+        { type: 'space', width: 1 },
+        { type: 'function', text: 'mod', limits: false },
+      ])
     case 'tag':
     case 'tag*': {
       const tag = reader.rawGroup()
-      return row([{ type: 'space', width: 2 }, { type: 'text', text: name === 'tag' ? `(${textOf(tag)})` : textOf(tag) }])
+      return row([
+        { type: 'space', width: 2 },
+        { type: 'text', text: name === 'tag' ? `(${textOf(tag)})` : textOf(tag) },
+      ])
     }
     case 'hspace':
     case 'hspace*':
@@ -464,7 +625,14 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
     case 'mskip':
     case 'kern':
     case 'mkern':
-      return { type: 'space', width: length(name.startsWith('h') || name.startsWith('m') && name !== 'mkern' && name !== 'mskip' ? reader.rawGroup() : reader.rawGroup()) }
+      return {
+        type: 'space',
+        width: length(
+          name.startsWith('h') || (name.startsWith('m') && name !== 'mkern' && name !== 'mskip')
+            ? reader.rawGroup()
+            : reader.rawGroup(),
+        ),
+      }
     case 'cancel':
     case 'bcancel':
     case 'xcancel':
@@ -486,7 +654,15 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
         rows.push([row(nodes)])
         if (stop !== '\\\\') break
       }
-      return { type: 'table', rows, align: ['center'], kind: 'small', open: '', close: '', display: false }
+      return {
+        type: 'table',
+        rows,
+        align: ['center'],
+        kind: 'small',
+        open: '',
+        close: '',
+        display: false,
+      }
     }
     case 'dots':
       return { type: 'operator', text: '…', kind: 'ord' }
@@ -496,8 +672,15 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
 }
 
 const ARROWS: Record<string, string> = {
-  xrightarrow: '→', xleftarrow: '←', xRightarrow: '⇒', xLeftarrow: '⇐', xleftrightarrow: '↔',
-  xLeftrightarrow: '⇔', xmapsto: '↦', xhookrightarrow: '↪', xtwoheadrightarrow: '↠',
+  xrightarrow: '→',
+  xleftarrow: '←',
+  xRightarrow: '⇒',
+  xLeftarrow: '⇐',
+  xleftrightarrow: '↔',
+  xLeftrightarrow: '⇔',
+  xmapsto: '↦',
+  xhookrightarrow: '↪',
+  xtwoheadrightarrow: '↠',
 }
 
 /** The delimiter after `\left`, `\big` and the like: one character or one command. */
@@ -559,27 +742,75 @@ function environment(reader: Reader, name: string): MathNode {
   }
   // A trailing `\\` leaves an empty last row: TeX draws none.
   const last = rows.at(-1)!
-  if (rows.length > 1 && last.length === 1 && last[0]!.type === 'row' && last[0]!.children.length === 0) rows.pop()
+  if (
+    rows.length > 1 &&
+    last.length === 1 &&
+    last[0]!.type === 'row' &&
+    last[0]!.children.length === 0
+  )
+    rows.pop()
 
   const matrix = MATRICES[bare]
   if (matrix) {
-    return { type: 'table', rows, align: align.length ? align : ['center'], kind: bare === 'smallmatrix' ? 'small' : 'matrix', open: matrix[0], close: matrix[1], display: false }
+    return {
+      type: 'table',
+      rows,
+      align: align.length ? align : ['center'],
+      kind: bare === 'smallmatrix' ? 'small' : 'matrix',
+      open: matrix[0],
+      close: matrix[1],
+      display: false,
+    }
   }
   if (bare === 'cases' || bare === 'dcases' || bare === 'rcases' || bare === 'drcases') {
     const right = bare.includes('r')
-    return { type: 'table', rows, align: ['left', 'left'], kind: 'cases', open: right ? '' : '{', close: right ? '}' : '', display: bare.startsWith('d') }
+    return {
+      type: 'table',
+      rows,
+      align: ['left', 'left'],
+      kind: 'cases',
+      open: right ? '' : '{',
+      close: right ? '}' : '',
+      display: bare.startsWith('d'),
+    }
   }
   if (['aligned', 'align', 'alignat', 'alignedat', 'split', 'eqnarray', 'flalign'].includes(bare)) {
-    return { type: 'table', rows, align: ['right', 'left'], kind: 'aligned', open: '', close: '', display: true }
+    return {
+      type: 'table',
+      rows,
+      align: ['right', 'left'],
+      kind: 'aligned',
+      open: '',
+      close: '',
+      display: true,
+    }
   }
   if (bare === 'gather' || bare === 'gathered' || bare === 'multline') {
-    return { type: 'table', rows, align: ['center'], kind: 'gather', open: '', close: '', display: true }
+    return {
+      type: 'table',
+      rows,
+      align: ['center'],
+      kind: 'gather',
+      open: '',
+      close: '',
+      display: true,
+    }
   }
   if (bare === 'array' || bare === 'subarray') {
-    return { type: 'table', rows, align: align.length ? align : ['center'], kind: 'array', open: '', close: '', display: false }
+    return {
+      type: 'table',
+      rows,
+      align: align.length ? align : ['center'],
+      kind: 'array',
+      open: '',
+      close: '',
+      display: false,
+    }
   }
   // `equation` and any other: its one cell as it is.
-  return rows.length === 1 && rows[0]!.length === 1 ? rows[0]![0]! : { type: 'table', rows, align: ['center'], kind: 'gather', open: '', close: '', display: true }
+  return rows.length === 1 && rows[0]!.length === 1
+    ? rows[0]![0]!
+    : { type: 'table', rows, align: ['center'], kind: 'gather', open: '', close: '', display: true }
 }
 
 function columns(spec: string): Array<'left' | 'center' | 'right'> {
@@ -607,13 +838,17 @@ function length(text: string): number {
   const value = Number(hit[1])
   if (!Number.isFinite(value)) return 0
   const unit = hit[2] ?? 'em'
-  const em = { em: 1, ex: 0.43, mu: 1 / 18, pt: 0.1, px: 0.0625, mm: 0.284, cm: 2.84, in: 7.2 }[unit] ?? 1
+  const em =
+    { em: 1, ex: 0.43, mu: 1 / 18, pt: 0.1, px: 0.0625, mm: 0.284, cm: 2.84, in: 7.2 }[unit] ?? 1
   return Math.max(-10, Math.min(10, value * em))
 }
 
 /** `\text{…}`'s inside: its escapes undone, and math in `$…$` left as written. */
 function textOf(raw: string): string {
-  return raw.replace(/\\([{}$%&#_ ])/g, '$1').replace(/\\textbackslash\b/g, '\\').replace(/~/g, '\u00a0')
+  return raw
+    .replace(/\\([{}$%&#_ ])/g, '$1')
+    .replace(/\\textbackslash\b/g, '\\')
+    .replace(/~/g, '\u00a0')
 }
 
 /** A node's letters when it holds nothing but letters (what `\operatorname` names). */

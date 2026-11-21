@@ -1,14 +1,146 @@
-<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
-<style>body{font:18px system-ui;margin:16px} td{padding:8px 16px;border:1px solid #ddd} th{font-size:12px;text-align:left}</style>
+<!doctype html><meta charset="utf-8" /><link rel="stylesheet" href="styles.css" />
+<style>
+  body {
+    font: 18px system-ui;
+    margin: 16px;
+  }
+  td {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+  }
+  th {
+    font-size: 12px;
+    text-align: left;
+  }
+</style>
 <table>
-<tr><th>brace a: accentunder</th><td><math display="block"><munder accentunder="true"><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn></mrow><mo stretchy="true">⏟</mo></munder></math></td></tr>
-<tr><th>brace b: plain munder</th><td><math display="block"><munder><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn></mrow><mo>⏟</mo></munder></math></td></tr>
-<tr><th>brace c: math-depth 0</th><td><math display="block"><munder><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn></mrow><mo stretchy="true" style="math-depth:0">⏟</mo></munder></math></td></tr>
-<tr><th>arrow a: mover stretchy</th><td><math display="block"><mi>A</mi><mover><mo stretchy="true">→</mo><mrow><mi>f</mi><mo>∘</mo><mi>g</mi><mo>∘</mo><mi>h</mi></mrow></mover><mi>B</mi></math></td></tr>
-<tr><th>arrow b: ⟶ minsize</th><td><math display="block"><mi>A</mi><mover><mo stretchy="true" style="math-depth:0">→</mo><mpadded lspace="0.3em" width="+0.6em"><mrow><mi>f</mi><mo>∘</mo><mi>g</mi><mo>∘</mo><mi>h</mi></mrow></mpadded></mover><mi>B</mi></math></td></tr>
-<tr><th>hat: ^ ˆ U+0302</th><td><math display="block"><mover accent="true"><mi>y</mi><mo>^</mo></mover><mo>,</mo><mover accent="true"><mi>y</mi><mo>ˆ</mo></mover><mo>,</mo><mover accent="true"><mi>y</mi><mo>&#x302;</mo></mover><mo>,</mo><msub><mover accent="true"><mi>y</mi><mo>ˆ</mo></mover><mi>i</mi></msub></math></td></tr>
-<tr><th>vec: → ⃗ U+20D7</th><td><math display="block"><mover accent="true"><mi>v</mi><mo stretchy="false">→</mo></mover><mo>,</mo><mover accent="true"><mi>v</mi><mo>&#x20D7;</mo></mover><mo>,</mo><mover accent="true"><mi>v</mi><mo stretchy="false" style="math-depth:1">→</mo></mover></math></td></tr>
-<tr><th>wide hat</th><td><math display="block"><mover accent="true"><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover><mo>,</mo><mover accent="true"><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow><mo stretchy="true">&#x302;</mo></mover><mo>,</mo><mover accent="true"><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow><mo stretchy="true">ˆ</mo></mover></math></td></tr>
-<tr><th>bar/tilde/dot</th><td><math display="block"><mover accent="true"><mi>x</mi><mo>¯</mo></mover><mo>,</mo><mover accent="true"><mi>x</mi><mo>&#x2015;</mo></mover><mo>,</mo><mover accent="true"><mi>y</mi><mo>~</mo></mover><mo>,</mo><mover accent="true"><mi>y</mi><mo>˜</mo></mover><mo>,</mo><mover accent="true"><mi>z</mi><mo>˙</mo></mover></math></td></tr>
-<tr><th>prime: msup vs inline</th><td><math display="block"><msup><mi>f</mi><mo>′</mo></msup><mo>,</mo><mi>f</mi><mo lspace="0" rspace="0">′</mo><mo>,</mo><msup><mi>f</mi><mo>″</mo></msup><mo>,</mo><mi>f</mi><mo lspace="0" rspace="0">″</mo></math></td></tr>
+  <tr>
+    <th>brace a: accentunder</th>
+    <td>
+      <math display="block"
+        ><munder accentunder="true"
+          ><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn></mrow
+          ><mo stretchy="true">⏟</mo></munder
+        ></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>brace b: plain munder</th>
+    <td>
+      <math display="block"
+        ><munder
+          ><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn></mrow
+          ><mo>⏟</mo></munder
+        ></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>brace c: math-depth 0</th>
+    <td>
+      <math display="block"
+        ><munder
+          ><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mo>⋯</mo><mo>+</mo><mn>1</mn></mrow
+          ><mo stretchy="true" style="math-depth: 0">⏟</mo></munder
+        ></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>arrow a: mover stretchy</th>
+    <td>
+      <math display="block"
+        ><mi>A</mi
+        ><mover
+          ><mo stretchy="true">→</mo
+          ><mrow><mi>f</mi><mo>∘</mo><mi>g</mi><mo>∘</mo><mi>h</mi></mrow></mover
+        ><mi>B</mi></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>arrow b: ⟶ minsize</th>
+    <td>
+      <math display="block"
+        ><mi>A</mi
+        ><mover
+          ><mo stretchy="true" style="math-depth: 0">→</mo
+          ><mpadded lspace="0.3em" width="+0.6em"
+            ><mrow><mi>f</mi><mo>∘</mo><mi>g</mi><mo>∘</mo><mi>h</mi></mrow></mpadded
+          ></mover
+        ><mi>B</mi></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>hat: ^ ˆ U+0302</th>
+    <td>
+      <math display="block"
+        ><mover accent="true"><mi>y</mi><mo>^</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>y</mi><mo>ˆ</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>y</mi><mo>&#x302;</mo></mover
+        ><mo>,</mo
+        ><msub
+          ><mover accent="true"><mi>y</mi><mo>ˆ</mo></mover
+          ><mi>i</mi></msub
+        ></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>vec: → ⃗ U+20D7</th>
+    <td>
+      <math display="block"
+        ><mover accent="true"><mi>v</mi><mo stretchy="false">→</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>v</mi><mo>&#x20D7;</mo></mover
+        ><mo>,</mo
+        ><mover accent="true"
+          ><mi>v</mi><mo stretchy="false" style="math-depth: 1">→</mo></mover
+        ></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>wide hat</th>
+    <td>
+      <math display="block"
+        ><mover accent="true"
+          ><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow
+          ><mo stretchy="true">^</mo></mover
+        ><mo>,</mo
+        ><mover accent="true"
+          ><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow
+          ><mo stretchy="true">&#x302;</mo></mover
+        ><mo>,</mo
+        ><mover accent="true"
+          ><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow
+          ><mo stretchy="true">ˆ</mo></mover
+        ></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>bar/tilde/dot</th>
+    <td>
+      <math display="block"
+        ><mover accent="true"><mi>x</mi><mo>¯</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>x</mi><mo>&#x2015;</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>y</mi><mo>~</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>y</mi><mo>˜</mo></mover
+        ><mo>,</mo><mover accent="true"><mi>z</mi><mo>˙</mo></mover></math
+      >
+    </td>
+  </tr>
+  <tr>
+    <th>prime: msup vs inline</th>
+    <td>
+      <math display="block"
+        ><msup><mi>f</mi><mo>′</mo></msup
+        ><mo>,</mo><mi>f</mi><mo lspace="0" rspace="0">′</mo><mo>,</mo
+        ><msup><mi>f</mi><mo>″</mo></msup
+        ><mo>,</mo><mi>f</mi><mo lspace="0" rspace="0">″</mo></math
+      >
+    </td>
+  </tr>
 </table>

@@ -90,7 +90,9 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@happy-dom/global-registrator": "21.0.4",
+    "@localix-ai/diagram": "workspace:*",
     "@localix-ai/highlight": "workspace:*",
+    "@localix-ai/math": "workspace:*",
     "@types/bun": "1.4.3",
     "@types/mdast": "^4.0.4",
     "@types/react": "^19.3.0",

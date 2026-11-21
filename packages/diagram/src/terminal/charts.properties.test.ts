@@ -12,7 +12,7 @@
  * Values are drawn from zero, below it, past what reads in digits, and what is not a number.
  */
 import { describe, expect, test } from 'bun:test'
-import { seeded, type Random } from '../../../test/random'
+import { seeded, type Random } from '../../test/random'
 import type { DiagramKind } from './kind'
 import { packetDiagram } from './packet'
 import { pieDiagram } from './pie'

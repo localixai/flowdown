@@ -45,13 +45,19 @@ describe('toMathML', () => {
   })
 
   test('gives a function its space, and none before a bracket', () => {
-    expect(inner('\\sin x')).toBe('<mrow><mi>sin</mi><mo lspace="0" rspace="0.1667em">\u2061</mo><mi>x</mi></mrow>')
+    expect(inner('\\sin x')).toBe(
+      '<mrow><mi>sin</mi><mo lspace="0" rspace="0.1667em">\u2061</mo><mi>x</mi></mrow>',
+    )
     expect(inner('\\sin(x)')).toContain('rspace="0">\u2061</mo><mo stretchy="false">(</mo>')
-    expect(inner('\\sin^2 x')).toStartWith('<mrow><msup><mi>sin</mi><mn>2</mn></msup><mo lspace="0" rspace="0.1667em">')
+    expect(inner('\\sin^2 x')).toStartWith(
+      '<mrow><msup><mi>sin</mi><mn>2</mn></msup><mo lspace="0" rspace="0.1667em">',
+    )
   })
 
   test('keeps a bracket its size unless \\left grows it', () => {
-    expect(inner('(x)')).toBe('<mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow>')
+    expect(inner('(x)')).toBe(
+      '<mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow>',
+    )
     expect(inner('\\left( x \\right)')).toBe(
       '<mrow><mo fence="true" form="prefix" stretchy="true" symmetric="true">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="true" symmetric="true">)</mo></mrow>',
     )
@@ -68,7 +74,9 @@ describe('toMathML', () => {
   })
 
   test('puts accents over with combining marks, and primes beside', () => {
-    expect(inner('\\hat x')).toBe('<mover accent="true"><mi>x</mi><mo stretchy="false">\u0302</mo></mover>')
+    expect(inner('\\hat x')).toBe(
+      '<mover accent="true"><mi>x</mi><mo stretchy="false">\u0302</mo></mover>',
+    )
     expect(inner('\\widehat{AB}')).toContain('<mo stretchy="true">\u0302</mo>')
     expect(inner('\\vec v')).toContain('\u20d7')
     expect(inner("f'")).toBe('<mrow><mi>f</mi><mo lspace="0" rspace="0">′</mo></mrow>')
@@ -77,8 +85,12 @@ describe('toMathML', () => {
 
   test('draws matrices, cases and aligned equations as tables', () => {
     const matrix = inner('\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}')
-    expect(matrix).toContain('<mtable class="ml-matrix"><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr>')
-    expect(matrix).toStartWith('<mrow><mo fence="true" form="prefix" stretchy="true" symmetric="true">(</mo>')
+    expect(matrix).toContain(
+      '<mtable class="ml-matrix"><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr>',
+    )
+    expect(matrix).toStartWith(
+      '<mrow><mo fence="true" form="prefix" stretchy="true" symmetric="true">(</mo>',
+    )
     const cases = inner('\\begin{cases} 1 & x>0 \\\\ 0 & \\text{else} \\end{cases}')
     expect(cases).toContain('<mtable class="ml-cases">')
     expect(cases).toContain('<mtd style="text-align:left">')
@@ -114,7 +126,30 @@ describe('toMathML', () => {
     // A seeded walk over the characters TeX gives meaning to.
     let seed = 7
     const next = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31)
-    const alphabet = ['\\frac', '\\sqrt', '{', '}', '^', '_', '&', '\\\\', '\\left(', '\\right)', '\\begin{matrix}', '\\end{matrix}', 'x', '1', '+', '\\', '[', ']', '$', "'", '\\text{', '\\mathbb']
+    const alphabet = [
+      '\\frac',
+      '\\sqrt',
+      '{',
+      '}',
+      '^',
+      '_',
+      '&',
+      '\\\\',
+      '\\left(',
+      '\\right)',
+      '\\begin{matrix}',
+      '\\end{matrix}',
+      'x',
+      '1',
+      '+',
+      '\\',
+      '[',
+      ']',
+      '$',
+      "'",
+      '\\text{',
+      '\\mathbb',
+    ]
     for (let round = 0; round < 500; round++) {
       let tex = ''
       for (let length = next() % 40; length > 0; length--) tex += alphabet[next() % alphabet.length]
