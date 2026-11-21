@@ -466,6 +466,7 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
       char: accent.char,
       stretchy: accent.stretchy,
       under: accent.under === true,
+      ...(accent.small ? { small: true } : {}),
     }
   const variant = VARIANTS[name]
   if (variant && !TEXTS.has(name)) return { type: 'variant', variant, body: argument(reader) }
@@ -547,7 +548,7 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
         SYMBOLS.get(name.slice(1).replace(/^(.)/, (first) => first))?.char ?? ARROWS[name] ?? '→'
       const stack: MathNode = {
         type: 'stack',
-        base: { type: 'operator', text: arrow, kind: 'rel', stretchy: true },
+        base: { type: 'operator', text: LONG[arrow] ?? arrow, kind: 'rel', stretchy: true },
         over,
       }
       if (under && stack.type === 'stack') stack.under = under
@@ -669,6 +670,17 @@ function readCommand(reader: Reader, name: string, stops: readonly Stop[]): Math
     default:
       return { type: 'error', text: `\\${name}` }
   }
+}
+
+/** An arrow under words starts long: an engine that cannot stretch it still draws it past a letter. */
+const LONG: Record<string, string> = {
+  '→': '⟶',
+  '←': '⟵',
+  '↔': '⟷',
+  '⇒': '⟹',
+  '⇐': '⟸',
+  '⇔': '⟺',
+  '↦': '⟼',
 }
 
 const ARROWS: Record<string, string> = {

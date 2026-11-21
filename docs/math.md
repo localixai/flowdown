@@ -156,4 +156,4 @@ toRows('\\frac{a+b}{2}') // ['a + b', '─────', '  2']
 ```
 
 On the formulas agents write it is nine times faster than KaTeX and writes almost eight times less markup;
-its code is 13.5 KB gzipped against KaTeX's 75 KB (`bun run bench` in `packages/math`).
+its code is 13.8 KB gzipped against KaTeX's 75 KB (`bun run bench` in `packages/math`).
