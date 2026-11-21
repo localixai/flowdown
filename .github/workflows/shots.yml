@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" = Linux ]; then deps=--with-deps; fi
-          bunx playwright-core install $deps chromium firefox webkit
+          bunx playwright-core@1.64.1 install $deps chromium firefox webkit
       - name: Math
         shell: bash
         working-directory: packages/math
