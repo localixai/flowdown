@@ -1,21 +1,11 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
+    // A renderer for pages: the DOM's types and React's JSX on top of the shared base.
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "verbatimModuleSyntax": true,
-    "isolatedDeclarations": false,
-    "skipLibCheck": true,
-    "noEmit": true,
-    "types": ["bun"],
-    // The highlighter is this repository's own package, read from its source: a test, the types and
-    // the build take it as it is, with no build of it first.
+    // The repository's own packages, read from their source: a test, the types and the build take
+    // them as they are, with no build of them first.
     "paths": { "@localix-ai/highlight": ["../highlight/src/index.ts"] }
   },
   "include": ["src", "scripts", "test"]

@@ -136,7 +136,7 @@ function table(attributes: Attribute[]): string[] {
       .map((field, at) =>
         widths[at] ? own[field] + ' '.repeat(widths[at]! - width(own[field])) : '',
       )
-      .filter((cell, at) => widths[at])
+      .filter((_, at) => widths[at])
       .join(' ')
       .trimEnd(),
   )
