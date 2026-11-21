@@ -1,7 +1,6 @@
 {
   "name": "@localix-ai/highlight",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "description": "Syntax highlighting for code that streams: an agent's files, patches and shell sessions coloured line by line as they arrive, each line once. 26 languages, highlight.js classes, no dependencies.",
   "keywords": [
     "agent",

@@ -113,6 +113,10 @@ fails when it is broken.
   releases it on GitHub (`rust-release.yml`). Programs take it by that tag:
   `flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.0" }`. Not on
   crates.io yet. Localix CLI takes it so, and keeps no copy of its own.
+- `@localix-ai/highlight` (`packages/highlight`) has versions of its own: write a change under its
+  version in `packages/highlight/CHANGELOG.md`, bump `version` in its `package.json`, and run
+  the Highlight release workflow from main (or push a tag `highlight-v<version>`): it checks,
+  publishes to npm and makes the GitHub release. flowdown builds it in and depends on no version.
 - Localix Studio and Localix Cloud pin the published package: a change here reaches them only
   after a release and a version bump there.
 
