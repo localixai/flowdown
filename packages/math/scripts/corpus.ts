@@ -1,0 +1,36 @@
+/**
+ * Formulas as agents write them, from one-liners to the environments that break renderers: what
+ * the shots compare against KaTeX, the bench times, and the tests read through.
+ */
+export const CORPUS: ReadonlyArray<readonly [name: string, tex: string, display: boolean]> = [
+  ['inline', 'E = mc^2', false],
+  ['inline sum', '\\sum_{i=1}^n x_i \\le \\int_0^1 f(t)\\,dt', false],
+  ['fraction', '\\frac{a+b}{c-d} = \\dfrac{1}{2}', true],
+  ['quadratic', 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}', true],
+  ['sum', '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}', true],
+  ['integral', '\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}', true],
+  ['limit', '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1', true],
+  ['product', '\\prod_{k=1}^{n} \\left(1 + \\frac{1}{k}\\right) = n + 1', true],
+  ['nested root', '\\sqrt[3]{x^3 + \\sqrt{y^2 + z^2}}', true],
+  ['greek', '\\alpha + \\beta \\cdot \\gamma = \\Delta \\Omega \\, \\varepsilon \\theta \\lambda', true],
+  ['softmax', '\\operatorname{softmax}(z)_i = \\frac{e^{z_i}}{\\sum_{j=1}^{K} e^{z_j}}', true],
+  ['attention', '\\text{Attention}(Q,K,V) = \\text{softmax}\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V', true],
+  ['cross entropy', '\\mathcal{L} = -\\frac{1}{N}\\sum_{i=1}^{N} \\sum_{c} y_{i,c} \\log \\hat{y}_{i,c}', true],
+  ['gradient', '\\theta_{t+1} = \\theta_t - \\eta \\nabla_\\theta \\mathcal{L}(\\theta_t)', true],
+  ['bayes', 'P(A \\mid B) = \\frac{P(B \\mid A)\\,P(A)}{P(B)}', true],
+  ['big O', 'T(n) = 2T\\!\\left(\\frac{n}{2}\\right) + O(n) \\implies T(n) = O(n \\log n)', true],
+  ['matrix', 'A = \\begin{pmatrix} a_{11} & a_{12} & \\cdots \\\\ a_{21} & a_{22} & \\cdots \\\\ \\vdots & \\vdots & \\ddots \\end{pmatrix}', true],
+  ['bmatrix', '\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\end{bmatrix}', true],
+  ['cases', 'f(n) = \\begin{cases} n/2 & \\text{if } n \\text{ is even} \\\\ 3n+1 & \\text{otherwise} \\end{cases}', true],
+  ['aligned', '\\begin{aligned} (a+b)^2 &= (a+b)(a+b) \\\\ &= a^2 + 2ab + b^2 \\end{aligned}', true],
+  ['sets', '\\forall x \\in \\mathbb{R},\\ \\exists y \\in \\mathbb{N} : x < y \\land A \\subseteq B \\cup \\varnothing', true],
+  ['accents', '\\vec{v} \\cdot \\hat{n} = \\|\\vec{v}\\| \\cos\\theta, \\quad \\bar{x}, \\tilde{y}, \\dot{z}', true],
+  ['binomial', '\\binom{n}{k} = \\frac{n!}{k!(n-k)!}', true],
+  ['maxwell', '\\nabla \\times \\mathbf{B} = \\mu_0 \\mathbf{J} + \\mu_0 \\varepsilon_0 \\frac{\\partial \\mathbf{E}}{\\partial t}', true],
+  ['euler', 'e^{i\\pi} + 1 = 0', true],
+  ['underbrace', '\\underbrace{1 + 1 + \\cdots + 1}_{n \\text{ times}} = n', true],
+  ['norm', '\\left\\| x \\right\\|_2 = \\sqrt{\\sum_i x_i^2}, \\quad \\langle u, v \\rangle', true],
+  ['arrows', 'A \\xrightarrow{f} B \\xrightarrow[\\text{onto}]{g} C, \\quad x \\mapsto x^2', true],
+  ['primes', "f'(x) = \\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}, \\quad f''", true],
+  ['wide', '\\widehat{ABC} \\quad \\overline{z_1 + z_2} = \\bar z_1 + \\bar z_2 \\quad \\overrightarrow{PQ}', true],
+]

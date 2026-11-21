@@ -1,0 +1,27 @@
+{
+  "speed": {
+    "@localix-ai/math": {
+      "perFormulaUs": 30.0521666666666,
+      "outputKB": 16.04296875
+    },
+    "KaTeX": {
+      "perFormulaUs": 270.8440666666661,
+      "outputKB": 123.5234375
+    },
+    "Temml": {
+      "perFormulaUs": 142.4196000000014,
+      "outputKB": 16.9169921875
+    }
+  },
+  "terminalUs": 45.797466666666274,
+  "streamingMs": {
+    "@localix-ai/math": 1078.972678,
+    "KaTeX": 9250.231389,
+    "Temml": 3178.4720869999874
+  },
+  "exponent": 0.6902702461901705,
+  "retainedKB": 41.28515625,
+  "vsKatex": 9.0124638822492,
+  "vsTemml": 4.739079267717859,
+  "outputVsKatex": 7.699537375213051
+}
