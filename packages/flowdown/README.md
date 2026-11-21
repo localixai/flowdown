@@ -42,9 +42,13 @@ sections, sources, file trees, titled code, diagrams and math. Nothing flickers,
 shows while the text is still coming in. It works in React, on a page with no framework, on a
 server and in a terminal, and a Rust crate reads the same dialect.
 
-```sh
-npm install @localix-ai/flowdown
-```
+| | |
+| --- | --- |
+| npm | `npm install @localix-ai/flowdown` |
+| pnpm | `pnpm add @localix-ai/flowdown` |
+| bun | `bun add @localix-ai/flowdown` |
+| yarn | `yarn add @localix-ai/flowdown` |
+| Cargo | `cargo add flowdown --git https://github.com/localixai/flowdown --tag rust-v0.1.0` |
 
 ```tsx
 import { Markdown } from '@localix-ai/flowdown'
