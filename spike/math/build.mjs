@@ -26,6 +26,9 @@ export const WAYS = {
 
 mkdirSync('out/fonts', { recursive: true })
 copyFileSync('node_modules/katex/dist/katex.min.css', 'out/katex.min.css')
+// Temml's own stylesheet: its WebKit and Chromium workarounds (accents, stretchy braces) live there.
+copyFileSync('node_modules/temml/dist/Temml-Local.css', 'out/temml.css')
+copyFileSync('node_modules/temml/dist/Temml.woff2', 'out/Temml.woff2')
 for (const f of ['stix-two-math', 'noto-sans-math']) copyFileSync(`node_modules/@fontsource/${f}/files/${f}-latin-400-normal.woff2`, `out/fonts/${f}.woff2`)
 mkdirSync('out/fonts-katex', { recursive: true })
 const katexCss = readFileSync('out/katex.min.css', 'utf8').replaceAll('url(fonts/', 'url(fonts-katex/')
@@ -39,6 +42,7 @@ const rows = CORPUS.map(([name, tex, display]) => {
 const head = Object.values(WAYS).map(({ label }) => `<th>${label}</th>`).join('')
 writeFileSync('out/page.html', `<!doctype html><meta charset="utf-8">
 <link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="temml.css">
 <style>
 @font-face { font-family: 'STIX Two Math'; src: url(fonts/stix-two-math.woff2) format('woff2'); font-display: block }
 @font-face { font-family: 'Noto Sans Math'; src: url(fonts/noto-sans-math.woff2) format('woff2'); font-display: block }
@@ -48,7 +52,7 @@ th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: center; vertical
 th { font-weight: 600; font-size: 13px; background: #f6f6f6 }
 tbody th { text-align: left; white-space: nowrap }
 td { font-size: 18px }
-math { font-size: 1em }
+math { font-size: 1.21em }
 math[display=block] { display: block math }
 .stix math { font-family: 'STIX Two Math', math }
 .noto math { font-family: 'Noto Sans Math', math }
