@@ -48,10 +48,13 @@ export function GrowingCode({
   language,
   title,
   body,
+  lined = body !== '',
 }: {
   language: string | undefined
   title?: string
   body: string
+  /** Whether the code has a line, an empty one included (`GrowingFence.lined`). */
+  lined?: boolean
 }) {
   const { highlight } = useRenderContext()
   // The class a finished block gets when its language is one the highlighter knows.
@@ -98,7 +101,7 @@ export function GrowingCode({
               />
             ))}
         {/* A finished block's text ends in a newline unless it is highlighted; so does this. */}
-        {!known && body ? '\n' : null}
+        {!known && lined ? '\n' : null}
       </code>
     </CodeFrame>
   )
