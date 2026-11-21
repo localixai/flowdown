@@ -2,7 +2,7 @@
  * Text with marks: Markdown (headings, emphasis, code, links, lists, quotes, fenced blocks) and
  * diffs, the patch an agent proposes: added and removed lines, hunks and file headers.
  */
-import type { Grammar } from '../engine'
+import { EMBED, type Grammar } from '../engine'
 import { literal } from './common'
 
 export const markdown: Grammar = {
@@ -12,10 +12,19 @@ export const markdown: Grammar = {
     root: {
       rules: [
         {
+          // A fence: its lines are read as the language it names (```ts), up to its closer.
           match: /^ {0,3}(?:`{3,}|~{3,}).*/,
           scope: 'code',
           push: 'fence',
-          arg: (text) => /[`~]+/.exec(text)![0],
+          arg: (text) => {
+            const marker = /[`~]+/.exec(text)![0]
+            const language =
+              text
+                .slice(text.indexOf(marker) + marker.length)
+                .trim()
+                .split(/[\s{]/)[0] ?? ''
+            return `${marker}${EMBED}${language.toLowerCase()}${EMBED}`
+          },
         },
         { match: /^ {0,3}#{1,6}(?=\s|$).*/, scope: 'section' },
         { match: /^ {0,3}(?:=+|-+)[ \t]*$/, scope: 'section' },
@@ -23,7 +32,7 @@ export const markdown: Grammar = {
         { match: /^[ \t]*>.*/, scope: 'quote' },
         { match: /^[ \t]*(?:[-*+]|\d{1,9}[.)])(?=[ \t]|$)/, scope: 'bullet' },
         { match: /(?<=^[ \t]*(?:[-*+]|\d{1,9}[.)])[ \t]+)\[[ xX]\](?=[ \t])/, scope: 'bullet' },
-        { match: /`[^`\n]+`/, scope: 'code' },
+        { match: /`[^`\n]+`/, scope: 'string' },
         { match: /\*\*[^*\n]+\*\*|__[^_\n]+__/, scope: 'strong' },
         {
           match: /(?<![\w*])\*[^*\s][^*\n]*\*(?!\*)|(?<![\w_])_[^_\s][^_\n]*_(?![\w_])/,
@@ -44,7 +53,7 @@ export const markdown: Grammar = {
           pop: true,
         },
       ],
-      fill: 'code',
+      embed: true,
     },
   },
 }

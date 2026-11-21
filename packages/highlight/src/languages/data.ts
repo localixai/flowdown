@@ -172,7 +172,8 @@ export const dockerfile: Grammar = {
         { match: /(?<=[ \t])--[\w-]+/, scope: 'attr' },
         { match: /"(?:[^"\\\n]|\\.)*"?|'[^'\n]*'?/, scope: 'string' },
         { match: /\$\{?[A-Za-z_]\w*(?::?[-+?][^}\n]*)?\}?/, scope: 'variable' },
-        NUMBER,
+        // A number on its own (`EXPOSE 8080`), not one inside a name (`node:20-alpine`).
+        { match: /(?<=^|[\s=])\d+(?:\.\d+)*(?=[\s,\]]|$)/, scope: 'number' },
       ],
     },
     run: {

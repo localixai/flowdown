@@ -153,6 +153,82 @@ test('a shell line shows its command and flags; the shell’s own words where a 
   ])
 })
 
+test('a shell’s own words, a negated command and a case’s patterns', () => {
+  expect(spans('if ! command -v jq; then', 'sh')).toEqual([
+    'keyword:if',
+    'title function_:command',
+    'attr:-v',
+    'keyword:then',
+  ])
+  expect(spans('[ -e "$f" ] || continue', 'sh')).toContain('keyword:continue')
+  expect(spans('export PATH=$HOME/bin', 'sh')[0]).toBe('keyword:export')
+  // The pattern is not a command; what follows it is.
+  expect(spans('  Darwin) brew install jq ;;', 'sh')).toEqual(['title function_:brew'])
+  expect(spans('echo $(date) now', 'sh')).toEqual([
+    'title function_:echo',
+    'subst:$(',
+    'title function_:date',
+    'subst:)',
+  ])
+})
+
+test('a fence in Markdown is read as the language it names, across its lines', () => {
+  const md =
+    '# Title\n\n```ts\nconst a = `x\n${b}` /* c\nd */\n```\n\n~~~python\ndef f(): pass\n~~~\n```\nplain\n```'
+  const html = highlight(md, 'md')!.split('\n')
+  expect(html[3]).toContain('<span class="hljs-keyword">const</span>')
+  expect(html[5]).toBe('<span class="hljs-comment">d */</span>')
+  expect(html[6]).toBe('<span class="hljs-code">```</span>')
+  expect(html[9]).toContain('<span class="hljs-keyword">def</span>')
+  expect(html[12]).toBe('plain')
+  // Streamed, it is the same.
+  const stream = createStream('markdown')!
+  const done: string[] = []
+  let current = ''
+  for (let at = 0; at < md.length; at += 3) {
+    const update = stream.write(md.slice(at, at + 3))
+    done.push(...update.done)
+    current = update.current
+  }
+  expect([...done, current].join('\n')).toBe(highlight(md, 'md')!)
+})
+
+test('the text of a JSX element is text, and a generic is not an element', () => {
+  // `do` in an element's text is not a keyword; the code after the element is code again.
+  expect(spans('return <p className="x">Nothing to do.</p>\nconst y = 1', 'tsx')).toEqual([
+    'keyword:return',
+    'tag:<',
+    'name:p',
+    'tag: ',
+    'attr:className',
+    'tag:=',
+    'string:"x"',
+    'tag:>',
+    'tag:</',
+    'name:p',
+    'tag:>',
+    'keyword:const',
+    'number:1',
+  ])
+  for (const generic of [
+    'const f = <T,>(x: T) => x',
+    'let g: <T = any>(k?: string) => T',
+    'h = <T>(x: T) => x',
+  ])
+    expect(highlight(generic, 'ts'), generic).not.toContain('hljs-tag')
+  // Read as an element by mistake, it gives the code back at the next line that starts as code.
+  expect(highlight('x = <Foo>\nconst z = 1', 'ts')!.split('\n')[1]).toContain('hljs-keyword')
+})
+
+test('a Dockerfile’s numbers stand on their own; a tag’s are the image’s name', () => {
+  expect(spans('FROM node:20-alpine AS deps\nEXPOSE 8080', 'dockerfile')).toEqual([
+    'keyword:FROM',
+    'keyword:AS',
+    'keyword:EXPOSE',
+    'number:8080',
+  ])
+})
+
 test('a heredoc is text from the line after its opener to its word', () => {
   const html = highlight('cat <<EOF > out.txt\nhello $x\nEOF\nls', 'sh')!.split('\n')
   expect(html[0]).toContain('hljs-title function_">cat')

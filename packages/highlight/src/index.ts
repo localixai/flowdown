@@ -37,7 +37,7 @@ export function tokenizer(language: string): Tokenizer | null {
   if (!grammar) return null
   let known = tokenizers.get(grammar)
   if (!known) {
-    known = new Tokenizer(grammar)
+    known = new Tokenizer(grammar, tokenizer)
     tokenizers.set(grammar, known)
   }
   return known
