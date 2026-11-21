@@ -7,11 +7,11 @@
 
 <p align="center">
   <a href="https://github.com/localixai/flowdown/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/localixai/flowdown/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
+  <a href="https://github.com/localixai/flowdown/blob/main/packages/highlight/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue"></a>
 </p>
 
 <p align="center">
-  <img alt="A TypeScript file streaming into a code block on a dark page, each line coloured as it arrives: keywords, types, strings, calls and a template string" src="docs/assets/stream.gif" width="878">
+  <img alt="A TypeScript file streaming into a code block on a dark page, each line coloured as it arrives: keywords, types, strings, calls and a template string" src="https://raw.githubusercontent.com/localixai/flowdown/main/packages/highlight/docs/assets/stream.gif" width="878">
 </p>
 
 <p align="center">
@@ -62,18 +62,18 @@ theme colours it. The code in it is escaped.
   know is `null`, never a guess.
 
 <p align="center">
-  <img alt="Two bar charts. A file that streams: @localix-ai/highlight 45 ms, highlight.js in pieces of 40 lines 3.4 s, highlight.js and Shiki on the whole text stopped after 20 s at 33% and 14%. Whole files: @localix-ai/highlight 2.6 s, highlight.js 9.6 s, Shiki 73 s" src="docs/assets/speed.png" width="878">
+  <img alt="Two bar charts. A file that streams: @localix-ai/highlight 45 ms, highlight.js in pieces of 40 lines 3.4 s, highlight.js and Shiki on the whole text stopped after 20 s at 33% and 14%. Whole files: @localix-ai/highlight 2.6 s, highlight.js 9.6 s, Shiki 73 s" src="https://raw.githubusercontent.com/localixai/flowdown/main/packages/highlight/docs/assets/speed.png" width="878">
 </p>
 
-Every figure is from `bun run bench` ([bench/results/latest.md](bench/results/latest.md)) and
-`bun run quality` ([bench/results/quality.md](bench/results/quality.md)).
+Every figure is from `bun run bench` ([bench/results/latest.md](https://github.com/localixai/flowdown/blob/main/packages/highlight/bench/results/latest.md)) and
+`bun run quality` ([bench/results/quality.md](https://github.com/localixai/flowdown/blob/main/packages/highlight/bench/results/quality.md)).
 
 ## Languages
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/languages-dark.png">
-    <img alt="Six code blocks: a shell session, a diff, a React component, Python, a GitHub Actions workflow in YAML and Rust, each coloured" src="docs/assets/languages-light.png" width="878">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/localixai/flowdown/main/packages/highlight/docs/assets/languages-dark.png">
+    <img alt="Six code blocks: a shell session, a diff, a React component, Python, a GitHub Actions workflow in YAML and Rust, each coloured" src="https://raw.githubusercontent.com/localixai/flowdown/main/packages/highlight/docs/assets/languages-light.png" width="878">
   </picture>
 </p>
 
@@ -149,7 +149,7 @@ bun scripts/readme.ts   # this README's pictures
 bun run shots           # every test/agent file beside Shiki's colours, light and dark, to look at
 ```
 
-[test/agent/](test/agent) is the code an agent writes, a file a language: what the tests, the
+[test/agent/](https://github.com/localixai/flowdown/tree/main/packages/highlight/test/agent) is the code an agent writes, a file a language: what the tests, the
 quality check and the benchmark read. Nothing of highlight.js or the TextMate grammars is copied
 here; their code is read from `.refs/` to compare against.
 
