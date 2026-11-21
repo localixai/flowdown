@@ -16,7 +16,9 @@ const small = (pairs: string): Map<string, string> => {
 export const SUPER = small(
   '0⁰1¹2²3³4⁴5⁵6⁶7⁷8⁸9⁹+⁺-⁻−⁻=⁼(⁽)⁾aᵃbᵇcᶜdᵈeᵉfᶠgᵍhʰiⁱjʲkᵏlˡmᵐnⁿoᵒpᵖrʳsˢtᵗuᵘvᵛwʷxˣyʸzᶻAᴬBᴮDᴰEᴱGᴳHᴴIᴵJᴶKᴷLᴸMᴹNᴺOᴼPᴾRᴿTᵀUᵁVⱽWᵂ∘°′′⊤ᵀ*˟βᵝγᵞδᵟθᶿφᵠχᵡ',
 )
-export const SUB = small('0₀1₁2₂3₃4₄5₅6₆7₇8₈9₉+₊-₋−₋=₌(₍)₎aₐeₑhₕiᵢjⱼkₖlₗmₘnₙoₒpₚrᵣsₛtₜuᵤvᵥxₓβᵦγᵧρᵨφᵩχᵪ,,')
+export const SUB = small(
+  '0₀1₁2₂3₃4₄5₅6₆7₇8₈9₉+₊-₋−₋=₌(₍)₎aₐeₑhₕiᵢjⱼkₖlₗmₘnₙoₒpₚrᵣsₛtₜuᵤvᵥxₓβᵦγᵧρᵨφᵩχᵪ,,',
+)
 
 /** A script in small letters, or after its mark (bracketed when longer than one) where one lacks. */
 export function scripted(text: string, table: Map<string, string>, mark: string): string {
@@ -44,9 +46,13 @@ export function toText(tex: string): string {
 export function line(node: MathNode, variant: Variant | null): string {
   switch (node.type) {
     case 'identifier':
-      return variant && variant !== 'italic' && variant !== 'normal' ? inVariant(node.text, variant) : node.text
+      return variant && variant !== 'italic' && variant !== 'normal'
+        ? inVariant(node.text, variant)
+        : node.text
     case 'number':
-      return variant === 'bold' || variant === 'double-struck' ? inVariant(node.text, variant) : node.text
+      return variant === 'bold' || variant === 'double-struck'
+        ? inVariant(node.text, variant)
+        : node.text
     case 'operator':
       if (node.kind === 'bin' || node.kind === 'rel') return ` ${node.text} `
       if (node.kind === 'punct') return `${node.text} `
@@ -63,7 +69,11 @@ export function line(node: MathNode, variant: Variant | null): string {
         const part = line(child, variant)
         // A sign at the start, or after a bracket or another operator, is a sign, not an operation.
         const previous = node.children[at - 1]
-        const unary = child.type === 'operator' && child.kind === 'bin' && (at === 0 || (previous?.type === 'operator' && previous.kind !== 'close' && previous.kind !== 'ord'))
+        const unary =
+          child.type === 'operator' &&
+          child.kind === 'bin' &&
+          (at === 0 ||
+            (previous?.type === 'operator' && previous.kind !== 'close' && previous.kind !== 'ord'))
         out += unary ? part.trim() : part
       })
       return out
@@ -98,8 +108,13 @@ export function line(node: MathNode, variant: Variant | null): string {
     case 'fenced':
       return `${node.open}${line(node.body, variant).trim()}${node.close}`
     case 'table': {
-      const rows = node.rows.map((cells) => cells.map((cell) => line(cell, variant).trim()).join(node.kind === 'aligned' ? ' ' : node.kind === 'cases' ? ' if ' : ', '))
-      if (node.kind === 'matrix' || node.kind === 'small') return `${node.open || '['}${rows.map((row) => `[${row}]`).join(', ')}${node.close || ']'}`
+      const rows = node.rows.map((cells) =>
+        cells
+          .map((cell) => line(cell, variant).trim())
+          .join(node.kind === 'aligned' ? ' ' : node.kind === 'cases' ? ' if ' : ', '),
+      )
+      if (node.kind === 'matrix' || node.kind === 'small')
+        return `${node.open || '['}${rows.map((row) => `[${row}]`).join(', ')}${node.close || ']'}`
       if (node.kind === 'cases') return `${node.open}${rows.join('; ')}${node.close}`
       return rows.join('; ')
     }

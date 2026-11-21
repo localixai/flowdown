@@ -71,7 +71,9 @@ function write(node: MathNode, variant: Variant | null): string {
       return `<mtext>${escape(text.replace(/^ | $/g, ' '))}</mtext>`
     }
     case 'space':
-      return node.width >= 0 ? `<mspace width="${em(node.width)}"/>` : `<mspace style="margin-left:${em(node.width)}"/>`
+      return node.width >= 0
+        ? `<mspace width="${em(node.width)}"/>`
+        : `<mspace style="margin-left:${em(node.width)}"/>`
     case 'row':
       return writeRow(node.children, variant)
     case 'fraction': {
@@ -96,9 +98,12 @@ function write(node: MathNode, variant: Variant | null): string {
       // An arrow under words is as wide as they are, and a little wider.
       const pad = (part: MathNode) => {
         const inside = one(part, variant)
-        return node.base.type === 'operator' && node.base.stretchy ? `<mpadded lspace="0.3em" width="+0.6em">${inside}</mpadded>` : inside
+        return node.base.type === 'operator' && node.base.stretchy
+          ? `<mpadded lspace="0.3em" width="+0.6em">${inside}</mpadded>`
+          : inside
       }
-      if (node.over && node.under) return `<munderover>${base}${pad(node.under)}${pad(node.over)}</munderover>`
+      if (node.over && node.under)
+        return `<munderover>${base}${pad(node.under)}${pad(node.over)}</munderover>`
       if (node.over) return `<mover>${base}${pad(node.over)}</mover>`
       if (node.under) return `<munder>${base}${pad(node.under)}</munder>`
       return base
@@ -110,7 +115,10 @@ function write(node: MathNode, variant: Variant | null): string {
     case 'variant':
       return write(node.body, node.variant)
     case 'style': {
-      const attributes = node.style === 'script' ? 'displaystyle="false" scriptlevel="1"' : `displaystyle="${node.style === 'display'}"`
+      const attributes =
+        node.style === 'script'
+          ? 'displaystyle="false" scriptlevel="1"'
+          : `displaystyle="${node.style === 'display'}"`
       return `<mrow ${attributes}>${write(node.body, variant)}</mrow>`
     }
     case 'color':
@@ -131,32 +139,45 @@ function identifier(text: string, upright: boolean, variant: Variant | null): st
   }
   // One letter leans by default in MathML as in TeX; `normal` stands it up.
   const single = [...text].length === 1
-  return single && (upright || variant === 'normal') ? `<mi mathvariant="normal">${escape(text)}</mi>` : `<mi>${escape(text)}</mi>`
+  return single && (upright || variant === 'normal')
+    ? `<mi mathvariant="normal">${escape(text)}</mi>`
+    : `<mi>${escape(text)}</mi>`
 }
 
 function operator(node: Extract<MathNode, { type: 'operator' }>): string {
   const attributes: string[] = []
   const delimiter = node.kind === 'open' || node.kind === 'close' || node.kind === 'fence'
-  if (node.size !== undefined) attributes.push(`minsize="${em(node.size)}"`, `maxsize="${em(node.size)}"`, 'stretchy="true"', 'symmetric="true"')
+  if (node.size !== undefined)
+    attributes.push(
+      `minsize="${em(node.size)}"`,
+      `maxsize="${em(node.size)}"`,
+      'stretchy="true"',
+      'symmetric="true"',
+    )
   else if (node.stretchy) attributes.push('stretchy="true"')
   // A bracket written without `\left` keeps its size, as in TeX: MathML would grow it.
   else if (delimiter) attributes.push('stretchy="false"')
   if (node.kind === 'op' && node.limits === true) attributes.push('movablelimits="false"')
-  if (node.kind === 'ord' && node.text.length === 1 && !/[⋯…⋮⋱⋰]/.test(node.text)) attributes.push('lspace="0"', 'rspace="0"')
-  if (node.kind === 'bin' && node.text === 'mod') attributes.push('lspace="0.2222em"', 'rspace="0.2222em"')
+  if (node.kind === 'ord' && node.text.length === 1 && !/[⋯…⋮⋱⋰]/.test(node.text))
+    attributes.push('lspace="0"', 'rspace="0"')
+  if (node.kind === 'bin' && node.text === 'mod')
+    attributes.push('lspace="0.2222em"', 'rspace="0.2222em"')
   return `<mo${attributes.length ? ` ${attributes.join(' ')}` : ''}>${escape(node.text)}</mo>`
 }
 
 /** `\sin`, `\lim`: the name, then a thin space before what it takes (none before a bracket). */
 function functionName(text: string, limits: boolean, beforeBracket: boolean): string {
   const after = beforeBracket ? '0' : '0.1667em'
-  if (limits) return `<mo movablelimits="true" form="prefix" lspace="0" rspace="${after}">${escape(text)}</mo>`
+  if (limits)
+    return `<mo movablelimits="true" form="prefix" lspace="0" rspace="${after}">${escape(text)}</mo>`
   return `<mi>${escape(text)}</mi><mo lspace="0" rspace="${after}">⁡</mo>`
 }
 
 const opensBracket = (node: MathNode | undefined): boolean =>
   node !== undefined &&
-  ((node.type === 'operator' && node.kind === 'open') || node.type === 'fenced' || (node.type === 'row' && opensBracket(node.children[0])))
+  ((node.type === 'operator' && node.kind === 'open') ||
+    node.type === 'fenced' ||
+    (node.type === 'row' && opensBracket(node.children[0])))
 
 function writeRow(children: MathNode[], variant: Variant | null): string {
   let out = ''
@@ -170,11 +191,18 @@ function writeRow(children: MathNode[], variant: Variant | null): string {
     if (child.type === 'scripts' && child.base.type === 'function' && !child.base.limits) {
       // `\sin^2 x`: the power on the name, then the function's space.
       const name = `<mi>${escape(child.base.text)}</mi>`
-      out += scriptsAround(name, child, variant, false) + `<mo lspace="0" rspace="${opensBracket(next) ? '0' : '0.1667em'}">⁡</mo>`
+      out +=
+        scriptsAround(name, child, variant, false) +
+        `<mo lspace="0" rspace="${opensBracket(next) ? '0' : '0.1667em'}">⁡</mo>`
       continue
     }
     if (child.type === 'scripts' && child.base.type === 'function') {
-      out += scriptsAround(functionName(child.base.text, true, opensBracket(next)), child, variant, true)
+      out += scriptsAround(
+        functionName(child.base.text, true, opensBracket(next)),
+        child,
+        variant,
+        true,
+      )
       continue
     }
     out += write(child, variant)
@@ -193,7 +221,12 @@ function scripts(node: Extract<MathNode, { type: 'scripts' }>, variant: Variant 
   return scriptsAround(one(node.base, variant), node, variant, takesLimits(node))
 }
 
-function scriptsAround(base: string, node: Extract<MathNode, { type: 'scripts' }>, variant: Variant | null, limits: boolean): string {
+function scriptsAround(
+  base: string,
+  node: Extract<MathNode, { type: 'scripts' }>,
+  variant: Variant | null,
+  limits: boolean,
+): string {
   const sub = node.sub && one(node.sub, variant)
   const sup = node.sup && one(node.sup, variant)
   if (limits) {
@@ -216,12 +249,16 @@ function fence(char: string, form: 'prefix' | 'postfix'): string {
 function table(node: Extract<MathNode, { type: 'table' }>, variant: Variant | null): string {
   const rows = node.rows.map((cells) => {
     const tds = cells.map((cell, column) => {
-      const align = node.align[node.kind === 'aligned' ? column % 2 : Math.min(column, node.align.length - 1)] ?? 'center'
+      const align =
+        node.align[
+          node.kind === 'aligned' ? column % 2 : Math.min(column, node.align.length - 1)
+        ] ?? 'center'
       const style = align === 'center' ? '' : ` style="text-align:${align}"`
       const display = node.display ? ' displaystyle="true"' : ''
       let inside = write(cell, variant)
       // `&=`: the relation keeps its room on the left, as it would after a term.
-      if (node.kind === 'aligned' && column % 2 === 1 && startsWithRelation(cell)) inside = `<mi></mi>${inside}`
+      if (node.kind === 'aligned' && column % 2 === 1 && startsWithRelation(cell))
+        inside = `<mi></mi>${inside}`
       return `<mtd${style}${display}>${inside}</mtd>`
     })
     return `<mtr>${tds.join('')}</mtr>`
@@ -234,7 +271,8 @@ function table(node: Extract<MathNode, { type: 'table' }>, variant: Variant | nu
 
 function startsWithRelation(node: MathNode): boolean {
   if (node.type === 'operator') return node.kind === 'rel' || node.kind === 'bin'
-  if (node.type === 'row') return node.children[0] !== undefined && startsWithRelation(node.children[0])
+  if (node.type === 'row')
+    return node.children[0] !== undefined && startsWithRelation(node.children[0])
   if (node.type === 'scripts' || node.type === 'stack') return startsWithRelation(node.base)
   return false
 }

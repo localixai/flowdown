@@ -19,9 +19,13 @@ import { CORPUS } from '../scripts/corpus'
 import { toMathML, toRows, toText } from '../src/index'
 
 const root = join(import.meta.dir, '..')
-const budgets = JSON.parse(readFileSync(join(root, 'budgets.json'), 'utf8')).bench as Record<string, number>
+const budgets = JSON.parse(readFileSync(join(root, 'budgets.json'), 'utf8')).bench as Record<
+  string,
+  number
+>
 
-const median = (values: number[]) => values.toSorted((a, b) => a - b)[Math.floor(values.length / 2)]!
+const median = (values: number[]) =>
+  values.toSorted((a, b) => a - b)[Math.floor(values.length / 2)]!
 const timed = (run: () => void, times = 15): number => {
   for (let warm = 0; warm < 3; warm++) run()
   const runs: number[] = []
@@ -35,7 +39,8 @@ const timed = (run: () => void, times = 15): number => {
 
 const renderers = {
   '@localix-ai/math': (tex: string, display: boolean) => toMathML(tex, { display }),
-  KaTeX: (tex: string, display: boolean) => katex.renderToString(tex, { displayMode: display, throwOnError: false }),
+  KaTeX: (tex: string, display: boolean) =>
+    katex.renderToString(tex, { displayMode: display, throwOnError: false }),
   Temml: (tex: string, display: boolean) => temml.renderToString(tex, { displayMode: display }),
 }
 
@@ -49,20 +54,27 @@ for (const [name, render] of Object.entries(renderers)) {
 }
 
 // The terminal's two outputs, on the same corpus.
-const terminalUs = (timed(() => {
-  for (const [, tex, display] of CORPUS) {
-    if (display) toRows(tex, 100)
-    else toText(tex)
-  }
-}) * 1000) / CORPUS.length
+const terminalUs =
+  (timed(() => {
+    for (const [, tex, display] of CORPUS) {
+      if (display) toRows(tex, 100)
+      else toText(tex)
+    }
+  }) *
+    1000) /
+  CORPUS.length
 
 // A long formula read at every prefix: a stream of 400 terms, token by token.
-const terms = (count: number) => Array.from({ length: count }, (_, at) => `\\frac{x_{${at}}^2}{${at + 1}}`).join(' + ')
+const terms = (count: number) =>
+  Array.from({ length: count }, (_, at) => `\\frac{x_{${at}}^2}{${at + 1}}`).join(' + ')
 const long = terms(400)
 const prefixes: string[] = []
 for (let at = 8; at <= long.length; at += 8) prefixes.push(long.slice(0, at))
 const streaming = Object.fromEntries(
-  Object.entries(renderers).map(([name, render]) => [name, timed(() => prefixes.forEach((prefix) => render(prefix, true)), 3)]),
+  Object.entries(renderers).map(([name, render]) => [
+    name,
+    timed(() => prefixes.forEach((prefix) => render(prefix, true)), 3),
+  ]),
 )
 
 // Growth: ten times the terms.
@@ -74,7 +86,8 @@ const exponent = Math.log(large / small) / Math.log(10)
 Bun.gc(true)
 const before = heapStats().heapSize
 let kept: string[] = []
-for (let round = 0; round < 40; round++) for (const [, tex, display] of CORPUS) kept.push(toMathML(tex, { display }))
+for (let round = 0; round < 40; round++)
+  for (const [, tex, display] of CORPUS) kept.push(toMathML(tex, { display }))
 kept = []
 Bun.gc(true)
 const retainedKB = Math.max(0, heapStats().heapSize - before) / 1024
@@ -94,20 +107,32 @@ const results = {
 const pad = (text: string, width: number) => text.padEnd(width)
 console.log(`${CORPUS.length} formulas`)
 for (const [name, figure] of Object.entries(speed)) {
-  console.log(`  ${pad(name, 18)} ${figure.perFormulaUs.toFixed(1).padStart(7)} µs a formula   ${figure.outputKB.toFixed(1).padStart(6)} KB of markup   streaming 400 terms: ${streaming[name]!.toFixed(0)} ms`)
+  console.log(
+    `  ${pad(name, 18)} ${figure.perFormulaUs.toFixed(1).padStart(7)} µs a formula   ${figure.outputKB.toFixed(1).padStart(6)} KB of markup   streaming 400 terms: ${streaming[name]!.toFixed(0)} ms`,
+  )
 }
 console.log(`  terminal rows      ${terminalUs.toFixed(1).padStart(7)} µs a formula`)
-console.log(`× KaTeX ${results.vsKatex.toFixed(1)} faster, ${results.outputVsKatex.toFixed(1)} times less markup; × Temml ${results.vsTemml.toFixed(1)}`)
-console.log(`growth exponent ${exponent.toFixed(2)}; heap kept after 1,200 formulas: ${retainedKB.toFixed(0)} KB`)
+console.log(
+  `× KaTeX ${results.vsKatex.toFixed(1)} faster, ${results.outputVsKatex.toFixed(1)} times less markup; × Temml ${results.vsTemml.toFixed(1)}`,
+)
+console.log(
+  `growth exponent ${exponent.toFixed(2)}; heap kept after 1,200 formulas: ${retainedKB.toFixed(0)} KB`,
+)
 
 mkdirSync(join(import.meta.dir, 'results'), { recursive: true })
-writeFileSync(join(import.meta.dir, 'results', 'latest.json'), `${JSON.stringify(results, null, 2)}\n`)
+writeFileSync(
+  join(import.meta.dir, 'results', 'latest.json'),
+  `${JSON.stringify(results, null, 2)}\n`,
+)
 
 if (process.argv.includes('--check')) {
   const failures = [
-    results.vsKatex < budgets.vsKatex! && `${results.vsKatex.toFixed(2)}× KaTeX, budget ${budgets.vsKatex}×`,
-    results.outputVsKatex < budgets.outputVsKatex! && `${results.outputVsKatex.toFixed(2)}× less markup than KaTeX, budget ${budgets.outputVsKatex}×`,
-    exponent > budgets.exponent! && `growth exponent ${exponent.toFixed(2)}, budget ${budgets.exponent}`,
+    results.vsKatex < budgets.vsKatex! &&
+      `${results.vsKatex.toFixed(2)}× KaTeX, budget ${budgets.vsKatex}×`,
+    results.outputVsKatex < budgets.outputVsKatex! &&
+      `${results.outputVsKatex.toFixed(2)}× less markup than KaTeX, budget ${budgets.outputVsKatex}×`,
+    exponent > budgets.exponent! &&
+      `growth exponent ${exponent.toFixed(2)}, budget ${budgets.exponent}`,
   ].filter(Boolean)
   for (const failure of failures) console.error(`✗ ${failure}`)
   if (failures.length) process.exit(1)

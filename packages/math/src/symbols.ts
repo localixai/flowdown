@@ -8,7 +8,17 @@
  * three times the bytes for the same five hundred entries.
  */
 
-export type SymbolClass = 'ord' | 'upright' | 'bin' | 'rel' | 'op' | 'open' | 'close' | 'fence' | 'punct' | 'dots'
+export type SymbolClass =
+  | 'ord'
+  | 'upright'
+  | 'bin'
+  | 'rel'
+  | 'op'
+  | 'open'
+  | 'close'
+  | 'fence'
+  | 'punct'
+  | 'dots'
 
 export interface MathSymbol {
   char: string
@@ -22,7 +32,13 @@ const table = (kind: SymbolClass, pairs: string, limits?: boolean): [string, Mat
     .trim()
     .split(/\s+/)
     .reduce<[string, MathSymbol][]>((all, word, at, words) => {
-      if (at % 2 === 0) all.push([word, limits === undefined ? { char: words[at + 1]!, kind } : { char: words[at + 1]!, kind, limits }])
+      if (at % 2 === 0)
+        all.push([
+          word,
+          limits === undefined
+            ? { char: words[at + 1]!, kind }
+            : { char: words[at + 1]!, kind, limits },
+        ])
       return all
     }, [])
 
@@ -103,8 +119,14 @@ exp log ln lg arg deg dim hom ker tr Tr rank sgn erf | lim liminf limsup max min
 argmax argmin injlim projlim plim`
 const [plain = '', withLimits = ''] = FUNCTIONS_TEXT.split('|')
 export const FUNCTIONS = new Map<string, boolean>([
-  ...plain.trim().split(/\s+/).map((name): [string, boolean] => [name, false]),
-  ...withLimits.trim().split(/\s+/).map((name): [string, boolean] => [name, true]),
+  ...plain
+    .trim()
+    .split(/\s+/)
+    .map((name): [string, boolean] => [name, false]),
+  ...withLimits
+    .trim()
+    .split(/\s+/)
+    .map((name): [string, boolean] => [name, true]),
 ])
 // How a few of them are written: `\liminf` is "lim inf", `\argmax` is "arg max".
 export const FUNCTION_TEXT: Record<string, string> = {
@@ -119,12 +141,44 @@ export const FUNCTION_TEXT: Record<string, string> = {
 
 /** One character a delimiter after `\left`, `\big` and the like may be named by. */
 export const DELIMITERS: Record<string, string> = {
-  '(': '(', ')': ')', '[': '[', ']': ']', '\\{': '{', '\\}': '}', '|': '|', '\\|': '‖', '/': '/',
-  '.': '', '<': '⟨', '>': '⟩', '\\lbrace': '{', '\\rbrace': '}', '\\langle': '⟨', '\\rangle': '⟩',
-  '\\lfloor': '⌊', '\\rfloor': '⌋', '\\lceil': '⌈', '\\rceil': '⌉', '\\vert': '|', '\\Vert': '‖',
-  '\\lvert': '|', '\\rvert': '|', '\\lVert': '‖', '\\rVert': '‖', '\\uparrow': '↑', '\\downarrow': '↓',
-  '\\updownarrow': '↕', '\\Uparrow': '⇑', '\\Downarrow': '⇓', '\\backslash': '∖', '\\lbrack': '[',
-  '\\rbrack': ']', '\\lgroup': '⟮', '\\rgroup': '⟯', '\\llbracket': '⟦', '\\rrbracket': '⟧',
+  '(': '(',
+  ')': ')',
+  '[': '[',
+  ']': ']',
+  '\\{': '{',
+  '\\}': '}',
+  '|': '|',
+  '\\|': '‖',
+  '/': '/',
+  '.': '',
+  '<': '⟨',
+  '>': '⟩',
+  '\\lbrace': '{',
+  '\\rbrace': '}',
+  '\\langle': '⟨',
+  '\\rangle': '⟩',
+  '\\lfloor': '⌊',
+  '\\rfloor': '⌋',
+  '\\lceil': '⌈',
+  '\\rceil': '⌉',
+  '\\vert': '|',
+  '\\Vert': '‖',
+  '\\lvert': '|',
+  '\\rvert': '|',
+  '\\lVert': '‖',
+  '\\rVert': '‖',
+  '\\uparrow': '↑',
+  '\\downarrow': '↓',
+  '\\updownarrow': '↕',
+  '\\Uparrow': '⇑',
+  '\\Downarrow': '⇓',
+  '\\backslash': '∖',
+  '\\lbrack': '[',
+  '\\rbrack': ']',
+  '\\lgroup': '⟮',
+  '\\rgroup': '⟯',
+  '\\llbracket': '⟦',
+  '\\rrbracket': '⟧',
 }
 
 /** Accents over (and a few under) what they take: the character, and whether it stretches. */
@@ -163,7 +217,21 @@ export const ACCENTS: Record<string, { char: string; stretchy: boolean; under?: 
 
 /** Room a command leaves, in em. */
 export const SPACES: Record<string, number> = {
-  ',': 3 / 18, thinspace: 3 / 18, ':': 4 / 18, '>': 4 / 18, medspace: 4 / 18, ';': 5 / 18,
-  thickspace: 5 / 18, '!': -3 / 18, negthinspace: -3 / 18, negmedspace: -4 / 18,
-  negthickspace: -5 / 18, quad: 1, qquad: 2, enspace: 0.5, ' ': 0.25, '~': 0.25, nobreakspace: 0.25,
+  ',': 3 / 18,
+  thinspace: 3 / 18,
+  ':': 4 / 18,
+  '>': 4 / 18,
+  medspace: 4 / 18,
+  ';': 5 / 18,
+  thickspace: 5 / 18,
+  '!': -3 / 18,
+  negthinspace: -3 / 18,
+  negmedspace: -4 / 18,
+  negthickspace: -5 / 18,
+  quad: 1,
+  qquad: 2,
+  enspace: 0.5,
+  ' ': 0.25,
+  '~': 0.25,
+  nobreakspace: 0.25,
 }

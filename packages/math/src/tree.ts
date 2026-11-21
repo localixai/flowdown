@@ -39,7 +39,13 @@ export type MathNode =
   | { type: 'text'; text: string }
   | { type: 'space'; width: number }
   | { type: 'row'; children: MathNode[] }
-  | { type: 'fraction'; numerator: MathNode; denominator: MathNode; style?: 'display' | 'text'; rule: boolean }
+  | {
+      type: 'fraction'
+      numerator: MathNode
+      denominator: MathNode
+      style?: 'display' | 'text'
+      rule: boolean
+    }
   | { type: 'root'; body: MathNode; index?: MathNode }
   | { type: 'scripts'; base: MathNode; sub?: MathNode; sup?: MathNode; limits?: boolean }
   | { type: 'accent'; base: MathNode; char: string; stretchy: boolean; under: boolean }

@@ -10,7 +10,7 @@
  * 6. Big diagrams draw in a small part of a second.
  */
 import { describe, expect, test } from 'bun:test'
-import { seeded, type Random } from '../../../test/random'
+import { seeded, type Random } from '../../test/random'
 import { lineText, type Line } from '../style'
 import { width } from '../width'
 import { ganttDiagram } from './gantt'

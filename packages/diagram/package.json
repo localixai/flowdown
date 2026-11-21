@@ -1,0 +1,63 @@
+{
+  "name": "@localix-ai/diagram",
+  "version": "0.0.0",
+  "description": "Mermaid diagrams as agents write them, every kind Mermaid has, drawn as SVG for a page and as boxes and lines for a terminal, from one layout. Any prefix of a stream reads; no dependencies.",
+  "keywords": [
+    "agent",
+    "ai",
+    "diagram",
+    "flowchart",
+    "llm",
+    "mermaid",
+    "mermaid-alternative",
+    "sequence-diagram",
+    "streaming",
+    "svg",
+    "terminal",
+    "zero-dependency"
+  ],
+  "homepage": "https://github.com/localixai/flowdown/tree/main/packages/diagram",
+  "bugs": {
+    "url": "https://github.com/localixai/flowdown/issues"
+  },
+  "license": "MIT",
+  "author": "rsaryev (https://github.com/rsaryev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/localixai/flowdown.git",
+    "directory": "packages/diagram"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.js",
+    "./terminal": "./dist/terminal.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "bun test --randomize",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "check": "publint --strict && attw --pack . --profile esm-only",
+    "size": "bun scripts/size.ts",
+    "bench": "bun bench/run.ts --check",
+    "shots": "bun scripts/shots.ts"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@types/bun": "1.4.3",
+    "mermaid": "12.3.0",
+    "playwright-core": "1.64.1",
+    "publint": "0.3.25",
+    "tsdown": "0.23.7",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
