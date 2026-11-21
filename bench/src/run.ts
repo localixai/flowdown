@@ -176,6 +176,7 @@ const meta = {
   budgetMs,
   renderers: Object.fromEntries(renderers.map((r) => [r.name, r.version])),
   corpus: Object.fromEntries(all.map((s) => [s.name, fingerprint(s)])),
+  ...(machine ? { machine } : null),
   ...(reused.size > 0 ? { reused: [...reused], reference: before!.meta.about } : null),
 }
 

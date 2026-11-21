@@ -49,6 +49,8 @@ const lead = (rows: Row[], scenario: string): string => {
     .sort((a, b) => a.totalMs - b.totalMs)[0]
   if (!ours || !best) return '—'
   const ratio = best.totalMs / ours.totalMs
+  // Within 5% is within what one run differs from the next on a shared machine: neither leads.
+  if (Math.abs(ratio - 1) < 0.05) return `level with ${best.renderer}`
   return ratio >= 1
     ? `${ratio.toFixed(1)}× faster than ${best.renderer}`
     : `${(1 / ratio).toFixed(1)}× slower than ${best.renderer}`
