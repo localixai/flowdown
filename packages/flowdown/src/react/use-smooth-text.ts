@@ -192,13 +192,17 @@ export function useSmoothText(
   const [pacer] = useState(() => createPacer(text))
   const [, setDrawn] = useState(0)
   const end = pacer.take(text, streaming)
+  const behind = end < text.length
+  // While all of it is shown (no smoothing, or caught up) there is nothing to start: the text is
+  // left out of what starts the loop, so a token queues no effect behind it.
+  const waiting = behind ? text : ''
 
-  // `text` and `streaming` are here to start the loop again when there is more to show.
+  // `waiting` and `streaming` are here to start the loop again when there is more to show.
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     pacer.run(catchUp, () => setDrawn((count) => count + 1))
-  }, [pacer, text, streaming, catchUp])
+  }, [pacer, waiting, behind, streaming, catchUp])
   useEffect(() => () => pacer.stop(), [pacer])
 
-  return [end >= text.length ? text : text.slice(0, end), end < text.length]
+  return [behind ? text.slice(0, end) : text, behind]
 }
