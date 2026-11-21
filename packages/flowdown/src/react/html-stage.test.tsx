@@ -19,7 +19,7 @@ describe('a reply with raw HTML in it', () => {
   test('still typesets its formulas', () => {
     const page = render('Press <kbd>Enter</kbd>.\n\nThe area is $\\pi r^2$.\n\n$$\nE = mc^2\n$$')
     expect(page).toContain('<kbd>Enter</kbd>')
-    expect(page.match(/class="katex"/g)?.length).toBe(2)
+    expect(page.match(/class="fd-math(?: fd-math-display)?"/g)?.length).toBe(2)
     expect(page).not.toContain('language-math')
   })
 

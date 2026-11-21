@@ -49,7 +49,9 @@ const BUDGET: Record<string, number> = {
   // that reads lines (`createLineColourer`, `document/fence.ts`): a token costs its line, not its
   // piece, and a comment opened in one piece is still one in the next. Every entry that draws a
   // growing fence carries it.
-  '.': 37.6,
+  // 0.1 KB more since `mermaid={true}` draws diagrams with the package's own engine
+  // (`@localix-ai/diagram`, fetched with the first diagram, so not counted here).
+  '.': 37.7,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
   // The code ranges of the sniffers, and on a page the copy of a selection, as for `.`.
   // And the pieces of a long list and a long quote, as for `.`.
@@ -65,13 +67,16 @@ const BUDGET: Record<string, number> = {
   // (`tui/table.ts`); and the parts of a list or a quote that grows keep their rows
   // (`tui/render.ts`). A 900-line file streams in a seventh of the time it took, a 160-row table in
   // a fifth, a 240-item list in a third (`bench/results/growth.md`).
-  // 3.6 KB more since a display formula is set on rows (`tui/formula.ts`): fractions over their
+  // 3.6 KB more since a display formula is set on rows (`@localix-ai/math`): fractions over their
   // rule, limits above and below, roots, matrices and brackets as tall as what they hold.
   // And 1.6 KB for the pieces of a long list and a long quote, as for `.`; 0.6 KB more since a
   // paragraph that grows is wrapped again from its last rows (`tui/wrap.ts`).
   // 0.1 KB for a fence's code read as code to the cut, as for `.`. 0.2 KB for a growing fence
   // coloured a line at a time, as for `.`.
-  './tui': 41.3,
+  // 5.1 KB more since a formula is read by `@localix-ai/math`, the parser a page's MathML is
+  // written by: every environment (cases, aligned, array, matrices), typefaces as Unicode's math
+  // letters, braces with their labels, `\xrightarrow`; the two outputs never read a formula apart.
+  './tui': 46.8,
   // Mermaid flowcharts and sequence diagrams drawn in a terminal, parsed, laid out and routed with
   // no dependency (`tui/diagram/`). An entry of its own, as `./highlight` is: a terminal that does
   // not draw diagrams does not load them. 31 KB more since it draws every kind Mermaid has that
@@ -103,7 +108,10 @@ const BUDGET: Record<string, number> = {
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,
-  './math': 1.5,
+  // Formulas as MathML, `@localix-ai/math`, built in: the parser, the symbols, the writer. It was
+  // a 1.5 KB setup of KaTeX, an optional peer that added 75 KB and its stylesheet on demand; the
+  // math font is `math.css`'s (80 KB, and 37.5 KB of letters only when `\mathbb` shows).
+  './math': 11.3,
   // The highlighter itself, `@localix-ai/highlight`, built in: 26 languages read a line at a
   // time. It was a 1.1 KB setup of highlight.js, an optional peer that added 37.6 KB on demand
   // (`flowdown + highlight` in `bench`); there is nothing to install now, and less to load.

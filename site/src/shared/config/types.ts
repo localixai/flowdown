@@ -66,7 +66,7 @@ export type Media =
   | { kind: 'video'; src: string; label: string; width: number; height: number; poster?: string }
   | { kind: 'film'; src: string; label: string }
   /** A reply as markdown, streamed and drawn live by flowdown: on a `page`, or as a `terminal`
-   *  draws it. `rich` loads Mermaid and KaTeX for a reply with a diagram or a formula. */
+   *  draws it. `rich` draws a reply's diagrams and formulas (flowdown's own, loaded when one shows). */
   | { kind: 'reply'; text: string; label: string; target?: 'page' | 'terminal'; rich?: boolean };
 
 /** A card of the landing: a claim, and beside it what shows it. `tag` is a small label over the

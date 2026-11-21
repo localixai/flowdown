@@ -89,7 +89,7 @@ import '@localix-ai/flowdown/styles.css'
 | `className`                                  | `className`                                                                   |
 | `plugins.code` (Shiki), `shikiTheme`         | `highlight`, and the `--fd-code-*` tokens for colours. See [Highlighting](../highlighting.md). |
 | `plugins.math`                               | `math`. See [Math](../math.md).                                               |
-| `plugins.mermaid`, `mermaid.config`          | `mermaid={() => import('mermaid')}`, coloured from the page's tokens. See [Diagrams](../diagrams.md). |
+| `plugins.mermaid`, `mermaid.config`          | `mermaid`, drawn by the built-in diagrams in the page's colours (or `mermaid={() => import('mermaid')}`). See [Diagrams](../diagrams.md). |
 | `controls`                                   | A copy button on each code block. Other buttons: override `pre` and wrap `CodeBlock`; see [Components](../components.md#wrap-a-built-in-component). |
 | `codeBlockMaxHeight`, `tableMaxHeight`       | CSS on `.fd-code pre` and `.fd-table`.                                      |
 | `linkSafety`                                 | Override `a` in `components`, and `urlTransform`.                             |

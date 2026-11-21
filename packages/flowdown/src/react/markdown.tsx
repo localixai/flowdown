@@ -13,7 +13,7 @@ import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
 import type { Extension, Node, References } from '../engine/types'
 import { Diagram } from '../mermaid/diagram'
-import { setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
+import { builtInDiagrams, setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
 import { Callout } from './callout'
 import { Code, CodeBlock } from './code-block'
 import { createFenceMemory, GrowingCode, growingFence } from './growing-code'
@@ -74,8 +74,12 @@ export interface MarkdownProps {
   html?: boolean | StageOption<Extension>
   /** Typeset `$…$`: `@localix-ai/flowdown/math`, or a loader for it. Off by default. */
   math?: StageOption<Extension>
-  /** Draw ```mermaid fences: `() => import('mermaid')`. Off by default: they show as code. */
-  mermaid?: MermaidLoader | null
+  /**
+   * Draw ```mermaid fences: `true` draws them with the package's own diagrams (no dependency,
+   * fetched when a diagram first shows); a loader such as `() => import('mermaid')` draws them with
+   * that engine instead. Off by default: they show as code.
+   */
+  mermaid?: boolean | MermaidLoader | null
   /** Highlight fenced code: `@localix-ai/flowdown/highlight`, or your own. Off by default. */
   highlight?: Highlighter | null
   /** The words the renderer adds (callout names, button labels), for a page in another language. */
@@ -420,7 +424,7 @@ export function Markdown({
     [htmlStage, math, urlTransform, components, extensions, entities, labelValue],
   )
   const context = useMemo<RenderContext>(() => {
-    if (mermaid) setMermaidLoader(mermaid)
+    if (mermaid) setMermaidLoader(mermaid === true ? builtInDiagrams : mermaid)
     return { highlight, mermaid: mermaid ? 'page' : null }
   }, [highlight, mermaid])
   const groups: ReactNode[] = []

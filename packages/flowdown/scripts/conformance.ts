@@ -173,7 +173,7 @@ const GITHUB_ADVANCED: Check[] = [
   {
     name: 'Mathematical expressions: `$…$`, `$$…$$`, ` ```math `',
     markdown: '$x^2$\n\n$$\ny\n$$\n\n```math\nz\n```',
-    expect: /(class="katex"[\s\S]*){3}/,
+    expect: /(class="fd-math[^"]*"[\s\S]*){3}/,
     note: 'with `@localix-ai/flowdown/math`',
   },
   {
@@ -261,7 +261,7 @@ const DIALECT: Check[] = [
   {
     name: 'Math',
     markdown: 'Inline $x^2$.',
-    expect: /class="katex"/,
+    expect: /class="fd-math/,
     note: 'with `@localix-ai/flowdown/math`',
   },
 ]

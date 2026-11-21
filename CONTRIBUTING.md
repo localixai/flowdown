@@ -54,9 +54,9 @@ Add a changeset (`bunx changeset`) to a pull request that changes the package. A
 publishes that version and makes its GitHub release
 ([release workflow](.github/workflows/release.yml)).
 
-The highlighter's versions are its own too: write a change under its version in
-[packages/highlight/CHANGELOG.md](packages/highlight/CHANGELOG.md) and run the
-[Highlight release workflow](.github/workflows/highlight-release.yml) from main.
+The highlighter's, the math's and the diagrams' versions are their own too: write a change under
+the version in its `packages/<name>/CHANGELOG.md` and run the
+[Package release workflow](.github/workflows/package-release.yml) from main, with the package.
 
 The crate's versions are its own: write a change to it under "Unreleased" in
 [crates/flowdown/CHANGELOG.md](crates/flowdown/CHANGELOG.md). A tag `rust-v<version>` releases

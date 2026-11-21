@@ -9,7 +9,14 @@ a person: read it before a change to either. This file says where things are and
 
 ## Layout
 
-- `packages/flowdown`: the library, the one npm package. In `src/`, `engine`, `core`,
+- `packages/flowdown`: the library. Beside it the packages it builds in, each published on its own:
+  `highlight` (code), `math` (TeX to MathML and terminal rows), `diagram` (Mermaid to SVG and terminal
+  rows). Every package is made from `templates/package` (`bun run new <name> "<description>"`) and
+  held to it by `scripts/packages.test.ts`: strict TypeScript from `tsconfig.base.json`, no
+  dependency, the same scripts, a size budget, a bench, tests in a random order, no clock or
+  randomness in shipped code. `.github/workflows/shots.yml` screenshots math and diagrams in every
+  engine on macOS, Windows and Linux, onto branches `shots/<branch>-<system>`.
+- In `packages/flowdown/src/`, `engine`, `core`,
   `document` and `render` know no framework and no page; `static`, `dom`, `element`, `react` and
   `tui` are the targets, and each names only what is under it. `layers.test.ts` holds the table.
 - `crates/flowdown`: the Rust crate, a parser into a tree with no dependency, in the Cargo
@@ -113,10 +120,11 @@ fails when it is broken.
   releases it on GitHub (`rust-release.yml`). Programs take it by that tag:
   `flowdown = { git = "https://github.com/localixai/flowdown", tag = "rust-v0.1.0" }`. Not on
   crates.io yet. Localix CLI takes it so, and keeps no copy of its own.
-- `@localix-ai/highlight` (`packages/highlight`) has versions of its own: write a change under its
-  version in `packages/highlight/CHANGELOG.md`, bump `version` in its `package.json`, and run
-  the Highlight release workflow from main (or push a tag `highlight-v<version>`): it checks,
-  publishes to npm and makes the GitHub release. flowdown builds it in and depends on no version.
+- `@localix-ai/highlight`, `@localix-ai/math` and `@localix-ai/diagram` (`packages/<name>`) have
+  versions of their own: write a change under its version in `packages/<name>/CHANGELOG.md`, bump
+  `version` in its `package.json`, and run the Package release workflow from main with the package
+  (or push a tag `<name>-v<version>`): it checks, publishes to npm and makes the GitHub release.
+  flowdown builds them in and depends on no version.
 - Localix Studio and Localix Cloud pin the published package: a change here reaches them only
   after a release and a version bump there.
 

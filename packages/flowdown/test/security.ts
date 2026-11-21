@@ -202,7 +202,7 @@ export interface Finding {
 }
 
 /** Everything in a page a browser could act on, read from its markup. */
-export function findings(page: string, { katex = false, slugs = false } = {}): Finding[] {
+export function findings(page: string, { math = false, slugs = false } = {}): Finding[] {
   const out: Finding[] = []
   const tags = /<([A-Za-z][^\s/>]*)((?:\s+[^\s=/>]+(?:="[^"]*")?)*)\s*\/?>/g
   for (const hit of page.matchAll(tags)) {
@@ -228,11 +228,17 @@ export function findings(page: string, { katex = false, slugs = false } = {}): F
       const name = (attribute[1] as string).toLowerCase()
       const value = decode(attribute[2] ?? '')
       if (name.startsWith('on')) out.push({ tag, problem: `handler ${name}` })
-      // The renderer's own inline styles: a table cell's alignment, a tree row's depth, KaTeX's layout.
+      // The renderer's own inline styles: a table cell's alignment, a tree row's depth, and in a
+      // formula a colour (a name or a hex, nothing else), \boxed's border, a negative space.
       if (
         name === 'style' &&
         !/^(text-align:(left|right|center)|--fd-tree-depth:\d+)$/.test(value) &&
-        !katex
+        !(
+          math &&
+          /^(color:(#[0-9a-fA-F]{3,8}|[a-zA-Z]{1,20})|border:0\.06em solid;padding:0\.2em 0\.3em|margin-left:-[0-9.]+em)$/.test(
+            value,
+          )
+        )
       )
         out.push({ tag, problem: `style ${value}` })
       if (URL_ATTRIBUTES.has(name)) {
@@ -273,7 +279,7 @@ export function findings(page: string, { katex = false, slugs = false } = {}): F
         for (const part of value.split(/\s+/))
           if (
             part &&
-            !/^(fd-|flowdown$|language-|hl-|hljs|katex|contains-task-list$|task-list-item$|sr-only$|footnotes$|data-footnote-backref$|mord|mspace|mbin|mrel|mopen|mclose|mpunct|minner|base$|strut$|vlist|pstrut$|sizing$|reset-|size\d|mtight$|msupsub$|mathnormal$|mathrm$|mathit$|enclosing$|col-align|arraycolsep|mtable$|accent|frac-line|mfrac$|nulldelimiter$|sqrt$|svg-align$|hide-tail$|root$|op-symbol$|large-op$|small-op$|mop$|delimsizing$|delimcenter$|mult$|amsrm$|textrm$|mathbf$|text$|mathsf$|mathtt$|boldsymbol$|x-arrow|cancel|stretchy$|brace|halfarrow|overline|underline|rule$|tag$|eqn-num$|thinbox$|llap$|rlap$|clap$|inner$|fix$|fbox$|fcolorbox$|boxpad$|mover$|munder$|newline$|sout$|katex-)/.test(
+            !/^(fd-|ml-|flowdown$|language-|hl-|hljs|katex|contains-task-list$|task-list-item$|sr-only$|footnotes$|data-footnote-backref$|mord|mspace|mbin|mrel|mopen|mclose|mpunct|minner|base$|strut$|vlist|pstrut$|sizing$|reset-|size\d|mtight$|msupsub$|mathnormal$|mathrm$|mathit$|enclosing$|col-align|arraycolsep|mtable$|accent|frac-line|mfrac$|nulldelimiter$|sqrt$|svg-align$|hide-tail$|root$|op-symbol$|large-op$|small-op$|mop$|delimsizing$|delimcenter$|mult$|amsrm$|textrm$|mathbf$|text$|mathsf$|mathtt$|boldsymbol$|x-arrow|cancel|stretchy$|brace|halfarrow|overline|underline|rule$|tag$|eqn-num$|thinbox$|llap$|rlap$|clap$|inner$|fix$|fbox$|fcolorbox$|boxpad$|mover$|munder$|newline$|sout$|katex-)/.test(
               part,
             )
           )

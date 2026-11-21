@@ -114,18 +114,19 @@ They are off by default, so a page that does not use them does not ship them:
 ```tsx
 import { Markdown } from '@localix-ai/flowdown'
 import { highlight } from '@localix-ai/flowdown/highlight'
-import 'katex/dist/katex.min.css'
+import '@localix-ai/flowdown/math.css'
 
 ;<Markdown
   math={() => import('@localix-ai/flowdown/math')}
-  mermaid={() => import('mermaid')}
+  mermaid
   highlight={highlight}
 >
   {text}
 </Markdown>
 ```
 
-Install the engines you use: `katex`, `mermaid`. The highlighter is built in. See [Math](math.md),
+Nothing more to install: formulas, diagrams and the highlighter are built in, each fetched only by a
+page that shows one. See [Math](math.md),
 [Diagrams](diagrams.md) and [Highlighting](highlighting.md).
 
 > [!TIP] Next.js and other server components

@@ -43,8 +43,6 @@
       "name": "flowdown-demo",
       "dependencies": {
         "@localix-ai/flowdown": "workspace:*",
-        "katex": "0.19.1",
-        "mermaid": "12.3.0",
         "react": "19.3.1",
         "react-dom": "19.3.1",
       },
@@ -108,11 +106,9 @@
         "unified": "11.0.5",
       },
       "peerDependencies": {
-        "katex": ">=0.16.0",
         "react": "^18.2.0 || ^19.0.0",
       },
       "optionalPeers": [
-        "katex",
         "react",
       ],
     },
@@ -150,8 +146,6 @@
       "version": "0.1.0",
       "dependencies": {
         "@xterm/xterm": "^6.0.0",
-        "katex": "0.19.1",
-        "mermaid": "12.3.0",
         "react": "19.3.1",
         "react-dom": "19.3.1",
       },

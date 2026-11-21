@@ -38,7 +38,7 @@ async function settled(page: Page) {
   await page.waitForFunction(() => {
     const reply = document.querySelector('.reply')!
     // The reply's source, not its text: a drawn diagram's own styles are text too.
-    const mathDone = !window.demo?.reply.includes('$') || reply.querySelector('.katex')
+    const mathDone = !window.demo?.reply.includes('$') || reply.querySelector('.fd-math')
     const diagrams = reply.querySelectorAll('.fd-diagram')
     const drawn = [...diagrams].every((node) => node.querySelector('.fd-diagram-canvas svg'))
     return mathDone && drawn

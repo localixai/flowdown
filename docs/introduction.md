@@ -90,7 +90,7 @@ What sets it apart:
   code, a half-typed `> [!STE` is hidden) so nothing flashes. Every frame is tested to render
   exactly what one parse of that frame would. See [Streaming](streaming.md).
 - **Heavy parts load when needed.** The HTML parser is fetched the first time a document holds HTML;
-  KaTeX and Mermaid are optional and yours to load; the highlighter is built in and colours code
+  Formulas, diagrams and the highlighter are built in, each loaded only for a reply that has one; the highlighter colours code
   that streams a line at a time. See [Math](math.md), [Diagrams](diagrams.md) and
   [Highlighting](highlighting.md).
 - **Plain CSS.** One stylesheet on `--fd-*` custom properties, light and dark built in, no Tailwind

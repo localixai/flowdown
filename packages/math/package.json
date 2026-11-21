@@ -1,6 +1,6 @@
 {
   "name": "@localix-ai/math",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "TeX formulas for pages and terminals as agents write them: MathML a browser lays out itself, with its own small math font, and the same formula on rows of a terminal. Any prefix of a stream draws; no dependencies.",
   "keywords": [
     "agent",
@@ -46,7 +46,7 @@
     "build": "tsdown && cp src/styles.css fonts/math.woff2 fonts/math-letters.woff2 fonts/OFL.txt dist/",
     "test": "bun test --randomize",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "check": "publint --strict && attw --pack . --profile esm-only",
+    "check": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints styles.css math.woff2 math-letters.woff2",
     "size": "bun scripts/size.ts",
     "bench": "bun bench/run.ts --check",
     "shots": "bun scripts/shots.ts",

@@ -37,6 +37,12 @@ export function scripted(text: string, table: Map<string, string>, mark: string)
 const SIMPLE = /^[√∂∇−-]?[\p{L}\p{N}\p{M}.′″]*(?:\([^()]*\))?$/u
 export const grouped = (text: string): string => (SIMPLE.test(text) ? text : `(${text})`)
 
+const takesOperand = (node: MathNode): boolean =>
+  (node.type === 'operator' && node.kind === 'op') ||
+  (node.type === 'scripts' && node.base.type === 'operator' && node.base.kind === 'op')
+const isName = (node: MathNode): boolean =>
+  node.type === 'function' || (node.type === 'scripts' && node.base.type === 'function')
+
 /** `tex` on one line. Reads any text and never throws. */
 export function toText(tex: string): string {
   return line(parse(tex), null).replace(/ {2,}/g, ' ').trim()
@@ -66,15 +72,28 @@ export function line(node: MathNode, variant: Variant | null): string {
     case 'row': {
       let out = ''
       node.children.forEach((child, at) => {
-        const part = line(child, variant)
-        // A sign at the start, or after a bracket or another operator, is a sign, not an operation.
+        let part = line(child, variant)
+        // A sign at the start, or after an operator or a bracket, is a sign, not an operation.
         const previous = node.children[at - 1]
         const unary =
           child.type === 'operator' &&
           child.kind === 'bin' &&
           (at === 0 ||
-            (previous?.type === 'operator' && previous.kind !== 'close' && previous.kind !== 'ord'))
-        out += unary ? part.trim() : part
+            (previous?.type === 'operator' &&
+              ['bin', 'rel', 'open', 'punct', 'op'].includes(previous.kind)))
+        if (unary) part = part.trim()
+        // A big operator stands apart from what is around it (`1/k ∑ᵢ rᵢ`), a name from the term
+        // before it (`n log n`).
+        if (takesOperand(child)) part = ` ${part.trim()} `
+        else if (
+          isName(child) &&
+          previous &&
+          (previous.type === 'identifier' ||
+            previous.type === 'number' ||
+            (previous.type === 'operator' && previous.kind === 'close'))
+        )
+          part = ` ${part}`
+        out += part
       })
       return out
     }
@@ -106,6 +125,9 @@ export function line(node: MathNode, variant: Variant | null): string {
       return over ? ` ${base}${scripted(over, SUPER, '^')} ` : ` ${base} `
     }
     case 'fenced':
+      // A binomial on one line is written as its count: `C(n, k)`.
+      if (node.body.type === 'fraction' && !node.body.rule)
+        return `C(${line(node.body.numerator, variant).trim()}, ${line(node.body.denominator, variant).trim()})`
       return `${node.open}${line(node.body, variant).trim()}${node.close}`
     case 'table': {
       const rows = node.rows.map((cells) =>

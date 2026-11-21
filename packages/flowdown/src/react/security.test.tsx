@@ -11,7 +11,7 @@ import { math } from '../math'
 /** A page's findings, or nothing. Text that only looks like a tag is escaped by React and is not one. */
 const attack = (markdown: string, props: Parameters<typeof render>[1] = {}): Finding[] =>
   findings(render(markdown, props), {
-    katex: Boolean(props?.math),
+    math: Boolean(props?.math),
     slugs: Boolean(props?.headingIds),
   })
 

@@ -1,28 +1,33 @@
 ---
 title: Diagrams
 description:
-  Draw ```mermaid fences with Mermaid in the colours of the page, loaded only when a reply holds a
-  diagram, never drawn half-written.
+  Draw ```mermaid fences, every kind Mermaid has, with no dependency and in the colours of the page,
+  loaded only when a reply holds a diagram, never drawn half-written.
 ---
 
 # Diagrams
 
-A ` ```mermaid ` fence is a diagram. Without a Mermaid loader it is shown as its source; pass one to
+A ` ```mermaid ` fence is a diagram. Without `mermaid` it is shown as its source; pass `mermaid` to
 draw it:
 
 ```tsx
 import { Markdown } from '@localix-ai/flowdown'
 
-const loadMermaid = () => import('mermaid')
-
 export function Reply({ text }: { text: string }) {
-  return <Markdown mermaid={loadMermaid}>{text}</Markdown>
+  return <Markdown mermaid>{text}</Markdown>
 }
 ```
 
-Install `mermaid`. It is not a dependency of flowdown: the page imports it through the loader,
-so a page without diagrams never bundles it, and you choose its version. The loader is called the
-first time a document holds a diagram.
+Nothing to install: diagrams are drawn by [`@localix-ai/diagram`](#the-package-underneath), built
+into flowdown and fetched the first time a document holds a diagram, so a page without one never
+loads it. It reads every kind Mermaid has (flowchart, sequence, class, state, ER, gantt, pie,
+mindmap, timeline, journey, gitGraph, quadrant, xychart, sankey, requirement, C4, block, packet,
+kanban, architecture, radar, treemap, ZenUML) and draws it as SVG: rounded boxes lightly filled,
+thin edges, a sans-serif label, every colour the page's own text colour at an opacity, so a diagram
+sits on a light page and a dark one alike.
+
+To draw with Mermaid itself instead, pass a loader: `mermaid={() => import('mermaid')}`, and
+install `mermaid`. Everything below holds for either.
 
 ````markdown
 ```mermaid
@@ -148,9 +153,9 @@ queue and one cache:
 ```tsx
 import { useEffect, useRef, useState } from 'react'
 import type { MarkdownComponents } from '@localix-ai/flowdown'
-import { mermaidRendererFor, resolveMermaidLook } from '@localix-ai/flowdown/mermaid'
+import { builtInDiagrams, mermaidRendererFor, resolveMermaidLook } from '@localix-ai/flowdown/mermaid'
 
-const renderer = mermaidRendererFor(() => import('mermaid'))
+const renderer = mermaidRendererFor(builtInDiagrams)
 
 function MyDiagram({ source }: { source: string }) {
   const frame = useRef<HTMLDivElement>(null)
@@ -161,7 +166,7 @@ function MyDiagram({ source }: { source: string }) {
     renderer.render(source, look, controller.signal).then(setSvg, () => setSvg(null))
     return () => controller.abort()
   }, [source])
-  // The SVG comes from Mermaid in strict mode, which removes scripts and event handlers.
+  // The SVG holds no script, handler, link or style: what a model wrote is text in it.
   return <div ref={frame} dangerouslySetInnerHTML={svg ? { __html: svg } : undefined} />
 }
 
@@ -175,3 +180,20 @@ const components: MarkdownComponents = {
 
 A ` ```tree ` fence draws a directory layout without Mermaid; see [Syntax](syntax.md). It needs no
 loader and is drawn on the server too.
+
+## The package underneath
+
+Diagrams are [`@localix-ai/diagram`](https://github.com/localixai/flowdown/tree/main/packages/diagram),
+a package of its own with no dependency. It lays a diagram out once, on a grid, and draws that
+layout two ways: as SVG for a page and as boxes and lines for a terminal, so a reply's diagram
+reads the same in both. It needs no browser, so a server can draw a diagram into its HTML:
+
+```ts
+import { drawDiagram, toSVG } from '@localix-ai/diagram'
+
+toSVG('flowchart LR\n  A --> B') // '<svg …>', or null when the text is not a diagram it reads
+drawDiagram('flowchart LR\n  A --> B', 80) // terminal rows
+```
+
+On one diagram of every kind it is about 30 times faster than Mermaid in Chromium, and 56 KB
+gzipped against Mermaid's 1.6 MB (`bun run bench` in `packages/diagram`).

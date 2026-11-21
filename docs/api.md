@@ -25,7 +25,7 @@ Every entry point and export of flowdown, and every prop of `<Markdown>`.
 | `@localix-ai/flowdown/stream`      | Completing a partial reply, without React.                                |                          |
 | `@localix-ai/flowdown/prompt`      | The instructions that teach a model the dialect. Plain text.              |                          |
 | `@localix-ai/flowdown/html`        | The raw HTML stage (reader and sanitizer).                                |                          |
-| `@localix-ai/flowdown/math`        | The math stage.                                                           | `katex` 0.16 or later    |
+| `@localix-ai/flowdown/math`        | The math stage.                                                           | none                     |
 | `@localix-ai/flowdown/highlight`   | A highlighter for fenced code, built in.                                  |                          |
 | `@localix-ai/flowdown/mermaid`     | The diagram renderer, for a page that draws ` ```mermaid ` fences itself. | `mermaid`, loaded by you |
 
@@ -54,7 +54,7 @@ import '@localix-ai/flowdown/styles.css'
 | `headingIds`   | `boolean`                               | `false`            | Give headings ids (`setup`, `setup-1`), the ids `extractHeadings` returns. |
 | `html`         | `boolean \| StageOption<Extension>`     | `true`             | Raw HTML. `true` loads the reader the first time a document holds HTML and leaves the tags out until then; `html` from `@localix-ai/flowdown/html` reads it in the first render; `false` drops raw HTML. See [Security](security.md). |
 | `math`         | `StageOption<Extension>`                | `null`             | Typeset `$…$`, `$$…$$` and ` ```math `: `@localix-ai/flowdown/math`, or a loader for it. See [Math](math.md). |
-| `mermaid`      | `MermaidLoader \| null`                 | `null`             | Draw ` ```mermaid ` fences: `() => import('mermaid')`. See [Diagrams](diagrams.md). |
+| `mermaid`      | `boolean \| MermaidLoader \| null`      | `null`             | Draw ` ```mermaid ` fences: `true` with the built-in diagrams, or a loader such as `() => import('mermaid')`. See [Diagrams](diagrams.md). |
 | `highlight`    | `Highlighter \| null`                   | `null`             | Highlight fenced code. See [Highlighting](highlighting.md). |
 | `labels`       | `LabelOverrides`                        | `DEFAULT_LABELS`   | The words the renderer adds, for another language. See [Components](components.md#labels). |
 | `urlTransform` | `UrlTransform \| null`                  | `defaultUrlTransform` | Rewrite or refuse a link or image URL. See [Security](security.md#links-and-images). |
@@ -219,10 +219,10 @@ document uses one.
 
 | Export                          | What it is                                                         |
 | ------------------------------- | ------------------------------------------------------------------ |
-| `math` (and default)            | The math stage, an `Extension`: `$…$`, `$$…$$` and ` ```math `, typeset with KaTeX and cached by expression. |
-| `typesetMath(source, display)`  | One expression typeset: KaTeX's HTML, or its error form.           |
+| `math` (and default)            | The math stage, an `Extension`: `$…$`, `$$…$$` and ` ```math `, written as MathML and cached by expression. |
+| `typesetMath(source, display)`  | One expression as MathML, from the cache when it was written before. |
 
-Import `katex/dist/katex.min.css` on the page.
+Import `@localix-ai/flowdown/math.css` on the page: the math font.
 
 ## `@localix-ai/flowdown/highlight`
 

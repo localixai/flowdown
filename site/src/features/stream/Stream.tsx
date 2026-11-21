@@ -4,10 +4,9 @@ import { TerminalReply } from './TerminalReply';
 import { useStream } from './use-stream';
 import './Stream.css';
 
-const loadMermaid = () => import('mermaid');
-// KaTeX's stylesheet comes with the stage: a page with no formula loads neither.
+// The math font comes with the stage: a page with no formula loads neither.
 const loadMath = () => {
-  void import('katex/dist/katex.min.css');
+  void import('@localix-ai/flowdown/math.css');
   return import('@localix-ai/flowdown/math');
 };
 
@@ -42,7 +41,7 @@ export function Stream({ text, label, target = 'page', rich = false }: { text: s
         {target === 'terminal' ? (
           <TerminalReply text={arrived} streaming={stream.streaming} highlight={highlight} />
         ) : (
-          <Markdown streaming={stream.streaming} highlight={highlight} {...(rich ? { mermaid: loadMermaid, math: loadMath } : {})} className="stream-reply">
+          <Markdown streaming={stream.streaming} highlight={highlight} {...(rich ? { mermaid: true, math: loadMath } : {})} className="stream-reply">
             {arrived}
           </Markdown>
         )}

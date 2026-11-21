@@ -47,11 +47,11 @@ const MAY_IMPORT: Record<string, string[]> = {
 /** The packages a part may name; a part not listed names none. */
 const MAY_NAME: Record<string, string[]> = {
   react: ['react', 'mermaid'],
-  mermaid: ['react', 'mermaid'],
-  math: ['katex'],
+  mermaid: ['react', 'mermaid', '@localix-ai/diagram'],
+  math: ['@localix-ai/math'],
   highlight: ['@localix-ai/highlight'],
   // A terminal draws diagrams with the package that draws them for pages too.
-  tui: ['@localix-ai/diagram'],
+  tui: ['@localix-ai/diagram', '@localix-ai/math'],
 }
 
 /** The parts that run where there may be no page: a server, a worker, a terminal. */

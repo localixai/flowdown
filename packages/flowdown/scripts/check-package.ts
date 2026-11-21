@@ -6,7 +6,8 @@
  *     import no package at all, so a server, a worker, a terminal or a page of another framework
  *     can use them;
  *   - every React module that uses hooks keeps its `'use client'`;
- *   - nothing imports KaTeX, highlight.js or Mermaid except the entry that is about it.
+ *   - nothing imports KaTeX or Mermaid (formulas and diagrams are built in), nor highlight.js but
+ *     the entry that is about it.
  * Run after `build`.
  */
 import { existsSync, readFileSync } from 'node:fs'
@@ -60,7 +61,10 @@ for (const path of [
 }
 
 const owners: Record<string, string> = {
-  katex: './math',
+  // Built in, so no entry imports them: a formula's and a diagram's code is the package's own.
+  katex: '',
+  '@localix-ai/math': '',
+  '@localix-ai/diagram': '',
   'highlight.js': './highlight',
   mermaid: '',
 }
