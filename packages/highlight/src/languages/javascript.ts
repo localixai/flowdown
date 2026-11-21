@@ -30,19 +30,47 @@ const REGEX: Rule = {
 
 /** A JSX tag, where an expression can start: `return <div>`, `(<Item />)`, `? <a/> : null`. */
 const JSX_OPEN: Rule = {
-  match: /(?<=(?:^|[(,=:?{}[]|&&|\|\||=>|\breturn)\s*)<(?=[A-Za-z>])/,
+  // Not a generic's parameters: `<T,>(x: T)`, `<T extends A>`, `<T = any>`, `<T>(x)`.
+  match:
+    /(?<=(?:^|[(,=:?{}[]|&&|\|\||=>|\breturn)\s*)<(?=[A-Za-z>])(?![A-Za-z_$][\w$]*\s*(?:,|=|\bextends\b)|[A-Za-z_$][\w$]*>\s*\()/,
   scope: 'tag',
   push: 'tag',
 }
-const JSX_CLOSE: Rule = { match: /<\/(?=[A-Za-z>])/, scope: 'tag', push: 'tag' }
+const JSX_CLOSE: Rule = { match: /<\/(?=[A-Za-z>])/, scope: 'tag', push: 'closing' }
 
+/** An opening tag: its name and attributes; `>` opens its children, `/>` closes it. */
 const jsxTag: State = {
   rules: [
-    { match: /(?<=<\/?)[\w.:-]+/, scope: 'name' },
+    { match: /(?<=<)[\w.:-]+/, scope: 'name' },
     { match: /[\w:-]+(?=\s*=)|(?<=\s)[\w:-]+/, scope: 'attr' },
     { match: /"[^"\n]*"?|'[^'\n]*'?/, scope: 'string' },
     { match: /\{/, scope: 'subst', push: 'subst' },
-    { match: /\/?>/, scope: 'tag', pop: true },
+    { match: /\/>/, scope: 'tag', pop: true },
+    { match: />/, scope: 'tag', next: 'children' },
+  ],
+  fill: 'tag',
+}
+
+/** What an element holds: text, which is not code, elements, and `{…}` code, up to its closing tag. */
+const children: State = {
+  rules: [
+    // A line that starts as code does (`)`, `}`, `const`, `export`) is code: what opened this was
+    // not an element after all, and the rest of the file is not its text.
+    {
+      match:
+        /^(?=\s*(?:[)};]|(?:const|let|var|function|return|export|import|type|interface|class|declare)\b))/,
+      pop: true,
+    },
+    { match: /<\/(?=[A-Za-z>])/, scope: 'tag', next: 'closing' },
+    { match: /<(?=[A-Za-z>])/, scope: 'tag', push: 'tag' },
+    { match: /\{/, scope: 'subst', push: 'subst' },
+  ],
+}
+
+const closing: State = {
+  rules: [
+    { match: /(?<=<\/)[\w.:-]+/, scope: 'name' },
+    { match: />/, scope: 'tag', pop: true },
   ],
   fill: 'tag',
 }
@@ -95,6 +123,8 @@ function grammar(name: string, aliases: string[], typescript: boolean): Grammar 
       subst: inner({ match: /\}/, scope: 'subst', pop: true }),
       brace: inner({ match: /\}/, pop: true }),
       tag: jsxTag,
+      children,
+      closing,
     },
   }
 }

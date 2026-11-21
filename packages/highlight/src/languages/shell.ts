@@ -11,12 +11,13 @@ import { words, type Grammar, type Rule, type State } from '../engine'
 import { literal } from './common'
 
 const KEYWORDS =
-  'if then else elif fi for while until in do done case esac function select time coproc'
+  'if then else elif fi for while until in do done case esac function select time coproc break ' +
+  'continue return local export readonly declare typeset'
 const keyword = words({ keyword: KEYWORDS, literal: 'true false' })
 
 /** Where a command's name stands: a line's start, after a prompt, an operator or a keyword. */
 const COMMAND_PLACE =
-  '(?<=(?:^[ \\t]*(?:\\$[ \\t]+)?|[|&;(`][ \\t]*|\\$\\([ \\t]*|\\b(?:then|do|else|time|sudo|exec|xargs|env)[ \\t]+)(?:[A-Za-z_]\\w*=[^ \\t]*[ \\t]+)*)'
+  '(?<=(?:^[ \\t]*(?:\\$[ \\t]+)?|^[ \\t]*[^ \\t()]+\\)[ \\t]*|[|&;(`!][ \\t]*|\\$\\([ \\t]*|\\b(?:then|do|else|time|sudo|exec|xargs|env)[ \\t]+)(?:[A-Za-z_]\\w*=[^ \\t]*[ \\t]+)*)'
 
 /** A command's name is drawn as a call is, as an editor draws it: `git`, `bun`, `echo`. */
 export const COMMAND = 'title function_'
@@ -43,10 +44,13 @@ const code: Rule[] = [
   SUBST_OPEN,
   BACKTICK,
   VARIABLE,
+  // A case's pattern, `Darwin)`, is a pattern, not a command.
+  { match: /(?<=^[ \t]*)[^\s()|;&]+(?=\))/ },
   { match: /(?<=\bfunction[ \t]+)[\w.:-]+/, scope: 'title function_' },
   { match: /(?<=^[ \t]*)[\w.:-]+(?=[ \t]*\(\)[ \t]*\{?)/, scope: 'title function_' },
   {
     match: new RegExp(
+      // Not a keyword or an assignment.
       `${COMMAND_PLACE}(?!(?:${KEYWORDS.split(' ').join('|')})(?![\\w.-]))(?![\\w./-]*=)[A-Za-z_./~][\\w./+-]*`,
     ),
     scope: COMMAND,

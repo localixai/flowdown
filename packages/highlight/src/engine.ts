@@ -46,7 +46,18 @@ export interface State {
    * text starts on the line after `<<EOF`, whatever that line goes on to say.
    */
   after?: string
+  /**
+   * The lines of the state are another language's (a fence in Markdown): a line its rules do not
+   * end the state with is read by that language's grammar, from the state its last line ended
+   * in. The state's argument is its own (the fence's marker), then {@link EMBED} and the language.
+   */
+  embed?: true
 }
+
+/** Parts the argument of an embedding state: its own, the language, the language's state. */
+export const EMBED = '\u0002'
+/** Stands for a space in the state of an embedded language, inside the state of this one. */
+const SPACE = '\u0001'
 
 export interface Grammar {
   /** The name a fence uses, and the others it is known by. */
@@ -71,6 +82,7 @@ interface Compiled {
   fill: Scope | undefined
   line: boolean
   after: string | undefined
+  embed: boolean
 }
 
 const ESCAPES: Record<string, string> = {
@@ -103,16 +115,23 @@ export class Tokenizer {
   private readonly grammar: Grammar
   private readonly compiled = new Map<string, Compiled>()
 
-  constructor(grammar: Grammar) {
+  private readonly resolve: (language: string) => Tokenizer | null
+
+  /** `resolve` finds the tokenizer of a language another one embeds (a Markdown fence's). */
+  constructor(grammar: Grammar, resolve: (language: string) => Tokenizer | null = () => null) {
     this.name = grammar.name
     this.grammar = grammar
+    this.resolve = resolve
     if (!grammar.states.root) throw new Error(`${grammar.name}: no root state`)
   }
 
   /** The state a file starts in. */
   readonly start = 'root'
 
-  private state(key: string): Compiled {
+  private state(full: string): Compiled {
+    // An embedding state is compiled for its own argument, whatever the language's state is.
+    const cut = full.indexOf(EMBED)
+    const key = cut === -1 ? full : full.slice(0, cut)
     const known = this.compiled.get(key)
     if (known) return known
     const colon = key.indexOf(':')
@@ -130,6 +149,7 @@ export class Tokenizer {
       fill: state.fill,
       line: state.line === true,
       after: state.after,
+      embed: state.embed === true,
     }
     // States made for an argument are as many as the file's heredocs: keep the cache bounded.
     if (this.compiled.size > 256) this.compiled.clear()
@@ -140,6 +160,22 @@ export class Tokenizer {
   /** One line (no `\n` in it), read from `start`: its HTML and the state it ends in. */
   line(text: string, start: string = this.start): Line {
     const stack = start.split(' ')
+    const top = stack[stack.length - 1]!
+    const embedding = this.state(top)
+    if (embedding.embed) {
+      // A line that does not end the state is the embedded language's, read from where it was.
+      embedding.search.lastIndex = 0
+      const ends = embedding.search.exec(text)
+      const [own = '', language = '', ...rest] = top.split(EMBED)
+      const inner = rest.join(EMBED)
+      const other = ends && ends.index === 0 ? null : this.resolve(language)
+      // A language does not embed itself: its states would be nested in their own.
+      if (other && other.name !== this.name) {
+        const read = other.line(text, inner ? inner.split(SPACE).join(' ') : other.start)
+        stack[stack.length - 1] = [own, language, read.end.split(' ').join(SPACE)].join(EMBED)
+        return { html: read.html, end: stack.join(' ') }
+      }
+    }
     let html = ''
     let open: Scope | undefined
     let pending = ''

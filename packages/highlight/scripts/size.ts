@@ -5,8 +5,11 @@
 import { gzipSync } from 'node:zlib'
 import { join } from 'node:path'
 
-/** KB, minified and gzipped: today's figure and a margin. */
-const BUDGET = 11.8
+/**
+ * KB, minified and gzipped: today's figure and a margin. 0.4 KB more since a Markdown fence is read
+ * as its language, JSX text is text, and the shell knows its own words and a case's patterns.
+ */
+const BUDGET = 12.3
 
 const built = await Bun.build({
   entrypoints: [join(import.meta.dir, '..', 'src', 'index.ts')],

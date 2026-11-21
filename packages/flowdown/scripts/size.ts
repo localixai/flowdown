@@ -107,7 +107,8 @@ const BUDGET: Record<string, number> = {
   // The highlighter itself, `@localix-ai/highlight`, built in: 26 languages read a line at a
   // time. It was a 1.1 KB setup of highlight.js, an optional peer that added 37.6 KB on demand
   // (`flowdown + highlight` in `bench`); there is nothing to install now, and less to load.
-  './highlight': 11.8,
+  // 0.4 KB more for a Markdown fence read as its language and JSX text read as text.
+  './highlight': 12.3,
   // Past 5 KB since a drawn diagram has a toolbar and an enlarged viewer (`diagram.css`).
   './styles.css': 5.5,
 }
