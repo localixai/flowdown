@@ -155,5 +155,5 @@ toText('x^2 + y_i') // 'x² + yᵢ'
 toRows('\\frac{a+b}{2}') // ['a + b', '─────', '  2']
 ```
 
-On the formulas agents write it is nine times faster than KaTeX and writes almost eight times less markup;
+On the formulas agents write it is nine times faster than KaTeX and writes over seven times less markup;
 its code is 13.8 KB gzipped against KaTeX's 75 KB (`bun run bench` in `packages/math`).

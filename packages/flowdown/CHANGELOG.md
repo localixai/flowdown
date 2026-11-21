@@ -15,7 +15,7 @@
     as it goes, never an error.
   - **Diagrams without Mermaid.** `<Markdown mermaid>` (`true`) draws ```` ```mermaid ```` fences with
     `@localix-ai/diagram`: every kind Mermaid has, as modern SVG in the page's colours, fetched with the
-    first diagram, about 30 times faster than Mermaid and 56 KB against its 1.6 MB. A loader
+    first diagram, over 20 times faster than Mermaid and 56 KB against its 1.6 MB. A loader
     (`() => import('mermaid')`) still draws with Mermaid. `builtInDiagrams` is exported from
     `@localix-ai/flowdown/mermaid` for a frame of your own.
   - **The terminal reads formulas with the same parser** as a page: every environment, typefaces as

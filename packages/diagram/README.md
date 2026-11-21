@@ -23,7 +23,7 @@ drawDiagram(source, 80) // terminal rows, as styled spans
 - **Every kind.** flowchart, sequence, class, state, ER, gantt, pie, mindmap, timeline, journey,
   gitGraph, quadrant, xychart, sankey, requirement, C4, block, packet, kanban, architecture, radar,
   treemap and ZenUML, in Mermaid's own syntax, the one models already write.
-- **Fast and small.** About 30 times faster than Mermaid in Chromium on one diagram of every kind,
+- **Fast and small.** Over 20 times faster than Mermaid in Chromium on one diagram of every kind,
   56 KB gzipped against Mermaid's 1.6 MB (`bun run bench`, `bench/results/latest.json`). It needs no
   DOM, so a server can draw a diagram into its HTML.
 - **Modern and quiet.** Rounded, lightly filled boxes, thin edges with small heads, sans-serif labels,

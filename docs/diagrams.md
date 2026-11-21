@@ -195,5 +195,5 @@ toSVG('flowchart LR\n  A --> B') // '<svg …>', or null when the text is not a 
 drawDiagram('flowchart LR\n  A --> B', 80) // terminal rows
 ```
 
-On one diagram of every kind it is about 30 times faster than Mermaid in Chromium, and 56 KB
+On one diagram of every kind it is over 20 times faster than Mermaid in Chromium, and 56 KB
 gzipped against Mermaid's 1.6 MB (`bun run bench` in `packages/diagram`).
