@@ -37,6 +37,25 @@ export function scripted(text: string, table: Map<string, string>, mark: string)
 const SIMPLE = /^[√∂∇−-]?[\p{L}\p{N}\p{M}.′″]*(?:\([^()]*\))?$/u
 export const grouped = (text: string): string => (SIMPLE.test(text) ? text : `(${text})`)
 
+/** Each accent's combining mark, which a terminal sets over its letter. */
+const COMBINING: Record<string, string> = {
+  ˆ: '\u0302',
+  '\u0302': '\u0302',
+  ˇ: '\u030c',
+  '\u030c': '\u030c',
+  '˜': '\u0303',
+  '\u0303': '\u0303',
+  '´': '\u0301',
+  '`': '\u0300',
+  '˙': '\u0307',
+  '¨': '\u0308',
+  '⋯': '\u20db',
+  '˘': '\u0306',
+  '¯': '\u0304',
+  '˚': '\u030a',
+  '→': '\u20d7',
+}
+
 const takesOperand = (node: MathNode): boolean =>
   (node.type === 'operator' && node.kind === 'op') ||
   (node.type === 'scripts' && node.base.type === 'operator' && node.base.kind === 'op')
@@ -116,8 +135,10 @@ export function line(node: MathNode, variant: Variant | null): string {
     case 'accent': {
       const base = line(node.base, variant).trim()
       if (node.char === '⏟' || node.char === '⏞') return base
-      if (node.char === '‾' || node.char === '̄') return [...base].map((char) => `${char}̅`).join('')
-      return [...base].length === 1 && /^[̀-ͯ⃐-⃿]$/.test(node.char) ? `${base}${node.char}` : base
+      // A terminal writes an accent as the combining mark over its letter.
+      if (node.char === '‾') return [...base].map((char) => `${char}\u0305`).join('')
+      const mark = COMBINING[node.char]
+      return [...base].length === 1 && mark ? `${base}${mark}` : base
     }
     case 'stack': {
       const base = line(node.base, variant).trim()

@@ -1,27 +1,27 @@
 {
   "speed": {
     "@localix-ai/math": {
-      "perFormulaUs": 30.0521666666666,
-      "outputKB": 16.04296875
+      "perFormulaUs": 29.160833333333375,
+      "outputKB": 16.3408203125
     },
     "KaTeX": {
-      "perFormulaUs": 270.8440666666661,
+      "perFormulaUs": 418.20286666666675,
       "outputKB": 123.5234375
     },
     "Temml": {
-      "perFormulaUs": 142.4196000000014,
+      "perFormulaUs": 178.1511000000004,
       "outputKB": 16.9169921875
     }
   },
-  "terminalUs": 45.797466666666274,
+  "terminalUs": 52.95176666666824,
   "streamingMs": {
-    "@localix-ai/math": 1078.972678,
-    "KaTeX": 9250.231389,
-    "Temml": 3178.4720869999874
+    "@localix-ai/math": 1316.5869379999995,
+    "KaTeX": 9401.666103999996,
+    "Temml": 3165.6510140000028
   },
-  "exponent": 0.6902702461901705,
-  "retainedKB": 41.28515625,
-  "vsKatex": 9.0124638822492,
-  "vsTemml": 4.739079267717859,
-  "outputVsKatex": 7.699537375213051
+  "exponent": 0.6303636213189722,
+  "retainedKB": 55.142578125,
+  "vsKatex": 14.341252250450072,
+  "vsTemml": 6.1092595661989595,
+  "outputVsKatex": 7.559194406263073
 }

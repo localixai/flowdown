@@ -73,14 +73,25 @@ describe('toMathML', () => {
     expect(inner('\\Gamma')).toBe('<mi mathvariant="normal">Γ</mi>')
   })
 
-  test('puts accents over with combining marks, and primes beside', () => {
+  test('puts accents over their letters, and primes beside', () => {
+    // A spacing accent with no room of its own sits over its letter in every engine; a wide one is
+    // the combining mark the font grows.
     expect(inner('\\hat x')).toBe(
-      '<mover accent="true"><mi>x</mi><mo stretchy="false">\u0302</mo></mover>',
+      '<mover accent="true"><mi>x</mi><mo stretchy="false" lspace="0" rspace="0">ˆ</mo></mover>',
     )
-    expect(inner('\\widehat{AB}')).toContain('<mo stretchy="true">\u0302</mo>')
-    expect(inner('\\vec v')).toContain('\u20d7')
+    expect(inner('\\widehat{AB}')).toContain(
+      '<mo stretchy="true" lspace="0" rspace="0">\u0302</mo>',
+    )
+    expect(inner('\\vec v')).toContain(
+      '<mo stretchy="false" lspace="0" rspace="0" scriptlevel="1">→</mo>',
+    )
+    expect(inner('\\|v\\|')).toContain('<mo stretchy="false" lspace="0" rspace="0">‖</mo>')
     expect(inner("f'")).toBe('<mrow><mi>f</mi><mo lspace="0" rspace="0">′</mo></mrow>')
-    expect(inner('\\underbrace{a+b}_{n}')).toStartWith('<munder><munder accentunder="true">')
+    // A brace or a rule is a border of the expression's box, its label under it.
+    expect(inner('\\underbrace{a+b}_{n}')).toBe(
+      '<munder><mrow class="ml-underbrace"><mi>a</mi><mo>+</mo><mi>b</mi></mrow><mi>n</mi></munder>',
+    )
+    expect(inner('\\overline{z}')).toBe('<mrow class="ml-overline"><mi>z</mi></mrow>')
   })
 
   test('draws matrices, cases and aligned equations as tables', () => {

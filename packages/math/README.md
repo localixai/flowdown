@@ -28,7 +28,7 @@ toRows('\\sum_{i=1}^{n} i')
   places a glyph, a screen reader reads a formula as math, and the TeX rides along as an annotation,
   so a copy gives the source back.
 - **Fast and small.** On the formulas agents write, about 30 µs a formula: nine times faster than
-  KaTeX, with almost eight times less markup. The code is 13.5 KB gzipped (KaTeX: 75 KB). Figures
+  KaTeX, with almost eight times less markup. The code is 13.8 KB gzipped (KaTeX: 75 KB). Figures
   from `bun run bench`, in `bench/results/latest.json`.
 - **Made for streams.** It reads any text and never throws: `\frac{a}{` is a fraction with an empty
   slot, an unknown command is shown as written. Every construct read has a bound.

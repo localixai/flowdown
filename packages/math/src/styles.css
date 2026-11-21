@@ -70,6 +70,41 @@ math mtext {
 .ml-cases > mtr > mtd + mtd {
   padding-left: 1em;
 }
+/* \overline and \underline, the braces and brackets over and under an expression: borders of its
+   box, as wide as it in every engine. A brace is a bracket whose ends curve in. */
+.ml-overline {
+  border-top: 0.06em solid;
+  padding-top: 0.08em;
+}
+.ml-underline {
+  border-bottom: 0.06em solid;
+  padding-bottom: 0.08em;
+}
+.ml-overbrace,
+.ml-underbrace,
+.ml-overbracket,
+.ml-underbracket {
+  border: 0.07em solid;
+  padding: 0 0.15em;
+}
+.ml-overbrace,
+.ml-overbracket {
+  border-bottom: 0;
+  padding-top: 0.2em;
+  margin-top: 0.15em;
+}
+.ml-underbrace,
+.ml-underbracket {
+  border-top: 0;
+  padding-bottom: 0.2em;
+  margin-bottom: 0.15em;
+}
+.ml-overbrace {
+  border-radius: 0.45em 0.45em 0 0;
+}
+.ml-underbrace {
+  border-radius: 0 0 0.45em 0.45em;
+}
 merror {
   border: 0;
   background: none;

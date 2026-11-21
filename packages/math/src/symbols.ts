@@ -182,24 +182,29 @@ export const DELIMITERS: Record<string, string> = {
 }
 
 /** Accents over (and a few under) what they take: the character, and whether it stretches. */
-export const ACCENTS: Record<string, { char: string; stretchy: boolean; under?: boolean }> = {
-  // Combining marks: the font places them over a letter's own accent point, in every engine; a
-  // spacing `^` sits to the left in Chromium and does not grow as `\widehat` needs.
-  hat: { char: '\u0302', stretchy: false },
+export const ACCENTS: Record<
+  string,
+  { char: string; stretchy: boolean; under?: boolean; small?: boolean }
+> = {
+  // Spacing accents, each set with no room of its own (`mathml.ts`): a combining mark is drawn
+  // beside its letter on Windows, and a mark outside the operator dictionary would take a quarter
+  // em on each side and sit off its letter in every engine. A wide accent is the combining mark,
+  // the character the font grows.
+  hat: { char: 'ˆ', stretchy: false },
   widehat: { char: '\u0302', stretchy: true },
-  check: { char: '\u030c', stretchy: false },
+  check: { char: 'ˇ', stretchy: false },
   widecheck: { char: '\u030c', stretchy: true },
-  tilde: { char: '\u0303', stretchy: false },
+  tilde: { char: '˜', stretchy: false },
   widetilde: { char: '\u0303', stretchy: true },
-  acute: { char: '\u0301', stretchy: false },
-  grave: { char: '\u0300', stretchy: false },
-  dot: { char: '\u0307', stretchy: false },
-  ddot: { char: '\u0308', stretchy: false },
-  dddot: { char: '\u20db', stretchy: false },
-  breve: { char: '\u0306', stretchy: false },
-  bar: { char: '\u0304', stretchy: false },
-  mathring: { char: '\u030a', stretchy: false },
-  vec: { char: '\u20d7', stretchy: false },
+  acute: { char: '´', stretchy: false },
+  grave: { char: '`', stretchy: false },
+  dot: { char: '˙', stretchy: false },
+  ddot: { char: '¨', stretchy: false },
+  dddot: { char: '⋯', stretchy: false, small: true },
+  breve: { char: '˘', stretchy: false },
+  bar: { char: '¯', stretchy: false },
+  mathring: { char: '˚', stretchy: false },
+  vec: { char: '→', stretchy: false, small: true },
   overrightarrow: { char: '→', stretchy: true },
   overleftarrow: { char: '←', stretchy: true },
   overleftrightarrow: { char: '↔', stretchy: true },

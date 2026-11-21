@@ -48,7 +48,14 @@ export type MathNode =
     }
   | { type: 'root'; body: MathNode; index?: MathNode }
   | { type: 'scripts'; base: MathNode; sub?: MathNode; sup?: MathNode; limits?: boolean }
-  | { type: 'accent'; base: MathNode; char: string; stretchy: boolean; under: boolean }
+  | {
+      type: 'accent'
+      base: MathNode
+      char: string
+      stretchy: boolean
+      under: boolean
+      small?: boolean
+    }
   | { type: 'stack'; base: MathNode; over?: MathNode; under?: MathNode }
   | { type: 'fenced'; open: string; close: string; body: MathNode }
   | {

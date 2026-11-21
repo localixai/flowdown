@@ -28,6 +28,18 @@ export function toMathML(tex: string, options: MathMLOptions = {}): string {
   return `<math${display}><semantics>${wrap(body)}${annotation}</semantics></math>`
 }
 
+/** Marks drawn as a border of what they mark, by the class that draws them. */
+const RULED: Record<string, string> = {
+  '‾': 'overline',
+  _: 'underline',
+  '⏞': 'overbrace',
+  '⏟': 'underbrace',
+  '⏜': 'overbrace',
+  '⏝': 'underbrace',
+  '⎴': 'overbracket',
+  '⎵': 'underbracket',
+}
+
 /** One element: a row of several is wrapped in `<mrow>`. */
 const wrap = (inside: string): string => (isOne(inside) ? inside : `<mrow>${inside}</mrow>`)
 
@@ -88,7 +100,13 @@ function write(node: MathNode, variant: Variant | null): string {
     case 'scripts':
       return scripts(node, variant)
     case 'accent': {
-      const mark = `<mo stretchy="${node.stretchy}">${escape(node.char)}</mo>`
+      // A line or a brace over or under an expression is a border of its box (`styles.css`): its
+      // width is the expression's in every engine, where Chromium places a stretched glyph off it.
+      const ruled = RULED[node.char]
+      if (ruled) return `<mrow class="ml-${ruled}">${write(node.base, variant)}</mrow>`
+      // No room of its own: the mark sits over the middle of what it marks, in every engine.
+      const small = node.small ? ' scriptlevel="1"' : ''
+      const mark = `<mo stretchy="${node.stretchy}" lspace="0" rspace="0"${small}>${escape(node.char)}</mo>`
       return node.under
         ? `<munder accentunder="true">${one(node.base, variant)}${mark}</munder>`
         : `<mover accent="true">${one(node.base, variant)}${mark}</mover>`
@@ -157,9 +175,15 @@ function operator(node: Extract<MathNode, { type: 'operator' }>): string {
   else if (node.stretchy) attributes.push('stretchy="true"')
   // A bracket written without `\left` keeps its size, as in TeX: MathML would grow it.
   else if (delimiter) attributes.push('stretchy="false"')
-  if (node.kind === 'op' && node.limits === true) attributes.push('movablelimits="false"')
-  if (node.kind === 'ord' && node.text.length === 1 && !/[⋯…⋮⋱⋰]/.test(node.text))
+  // A bar of a norm or a set takes no room of its own, as in TeX (`‖v‖`); a colon is a relation's
+  // room apart.
+  if (node.kind === 'fence' && node.size === undefined && !node.stretchy)
     attributes.push('lspace="0"', 'rspace="0"')
+  if (node.kind === 'rel' && node.text === ':')
+    attributes.push('lspace="0.2778em"', 'rspace="0.2778em"')
+  if (node.kind === 'op' && node.limits === true) attributes.push('movablelimits="false"')
+  // A dot, a slash, a prime or `⋯` among terms takes no room of its own: the operators around it do.
+  if (node.kind === 'ord') attributes.push('lspace="0"', 'rspace="0"')
   if (node.kind === 'bin' && node.text === 'mod')
     attributes.push('lspace="0.2222em"', 'rspace="0.2222em"')
   return `<mo${attributes.length ? ` ${attributes.join(' ')}` : ''}>${escape(node.text)}</mo>`
@@ -184,6 +208,18 @@ function writeRow(children: MathNode[], variant: Variant | null): string {
   for (let at = 0; at < children.length; at++) {
     const child = children[at]!
     const next = children[at + 1]
+    // A name after a term stands a thin space from it: `n log n`.
+    const previous = children[at - 1]
+    const named =
+      child.type === 'function' || (child.type === 'scripts' && child.base.type === 'function')
+    if (
+      named &&
+      previous &&
+      (previous.type === 'identifier' ||
+        previous.type === 'number' ||
+        (previous.type === 'operator' && previous.kind === 'close'))
+    )
+      out += '<mspace width="0.1667em"/>'
     if (child.type === 'function') {
       out += functionName(child.text, child.limits, opensBracket(next))
       continue
