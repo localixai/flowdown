@@ -4,6 +4,7 @@
  */
 import { fenceTitle } from '../dialect'
 import { continues } from '../core/continues'
+import { unescapeString } from '../engine/entities'
 
 const OPENING = /^(`{3,}|~{3,})([^\n`]*)\n/
 
@@ -39,11 +40,12 @@ export const createFenceMemory = (): FenceMemory => ({ read: null })
 const shared = createFenceMemory()
 
 /** `rest` without its last line, when that line closes the fence: the healer's is not code. */
-function unclosed(rest: string, marker: string, length: number): string {
+function unclosed(rest: string, marker: string, length: number): { body: string; lined: boolean } {
   const closing = rest.lastIndexOf('\n')
+  // Closed by its last line: the code is the lines above it, of which there may be none.
   return closesFence(rest, closing + 1, rest.length, marker, length, 0)
-    ? rest.slice(0, Math.max(closing, 0))
-    : rest
+    ? { body: rest.slice(0, Math.max(closing, 0)), lined: closing >= 0 }
+    : { body: rest, lined: rest !== '' }
 }
 
 /** An open fence: its language, the file it names, and the code written so far. */
@@ -51,6 +53,11 @@ export interface GrowingFence {
   language: string | undefined
   title: string
   body: string
+  /**
+   * Whether the code has a line at all: a body of one empty line is `''` as a body of none is, and
+   * a finished block draws the one as a newline and the other as nothing.
+   */
+  lined: boolean
 }
 
 /**
@@ -71,17 +78,20 @@ export function growingFence(
   const marker = fence[0] ?? '`'
   const rest = source.slice(opening[0].length)
   const markers = closer.trimStart()
-  let body: string
-  if (!closer) body = unclosed(rest, marker, fence.length)
+  let read: { body: string; lined: boolean }
+  if (!closer) read = unclosed(rest, marker, fence.length)
   else if (markers[0] !== marker || markers.length < fence.length)
     // Not a line that closes this fence: it is read with the text, as any other line.
-    body = unclosed(rest + closer, marker, fence.length)
+    read = unclosed(rest + closer, marker, fence.length)
   // It closes the fence: the code is what is above it, without the newline that ends that.
-  else body = closer !== markers || !rest ? rest : rest.slice(0, -1)
+  else read = { body: closer !== markers || !rest ? rest : rest.slice(0, -1), lined: rest !== '' }
+  const { body, lined } = read
   // A fence closed earlier in the block means the block is not just this fence.
-  const read = memory.read
+  const before = memory.read
   let at =
-    read !== null && read.fence === fence && continues(body, read.body, read.clean) ? read.clean : 0
+    before !== null && before.fence === fence && continues(body, before.body, before.clean)
+      ? before.clean
+      : 0
   memory.read = null
   for (let end = body.indexOf('\n', at); end !== -1; end = body.indexOf('\n', at)) {
     if (closesFence(body, at, end, marker, fence.length, 3)) return null
@@ -90,9 +100,11 @@ export function growingFence(
   // The last line is still being written: read, but not remembered.
   if (closesFence(body, at, body.length, marker, fence.length, 3)) return null
   memory.read = { fence, body, clean: at }
-  const info = opening[2]?.trim() ?? ''
+  // The info string as the engine reads it: its escapes and character references resolved
+  // (```` ```foo\+bar ```` is `foo+bar`), so the open fence names what the closed one will.
+  const info = unescapeString(opening[2]?.trim() ?? '')
   const language = info.split(/\s+/)[0] || undefined
-  return { language, title: fenceTitle(info.slice(language?.length ?? 0)), body }
+  return { language, title: fenceTitle(info.slice(language?.length ?? 0)), body, lined }
 }
 
 /** How many lines a piece of a growing fence holds. */

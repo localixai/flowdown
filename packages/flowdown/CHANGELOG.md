@@ -21,6 +21,14 @@
   - **The terminal reads formulas with the same parser** as a page: every environment, typefaces as
     Unicode's math letters, braces with their labels, `\xrightarrow`.
 
+### Patch Changes
+
+- A code block still being written now draws, at every character, what one parse of it draws: its
+  language's escapes and character references are resolved as they are once it closes
+  (` ```foo\+bar ` names `foo+bar`), and a block of one empty line keeps that line. Every example of
+  CommonMark's and GitHub's specifications is now fed to the renderer a character at a time, and
+  every frame, streaming and finished, must be what one parse of that frame draws.
+
 ## 0.8.0
 
 ### Minor Changes
