@@ -38,9 +38,11 @@ export function useStage<T extends object>(
 ): T | null {
   const lazy = typeof option === 'function' ? (option as StageLoader<T>) : null
   const latest = useRef(lazy)
+  // Only when the loader changes: an effect on every render queues a task behind every token of
+  // a reply, for a loader that is the same one all along.
   useEffect(() => {
     latest.current = lazy
-  })
+  }, [lazy])
   // A stage another document on the page already loaded is there from the first render.
   const [stage, setStage] = useState<T | null>(() =>
     lazy ? ((loaded.get(lazy) as T | undefined) ?? null) : null,
