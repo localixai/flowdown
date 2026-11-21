@@ -371,7 +371,7 @@ describe('math, loaded on demand', () => {
           await new Promise((resolve) => setTimeout(resolve, 0))
         })
         expect(calls).toBe(1)
-        expect(host.querySelector('.katex')).not.toBeNull()
+        expect(host.querySelector('.fd-math')).not.toBeNull()
       },
     )
   })
@@ -438,10 +438,10 @@ describe('loaders written inline, a new function on every render', () => {
     )
     await mounted(page('The area is $\\pi r^2$.'), async (host, rerender) => {
       await settle()
-      expect(host.querySelector('.katex')).not.toBeNull()
+      expect(host.querySelector('.fd-math')).not.toBeNull()
       for (const tail of [' More', ' text', ' arrives']) {
         await rerender(page(`The area is $\\pi r^2$.${tail}`))
-        expect(host.querySelector('.katex')).not.toBeNull()
+        expect(host.querySelector('.fd-math')).not.toBeNull()
       }
       await settle()
       expect(loads).toBe(1)

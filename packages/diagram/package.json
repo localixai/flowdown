@@ -1,6 +1,6 @@
 {
   "name": "@localix-ai/diagram",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Mermaid diagrams as agents write them, every kind Mermaid has, drawn as SVG for a page and as boxes and lines for a terminal, from one layout. Any prefix of a stream reads; no dependencies.",
   "keywords": [
     "agent",

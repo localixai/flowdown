@@ -39,8 +39,8 @@ protocol that is not on the list does not reach the page:
 
 HTML never becomes a string that the browser parses: each allowed tag is made a React element
 with its allowed attributes, so there is no markup for a reply to break out of. Formulas are
-typeset after the sanitizer, so KaTeX's own markup is not stripped and nothing in a reply can
-disguise itself as KaTeX's.
+written after the sanitizer, so their MathML is not stripped and nothing in a reply can disguise
+itself as a formula's.
 
 Turn HTML off where replies have no reason to contain it:
 
@@ -91,15 +91,20 @@ The copy button writes to the clipboard only when the reader presses it.
 
 ## Formulas
 
-Formulas are typeset with KaTeX's defaults: `trust` is off, so `\href`, `\url`, `\includegraphics`
-and `\htmlClass` do not produce links, images or classes. A formula that does not parse is shown as
-source in KaTeX's error style.
+A formula is MathML written by `@localix-ai/math`, which has no command that makes a link, an image
+or a class: `\href`, `\url`, `\includegraphics` and `\htmlClass` are shown as written. Every
+character of a reply is escaped; a colour (`\color`) is a name or a hex colour, anything else
+dropped; the only styles it writes are a cell's alignment, that colour, `\boxed`'s border and a
+negative space, and `test/security.ts` holds every formula to exactly those.
 
 ## Diagrams
 
-Mermaid runs with `securityLevel: 'strict'`: HTML in labels is encoded as text, and `click`
-handlers are off. A diagram cannot run script or link anywhere. Mermaid is only loaded when you pass
-a loader.
+The built-in diagrams (`mermaid`) are SVG written by `@localix-ai/diagram`: every label is text, its
+characters escaped, and the SVG holds no script, no event handler, no link, no `<style>` and no
+`<foreignObject>`; `click` lines and `href`s in a diagram are read as nothing. Its tests feed it
+markup and handlers in labels and check none comes out. Mermaid itself, when you pass its loader
+instead, runs with `securityLevel: 'strict'`: HTML in labels is encoded as text, and `click`
+handlers are off.
 
 ## What it does not replace
 

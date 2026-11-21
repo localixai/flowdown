@@ -61,7 +61,7 @@ in [bench/results/features.json](../bench/results/features.json).
   ([bench/src/size.ts](../bench/src/size.ts)).
 - **Loaded on demand.** flowdown fetches its HTML reader and the full table of HTML5 character
   references (14 KB together) only for a reply that needs them. Streamdown loads its HTML parser up
-  front. Packages a renderer loads only when a reply needs them (KaTeX, Mermaid, D2) are not counted
+  front. Packages a renderer loads only when a reply needs them (KaTeX, Mermaid, D2, and flowdown's own math and diagrams) are not counted
   for any library.
 - **Highlighting.** flowdown with code highlighting for 23 languages is 68 KB.
 - **Packages installed** counts dependencies all the way down, read from the lockfile, without
@@ -73,7 +73,7 @@ From each library's documentation, not measured.
 
 | Library | Code highlighting | Math | Diagrams |
 | :--- | :--- | :--- | :--- |
-| **flowdown** | Built in, `@localix-ai/flowdown/highlight` | KaTeX | Mermaid |
+| **flowdown** | Built in, `@localix-ai/flowdown/highlight` | Built in, MathML (`@localix-ai/math`) | Built in, every kind Mermaid has (`@localix-ai/diagram`), or Mermaid |
 | Streamdown | Shiki plugin | KaTeX plugin | Mermaid plugin |
 | react-markdown | rehype plugin | remark and rehype plugins | Your component |
 | markdown-to-jsx | Your component | — | Your component |

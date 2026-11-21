@@ -41,7 +41,7 @@ describe('the HTML text under attack', () => {
   test('nothing a reply writes can act on the page', () => {
     const failures: string[] = []
     for (const [markdown, streaming] of attacks()) {
-      const found = findings(renderToHtml(markdown, { html, math, streaming }), { katex: true })
+      const found = findings(renderToHtml(markdown, { html, math, streaming }), { math: true })
       if (found.length > 0) failures.push(`${JSON.stringify(markdown)} ${JSON.stringify(found)}`)
     }
     expect(failures.slice(0, 5)).toEqual([])
@@ -87,7 +87,7 @@ describe('the DOM target under attack', () => {
     const failures: string[] = []
     for (const [markdown, streaming] of attacks()) {
       mounted.update(markdown, { streaming })
-      const found = findings(mounted.element.outerHTML, { katex: true })
+      const found = findings(mounted.element.outerHTML, { math: true })
       // The page itself, not its markup: no element a reply named, no handler set as an attribute.
       for (const element of mounted.element.querySelectorAll('*'))
         for (const attribute of element.attributes)

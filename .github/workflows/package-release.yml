@@ -1,0 +1,89 @@
+name: Package release
+
+# Publishes one of the packages made from templates/package (highlight, math, diagram) to npm at the
+# version in its package.json, and makes the GitHub release `<name>-v<version>` with that version's
+# part of its CHANGELOG.md. Run it from main by hand (Actions, Package release, Run workflow, the
+# package), or push the tag `<name>-v<version>`. flowdown's tags are `v<version>` and the crate's
+# `rust-v<version>`: no tag matches another's pattern. A version npm has already is not published
+# again, so a run that failed after npm took it can be run again for its release.
+
+on:
+  push:
+    tags: ['highlight-v*', 'math-v*', 'diagram-v*']
+  workflow_dispatch:
+    inputs:
+      package:
+        description: The package, a folder of packages/
+        type: choice
+        options: [highlight, math, diagram]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-release-${{ inputs.package || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      # For the tag and the GitHub release.
+      contents: write
+      # For npm provenance: the package page links the build that published it.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+
+      - name: Which package, and the tag names its version
+        env:
+          TAG: ${{ github.ref_name }}
+          CHOSEN: ${{ inputs.package }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = push ]; then name="${TAG%-v*}"; else name="$CHOSEN"; fi
+          version="$(jq -r .version "packages/$name/package.json")"
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$TAG" != "$name-v$version" ]; then
+            echo "::error::tag $TAG, but packages/$name/package.json is $version"
+            exit 1
+          fi
+          echo "NAME=$name" >> "$GITHUB_ENV"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: The checks
+        run: |
+          cd "packages/$NAME"
+          bun run typecheck
+          bun run test
+          bun run build
+          bun run check
+          bun run size
+
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd "packages/$NAME"
+          # In the user's config: inside a workspace npm reads the root's .npmrc, not this folder's.
+          echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
+          npm whoami --registry https://registry.npmjs.org
+          if npm view "@localix-ai/$NAME@$VERSION" version --registry https://registry.npmjs.org > /dev/null 2>&1; then
+            echo "npm has @localix-ai/$NAME@$VERSION already"
+          else
+            npm publish --access public --provenance --registry https://registry.npmjs.org
+          fi
+
+      # After npm has the version. Run by hand, this makes the tag on the commit it ran on.
+      - name: The release, with its changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          awk -v v="## $VERSION" '$0 == v { on = 1; next } on && /^## / { exit } on' \
+            "packages/$NAME/CHANGELOG.md" > notes.md
+          gh release view "$NAME-v$VERSION" > /dev/null 2>&1 ||
+            gh release create "$NAME-v$VERSION" --title "@localix-ai/$NAME $VERSION" \
+              --notes-file notes.md --target "$GITHUB_SHA"

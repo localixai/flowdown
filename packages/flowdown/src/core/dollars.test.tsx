@@ -21,8 +21,8 @@ describe('isLiteralDollar', () => {
 
 describe('escapeLiteralDollars', () => {
   test('a formula may start with a number: it closes and holds a sign only math writes', () => {
-    expect(render('Sum: $2 + 2 = 4$.', { math }).match(/class="katex"/g)).toHaveLength(1)
-    expect(render('A step: $3 \\cdot 4$ here.', { math }).match(/class="katex"/g)).toHaveLength(1)
+    expect(render('Sum: $2 + 2 = 4$.', { math }).match(/class="fd-math"/g)).toHaveLength(1)
+    expect(render('A step: $3 \\cdot 4$ here.', { math }).match(/class="fd-math"/g)).toHaveLength(1)
     // A price stays one: no closing dollar of its own look, or no sign only math writes.
     expect(escapeLiteralDollars('$5 and $10 = cheap')).toBe('\\$5 and \\$10 = cheap')
     expect(escapeLiteralDollars('pay $5 now and 7$ later')).toBe('pay \\$5 now and 7\\$ later')
@@ -52,7 +52,7 @@ describe('escapeLiteralDollars', () => {
     const reply =
       'Formula $a*b$, price $5 and $10, variables $HOME/bin and $PATH, command `echo $USER`.'
     const html = render(reply, { math })
-    expect(html.match(/class="katex"/g)).toHaveLength(1)
+    expect(html.match(/class="fd-math"/g)).toHaveLength(1)
     expect(html).toContain('price $5 and $10, variables $HOME/bin and $PATH, command')
     expect(html).toContain('<code>echo $USER</code>')
   })
@@ -63,26 +63,26 @@ describe('single dollars pair by the pandoc rule', () => {
 
   test('a shell line is text, not a formula', () => {
     const html = render(shell, { math })
-    expect(html).not.toContain('katex')
+    expect(html).not.toContain('fd-math')
     expect(html).toContain('$(seq 1 12); do printf &quot;line %s&quot; $i; done')
     expect(hasMathSyntax(shell)).toBe(false)
   })
 
   test('the opening dollar has no space after it, the closing one none before and no digit after', () => {
-    const katex = (markdown: string) =>
-      render(markdown, { math }).match(/class="katex"/g)?.length ?? 0
-    expect(katex('$x$')).toBe(1)
-    expect(katex('a $b$, c')).toBe(1)
-    expect(katex('$ x $')).toBe(0)
-    expect(katex('$x $')).toBe(0)
-    expect(katex('$a$5')).toBe(0)
-    expect(katex('costs $5 and $10')).toBe(0)
+    const formulas = (markdown: string) =>
+      render(markdown, { math }).match(/class="fd-math"/g)?.length ?? 0
+    expect(formulas('$x$')).toBe(1)
+    expect(formulas('a $b$, c')).toBe(1)
+    expect(formulas('$ x $')).toBe(0)
+    expect(formulas('$x $')).toBe(0)
+    expect(formulas('$a$5')).toBe(0)
+    expect(formulas('costs $5 and $10')).toBe(0)
     expect(render('$ x $', { math })).toContain('$ x $')
     expect(render('$a$5', { math })).toContain('$a$5')
   })
 
   test('an escaped dollar closes nothing', () => {
-    expect(render('$a + \\$b$', { math }).match(/class="katex"/g)).toHaveLength(1)
+    expect(render('$a + \\$b$', { math }).match(/class="fd-math"/g)).toHaveLength(1)
   })
 
   test('hasMathSyntax agrees with the parser', () => {

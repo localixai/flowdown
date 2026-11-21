@@ -3,7 +3,7 @@
  * `window.demo.show(text, streaming)` sets it, so the capture script can stream it frame by frame.
  * With `&black`, the page is black, as a terminal beside it is.
  */
-import 'katex/dist/katex.min.css'
+import '@localix-ai/flowdown/math.css'
 import '@localix-ai/flowdown/styles.css'
 import { Markdown } from '@localix-ai/flowdown'
 import { highlight } from '@localix-ai/flowdown/highlight'
@@ -26,7 +26,6 @@ const streamed = params.has('stream')
 
 const math = () => import('@localix-ai/flowdown/math')
 const html = () => import('@localix-ai/flowdown/html')
-const mermaid = () => import('mermaid')
 
 function Scene() {
   const [reply, setReply] = useState({ text: streamed ? '' : scene.reply, streaming: false })
@@ -37,13 +36,7 @@ function Scene() {
     <main className="chat" data-scene>
       {scene.question && <div className="question">{scene.question}</div>}
       <div className="reply">
-        <Markdown
-          streaming={reply.streaming}
-          math={math}
-          html={html}
-          mermaid={mermaid}
-          highlight={highlight}
-        >
+        <Markdown streaming={reply.streaming} math={math} html={html} mermaid highlight={highlight}>
           {reply.text}
         </Markdown>
       </div>

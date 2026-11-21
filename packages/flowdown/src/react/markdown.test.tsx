@@ -91,14 +91,14 @@ describe('portable Markdown', () => {
   test('preserves currency, environment variables and fenced source beside real math', () => {
     const source = '$5 and $10; $HOME/bin. Formula: $x^2$.\n\n```bash\necho "$HOME"\n```'
     const html = renderToStaticMarkup(<Markdown math={math}>{source}</Markdown>)
-    expect(html.match(/class="katex"/g)).toHaveLength(1)
+    expect(html.match(/class="fd-math"/g)).toHaveLength(1)
     expect(html).toContain('$5 and $10; $HOME/bin.')
     expect(html).toContain('echo &quot;$HOME&quot;')
   })
 
   test('without the math stage a formula reads as the source it is', () => {
     const html = renderToStaticMarkup(<Markdown>{'Formula: $x^2$.'}</Markdown>)
-    expect(html).not.toContain('katex')
+    expect(html).not.toContain('fd-math')
     expect(html).toContain('$x^2$')
   })
 

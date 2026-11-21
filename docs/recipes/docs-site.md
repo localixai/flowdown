@@ -20,13 +20,12 @@ import { Markdown, type MarkdownProps } from '@localix-ai/flowdown'
 import { highlight } from '@localix-ai/flowdown/highlight'
 import { html } from '@localix-ai/flowdown/html'
 import '@localix-ai/flowdown/styles.css'
-import 'katex/dist/katex.min.css'
+import '@localix-ai/flowdown/math.css'
 
 const loadMath = () => import('@localix-ai/flowdown/math')
-const loadMermaid = () => import('mermaid')
 
 export function DocMarkdown(props: Omit<MarkdownProps, 'html' | 'math' | 'mermaid' | 'highlight'>) {
-  return <Markdown {...props} html={html} math={loadMath} mermaid={loadMermaid} highlight={highlight} />
+  return <Markdown {...props} html={html} math={loadMath} mermaid highlight={highlight} />
 }
 ```
 
@@ -34,10 +33,10 @@ export function DocMarkdown(props: Omit<MarkdownProps, 'html' | 'math' | 'mermai
   loader, the prerendered page would leave them out and the client would add them after loading the
   parser: the markup would not match and React would warn while hydrating. Passing the stage
   parses them in the first render, on the server and the client alike.
-- **Math and Mermaid as loaders.** A page without a formula never fetches KaTeX, and a page without
-  a diagram never fetches Mermaid. The prerendered page shows a diagram's source, and the client
+- **Math as a loader, diagrams on demand.** A page without a formula never fetches the math code, and
+  a page without a diagram never fetches the diagram code. The prerendered page shows a diagram's source, and the client
   draws it after hydration, which React does not count as a mismatch.
-- **Loaders at module level.** Every page shares one loaded KaTeX and one Mermaid.
+- **Loaders at module level.** Every page shares one loaded math stage.
 
 ## Headings and a table of contents
 

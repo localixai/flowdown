@@ -14,3 +14,4 @@ export {
   type MermaidRenderer,
 } from './renderer'
 export { resolveMermaidLook, type MermaidLook } from './look'
+export { builtInDiagrams } from './loader'

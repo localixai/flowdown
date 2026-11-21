@@ -344,7 +344,7 @@ flowchart LR
 ## Math
 
 `$…$` inline, and `$$…$$` on lines of their own or a ` ```math ` fence for a display formula,
-typeset with KaTeX when the page turns math on. See
+drawn as MathML when the page turns math on. See
 [Math](math.md).
 
 ```markdown

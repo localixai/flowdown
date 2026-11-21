@@ -187,7 +187,7 @@ grown to its height:
 A script Unicode has small letters for stays small (`x²`, `∫₀¹`). A formula with nothing to set on
 rows, or one too wide for the terminal, is written on one row and wrapped, as inside a sentence.
 A `$` that is money or a shell variable is text, by the
-[rule a page follows](math.md#dollar-signs-that-are-not-math). No KaTeX is loaded; `math: false`
+[rule a page follows](math.md#dollar-signs-that-are-not-math). No page code is loaded: the formula is set in Unicode by the parser a page uses; `math: false`
 leaves formulas as the text they were written as.
 
 For a reply that is still arriving, keep a view:

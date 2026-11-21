@@ -1,7 +1,7 @@
 {
   "name": "@localix-ai/flowdown",
   "version": "0.8.0",
-  "description": "Ultrafast, lightweight streaming Markdown for React and AI replies. Its own parser, zero dependencies, 32 KB gzipped. GitHub Markdown plus steps, tabs, callouts, diagrams and math. Also as HTML text, on a page with no framework, as a custom element and in a terminal.",
+  "description": "Ultrafast, lightweight streaming Markdown for React and AI replies. Its own parser, zero dependencies, 32 KB gzipped. GitHub Markdown plus steps, tabs, callouts, diagrams and math with no extra dependency. Also as HTML text, on a page with no framework, as a custom element and in a terminal.",
   "keywords": [
     "ai",
     "ai-chat",
@@ -74,13 +74,14 @@
     "./highlight": "./dist/highlight/index.js",
     "./mermaid": "./dist/mermaid/index.js",
     "./styles.css": "./dist/styles.css",
+    "./math.css": "./dist/math.css",
     "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsdown && bun scripts/build-css.ts",
     "test": "bun test --randomize",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "check": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints styles.css && bun scripts/check-package.ts",
+    "check": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints styles.css math.css && bun scripts/check-package.ts",
     "size": "bun scripts/size.ts",
     "conformance": "bun scripts/conformance.ts",
     "prompt": "bun scripts/prompt.ts",
@@ -115,13 +116,9 @@
     "unified": "11.0.5"
   },
   "peerDependencies": {
-    "katex": ">=0.16.0",
     "react": "^18.2.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
-    "katex": {
-      "optional": true
-    },
     "react": {
       "optional": true
     }

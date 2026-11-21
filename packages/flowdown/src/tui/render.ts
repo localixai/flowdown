@@ -11,8 +11,7 @@ import { formOf, type Form } from '../core/forms'
 import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE, type CalloutKind } from '../dialect'
 import type { Node } from '../engine/types'
 import { createCodeDrawer, type CodeDrawer } from './code'
-import { formulaRows } from './formula'
-import { mathRows, mathText } from './math'
+import { toRows, toText } from '@localix-ai/math'
 import { printable } from './printable'
 import {
   BOLD,
@@ -128,7 +127,7 @@ function one(node: Node, style: Style, lines: Lines): void {
       return push(lines, (node.value ?? '').replaceAll(' ', NO_BREAK), patch(style, CODE))
     case 'inlineMath':
       // A formula keeps to one row where a row holds it, as code does.
-      return push(lines, mathText(node.value ?? '').replaceAll(' ', NO_BREAK), patch(style, MATH))
+      return push(lines, toText(node.value ?? '').replaceAll(' ', NO_BREAK), patch(style, MATH))
     case 'break':
       lines.push([])
       return
@@ -362,13 +361,15 @@ class Renderer {
 
   /**
    * A formula on rows of its own, set in from the text: its fractions, limits and matrices set on
-   * rows where they fit (`formula.ts`), else written on one row for each of its lines, wrapped.
+   * rows where they fit (`@localix-ai/math`, which a page's MathML is written by too), else
+   * written on one row, wrapped.
    */
   private formula(node: Node): void {
     const source = node.value ?? ''
     const inset = span('  ', PLAIN)
-    const set = formulaRows(source, this.room() - columnsOf(inset.text))
-    const rows = set ?? mathRows(source)
+    const drawn = toRows(source, this.room() - columnsOf(inset.text))
+    const set = drawn.length > 1 ? drawn : null
+    const rows = drawn
     if (rows.length === 0) return
     this.within(inset, inset, () => {
       for (const row of rows) {

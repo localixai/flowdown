@@ -71,7 +71,7 @@ export default function Chat() {
                 key={index}
                 streaming={part.state === 'streaming'}
                 highlight={highlight}
-                mermaid={() => import('mermaid')}
+                mermaid
               >
                 {part.text}
               </Markdown>
@@ -112,4 +112,4 @@ A person's own message is usually shown as typed, not as Markdown. If you do ren
   as finished when the chat's `status` is no longer `'streaming'`:
   `streaming={part.state === 'streaming' && status === 'streaming'}`.
 - **Math.** Turn it on in both places: `answerFormatPrompt({ math: true })` on the server,
-  `math={() => import('@localix-ai/flowdown/math')}` and the KaTeX stylesheet on the page.
+  `math={() => import('@localix-ai/flowdown/math')}` and `@localix-ai/flowdown/math.css` on the page.

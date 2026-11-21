@@ -22,8 +22,7 @@ import { createDocument } from '../document'
 import { parse } from '../engine'
 import type { Extension, Node } from '../engine/types'
 import { drawDiagram } from './diagram'
-import { formulaRows } from './formula'
-import { mathText } from './math'
+import { toRows, toText } from '@localix-ai/math'
 import {
   createTerminalView,
   lineText,
@@ -684,14 +683,14 @@ describe('on the corpus', () => {
     // A source's host repeats its address, which is printed; a tree fence is drawn from its rows.
     if (form === 'source-host') return
     if (node.type === 'code' && node.lang === 'tree') return
-    // A display formula set on rows is read across them, not along: `formula.test.ts` says what
-    // it is drawn as. Only the text around it is held to its order here.
+    // A display formula set on rows is read across them, not along: `@localix-ai/math`'s tests say
+    // what it is drawn as. Only the text around it is held to its order here.
     const only = node.type === 'paragraph' && node.children?.length === 1 ? node.children[0] : null
     const display = node.type === 'math' ? node : only?.type === 'inlineMath' ? only : null
-    if (display && formulaRows(display.value ?? '', Number.POSITIVE_INFINITY) !== null) return
-    // A formula is on the screen as the terminal writes it: `math.test.ts` says what that is.
+    if (display && toRows(display.value ?? '', Number.MAX_SAFE_INTEGER).length > 1) return
+    // A formula is on the screen as the terminal writes it: `@localix-ai/math`'s tests say what.
     if (node.type === 'inlineMath' || node.type === 'math') {
-      out.push(printable(mathText(node.value ?? '').replace(/\s/g, '')))
+      out.push(printable(toText(node.value ?? '').replace(/\s/g, '')))
       return
     }
     if (typeof node.value === 'string') out.push(printable(node.value.replace(/\s/g, '')))

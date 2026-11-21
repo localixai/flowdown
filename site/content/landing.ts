@@ -90,7 +90,7 @@ const CARDS: Card[] = [
   {
     tag: 'Diagrams and math',
     title: 'A diagram a reader can open',
-    text: 'A `mermaid` fence is drawn once it is whole, in the page’s colours, and opens in a viewer that zooms and pans: try it. Formulas are set by KaTeX. Both load only for a reply that has one.',
+    text: 'A `mermaid` fence is drawn once it is whole, every kind Mermaid has, in the page’s colours, and opens in a viewer that zooms and pans: try it. Formulas are MathML the browser lays out. Both are built in, and load only for a reply that has one.',
     links: [
       { href: `${DOCS}/diagrams`, label: 'Diagrams' },
       { href: `${DOCS}/math`, label: 'Math' },

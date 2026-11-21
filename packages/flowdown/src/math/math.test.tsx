@@ -7,15 +7,15 @@ const toHtml = (markdown: string) => render(markdown, { math })
 describe('the math stage', () => {
   test('typesets inline and display math', () => {
     const html = toHtml('Inline $E = mc^2$ here.\n\n$$\n\\frac{a}{b}\n$$')
-    expect(html).toContain('<span class="katex">')
-    expect(html).toContain('<span class="katex-display">')
+    expect(html).toContain('<span class="fd-math"><math><semantics>')
+    expect(html).toContain('<span class="fd-math fd-math-display"><math display="block">')
     expect(html).not.toContain('language-math')
   })
 
   test('a fence whose language is math is a display formula, as on GitHub', () => {
     const fence = '```math\n\\sqrt{3}\n```'
-    expect(render(fence, { math })).toContain('katex-display')
-    expect(render(`Before.\n\n${fence}\n\nAfter.`, { math })).toContain('katex-display')
+    expect(render(fence, { math })).toContain('fd-math-display')
+    expect(render(`Before.\n\n${fence}\n\nAfter.`, { math })).toContain('fd-math-display')
     // Still streaming, it is not shown as code first.
     expect(render('```math\n\\sqrt{3', { math, streaming: true })).not.toContain('fd-code')
     // Without the stage it is the code block any renderer shows.
@@ -29,9 +29,9 @@ describe('the math stage', () => {
     expect(typesetMath('x^2 + y^2 = z^2', true)).not.toBe(first)
   })
 
-  test('an expression KaTeX cannot parse renders its own error form instead of throwing', () => {
-    const html = toHtml('Broken $\\frac{a}{$ here.')
-    expect(html).toContain('katex-error')
+  test('an expression cut off or unknown is drawn as far as it goes, never thrown', () => {
+    expect(toHtml('Broken $\\frac{a}{$ here.')).toContain('<mfrac><mi>a</mi><mrow></mrow></mfrac>')
+    expect(toHtml('Unknown $\\foo x$ here.')).toContain('<merror><mtext>\\foo</mtext></merror>')
   })
 
   test('without the stage, dollars are text', () => {
