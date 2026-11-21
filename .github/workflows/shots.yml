@@ -1,0 +1,59 @@
+# Screenshots of the packages that draw (math, diagrams) in every engine Localix runs on: WebKit on
+# macOS and Linux, Chromium (WebView2) on Windows, and Firefox. Each system's images are pushed to
+# a branch of their own, `shots/<branch>-<system>`, where a review (or a session behind a proxy that
+# cannot read artifact storage) reads them. Nothing here gates a merge.
+name: shots
+
+on:
+  push:
+    branches-ignore: [main, 'shots/**', 'spike/**']
+    paths: ['packages/math/**', 'packages/diagram/**', '.github/workflows/shots.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, engines: 'chromium,firefox,webkit', system: linux }
+          - { os: macos-15, engines: 'webkit,chromium,firefox', system: macos }
+          - { os: windows-2025, engines: 'chromium,firefox', system: windows }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - name: Browsers
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then deps=--with-deps; fi
+          bunx playwright-core install $deps chromium firefox webkit
+      - name: Math
+        shell: bash
+        working-directory: packages/math
+        run: bun scripts/shots.ts --engines '${{ matrix.engines }}' --tag '${{ matrix.system }}'
+      - name: Diagrams
+        if: hashFiles('packages/diagram/scripts/shots.ts') != ''
+        shell: bash
+        working-directory: packages/diagram
+        run: bun scripts/shots.ts --engines '${{ matrix.engines }}' --tag '${{ matrix.system }}'
+      - name: Push the images
+        shell: bash
+        run: |
+          mkdir -p /tmp/images
+          cp packages/math/shots/*.png /tmp/images/ 2>/dev/null || true
+          for f in packages/diagram/shots/*.png; do [ -e "$f" ] && cp "$f" "/tmp/images/diagram-$(basename "$f")"; done
+          cd /tmp/images
+          git init -q -b main && git add . && git -c user.name=ci -c user.email=ci@localix.ai commit -qm "shots of ${GITHUB_SHA}"
+          git push -fq "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:refs/heads/shots/${GITHUB_REF_NAME//\//-}-${{ matrix.system }}"

@@ -1,0 +1,77 @@
+/*
+ * @localix-ai/math/styles.css: the package's math font, and the few rules MathML Core leaves to a
+ * page. With it a formula looks the same in every engine: an engine's own math font may not be able
+ * to grow a bracket (Chromium on Windows), or may set a formula smaller than the text around it.
+ *
+ * The letters `\mathbb`, `\mathcal`, `\mathbf` give are a file of their own, fetched only by a page
+ * that shows one (`unicode-range`).
+ */
+@font-face {
+  font-family: 'Localix Math';
+  src: url('./math.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Localix Math';
+  src: url('./math-letters.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+1D400-1D433, U+1D468-1D56B, U+1D6A8-1D6E1, U+1D71C-1D755, U+1D7CE-1D7E1;
+}
+
+math {
+  font-family: 'Localix Math', math;
+  /* A math font's letters run smaller than a text font's: this sets them at the text's height. */
+  font-size: 1.12em;
+}
+math[display='block'] {
+  display: block math;
+  margin: 0.75em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.1em 0;
+}
+/* A formula wider than its column scrolls rather than running past it. */
+math[display='block'] > semantics {
+  display: inline math;
+}
+
+/* Text inside a formula keeps the page's own face, as \text does in TeX. */
+math mtext {
+  font-family: inherit;
+}
+
+/* Matrices: a little room between columns, a little between rows. */
+.ml-matrix > mtr > mtd,
+.ml-small > mtr > mtd {
+  padding: 0.2em 0.5em;
+}
+.ml-matrix > mtr > mtd:first-child,
+.ml-small > mtr > mtd:first-child {
+  padding-left: 0.15em;
+}
+.ml-matrix > mtr > mtd:last-child,
+.ml-small > mtr > mtd:last-child {
+  padding-right: 0.15em;
+}
+/* aligned: the right and left halves meet at their `&`. */
+.ml-aligned > mtr > mtd {
+  padding: 0.25em 0;
+}
+.ml-aligned > mtr > mtd:nth-child(2n + 3) {
+  padding-left: 2em;
+}
+.ml-gather > mtr > mtd {
+  padding: 0.25em 0;
+}
+/* cases: the value, then its condition after a gap. */
+.ml-cases > mtr > mtd {
+  padding: 0.15em 0 0.15em 0.2em;
+}
+.ml-cases > mtr > mtd + mtd {
+  padding-left: 1em;
+}
+merror {
+  border: 0;
+  background: none;
+  color: #c33;
+}
