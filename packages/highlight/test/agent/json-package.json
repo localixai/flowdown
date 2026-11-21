@@ -1,0 +1,23 @@
+{
+  "name": "@acme/app",
+  "version": "1.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "tsc -b && vite build",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "zod": "3.23.8"
+  },
+  "engines": { "node": ">=20" },
+  "tool_result": {
+    "ok": true,
+    "exitCode": 0,
+    "durationMs": 1532.5,
+    "files": ["src/index.ts", "src/queue.ts"],
+    "error": null
+  }
+}

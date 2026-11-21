@@ -33,5 +33,5 @@
     // KaTeX's ES module has only a default export.
     "import/no-named-as-default-member": "off"
   },
-  "ignorePatterns": ["**/dist/**", "**/node_modules/**"]
+  "ignorePatterns": ["**/dist/**", "**/node_modules/**", "packages/highlight/test/agent/**", "packages/highlight/.refs/**"]
 }
