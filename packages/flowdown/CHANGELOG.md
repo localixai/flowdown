@@ -1,5 +1,30 @@
 # @localix-ai/flowdown
 
+## 0.8.0
+
+### Minor Changes
+
+- b341c7a: `@localix-ai/flowdown/highlight` is its own highlighter now, built in: nothing to install, and
+  `highlight.js` is no longer a peer dependency. It reads each line from the state the line above
+  ended in, so a fence an agent is still writing is coloured a line once and exactly as the finished
+  block is (a comment opened in one piece of 40 lines is still one in the next), on a page, in the
+  other targets and in a terminal. 26 languages, the shell session (`console`), SCSS, `.env` files
+  and Vue and Svelte among the new ones; a shell command is drawn as a call is. A page loads 48.3 KB
+  with highlighting where it loaded 74.4 KB. A highlighter of your own can offer the same with
+  `lines`.
+
+  On a two-core machine (`bench/results/machines/linux-2-core`), the 50,000-character code reply
+  with highlighting streams in 0.4 s frame by frame where it took 3.3 s, and in 1.4 s token by
+  token where it took 14.8 s. The highlighter is also published on its own, as
+  `@localix-ai/highlight`.
+
+### Patch Changes
+
+- a39dd9e: `<Markdown>` leaves React no work after a streamed token. Its hooks queued an effect behind every
+  commit (the loader of each optional stage was stored again, and the pacer started again with
+  smoothing off), so each token cost a scheduler task once it was drawn. They now run only when the
+  loader changes or there is text still to show.
+
 ## 0.7.2
 
 ### Patch Changes
