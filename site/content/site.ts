@@ -17,6 +17,7 @@ const site: SiteConfig = {
     ['pnpm', 'pnpm add @localix-ai/flowdown'],
     ['bun', 'bun add @localix-ai/flowdown'],
     ['yarn', 'yarn add @localix-ai/flowdown'],
+    ['Cargo', 'cargo add flowdown --git https://github.com/localixai/flowdown --tag rust-v0.1.0'],
   ],
   image: { path: '/og.png', alt: 'flowdown: streaming Markdown for React and AI replies, with one reply drawn on a page and in a terminal' },
   bar: {
