@@ -19,10 +19,11 @@
  * all but three of them are the renderers that have not changed.
  *
  * Options: `--all`, `--only=chat-5k,code-50k`, `--renderers=flowdown,streamdown`, `--runs=3`,
+ * `--machine=name` (written to and kept from `results/machines/<name>/`, as run.ts does),
  * `--no-write`.
  */
 import { execSync } from 'node:child_process'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { cpus, tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -136,7 +137,8 @@ const rows: Row[] = []
 
 // ─── What is kept from the last record ───
 
-const results = join(import.meta.dir, '../results')
+const machine = process.argv.find((a) => a.startsWith('--machine='))?.split('=')[1]
+const results = join(import.meta.dir, '../results', ...(machine ? ['machines', machine] : []))
 const cpu = cpus()[0]?.model ?? ''
 const engine = `Chromium ${browser.version()}`
 const replies = [...scenarios(), ...scaling()]
@@ -319,7 +321,9 @@ ${table((row) => `${row.p95Ms.toFixed(2)} (${row.maxMs.toFixed(1)})`)}
 if (process.argv.includes('--no-write') || flag('only') || flag('renderers')) console.log(`\n${markdown}`)
 else {
   const dir = results
+  mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'browser.json'), `${JSON.stringify({ meta, rows }, null, 2)}\n`)
   writeFileSync(join(dir, 'browser.md'), markdown)
-  console.log(`\nwrote results/browser.md and results/browser.json`)
+  const where = machine ? `results/machines/${machine}` : 'results'
+  console.log(`\nwrote ${where}/browser.md and ${where}/browser.json`)
 }

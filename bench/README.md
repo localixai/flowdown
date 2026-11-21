@@ -149,6 +149,9 @@ Options for `bun src/run.ts` (with `NODE_ENV=production`):
 - `--passes=3`: the whole table that many times over, each number the median of its passes;
   `bun run bench` passes it.
 - `--label=name`: the name of the results file, `results/<date>-<name>.json`.
+- `--machine=name`: write to `results/machines/<name>/`, for a machine other than the one the
+  published figures come from: a `latest` and a reference of its own (see
+  [Other machines](#other-machines)).
 - `--no-write`: print only.
 
 React runs its production build (`NODE_ENV=production`); the development build checks far more
@@ -163,6 +166,22 @@ main-thread time from the browser's own counters. Chromium's engine is V8 and Bu
 JavaScriptCore: a cost only one of them has shows in only one of the two runs. It takes
 `--only`, `--renderers`, `--runs` and `--no-write` as `run.ts` does, and no budget is held to it:
 its times move with how warm the machine is.
+
+## Other machines
+
+The figures the README quotes are one machine's, an Apple M5. A full run on another machine is
+kept apart, in `results/machines/<name>/`, with a `latest` and a reference of its own
+(`bun src/run.ts --all --passes=3 --machine=<name>`, then `bun src/reference.ts
+--machine=<name>`), and is never mixed with the M5's nor kept from it. `bun src/machines.ts`
+writes [results/machines.md](results/machines.md): the same four replies on every machine, one
+row each.
+
+- `linux-2-core`: an Intel Xeon at 2.1 GHz, two cores, Linux, a shared virtual machine. Every
+  budget holds there (`bun run bench:check results/machines/linux-2-core/latest.json`),
+  `linear-code` included. A long reply keeps its lead over every renderer, and the order of the
+  others is the M5's. A short one does not: `chat-5k` streams in tens of milliseconds, where a
+  run on two shared cores differs from the next by half of that, and flowdown and markdown-to-jsx
+  trade places from one run to the next.
 
 ## Results in git
 
@@ -198,6 +217,7 @@ bench/
     parsers.ts      how each parser is set up
     growth.ts       one block that grows (a fence, a table, a list), in each target
     differential.ts the parser against micromark on seeded texts; exits 1 on a new kind of difference
+    machines.ts     the same replies on every machine with a full run: results/machines.md
   results/
     latest.md
     latest.json
@@ -209,7 +229,9 @@ bench/
     growth.md
     growth.json
     differential.md
+    machines.md
     <date>-<label>.json
+    machines/<name>/  another machine's runs: latest, reference and <date>-<label>.json
 ```
 
 ## Checked with Claude Fable 5.2

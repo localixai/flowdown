@@ -9,6 +9,7 @@
  * that does not move when flowdown is measured again.
  *
  * Run it again after a full run (`bun run bench:all`), which adds one more record to the mean.
+ * `--machine=name` does the same in `results/machines/<name>/`, from that machine's own runs.
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cpus } from 'node:os'
@@ -31,7 +32,9 @@ interface Recorded {
   rows: Row[]
 }
 
-const dir = join(import.meta.dir, '../results')
+const machine = process.argv.find((a) => a.startsWith('--machine='))?.split('=')[1]
+const dir = join(import.meta.dir, '../results', ...(machine ? ['machines', machine] : []))
+const where = machine ? `results/machines/${machine}` : 'results'
 const cpu = cpus()[0]?.model ?? 'unknown'
 const runtime = `bun ${Bun.version}`
 const budgetMs = Number(process.argv.find((a) => a.startsWith('--budget='))?.split('=')[1] ?? 30_000)
@@ -86,7 +89,7 @@ const meta = {
   about: `the mean of ${Math.min(...counts)} to ${Math.max(...counts)} full runs, ${[...used][0]!.slice(0, 10)} to ${[...used].at(-1)!.slice(0, 10)}`,
 }
 writeFileSync(join(dir, 'reference.json'), `${JSON.stringify({ meta, rows }, null, 2)}\n`)
-console.log(`wrote results/reference.json: ${rows.length} rows, ${meta.about}`)
+console.log(`wrote ${where}/reference.json: ${rows.length} rows, ${meta.about}`)
 for (const renderer of others) {
   const of = (scenario: string) =>
     rows.find((r) => r.renderer === renderer.name && r.scenario === scenario && r.pattern === 'frame')

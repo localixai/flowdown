@@ -7,6 +7,7 @@
     "bench:all": "bun run --cwd ../packages/flowdown build && NODE_ENV=production bun src/run.ts --all --passes=3",
     "bench:quick": "NODE_ENV=production bun src/run.ts --quick",
     "reference": "bun src/reference.ts",
+    "machines": "bun src/machines.ts",
     "bench:check": "bun src/check.ts",
     "browser": "bun run --cwd ../packages/flowdown build && bun src/browser.ts",
     "parse": "bun src/parse.ts",

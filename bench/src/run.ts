@@ -1,6 +1,6 @@
 /**
  * `bun src/run.ts [--all] [--quick] [--only=a,b] [--renderers=flowdown,streamdown] [--runs=3]
- * [--passes=1] [--label=name] [--no-write]`
+ * [--passes=1] [--label=name] [--machine=name] [--no-write]`
  *
  * Every scenario, under each of its chunk patterns, through every renderer, each in a process of
  * its own (cell.ts): one warm-up run, then `--runs` measured ones, of which the median is kept.
@@ -15,6 +15,10 @@
  * as long as it is of the same version of the renderer, the same reply, the same machine, runtime
  * and time budget. A row that cannot be kept is measured. `meta.reused` names the renderers whose
  * rows were kept, and `meta.reference` what they are the mean of.
+ *
+ * With `--machine=name` all of it is written to `results/machines/<name>/` instead, with a
+ * `reference.json` and a `latest` of its own: the figures of another machine, never mixed with the
+ * ones the README quotes, and never taken from them.
  */
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -47,7 +51,9 @@ const label = flag('label') ?? 'local'
 const everyone = process.argv.includes('--all')
 const cpu = cpus()[0]?.model ?? 'unknown'
 const runtime = `bun ${Bun.version}`
-const dir = join(import.meta.dir, '..', 'results')
+const machine = flag('machine')
+const dir = join(import.meta.dir, '..', 'results', ...(machine ? ['machines', machine] : []))
+const where = machine ? `results/machines/${machine}` : 'results'
 
 /** The reference: where the rows of a renderer that has not changed are kept from. */
 interface Earlier {
@@ -184,6 +190,6 @@ if (!process.argv.includes('--no-write')) {
     writeFileSync(join(dir, 'latest.md'), report(meta, rows, renderers))
   }
   console.log(
-    `\nwrote results/${stamp}-${label}.json${quick || only ? '' : ', latest.json and latest.md'}`,
+    `\nwrote ${where}/${stamp}-${label}.json${quick || only ? '' : ', latest.json and latest.md'}`,
   )
 }
