@@ -1,0 +1,27 @@
+/* Layout of the settings page. */
+:root {
+  --accent: #4f46e5;
+  --radius: 8px;
+}
+
+.settings > .panel,
+.settings .panel:hover {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  padding: calc(var(--radius) * 2) 0;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  border-radius: var(--radius);
+}
+
+#save-button[disabled]::after {
+  content: "…";
+  color: var(--accent) !important;
+  transition: opacity 150ms ease-in-out;
+}
+
+@media (max-width: 640px) {
+  .settings {
+    grid-template-columns: 1fr;
+  }
+}

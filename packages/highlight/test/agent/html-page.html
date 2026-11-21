@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Orders &amp; returns</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- The table is filled by the script below. -->
+    <main id="app" class="container" data-page="orders">
+      <h1>Orders</h1>
+      <table>
+        <thead><tr><th>ID</th><th>Total</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <button type="button" disabled>Load more</button>
+    </main>
+    <script type="module">
+      const rows = await fetch('/api/orders').then((response) => response.json())
+      document.querySelector('tbody').innerHTML = rows
+        .map((row) => `<tr><td>${row.id}</td><td>${row.total}</td></tr>`)
+        .join('')
+    </script>
+  </body>
+</html>

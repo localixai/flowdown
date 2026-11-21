@@ -1,0 +1,19 @@
+$ git status --short
+ M src/index.ts
+?? src/queue.test.ts
+$ npm test -- --run src/queue.test.ts
+
+> app@1.4.0 test
+> vitest --run src/queue.test.ts
+
+ ✓ src/queue.test.ts (6 tests) 41ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+$ git add -A && git commit -m "fix(queue): retry failed tasks"
+[main 3f2a1c9] fix(queue): retry failed tasks
+ 2 files changed, 48 insertions(+), 3 deletions(-)
+$ ls -la dist/
+total 24
+drwxr-xr-x  4 dev  staff   128 Nov 21 14:02 .
+-rw-r--r--  1 dev  staff  9381 Nov 21 14:02 index.js

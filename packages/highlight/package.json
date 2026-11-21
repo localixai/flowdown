@@ -1,0 +1,61 @@
+{
+  "name": "@localix-ai/highlight",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Syntax highlighting for code that streams: an agent's files, patches and shell sessions coloured line by line as they arrive, each line once. 26 languages, highlight.js classes, no dependencies.",
+  "keywords": [
+    "agent",
+    "ai",
+    "code",
+    "highlight",
+    "highlighter",
+    "llm",
+    "streaming",
+    "syntax-highlighting",
+    "zero-dependency"
+  ],
+  "homepage": "https://github.com/localixai/flowdown/tree/main/packages/highlight",
+  "bugs": {
+    "url": "https://github.com/localixai/flowdown/issues"
+  },
+  "license": "MIT",
+  "author": "rsaryev (https://github.com/rsaryev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/localixai/flowdown.git",
+    "directory": "packages/highlight"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "check": "publint --strict && attw --pack . --profile esm-only",
+    "size": "bun scripts/size.ts",
+    "quality": "bun scripts/quality.ts --check",
+    "bench": "bun bench/run.ts --check",
+    "references": "bun scripts/references.ts"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@types/bun": "1.4.3",
+    "highlight.js": "11.12.0",
+    "publint": "0.3.25",
+    "shiki": "4.6.0",
+    "tsdown": "0.23.7",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
