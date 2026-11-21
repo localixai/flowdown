@@ -39,6 +39,8 @@ jobs:
       - run: rustup toolchain install
       - run: crates/flowdown/scripts/check
 
+      # Left alone when it is there already, as when the tag was made with its release on the
+      # repository's page: the checks above still ran on the tag.
       - name: The release, with its changelog
         env:
           GH_TOKEN: ${{ github.token }}
@@ -47,5 +49,6 @@ jobs:
           version=${TAG#rust-v}
           awk -v v="## $version" '$0 == v { on = 1; next } on && /^## / { exit } on' \
             crates/flowdown/CHANGELOG.md > notes.md
-          gh release create "$TAG" --title "flowdown (Rust) $version" --notes-file notes.md \
-            --latest=false
+          gh release view "$TAG" > /dev/null 2>&1 ||
+            gh release create "$TAG" --title "flowdown (Rust) $version" --notes-file notes.md \
+              --latest=false
