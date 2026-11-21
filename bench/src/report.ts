@@ -145,7 +145,8 @@ const total = (row: Row) =>
 /** The renderers whose rows were not measured in this run, and what they are instead. */
 const kept = (meta: Record<string, unknown>) =>
   Array.isArray(meta.reused)
-    ? `\n- **kept from results/reference.json:** ${meta.reused.join(', ')}: ${String(meta.reference)}`
+    ? `\n- **kept from results/${meta.machine ? `machines/${String(meta.machine)}/` : ''}reference.json:** ` +
+      `${meta.reused.join(', ')}: ${String(meta.reference)}`
     : ''
 
 export function report(meta: Record<string, unknown>, rows: Row[], renderers: readonly Renderer[]) {
