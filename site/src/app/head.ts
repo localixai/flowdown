@@ -9,12 +9,14 @@ export type Meta = {
   route: string;
   /** The landing is a website; a docs page, an article. */
   kind: 'website' | 'article';
+  /** A docs page's markdown, for a reader that would rather have it (an assistant, a crawler). */
+  markdown?: string;
 };
 
 const IMAGE = `${SITE.url}${SITE.image.path}`;
 
 /** A page's own head: its title, description, canonical URL, link previews and what it is. */
-export function head({ title, headline, description, route, kind }: Meta): string {
+export function head({ title, headline, description, route, kind, markdown }: Meta): string {
   const url = `${SITE.url}${route}`;
   const [t, d, alt] = [escapeHtml(title), escapeHtml(description), escapeHtml(SITE.image.alt)];
   const data =
@@ -32,6 +34,7 @@ export function head({ title, headline, description, route, kind }: Meta): strin
     `<title>${t}</title>`,
     `<meta name="description" content="${d}">`,
     `<link rel="canonical" href="${url}">`,
+    ...(markdown ? [`<link rel="alternate" type="text/markdown" href="${SITE.url}${markdown}">`] : []),
     `<meta property="og:type" content="${kind}">`,
     `<meta property="og:site_name" content="${escapeHtml(SITE.name)}">`,
     '<meta property="og:locale" content="en_US">',

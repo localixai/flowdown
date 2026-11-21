@@ -8,6 +8,8 @@ export type AnalyticsEvents = {
   install_copied: { method: string };
   /** A docs code block copied. */
   code_copied: Record<string, never>;
+  /** A docs page copied as markdown, from its "Copy page". */
+  page_copied: Record<string, never>;
   /** The docs' search closed after a query; `found` is whether its last query had results. */
   docs_searched: { found: boolean };
 };

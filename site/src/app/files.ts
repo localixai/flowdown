@@ -16,7 +16,7 @@ export function sitemap(): string {
 export function llmsDocs(): string {
   const groups = GROUPS.map(
     (group) =>
-      `### ${group.title}\n\n${group.pages.map((page) => `- [${page.title}](${SITE}${page.route}): ${page.description}`).join('\n')}`,
+      `### ${group.title}\n\n${group.pages.map((page) => `- [${page.title}](${SITE}${page.route}.md): ${page.description}`).join('\n')}`,
   );
   return `## Docs\n\n${groups.join('\n\n')}\n\nEvery page in one markdown file: ${SITE}/llms-full.txt\n`;
 }
@@ -25,6 +25,12 @@ export function llmsDocs(): string {
 export function llmsFull(): string {
   const pages = PAGES.map((page) => `---\n\nSource: ${SITE}${page.route}\n\n${page.markdown.trim()}\n`);
   return `# ${INDEX.title}\n\n> ${INDEX.description}\n\n${pages.join('\n')}`;
+}
+
+/** Each page as its own markdown file, beside its HTML (`/docs/ci.md` beside `/docs/ci`): what
+ *  the page's "Copy page" copies and an assistant reads, its links made absolute. */
+export function markdownPages(): Array<{ file: string; text: string }> {
+  return PAGES.map((page) => ({ file: `${page.route.slice(1)}.md`, text: `${page.markdown.trim()}\n` }))
 }
 
 /** A piece of a page's HTML as the text a reader sees: no tags, no copy buttons, no heading marks. */

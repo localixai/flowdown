@@ -1,0 +1,62 @@
+/* "Copy page" and its menu: one split button, quiet beside the title until it is wanted. */
+.page-actions {
+  display: inline-flex;
+  flex: none;
+  margin-top: 0.35rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+}
+.page-actions > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 0;
+  background: none;
+  color: var(--soft);
+  font: 500 var(--step-s) / 1 var(--text);
+  cursor: pointer;
+}
+.page-actions > button:is(:hover, :focus-visible),
+.page-actions-more:has(+ :popover-open) {
+  background: var(--raised);
+  color: var(--white);
+}
+.page-actions-copy {
+  border-radius: 8px 0 0 8px;
+}
+/* Without the script there is nothing to copy with: the chevron stands alone. */
+.page-actions-more {
+  justify-content: center;
+  width: 2.25rem;
+  padding: 0;
+  border-radius: 8px;
+}
+.page-actions-copy:not([hidden]) + .page-actions-more {
+  border-left: 1px solid var(--line-strong);
+  border-radius: 0 8px 8px 0;
+}
+.page-actions-more svg {
+  transition: transform 180ms var(--ease-out);
+}
+.page-actions-more:has(+ :popover-open) svg {
+  transform: rotate(180deg);
+}
+.page-actions-copy svg:nth-of-type(2),
+.page-actions-copy[data-copied] svg:nth-of-type(1) {
+  display: none;
+}
+.page-actions-copy[data-copied] svg:nth-of-type(2) {
+  display: block;
+}
+
+/* The menu's rows carry a line of what each does under its name. */
+.page-actions-menu :is(a, button) > span {
+  display: grid;
+  gap: 0.15rem;
+}
+.page-actions-menu small {
+  color: var(--muted);
+  font-size: 0.75rem;
+}

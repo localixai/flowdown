@@ -48,6 +48,7 @@ for (const route of ssr.DOCS_ROUTES) {
   await writeFile(file, ssr.renderDocsPage(route, template));
 }
 await writeFile(`${dist}${ssr.SEARCH_INDEX.slice(1)}`, ssr.searchIndex());
+for (const { file, text } of ssr.markdownPages()) await writeFile(dist + file, text);
 for (const image of ssr.IMAGES) {
   await mkdir(dirname(dist + image), { recursive: true });
   await cp(repo + image, dist + image);
@@ -67,6 +68,11 @@ const headers = [
   '  Cache-Control: public, max-age=604800',
   '/favicon.png',
   '  Cache-Control: public, max-age=604800',
+  // A page's markdown is for assistants: read as text, and kept out of search results, where its
+  // HTML page is the one to find.
+  '/docs/*.md',
+  '  Content-Type: text/markdown; charset=utf-8',
+  '  X-Robots-Tag: noindex',
 ];
 const own = existsSync(`${dist}_headers`) ? `${(await readFile(`${dist}_headers`, 'utf8')).trimEnd()}\n` : '';
 await writeFile(`${dist}_headers`, `${own}${headers.join('\n')}\n`);

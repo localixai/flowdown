@@ -1,5 +1,5 @@
 // The docs pages' only script (their styles are docs.html's links). The pages are whole HTML from
-// the build, with no React in the browser: this adds the code blocks' Copy, the tabs' switch, and marks the section
+// the build, with no React in the browser: this adds the code blocks' Copy, the page's Copy, the tabs' switch, and marks the section
 // being read in the table of contents. Without it a page reads the same.
 
 import { startConsent } from '@/features/consent';
@@ -25,6 +25,38 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('.fd-code-copy
     timer = window.setTimeout(() => {
       delete button.dataset.copied;
       button.setAttribute('aria-label', 'Copy code');
+    }, 1600);
+  });
+}
+
+// "Copy page": the page's markdown, as the build wrote it beside the page, onto the clipboard.
+// It is fetched on the press, not before: a reader who never copies never downloads it.
+for (const row of document.querySelectorAll<HTMLElement>('[data-copy-row]')) row.hidden = false;
+// Both "Copy page"s (the button and the menu's row) answer on the button: it says Copied.
+const pageCopy = document.querySelector<HTMLElement>('.page-actions-copy');
+const pageCopyLabel = pageCopy?.querySelector('[aria-live]');
+let pageCopied = 0;
+for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy-page]')) {
+  button.hidden = false;
+  button.addEventListener('click', async () => {
+    try {
+      const response = await fetch(button.dataset.copyPage ?? '');
+      if (!response.ok) return;
+      // Safari keeps a press's permission to write only through a promise handed to it at once.
+      const text = response.text().then((body) => new Blob([body], { type: 'text/plain' }));
+      await navigator.clipboard.write([new ClipboardItem({ 'text/plain': text })]);
+    } catch {
+      return;
+    }
+    track('page_copied', {});
+    button.closest<HTMLElement>('.menu')?.hidePopover();
+    if (!pageCopy || !pageCopyLabel) return;
+    pageCopy.dataset.copied = '';
+    pageCopyLabel.textContent = 'Copied';
+    window.clearTimeout(pageCopied);
+    pageCopied = window.setTimeout(() => {
+      delete pageCopy.dataset.copied;
+      pageCopyLabel.textContent = 'Copy page';
     }, 1600);
   });
 }
