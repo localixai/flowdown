@@ -1,8 +1,9 @@
 import { PAGES, type DocPage } from '@/entities/doc';
 import { DOCS, SITE } from '@/shared/config';
+import { PageActions } from './PageActions';
 import { ReadingBar } from './ReadingBar';
 
-/** One page: the bar it is read under, its title, the markdown as HTML, then the pages before
+/** One page: the bar it is read under, its title with the page for an assistant, the markdown as HTML, then the pages before
  *  and after it around where to change it. */
 export function Article({ page }: { page: DocPage }) {
   const at = PAGES.indexOf(page);
@@ -11,9 +12,12 @@ export function Article({ page }: { page: DocPage }) {
   return (
     <article className="docs-article">
       <ReadingBar page={page} />
-      <h1 className="docs-title" id={page.titleId}>
-        {page.title}
-      </h1>
+      <header className="docs-title-row">
+        <h1 className="docs-title" id={page.titleId}>
+          {page.title}
+        </h1>
+        <PageActions page={page} />
+      </header>
       <div dangerouslySetInnerHTML={{ __html: page.html }} />
       <footer className="docs-foot">
         {previous ? (

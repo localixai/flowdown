@@ -18,11 +18,19 @@ function pages(): Plugin {
         const url: string = req.originalUrl ?? '';
         const route = url.split(/[?#]/)[0]?.replace(/(.)\/$/, '$1') ?? '';
         // The landing, and every file (a module, an asset, a picture), are Vite's own to serve.
-        // (but the search's index, which the build writes and the dev server makes on request).
-        const made = route.endsWith('/search.json');
+        // (but the search's index and a docs page's markdown, which the build writes and the dev
+        // server makes on request).
+        const made = route.endsWith('/search.json') || (route.startsWith('/docs/') && route.endsWith('.md'));
         if (route === '/' || (/\.\w+$/.test(route) && !made) || route.startsWith('/@')) return next();
         void (async () => {
           const entry = await server.ssrLoadModule(ENTRY);
+          if (made && route.endsWith('.md')) {
+            const page = (entry.markdownPages() as Array<{ file: string; text: string }>).find((one) => `/${one.file}` === route);
+            if (!page) return next();
+            res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+            res.end(page.text);
+            return;
+          }
           if (made) {
             if (route !== entry.SEARCH_INDEX) return next();
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
