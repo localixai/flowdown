@@ -1,0 +1,34 @@
+# Throwaway: the math rendering spike's page, screenshotted in every engine Localix runs on.
+name: spike-math
+on:
+  push:
+    branches: [spike/math]
+permissions:
+  contents: read
+jobs:
+  shots:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, engines: 'chromium,firefox,webkit', tag: linux }
+          - { os: macos-latest, engines: 'webkit,chromium,firefox', tag: macos }
+          - { os: windows-latest, engines: 'chromium,firefox', tag: windows }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: spike/math
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx playwright-core install --with-deps chromium firefox webkit
+        if: runner.os == 'Linux'
+      - run: npx playwright-core install chromium firefox webkit
+        if: runner.os != 'Linux'
+      - run: node build.mjs
+      - run: node shot.mjs
+        env: { ENGINES: '${{ matrix.engines }}', TAG: '${{ matrix.tag }}' }
+      - uses: actions/upload-artifact@v4
+        with: { name: 'shots-${{ matrix.tag }}', path: 'spike/math/out/shot-*.png' }
