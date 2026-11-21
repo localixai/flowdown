@@ -27,7 +27,7 @@
  */
 import { parseContainerMarker, type ContainerKind } from '../dialect'
 import type { References } from '../engine/types'
-import { continues } from './continues'
+import { checked, continues, type Grown } from './continues'
 
 export interface MarkdownBlock {
   /** The block's own source. */
@@ -388,7 +388,12 @@ function htmlOpen(raw: string): boolean {
  * The pieces the scan cut (`starts`, offsets into `text`) joined into the blocks that must render
  * together: the offsets where a block starts. Read by the same grammar as the remark pass.
  */
-function group(text: string, starts: readonly number[], refs: boolean): number[] {
+function group(
+  text: string,
+  starts: readonly number[],
+  refs: boolean,
+  free: Free = { from: 0, to: 0 },
+): number[] {
   const count = starts.length
   const endOf = (piece: number) => (piece + 1 < count ? starts[piece + 1]! : text.length)
   const first = (piece: number) => (piece < count ? lineAt(text, starts[piece]!) : '')
@@ -481,6 +486,9 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
    */
   const form = (piece: number): { kind: ContainerKind; end: number } | null => {
     if (piece >= count) return null
+    // Most pieces hold no marker, and a fence still being written is one piece: it is not read
+    // whole on every token only to be told so.
+    if (markerFrom(text, starts[piece]!, free) >= endOf(piece)) return null
     const body = text.slice(starts[piece]!, endOf(piece)).trimEnd()
     if (!body.includes('[!')) return null
     const lines = body.split('\n')
@@ -572,12 +580,21 @@ function group(text: string, starts: readonly number[], refs: boolean): number[]
   return blocks
 }
 
+/** The last text `normalizeLineEndings` gave back. */
+let normalized = ''
+
 /**
  * Line endings as the scan reads them: `\r\n` and `\r` become `\n`. Offsets of the blocks are into
  * the normalized text, which is what the renderer draws from.
  */
-export const normalizeLineEndings = (markdown: string): string =>
-  markdown.includes('\r') ? markdown.replace(/\r\n?/g, '\n') : markdown
+export const normalizeLineEndings = (markdown: string): string => {
+  // A reply is normalized by `<Markdown>`, again by its document and again by the splitter, and
+  // each scan is the whole reply on every token. A text equal to the last result has no `\r`:
+  // the same string object answers `===` without reading it.
+  if (markdown === normalized) return markdown
+  normalized = markdown.includes('\r') ? markdown.replace(/\r\n?/g, '\n') : markdown
+  return normalized
+}
 
 /** Blocks that are one fenced code block and nothing else: no prose, HTML, math or heading. */
 const fenced = new WeakSet<MarkdownBlock>()
@@ -641,6 +658,25 @@ function pieces(
   return scan.whole ? null : { starts, progress: next, mixed: scan.mixed }
 }
 
+/**
+ * A stretch of a text in which no `[!` starts, from `from` up to `to`: what a split found, kept
+ * for the next one, which searches only what is past it.
+ */
+interface Free {
+  from: number
+  to: number
+}
+
+/** Where the first `[!` at or after `at` is (`Infinity` for none), and the stretch it leaves free. */
+function markerFrom(text: string, at: number, free: Free): number {
+  const inside = at >= free.from && at <= free.to
+  const found = text.indexOf('[!', inside ? free.to : at)
+  const end = found === -1 ? text.length : found
+  if (inside) free.to = Math.max(free.to, end)
+  else Object.assign(free, { from: at, to: end })
+  return found === -1 ? Infinity : found
+}
+
 /** The blocks of `text` that the pieces at `cuts` make, the first on line `line`. */
 function build(
   text: string,
@@ -648,8 +684,9 @@ function build(
   line: number,
   mixed: boolean,
   refs: boolean,
+  free?: Free,
 ): MarkdownBlock[] {
-  const starts = group(text, cuts, refs)
+  const starts = group(text, cuts, refs, free)
   const blocks: MarkdownBlock[] = []
   let current = line
   let piece = 0
@@ -689,8 +726,11 @@ export function splitBlocks(input: string, { refs = false }: SplitOptions = {}):
 const REOPENED = 2
 
 export interface BlockSplitter {
-  /** The same blocks as `splitBlocks(markdown)`; the ones that did not change are the same objects. */
-  split(markdown: string): MarkdownBlock[]
+  /**
+   * The same blocks as `splitBlocks(markdown)`; the ones that did not change are the same objects.
+   * `grown`: what the caller has checked of `markdown` against the text it split last.
+   */
+  split(markdown: string, grown?: Grown | null): MarkdownBlock[]
   /** Characters scanned so far: the work the splitter has done. */
   readonly lexed: number
 }
@@ -707,23 +747,28 @@ export function createBlockSplitter({ refs = false }: SplitOptions = {}): BlockS
   let blocks: MarkdownBlock[] = []
   let progress: Progress | null = null
   let lexed = 0
+  /** Where `text` has no `[!` (`Free`). */
+  let free: Free = { from: 0, to: 0 }
 
   return {
     get lexed() {
       return lexed
     },
-    split(input) {
+    split(input, grown) {
       const markdown = normalizeLineEndings(input)
       if (!markdown) {
         text = ''
         blocks = []
         progress = null
+        free = { from: 0, to: 0 }
         return whole(markdown)
       }
       let kept = blocks.slice(0, Math.max(0, blocks.length - REOPENED))
       let last = kept.at(-1)
       let from = last ? last.offset + last.source.length : 0
-      if (from > 0 && !continues(markdown, text, from)) {
+      // Compared once, up to the last block kept: past what the caller checked of the same text.
+      const known = checked(grown, text)
+      if (from > 0 && !continues(markdown, text, from, known)) {
         kept = []
         last = undefined
         from = 0
@@ -734,11 +779,16 @@ export function createBlockSplitter({ refs = false }: SplitOptions = {}): BlockS
       if (progress !== null && progress.from === from) {
         for (let index = progress.marks.length - 1; index >= 0 && !mark; index -= 1) {
           const tried = progress.marks[index]!
-          if (continues(markdown, text, tried.at, from)) mark = tried
+          if (continues(markdown, text, tried.at, Math.max(from, known))) mark = tried
         }
       }
       lexed += markdown.length - (mark ? mark.at : from)
       const cut = pieces(markdown, from, mark ? progress : null, mark, refs)
+      // Where the last text had no `[!`, as far as this one is the same as it (a `[!` starting
+      // at the last character the two share may end in what is new): a fence still being written
+      // is then searched for a marker only in what it gained.
+      const same = Math.max(known, mark ? mark.at : from)
+      free = { from: free.from, to: Math.min(free.to, same - 1) }
       text = markdown
       if (!cut) {
         // A definition arrived: what was cut before it is one block with it now.
@@ -753,7 +803,7 @@ export function createBlockSplitter({ refs = false }: SplitOptions = {}): BlockS
         for (let at = last.source.indexOf('\n'); at !== -1; at = last.source.indexOf('\n', at + 1))
           line += 1
       }
-      const rest = build(markdown, cut.starts, line, cut.mixed, refs)
+      const rest = build(markdown, cut.starts, line, cut.mixed, refs, free)
       // A block that reads the same as last time is the same object, with what was worked out
       // from it.
       for (let index = 0; index < rest.length; index += 1) {

@@ -6,12 +6,14 @@ import { normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
 import { createDocument, usesHtml, usesMath, usesRareEntity } from '../document'
 import { createListReader } from '../document/list'
 import { createQuoteReader } from '../document/quote'
+import { grownOf } from '../document/grown'
 import type { KeptNode } from '../render/tree'
 import { parse } from '../engine'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE } from '../dialect'
 import { addEntities, hasAllEntities } from '../engine/entities'
 import type { Extension, Node, References } from '../engine/types'
+import type { Grown } from '../core/continues'
 import { Diagram } from '../mermaid/diagram'
 import { builtInDiagrams, setMermaidLoader, type MermaidLoader } from '../mermaid/loader'
 import { Callout } from './callout'
@@ -114,6 +116,11 @@ interface BlockProps {
   /** The document's link definitions as this block asks them: another object when they changed. */
   refs: References | undefined
   options: BlockOptions
+  /**
+   * What the document checked of the source against its last block's (`grownOf`), on the last
+   * block only. Not compared by the memo: it changes only with the source.
+   */
+  grown: Grown | null
 }
 
 export { draw, type BlockOptions } from './draw'
@@ -184,6 +191,7 @@ const Block = memo(
     headingKey,
     refs,
     options,
+    grown,
   }: BlockProps) {
     // What the block keeps between its renders, in one place: a growing fence's last reading, the
     // readers of a long list or quote, and what they drew, for as long as it is drawn the same way.
@@ -201,7 +209,7 @@ const Block = memo(
     if (kept.offset !== offset || kept.headingKey !== headingKey)
       Object.assign(kept, { offset, headingKey, drawn: new WeakMap() })
     const memory = kept.memory
-    const fence = growing && !options.ownCode ? growingFence(open, closer, memory) : null
+    const fence = growing && !options.ownCode ? growingFence(open, closer, memory, grown) : null
     if (
       fence &&
       fence.language !== DIAGRAM_FENCE_LANGUAGE &&
@@ -209,7 +217,7 @@ const Block = memo(
       // A `math` fence is a formula where the page typesets math, and code where it does not.
       !(fence.language === 'math' && options.extensions?.some((stage) => stage.name === 'math'))
     )
-      return <GrowingCode {...fence} />
+      return <GrowingCode {...fence} grown={memory.checked ?? null} />
     const source = closer ? open + closer : open
     // A table that is the whole block is drawn row by row, unless the page reads tables itself
     // (its own elements or extensions see the table whole).
@@ -223,8 +231,8 @@ const Block = memo(
       options.ownList || opens === undefined
         ? null
         : opens === '>'
-          ? kept.quotes.read(open, closer, parsed, kept.scope)
-          : kept.lists.read(open, closer, parsed, kept.scope)
+          ? kept.quotes.read(open, closer, parsed, kept.scope, grown)
+          : kept.lists.read(open, closer, parsed, kept.scope, grown)
     if (list)
       return (
         <GrowingFence.Provider value={growing}>
@@ -306,6 +314,7 @@ const BlockGroup = memo(
             headingKey={headingKeyOf(own)}
             refs={block.refs}
             options={options}
+            grown={last ? grownOf(block) : null}
           />
         </Fragment>,
       )

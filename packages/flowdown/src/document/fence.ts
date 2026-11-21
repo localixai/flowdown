@@ -3,7 +3,7 @@
  * renderer needs to draw a long fence in pieces, a token costing only its last lines.
  */
 import { fenceTitle } from '../dialect'
-import { continues } from '../core/continues'
+import { checked, continues, type Grown } from '../core/continues'
 import { unescapeString } from '../engine/entities'
 
 const OPENING = /^(`{3,}|~{3,})([^\n`]*)\n/
@@ -31,11 +31,17 @@ function closesFence(
  * fence that grows is read once per token, and the next read starts where this one stopped.
  */
 export interface FenceMemory {
-  read: { fence: string; body: string; clean: number } | null
+  /** `source`: the block's text it was read from, which a document's `Grown` names. */
+  read: { fence: string; body: string; clean: number; source: string } | null
+  /**
+   * What the last read checked of its body against the body read before it: what reads the body
+   * next (a cutter, a colourer) compares only what is past it.
+   */
+  checked?: Grown | null
 }
 
 /** A place for it. A block that draws a growing fence keeps its own; this one is the default. */
-export const createFenceMemory = (): FenceMemory => ({ read: null })
+export const createFenceMemory = (): FenceMemory => ({ read: null, checked: null })
 
 const shared = createFenceMemory()
 
@@ -69,6 +75,7 @@ export function growingFence(
   source: string,
   closer = '',
   memory: FenceMemory = shared,
+  grown: Grown | null = null,
 ): GrowingFence | null {
   // The opening line is still being written: short, and read joined.
   if (closer && !source.includes('\n')) return growingFence(source + closer, '', memory)
@@ -88,10 +95,14 @@ export function growingFence(
   const { body, lined } = read
   // A fence closed earlier in the block means the block is not just this fence.
   const before = memory.read
-  let at =
-    before !== null && before.fence === fence && continues(body, before.body, before.clean)
-      ? before.clean
-      : 0
+  // The code is the source past its opening line: what the document checked of the source the
+  // last body was read from holds for the code, past that line.
+  const same = before === null ? 0 : Math.max(0, checked(grown, before.source) - opening[0].length)
+  const goesOn =
+    before !== null && before.fence === fence && continues(body, before.body, before.clean, same)
+  let at = goesOn ? before.clean : 0
+  const known = goesOn ? Math.max(before.clean, same) : same
+  memory.checked = before !== null && known > 0 ? { previous: before.body, same: known } : null
   memory.read = null
   for (let end = body.indexOf('\n', at); end !== -1; end = body.indexOf('\n', at)) {
     if (closesFence(body, at, end, marker, fence.length, 3)) return null
@@ -99,7 +110,7 @@ export function growingFence(
   }
   // The last line is still being written: read, but not remembered.
   if (closesFence(body, at, body.length, marker, fence.length, 3)) return null
-  memory.read = { fence, body, clean: at }
+  memory.read = { fence, body, clean: at, source }
   // The info string as the engine reads it: its escapes and character references resolved
   // (```` ```foo\+bar ```` is `foo+bar`), so the open fence names what the closed one will.
   const info = unescapeString(opening[2]?.trim() ?? '')
@@ -124,14 +135,14 @@ export interface Cut {
  * Cuts a body that grows at its end into its pieces. It remembers where the complete pieces end,
  * so a token costs the last piece and not a count of every line above it.
  */
-export function createCutter(): (body: string) => Cut {
+export function createCutter(): (body: string, grown?: Grown | null) => Cut {
   let text = ''
   /** Where each complete piece ends in `text`. */
   let ends: number[] = []
   let run = 0
-  return (body) => {
+  return (body, grown) => {
     const done = ends.at(-1) ?? 0
-    if (done > 0 && !continues(body, text, done)) {
+    if (done > 0 && !continues(body, text, done, checked(grown, text))) {
       ends = []
       run += 1
     }
@@ -185,6 +196,7 @@ export function createLineColourer(): (
   body: string,
   reader: LineHighlighter,
   language: string,
+  grown?: Grown | null,
 ) => ColouredCut {
   let text = ''
   let read = ''
@@ -197,8 +209,8 @@ export function createLineColourer(): (
   let pieces: string[] = []
   /** The HTML of the complete lines of the last piece, each ending in its newline. */
   let lines: string[] = []
-  return (body, reader, language) => {
-    if (language !== read || (done > 0 && !continues(body, text, done))) {
+  return (body, reader, language, grown) => {
+    if (language !== read || (done > 0 && !continues(body, text, done, checked(grown, text)))) {
       if (done > 0) run += 1
       read = language
       done = 0

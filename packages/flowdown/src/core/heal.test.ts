@@ -1,6 +1,15 @@
 import { describe, expect, test } from 'bun:test'
-import { fenceScanStats } from './fence-scan'
-import { closePartialMarkdown, openFenceBody, isGrowingFence } from './heal'
+import { prefixes } from '../../test/chunks'
+import { CORPUS } from '../../test/corpus'
+import { scenarios } from '../../test/replies'
+import { fenceScanStats, openFence } from './fence-scan'
+import {
+  closePartialMarkdown,
+  closePartialProse,
+  healProse,
+  openFenceBody,
+  isGrowingFence,
+} from './heal'
 
 describe('closePartialMarkdown math', () => {
   test('withholds a formula still being typed, from its opening dollar', () => {
@@ -341,5 +350,21 @@ describe('openFenceBody incremental scan', () => {
     }
     // A rescan from the start on every call would scan about lines² / 2.
     expect(fenceScanStats.lines - before).toBeLessThanOrEqual(lines + 1)
+  })
+})
+
+describe('what healing leaves as it was', () => {
+  test('the healed text starts with the kept part of the text, at every prefix of every reply', () => {
+    const replies = [...Object.values(CORPUS), ...scenarios().map((s) => s.text.slice(0, 6_000))]
+    const changed: Array<{ prefix: string; kept: number }> = []
+    for (const reply of replies)
+      for (const prefix of prefixes(reply, 'frame')) {
+        if (openFence(prefix)) continue
+        const { text, kept } = healProse(prefix)
+        expect(text).toBe(closePartialProse(prefix))
+        expect(kept).toBeLessThanOrEqual(Math.min(text.length, prefix.length))
+        if (text.slice(0, kept) !== prefix.slice(0, kept)) changed.push({ prefix, kept })
+      }
+    expect(changed).toEqual([])
   })
 })

@@ -294,30 +294,41 @@ export function closePartialMarkdown(text: string): string {
  * its own scanner about the fence, and comes here with the answer.
  */
 export function closePartialProse(text: string): string {
-  if (!text) return text
+  return healProse(text).text
+}
+
+/**
+ * `closePartialProse`, and how much of the text it left as it was: the healed text starts with
+ * `kept` characters of the text. Every step holds back an end or completes the last paragraph, so
+ * what is above is the same; a document that checked the text against the last one knows, from
+ * this, how much of what it splits it checked too.
+ */
+export function healProse(text: string): { text: string; kept: number } {
+  if (!text) return { text, kept: 0 }
+  const cut = (healed: string) => ({ text: healed, kept: healed.length })
 
   // A half-typed table row is its own kind of flash — hide it. The active edit
   // is that row, so there's nothing else to stabilize this frame.
   const detabled = dropTrailingPartialTableRow(text)
-  if (detabled !== text) return detabled
+  if (detabled !== text) return cut(detabled)
   // The row of dashes that would make a table of the line above it, still being typed.
   const delimited = dropTrailingPartialDelimiterRow(text)
-  if (delimited !== text) return closePartialProse(delimited)
+  if (delimited !== text) return healProse(delimited)
   // Same for a callout marker still being typed on its quote line.
   const unmarked = dropTrailingPartialCalloutMarker(text)
-  if (unmarked !== text) return unmarked
+  if (unmarked !== text) return cut(unmarked)
   const bare = dropTrailingBareFormMarker(text)
-  if (bare !== text) return bare
+  if (bare !== text) return cut(bare)
   // The text above a marker held back may itself end mid-construct (`**bold` on the line before).
   const held = dropTrailingBareBlockMarker(text)
-  if (held !== text) return closePartialProse(held)
+  if (held !== text) return healProse(held)
 
   // Inline constructs cannot span a blank line, so only the last paragraph can
   // be dangling — operate on it alone and keep the rest byte-identical.
   const splitAt = lastParagraph(text)
   const head = text.slice(0, splitAt)
   let tail = text.slice(splitAt)
-  if (!tail) return text
+  if (!tail) return { text, kept: text.length }
   // What is completed goes where the text stops, before the line break or the space it may end
   // in: `**` after a line break opens nothing and closes nothing, and shows, with the `**` it was
   // to close (`A **long bold⏎`).
@@ -337,7 +348,9 @@ export function closePartialProse(text: string): string {
   tail = balanceSingleEmphasis(tail, '_')
   tail += after
   // Nothing to complete: the very text, so a long reply is not copied on every token.
-  if (head.length + tail.length === text.length && text.endsWith(tail)) return text
+  if (head.length + tail.length === text.length && text.endsWith(tail))
+    return { text, kept: text.length }
   // What was hidden may leave a marker bare (`- *` is `- `): it is held back as one typed so.
-  return dropTrailingBareBlockMarker(head + tail)
+  const healed = dropTrailingBareBlockMarker(head + tail)
+  return { text: healed, kept: Math.min(splitAt, healed.length) }
 }

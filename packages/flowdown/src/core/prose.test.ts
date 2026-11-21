@@ -87,3 +87,10 @@ test('a fence in a list item does not make the text after it code', () => {
   // A fence inside a formula is the formula's text: its `$$` still closes it.
   expect(markdownProseWithoutCode('$$\n```\nx\n$$\n')).toBe('$$\n```\nx\n$$\n')
 })
+
+test('the text is read for a tag before the mask is made, and says no more than the mask', () => {
+  // The mask blanks a code span to spaces, so `<div` before one reads as a tag only in the mask:
+  // the look at the text first must not turn that answer.
+  expect(hasHtmlSyntax('<div`x`')).toBe(true)
+  expect(hasHtmlSyntax('a < b and 2<3, `<br>`')).toBe(false)
+})

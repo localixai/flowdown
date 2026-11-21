@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { continues } from './continues'
+import { checked, continues } from './continues'
 
 test('a text that grew continues the last one', () => {
   expect(continues('abcdef', 'abc', 3)).toBe(true)
@@ -31,4 +31,17 @@ test('says what startsWith said, for every prefix of two texts that part ways', 
       expect(continues(after, before, upTo, from)).toBe(
         after.length >= upTo && after.startsWith(before.slice(from, upTo), from),
       )
+})
+
+test('a part compares past what its caller checked, only for the text it remembers', () => {
+  const grown = { previous: 'abc', same: 3 }
+  expect(checked(grown, 'abc')).toBe(3)
+  expect(checked(grown, 'abc', 4)).toBe(4)
+  // Another text: the caller's check says nothing of it.
+  expect(checked(grown, 'abd')).toBe(0)
+  expect(checked(grown, 'abd', 2)).toBe(2)
+  expect(checked(null, 'abc', 1)).toBe(1)
+  // The check is taken as `from`: what follows `same` is still compared.
+  expect(continues('abXdef', 'abc', 3, checked({ previous: 'abc', same: 2 }, 'abc'))).toBe(false)
+  expect(continues('abcdef', 'abc', 3, checked(grown, 'abc'))).toBe(true)
 })

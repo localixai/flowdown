@@ -29,6 +29,11 @@ export function hasMathSyntax(markdown: string): boolean {
  * stay literal, so they must not enable the full rehype-raw + sanitize pipeline. */
 export function hasHtmlSyntax(markdown: string): boolean {
   const tag = /<[a-zA-Z][\w-]*[\s/>]/
+  // A tag in the prose starts with `<` and a letter that are prose, so the same two characters
+  // are in the text. Without them the mask, which parses the text, is not made: most blocks have
+  // none. (Not `tag` itself: the mask blanks code to spaces, and `<div` before a code span
+  // matches it only there.)
+  if (!/<[a-z]/i.test(markdown)) return false
   // Whether a `$$` line fences a formula moves where code is, and the page may typeset math or
   // not: a tag that is prose in either reading is HTML. Only a text with `$$` reads two ways.
   return (

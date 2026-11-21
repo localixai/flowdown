@@ -17,7 +17,7 @@
  *
  * Anything else, and a quote short enough to read whole, is read whole, as ever.
  */
-import { continues } from '../core/continues'
+import { checked, continues, type Grown } from '../core/continues'
 import { formOf } from '../core/forms'
 import { parseContainerMarker } from '../dialect'
 import type { Node } from '../engine/types'
@@ -55,15 +55,21 @@ interface Piece {
 
 export interface QuoteReader {
   /** As `ListReader.read`, for a block that is one long quote. */
-  read(source: string, closer: string, parse: (text: string) => Node, scope: unknown): Node | null
+  read(
+    source: string,
+    closer: string,
+    parse: (text: string) => Node,
+    scope: unknown,
+    grown?: Grown | null,
+  ): Node | null
 }
 
 export function createQuoteReader(): QuoteReader {
   let cut: Cut | null = null
   let pieces: Piece[] = []
   return {
-    read(source, closer, parse, scope) {
-      cut = cutOf(source, cut)
+    read(source, closer, parse, scope, grown) {
+      cut = cutOf(source, cut, grown)
       if (cut.whole) return null
       let starts = cut.starts
       let lines = cut.lines
@@ -155,9 +161,9 @@ const closes = (inside: string, fence: { char: string; length: number }): boolea
   )
 }
 
-function cutOf(source: string, before: Cut | null): Cut {
+function cutOf(source: string, before: Cut | null, grown?: Grown | null): Cut {
   const cut: Cut =
-    before && continues(source, before.text, before.read)
+    before && continues(source, before.text, before.read, checked(grown, before.text))
       ? { ...before, starts: [...before.starts], lines: [...before.lines], text: source }
       : {
           text: source,
