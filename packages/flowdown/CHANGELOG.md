@@ -28,6 +28,16 @@
   (` ```foo\+bar ` names `foo+bar`), and a block of one empty line keeps that line. Every example of
   CommonMark's and GitHub's specifications is now fed to the renderer a character at a time, and
   every frame, streaming and finished, must be what one parse of that frame draws.
+- A token costs less of the main thread: a reply is compared with the last one once, not four
+  times. The document checks it and hands what it checked down, so the scan for an open fence,
+  the splitter, a growing fence and its colourer, and a long list or quote compare only what is
+  new. The reply is no longer scanned for `\r` three times a token, a fence still being written is
+  no longer searched whole for a form's `[!`, and a block with no `<` before a letter is no longer
+  parsed only to learn that it has no HTML. A long fence, the dialect's forms and a long report
+  stream in less main-thread time. Nothing drawn changes: a page that is edited, cut back or
+  regenerated while it streams draws, at every step, what a new page draws.
+- `@localix-ai/flowdown/document` exports `grownOf(block)`: what the document checked of its last
+  block against the last update's. A renderer of its own passes it to `growingFence` as `grown`.
 
 ## 0.8.0
 

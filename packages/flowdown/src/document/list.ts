@@ -14,7 +14,7 @@
  *
  * Anything else, and a list short enough to read whole, is read whole, as ever.
  */
-import { continues } from '../core/continues'
+import { checked, continues, type Grown } from '../core/continues'
 import { formOf } from '../core/forms'
 import type { Node } from '../engine/types'
 
@@ -65,9 +65,16 @@ export interface ListReader {
    * by `parse`; null when the block is read whole. `closer` is the line that closes the fence the
    * block ends inside, read after the last piece and not as a line of the list. `scope` is what
    * `parse` reads with besides the text (its extensions, the document's link definitions): a piece
-   * read with another is read again.
+   * read with another is read again. `grown`: what the document checked of `source` against the
+   * block it was last update (`grownOf`), so the source is not compared again.
    */
-  read(source: string, closer: string, parse: (text: string) => Node, scope: unknown): Node | null
+  read(
+    source: string,
+    closer: string,
+    parse: (text: string) => Node,
+    scope: unknown,
+    grown?: Grown | null,
+  ): Node | null
 }
 
 /** The reader of one document's growing block: it remembers its cut and the pieces it read. */
@@ -75,8 +82,8 @@ export function createListReader(): ListReader {
   let cut: Cut | null = null
   let pieces: Piece[] = []
   return {
-    read(source, closer, parse, scope) {
-      cut = cutOf(source, cut)
+    read(source, closer, parse, scope, grown) {
+      cut = cutOf(source, cut, grown)
       if (cut.whole) return null
       // The line still being written is read each time, and not kept in the cut.
       let starts = cut.items
@@ -167,9 +174,9 @@ function stepOf(cut: Cut, text: string): Step | null {
  * The cut of `source` over its lines read whole, going on from `before` where `source` continues
  * the text it read: a token costs the lines it added, not the list.
  */
-function cutOf(source: string, before: Cut | null): Cut {
+function cutOf(source: string, before: Cut | null, grown?: Grown | null): Cut {
   const cut: Cut =
-    before && continues(source, before.text, before.read)
+    before && continues(source, before.text, before.read, checked(grown, before.text))
       ? { ...before, items: [...before.items], lines: [...before.lines], text: source }
       : {
           text: source,

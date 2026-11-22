@@ -22,12 +22,16 @@ import {
   headingIdsOfBlocks,
 } from '../core/block-facts'
 import { createBlockSplitter, normalizeLineEndings, type MarkdownBlock } from '../core/blocks'
+import { continues, type Grown } from '../core/continues'
 import { createFenceScanner } from '../core/fence-scan'
-import { closePartialProse } from '../core/heal'
+import { healProse } from '../core/heal'
+import { keepGrown } from './grown'
 import { createReferences } from './references'
 
 export { splitBlocks, isFenceBlock, type MarkdownBlock, type SplitOptions } from '../core/blocks'
 export { growingFence, createFenceMemory, type FenceMemory, type GrowingFence } from './fence'
+export { grownOf } from './grown'
+export type { Grown } from '../core/continues'
 export { tableRows, type TableRows } from './table'
 /**
  * The dialect for `parse` of `@localix-ai/flowdown/engine`, and what it marked a node as: a target of your
@@ -104,6 +108,10 @@ export function createDocument({ refs = false }: DocumentOptions = {}): Markdown
     headingIds: boolean
     state: DocumentState
   } | null = null
+  /** The last block of the last update, when its source is the end of that update's text. */
+  let end: MarkdownBlock | null = null
+  /** The text the last update split, and how much of it is that update's text as it was. */
+  let split = { text: '', kept: 0 }
 
   return {
     update(input, { streaming = false, math = false, headingIds = false } = {}) {
@@ -117,19 +125,40 @@ export function createDocument({ refs = false }: DocumentOptions = {}): Markdown
         last.headingIds === headingIds
       )
         return last.state
+      // The one comparison of the reply with the last one this update makes: each part below
+      // that remembers the last text compares only what is past it.
+      const grown: Grown | null =
+        last !== null && continues(text, last.text, last.text.length)
+          ? { previous: last.text, same: last.text.length }
+          : null
       // Inside a fence left open, the reply is read as it is and the line that closes the fence
       // goes to the last block beside its text: joined here, every token would copy the reply.
-      const fence = streaming ? openFence(text) : null
+      const fence = streaming ? openFence(text, grown) : null
       const closer = fence ? `${text.endsWith('\n') ? '' : '\n'}${fence.indent}${fence.marker}` : ''
-      const healed = streaming && !fence ? closePartialProse(text) : text
+      const healing = streaming && !fence ? healProse(text) : { text, kept: text.length }
+      const healed = healing.text
+      // What was checked is of the text: it holds for what is split up to where either the text
+      // or the last one was healed.
+      const whole: Grown | null = grown && {
+        previous: split.text,
+        same: Math.min(grown.same, healing.kept, split.kept),
+      }
+      split = { text: healed, kept: healing.kept }
       // Blocks that did not change come back as the same objects, and everything worked out
       // from a block is kept beside it.
-      const cut = splitter.split(healed)
+      const cut = splitter.split(healed, whole)
       // Literal dollars are escaped only where `$` can mean math: elsewhere positions stay exact.
       const escaped = math ? cut.map(escapedBlock) : cut
       // Each block that may refer to a link definition gets the document's, from the text as it
       // will be parsed.
       const blocks = references ? references.resolve(escaped, math) : escaped
+      // The last block, when its source is the end of the text: the next update can say how much
+      // of it still reads the same.
+      const tail = blocks.at(-1)
+      const own = tail !== undefined && tail.source === cut.at(-1)?.source
+      if (own && whole && end !== null && end.offset === tail.offset && whole.same > tail.offset)
+        keepGrown(tail, { previous: end.source, same: whole.same - tail.offset })
+      end = own ? tail : null
       const state: DocumentState = {
         blocks,
         closer,

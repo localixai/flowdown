@@ -6,7 +6,7 @@
  * the scan state after the last complete line is remembered and resumed when the next text extends
  * it. Any other text simply rescans from the start.
  */
-import { continues } from './continues'
+import { checked, continues, type Grown } from './continues'
 
 export interface OpenFence {
   marker: string
@@ -25,6 +25,8 @@ interface ScanState {
   /** Text through the end of the last complete line (ends with `\n`, or is empty). */
   prefix: string
   open: OpenFence | null
+  /** The whole text that prefix was read from: what a caller's `Grown` names. */
+  seen: string
 }
 
 /** Complete lines scanned so far; tests read it to prove the scan resumes instead of restarting. */
@@ -54,7 +56,7 @@ function step(
  * or null when all fenced code blocks are closed. A closing fence must use the same character,
  * be at least as long as the opener, and carry no info string.
  */
-export type FenceScanner = (text: string) => OpenFence | null
+export type FenceScanner = (text: string, grown?: Grown | null) => OpenFence | null
 
 /**
  * A scan that remembers one growing text. Each rendered document has its own: two replies that
@@ -62,11 +64,11 @@ export type FenceScanner = (text: string) => OpenFence | null
  * every token.
  */
 export function createFenceScanner(): FenceScanner {
-  let cached: ScanState = { prefix: '', open: null }
+  let cached: ScanState = { prefix: '', open: null, seen: '' }
 
-  return (text) => {
+  return (text, grown) => {
     let { prefix, open } = cached
-    if (!continues(text, prefix, prefix.length)) {
+    if (!continues(text, prefix, prefix.length, checked(grown, cached.seen))) {
       prefix = ''
       open = null
     }
@@ -78,7 +80,9 @@ export function createFenceScanner(): FenceScanner {
       fenceScanStats.lines += 1
       offset = nl + 1
     }
-    if (offset !== prefix.length) cached = { prefix: text.slice(0, offset), open }
+    // The prefix is always one of `seen`: a caller's check of `seen` then holds for it too.
+    if (offset !== prefix.length) prefix = text.slice(0, offset)
+    cached = { prefix, open, seen: text }
     // The unterminated last line is evaluated but never committed: it may still change.
     return offset < text.length || lastNewline === -1
       ? step(open, text.slice(offset), text.length + 1, text.length)

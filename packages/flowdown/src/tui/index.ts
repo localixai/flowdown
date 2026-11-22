@@ -23,7 +23,7 @@
 import { mathSyntax } from '../core/math-syntax'
 import { flowdownDialect } from '../core/remark-answer-blocks'
 import { DIAGRAM_FENCE_LANGUAGE, TREE_FENCE_LANGUAGE } from '../dialect'
-import { createDocument, type MarkdownBlock } from '../document'
+import { createDocument, grownOf, type MarkdownBlock } from '../document'
 import {
   createCutter,
   createFenceMemory,
@@ -147,8 +147,9 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
     const body = end === fence.body.length ? fence.body : fence.body.slice(0, end)
     // A highlighter that reads a line at a time colours each line once, from the state above it.
     const reader = fence.language && highlight?.lines ? highlight.lines(fence.language) : null
-    const coloured = reader && fence.language ? colour(body, reader, fence.language) : null
-    const { parts, run } = coloured ?? cut(body)
+    const coloured =
+      reader && fence.language ? colour(body, reader, fence.language, memory.checked) : null
+    const { parts, run } = coloured ?? cut(body, memory.checked)
     const key = `${fence.language ?? ''}\u0000${columns}`
     const kept = pieces
     pieces = parts.map((part, index) => {
@@ -270,7 +271,10 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
         // A fence drawn in pieces is drawn whole once nothing more can come to it.
         if (made === undefined || made.closer !== closer || (made.pieced && !growing)) {
           if (growing) redrawn = true
-          const fence = growing && state.growing ? growingFence(block.source, closer, memory) : null
+          // What the document checked of the block: the fence, a list or a quote compares only past it.
+          const grown = growing ? grownOf(block) : null
+          const fence =
+            growing && state.growing ? growingFence(block.source, closer, memory, grown) : null
           const source = block.source + closer
           const table = growing && !closer ? tableRows(source) : null
           const tabled = table ? tableBlock(table, block.refs) : null
@@ -283,8 +287,8 @@ export function createTerminalView(options: TerminalOptions = {}): TerminalView 
             const tree =
               (ownList
                 ? null
-                : (lists.read(block.source, closer, parsed, scope) ??
-                  quotes.read(block.source, closer, parsed, scope))) ?? parsed(source)
+                : (lists.read(block.source, closer, parsed, scope, grown) ??
+                  quotes.read(block.source, closer, parsed, scope, grown))) ?? parsed(source)
             const rows = drawBlock(
               tree,
               columns,

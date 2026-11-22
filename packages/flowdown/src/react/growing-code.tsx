@@ -1,5 +1,6 @@
 'use client'
 import { memo, useMemo, useState } from 'react'
+import type { Grown } from '../core/continues'
 import { createCutter, createLineColourer } from '../document/fence'
 import { CodeFrame } from './code-block'
 import { useRenderContext, type Highlighter } from './context'
@@ -49,12 +50,15 @@ export function GrowingCode({
   title,
   body,
   lined = body !== '',
+  grown = null,
 }: {
   language: string | undefined
   title?: string
   body: string
   /** Whether the code has a line, an empty one included (`GrowingFence.lined`). */
   lined?: boolean
+  /** What was checked of `body` against the last one (`FenceMemory.checked`). */
+  grown?: Grown | null
 }) {
   const { highlight } = useRenderContext()
   // The class a finished block gets when its language is one the highlighter knows.
@@ -70,10 +74,10 @@ export function GrowingCode({
   // A highlighter that reads a line at a time colours each line once, from the state above it.
   const reader = known && language && highlight?.lines ? highlight.lines(language) : null
   const coloured = useMemo(
-    () => (reader && language ? colour(body, reader, language) : null),
-    [colour, reader, body, language],
+    () => (reader && language ? colour(body, reader, language, grown) : null),
+    [colour, reader, body, language, grown],
   )
-  const { parts, run } = useMemo(() => coloured ?? cut(body), [coloured, cut, body])
+  const { parts, run } = useMemo(() => coloured ?? cut(body, grown), [coloured, cut, body, grown])
   return (
     <CodeFrame language={language} title={title} text={body}>
       {/* The file a finished block names is on its `<code>` too, for a page's own styles. */}

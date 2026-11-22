@@ -51,15 +51,25 @@ const BUDGET: Record<string, number> = {
   // growing fence carries it.
   // 0.1 KB more since `mermaid={true}` draws diagrams with the package's own engine
   // (`@localix-ai/diagram`, fetched with the first diagram, so not counted here).
-  '.': 37.7,
+  // 0.7 KB more since a token compares the reply with the last one once, not four times. The
+  // document checks it and hands what it checked down (`Grown`, `core/continues.ts`): the scan
+  // for an open fence, the splitter, a growing fence, its cutter and colourer, a long list or
+  // quote each compare only what is past it, and the healer says how much of the text it left as
+  // it was (`healProse`, `core/heal.ts`). The splitter remembers where the text had no `[!`, so a
+  // fence still being written is not searched whole for a marker (`core/blocks.ts`). The reply
+  // is no longer scanned three times for `\r`, and a block with no `<` before a letter is not
+  // parsed for its prose to learn it has no HTML (`core/syntax.ts`). A long reply, a long fence
+  // and the dialect's forms stream in less main-thread time (`bench/`).
+  '.': 38.4,
   // The renderer with no framework under it: as HTML text, on a page, as an element of the page's.
   // The code ranges of the sniffers, and on a page the copy of a selection, as for `.`.
   // And the pieces of a long list and a long quote, as for `.`.
   // And a fence's code read as code to the cut, as for `.`.
   // And a growing fence coloured a line at a time, as for `.`.
-  './static': 33,
-  './dom': 35.1,
-  './element': 35.3,
+  // And a reply compared with the last one once a token, as for `.` (0.6 KB).
+  './static': 33.5,
+  './dom': 35.7,
+  './element': 35.8,
   // The renderer for a terminal: the parser, the dialect, and rows wrapped by their columns.
   // 2.4 KB more since a block that grows costs its end: a fence still being written is read
   // without parsing its block and drawn in pieces (`document/fence.ts`, 0.7 KB of it); a table is
@@ -76,7 +86,8 @@ const BUDGET: Record<string, number> = {
   // 5.1 KB more since a formula is read by `@localix-ai/math`, the parser a page's MathML is
   // written by: every environment (cases, aligned, array, matrices), typefaces as Unicode's math
   // letters, braces with their labels, `\xrightarrow`; the two outputs never read a formula apart.
-  './tui': 46.8,
+  // 0.6 KB more for a reply compared with the last one once a token, as for `.`.
+  './tui': 47.3,
   // Mermaid flowcharts and sequence diagrams drawn in a terminal, parsed, laid out and routed with
   // no dependency (`tui/diagram/`). An entry of its own, as `./highlight` is: a terminal that does
   // not draw diagrams does not load them. 31 KB more since it draws every kind Mermaid has that
@@ -91,20 +102,23 @@ const BUDGET: Record<string, number> = {
   // what the healer holds back and where it completes, 0.3 KB for the code ranges (see `.`), and
   // the parser's four readings the differential fuzz found (`engine/blocks.ts`). 0.1 KB more for
   // tabs parted by a `---` and a formula that starts with a number, as for `.`. 0.2 KB more for a
-  // fence's code read as code to the cut and what the healer holds back, as for `.`.
-  './document': 22.6,
+  // fence's code read as code to the cut and what the healer holds back, as for `.`. 0.6 KB more
+  // for a reply compared with the last one once a token, as for `.`.
+  './document': 23.2,
   './engine': 13,
   // The plugin and the helpers; `extractHeadings` reads Markdown, so the parser is here too.
-  // 0.1 KB more for a fence's code read as code to the cut, as for `.`.
-  './remark': 20.7,
+  // 0.1 KB more for a fence's code read as code to the cut, as for `.`. 0.2 KB more for the
+  // splitter and the healer that take what a caller checked, as for `.`.
+  './remark': 20.9,
   // Past 4.5 KB by twenty bytes: the check that a text continues the last one (`continues.ts`);
   // then 0.4 KB for the cut of a document with link definitions.
   // 0.1 KB more since the repair of an unfinished end reads from the item being written, and holds
   // a marker left bare once a half-typed `*` is hidden (`core/heal.ts`). Then a few bytes for a
   // formula that starts with a number, which the repair reads as the renderer does.
   // 0.2 KB more for a fence's code read as code to the cut, an item that opens empty, and the row
-  // of dashes, `[^1` and task box the repair holds back (see `.`).
-  './stream': 5.4,
+  // of dashes, `[^1` and task box the repair holds back (see `.`). 0.3 KB more for the scan and
+  // the repair that take what a caller checked and say what they kept, as for `.`.
+  './stream': 5.7,
   './prompt': 2,
   // The HTML reader and sanitizer, and every HTML5 character reference (11.7 KB of it).
   './html': 16.5,
