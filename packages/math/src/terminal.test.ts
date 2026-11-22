@@ -16,6 +16,18 @@ describe('toText', () => {
     expect(toText('\\sqrt{x} + \\sqrt{a+b}')).toBe('√x + √(a + b)')
   })
 
+  test('stands a name apart from any term before it', () => {
+    expect(toText('y_i \\log x')).toBe('yᵢ log x')
+    expect(toText('x^2 \\sin y')).toBe('x² sin y')
+    expect(toText('a + \\log b')).toBe('a + log b')
+    expect(toRows('y_i \\log x')).toEqual(['yᵢ log x'])
+  })
+
+  test('draws an arrow under words with its head where it points', () => {
+    expect(toRows('A \\xrightarrow{f} B')).toEqual(['   f', 'A ──⟶ B'])
+    expect(toRows('A \\xleftarrow{f} B')).toEqual(['   f', 'A ⟵── B'])
+  })
+
   test('keeps typefaces and signs', () => {
     expect(toText('x \\in \\mathbb{R}')).toBe('x ∈ ℝ')
     expect(toText('-x')).toBe('−x')

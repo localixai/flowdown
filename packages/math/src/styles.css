@@ -70,8 +70,8 @@ math mtext {
 .ml-cases > mtr > mtd + mtd {
   padding-left: 1em;
 }
-/* \overline and \underline, the braces and brackets over and under an expression: borders of its
-   box, as wide as it in every engine. A brace is a bracket whose ends curve in. */
+/* \overline and \underline, and the brackets over and under an expression: borders of its box,
+   as wide as it in every engine. */
 .ml-overline {
   border-top: 0.06em solid;
   padding-top: 0.08em;
@@ -80,30 +80,70 @@ math mtext {
   border-bottom: 0.06em solid;
   padding-bottom: 0.08em;
 }
-.ml-overbrace,
-.ml-underbrace,
 .ml-overbracket,
 .ml-underbracket {
   border: 0.07em solid;
   padding: 0 0.15em;
 }
-.ml-overbrace,
 .ml-overbracket {
   border-bottom: 0;
   padding-top: 0.2em;
   margin-top: 0.15em;
 }
-.ml-underbrace,
 .ml-underbracket {
   border-top: 0;
   padding-bottom: 0.2em;
   margin-bottom: 0.15em;
 }
-.ml-overbrace {
-  border-radius: 0.45em 0.45em 0 0;
+/* A brace is painted in its box, so it is as wide as what it marks in every engine: two hooks at
+   the ends, two stems and a point in the middle, each a gradient in the text's colour. Radius 0.14em,
+   stroke 0.065em; the brace is 0.345em tall. */
+.ml-overbrace,
+.ml-underbrace {
+  padding: 0 0.1em;
+  background-repeat: no-repeat;
+  --ml-ring:
+    transparent 0.1075em, currentColor 0.1075em, currentColor 0.1725em, transparent 0.1725em;
+  --ml-line: linear-gradient(currentColor, currentColor);
+  background-size:
+    0.1725em 0.1725em,
+    0.1725em 0.1725em,
+    0.1725em 0.1725em,
+    0.1725em 0.1725em,
+    calc(50% - 0.3125em) 0.065em,
+    calc(50% - 0.3125em) 0.065em;
 }
 .ml-underbrace {
-  border-radius: 0 0 0.45em 0.45em;
+  padding-bottom: 0.43em;
+  margin-bottom: 0.1em;
+  background-image:
+    radial-gradient(circle at 100% 0, var(--ml-ring)),
+    radial-gradient(circle at 0 0, var(--ml-ring)),
+    radial-gradient(circle at 0 100%, var(--ml-ring)),
+    radial-gradient(circle at 100% 100%, var(--ml-ring)), var(--ml-line), var(--ml-line);
+  background-position:
+    left 0 bottom 0.14em,
+    right 0 bottom 0.14em,
+    left calc(50% - 0.05375em) bottom 0.0325em,
+    left calc(50% + 0.05375em) bottom 0.0325em,
+    left 0.1725em bottom 0.14em,
+    right 0.1725em bottom 0.14em;
+}
+.ml-overbrace {
+  padding-top: 0.43em;
+  margin-top: 0.1em;
+  background-image:
+    radial-gradient(circle at 100% 100%, var(--ml-ring)),
+    radial-gradient(circle at 0 100%, var(--ml-ring)),
+    radial-gradient(circle at 0 0, var(--ml-ring)),
+    radial-gradient(circle at 100% 0, var(--ml-ring)), var(--ml-line), var(--ml-line);
+  background-position:
+    left 0 top 0.14em,
+    right 0 top 0.14em,
+    left calc(50% - 0.05375em) top 0.0325em,
+    left calc(50% + 0.05375em) top 0.0325em,
+    left 0.1725em top 0.14em,
+    right 0.1725em top 0.14em;
 }
 merror {
   border: 0;

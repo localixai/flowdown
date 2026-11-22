@@ -30,6 +30,8 @@ uses `\mathbb`, `\mathcal` or `\mathbf`). With it a formula looks the same in We
 Firefox; without it each engine uses its own math font, and Chromium on Windows cannot grow a
 bracket.
 
+![A reply on a dark page explaining cross-entropy: a sum with limits, a softmax fraction, a brace under p minus y labelled prediction minus truth, arrows labelled softmax and minus log, and a Jacobian written as cases](assets/readme/math-dark.png)
+
 ## A loader or the stage itself
 
 | `math`                              | What happens                                                                                                                   |
