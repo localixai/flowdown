@@ -15,7 +15,10 @@
 import { inVariant } from './letters'
 import { parse } from './parse'
 import { line, scripted, SUB, SUPER } from './text'
-import type { MathNode, Variant } from './tree'
+import { endsInTerm, type MathNode, type Variant } from './tree'
+
+/** Arrows that point left: their head is drawn at the left end of a line under words. */
+const LEFTWARD = new Set(['←', '⟵', '⇐', '⟸'])
 
 interface Box {
   rows: string[]
@@ -175,8 +178,11 @@ function box(node: MathNode, variant: Variant | null, tight = false): Box {
       const bottom = node.under ? box(node.under, variant, true) : null
       const arrow = node.base.type === 'operator' && node.base.stretchy
       const width = Math.max(top?.width ?? 0, bottom?.width ?? 0)
+      const head = node.base.type === 'operator' ? node.base.text : ''
+      const shaft = '─'.repeat(width + 1)
+      // A leftward arrow's head is at its left end.
       const middle = arrow
-        ? flat(` ${'─'.repeat(width + 1)}${node.base.type === 'operator' ? node.base.text : ''} `)
+        ? flat(LEFTWARD.has(head) ? ` ${head}${shaft} ` : ` ${shaft}${head} `)
         : base
       const parts = [top, middle, bottom].filter((part): part is Box => part !== null)
       return over(parts, top ? 1 : 0)
@@ -253,14 +259,7 @@ function rowBox(children: MathNode[], variant: Variant | null, tight: boolean): 
     // A name after a term stands apart from it: `n log n`.
     const named =
       child.type === 'function' || (child.type === 'scripts' && child.base.type === 'function')
-    if (
-      named &&
-      previous &&
-      (previous.type === 'identifier' ||
-        previous.type === 'number' ||
-        (previous.type === 'operator' && previous.kind === 'close'))
-    )
-      boxes.push(flat(' '))
+    if (named && previous && endsInTerm(previous)) boxes.push(flat(' '))
     boxes.push(box(child, variant, tight))
     if (child.type === 'operator' && child.kind === 'punct' && !tight) boxes.push(flat(' '))
     if (

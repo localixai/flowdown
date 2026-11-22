@@ -83,6 +83,14 @@ add `answerFormatPrompt()` from `@localix-ai/flowdown/prompt`
 Every figure, how it was measured, and the cases where another renderer suits better are in
 [the comparison](https://flowdown.localix.ai/docs/comparison).
 
+<p align="center">
+  <a href="https://flowdown.localix.ai/docs/math"><img alt="A reply on a dark page explaining cross-entropy: a sum with limits, a softmax fraction, a brace under p minus y labelled prediction minus truth, arrows labelled softmax and minus log, and a Jacobian written as cases" src="https://raw.githubusercontent.com/localixai/flowdown/main/docs/assets/readme/math-dark.png" width="760"></a>
+</p>
+
+<p align="center">
+  <sub>Formulas as MathML, with a math font of its own and no dependency (<a href="https://flowdown.localix.ai/docs/math">math</a>).</sub>
+</p>
+
 ## Beyond React
 
 One package covers every target, each behind its own import path. Only the first one imports

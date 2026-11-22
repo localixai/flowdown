@@ -5,6 +5,7 @@ import forms from '../review/forms.md' with { type: 'text' }
 import code from '../scenes/code.md' with { type: 'text' }
 import diagram from '../scenes/diagram.md' with { type: 'text' }
 import hero from '../scenes/hero.md' with { type: 'text' }
+import mathScene from '../scenes/math.md' with { type: 'text' }
 import sources from '../scenes/sources.md' with { type: 'text' }
 import steps from '../scenes/steps.md' with { type: 'text' }
 import viewer from '../scenes/viewer.md' with { type: 'text' }
@@ -22,6 +23,7 @@ export const scenes: Record<string, { question: string; reply: string }> = {
   diagram: scene(diagram),
   sources: scene(sources),
   viewer: scene(viewer),
+  math: scene(mathScene),
   // The reply `examples/tui` streams into a terminal, shown beside that recording; no question.
   pair: { question: '', reply: terminalReply.trim() },
 }

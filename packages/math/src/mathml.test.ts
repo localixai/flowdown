@@ -54,6 +54,28 @@ describe('toMathML', () => {
     )
   })
 
+  test('keeps words over an arrow in their own width, with spaces every engine counts', () => {
+    const arrow = inner('z \\xrightarrow{\\operatorname{softmax}} p')
+    expect(arrow).toContain('<mrow><mspace width="0.3em"/>')
+    expect(arrow).not.toContain('mpadded')
+  })
+
+  test('stands a name a thin space from any term before it, as TeX does after an ordinary atom', () => {
+    const thin = '<mspace width="0.1667em"/><mi>log</mi>'
+    // A letter with a script, a fraction, a root, a bracketed group: each is a term.
+    for (const tex of [
+      'y_i \\log x',
+      'x^2 \\log x',
+      '\\frac12 \\log n',
+      '\\sqrt2 \\log n',
+      '(a) \\log b',
+    ])
+      expect(inner(tex)).toContain(thin)
+    // After an operator, a relation or an opening bracket the operator's own room is enough.
+    for (const tex of ['a + \\log b', 'a = \\log b', '(\\log b)', '\\sum \\log x'])
+      expect(inner(tex)).not.toContain(thin)
+  })
+
   test('keeps a bracket its size unless \\left grows it', () => {
     expect(inner('(x)')).toBe(
       '<mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow>',

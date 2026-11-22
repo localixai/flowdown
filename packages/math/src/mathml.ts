@@ -9,7 +9,7 @@
  */
 import { inVariant } from './letters'
 import { parse } from './parse'
-import type { MathNode, Variant } from './tree'
+import { endsInTerm, type MathNode, type Variant } from './tree'
 
 export interface MathMLOptions {
   /** A display formula, set on its own line, its limits above and below. */
@@ -28,7 +28,7 @@ export function toMathML(tex: string, options: MathMLOptions = {}): string {
   return `<math${display}><semantics>${wrap(body)}${annotation}</semantics></math>`
 }
 
-/** Marks drawn as a border of what they mark, by the class that draws them. */
+/** Marks drawn by the class that draws them: a border of what they mark, or a brace painted in it. */
 const RULED: Record<string, string> = {
   '‾': 'overline',
   _: 'underline',
@@ -113,11 +113,13 @@ function write(node: MathNode, variant: Variant | null): string {
     }
     case 'stack': {
       const base = one(node.base, variant)
-      // An arrow under words is as wide as they are, and a little wider.
+      // Words over or under an arrow keep 0.3em clear on each side. The room is spaces, which every
+      // engine counts: a relative `mpadded` width is not MathML Core, and Chromium drew long words
+      // over the next symbol.
       const pad = (part: MathNode) => {
         const inside = one(part, variant)
         return node.base.type === 'operator' && node.base.stretchy
-          ? `<mpadded lspace="0.3em" width="+0.6em">${inside}</mpadded>`
+          ? `<mrow><mspace width="0.3em"/>${inside}<mspace width="0.3em"/></mrow>`
           : inside
       }
       if (node.over && node.under)
@@ -208,18 +210,11 @@ function writeRow(children: MathNode[], variant: Variant | null): string {
   for (let at = 0; at < children.length; at++) {
     const child = children[at]!
     const next = children[at + 1]
-    // A name after a term stands a thin space from it: `n log n`.
+    // A name after a term stands a thin space from it: `n log n`, `y_i log x`.
     const previous = children[at - 1]
     const named =
       child.type === 'function' || (child.type === 'scripts' && child.base.type === 'function')
-    if (
-      named &&
-      previous &&
-      (previous.type === 'identifier' ||
-        previous.type === 'number' ||
-        (previous.type === 'operator' && previous.kind === 'close'))
-    )
-      out += '<mspace width="0.1667em"/>'
+    if (named && previous && endsInTerm(previous)) out += '<mspace width="0.1667em"/>'
     if (child.type === 'function') {
       out += functionName(child.text, child.limits, opensBracket(next))
       continue

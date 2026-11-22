@@ -1,6 +1,6 @@
 /**
  * The README's pictures, into docs/assets/readme: the scenes in light and dark
- * (`<scene>-<theme>.png`), the hero reply streaming (`stream-<theme>.png`, animated) and a diagram
+ * (`<scene>-<theme>.png`; `math` in dark alone), the hero reply streaming (`stream-<theme>.png`, animated) and a diagram
  * enlarged, zoomed and panned in its viewer (`viewer-<theme>.png`, animated). Each of those
  * animations also gets an `.mp4` and a `.gif` beside it, for sites that do not play APNG.
  *
@@ -25,6 +25,9 @@ import { serve } from './serve'
 const OUT = join(import.meta.dir, '../../docs/assets/readme')
 const THEMES = ['light', 'dark'] as const
 const SCALE = 2
+
+/** Scenes drawn in dark alone: every picture added since 2026-11-22 is (the owner's rule). */
+const DARK_ONLY = ['math']
 
 /** The scenes that are animations, each with its own capture, not stills. */
 const ANIMATED = ['hero', 'viewer', 'pair']
@@ -410,7 +413,8 @@ try {
       colorScheme: theme,
     })
     for (const scene of Object.keys(scenes).filter((name) => !ANIMATED.includes(name)))
-      if (wanted(scene)) await still(page, server.url.href, scene, theme)
+      if (wanted(scene) && !(theme === 'light' && DARK_ONLY.includes(scene)))
+        await still(page, server.url.href, scene, theme)
     if (wanted('stream')) await stream(page, server.url.href, theme)
     if (wanted('viewer')) await viewer(page, server.url.href, theme)
     await page.close()

@@ -5,7 +5,7 @@
  */
 import { inVariant } from './letters'
 import { parse } from './parse'
-import type { MathNode, Variant } from './tree'
+import { endsInTerm, type MathNode, type Variant } from './tree'
 
 const small = (pairs: string): Map<string, string> => {
   const chars = [...pairs]
@@ -104,14 +104,7 @@ export function line(node: MathNode, variant: Variant | null): string {
         // A big operator stands apart from what is around it (`1/k ∑ᵢ rᵢ`), a name from the term
         // before it (`n log n`).
         if (takesOperand(child)) part = ` ${part.trim()} `
-        else if (
-          isName(child) &&
-          previous &&
-          (previous.type === 'identifier' ||
-            previous.type === 'number' ||
-            (previous.type === 'operator' && previous.kind === 'close'))
-        )
-          part = ` ${part}`
+        else if (isName(child) && previous && endsInTerm(previous)) part = ` ${part}`
         out += part
       })
       return out

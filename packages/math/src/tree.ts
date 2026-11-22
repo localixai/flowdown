@@ -79,3 +79,26 @@ export type MathNode =
 export const row = (children: MathNode[]): MathNode =>
   children.length === 1 ? children[0]! : { type: 'row', children }
 export const EMPTY: MathNode = { type: 'row', children: [] }
+
+/**
+ * Whether `node` ends in a term, an ordinary atom in TeX's sense: a letter, a number, a closing
+ * bracket, a fraction, a root, a group, and any of these with scripts. TeX sets a name a thin space
+ * after one; after an operator, a relation, an opening bracket or a space the room is the operator's
+ * own, or written.
+ */
+export function endsInTerm(node: MathNode): boolean {
+  switch (node.type) {
+    case 'operator':
+      return node.kind === 'close' || node.kind === 'ord'
+    case 'function':
+    case 'space':
+    case 'error':
+      return false
+    case 'scripts':
+      return endsInTerm(node.base)
+    case 'row':
+      return node.children.length > 0 && endsInTerm(node.children.at(-1)!)
+    default:
+      return true
+  }
+}
