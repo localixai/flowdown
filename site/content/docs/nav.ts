@@ -1,4 +1,4 @@
-import type { DocsConfig } from '@/shared/config';
+import type { DocsConfig } from '@/shared/config'
 
 // The docs' table of contents. The pages are the repository's own `docs/`, as GitHub shows them:
 // every markdown file there is a page listed here, in a group, or is named under `unlisted` with
@@ -17,17 +17,28 @@ const docs: DocsConfig = {
     },
     {
       title: 'Writing',
-      blurb: 'The forms a model can write, the prompt that teaches them, and what the parser passes.',
+      blurb:
+        'The forms a model can write, the prompt that teaches them, and what the parser passes.',
       pages: ['syntax', 'prompting', 'conformance'],
     },
     {
       title: 'Rendering',
       blurb: 'A reply while it streams, its look, its components, and what a reply may not do.',
-      pages: ['streaming', 'styling', 'components', 'math', 'diagrams', 'highlighting', 'security'],
+      pages: [
+        'streaming',
+        'styling',
+        'components',
+        'math',
+        'diagrams',
+        'quiz',
+        'highlighting',
+        'security',
+      ],
     },
     {
       title: 'Beyond React',
-      blurb: 'The same reply as HTML text, a page, a custom element or a terminal, in a remark pipeline, and in Rust.',
+      blurb:
+        'The same reply as HTML text, a page, a custom element or a terminal, in a remark pipeline, and in Rust.',
       pages: ['targets', 'remark', 'rust'],
     },
     {
@@ -42,6 +53,6 @@ const docs: DocsConfig = {
     },
   ],
   unlisted: {},
-};
+}
 
-export default docs;
+export default docs

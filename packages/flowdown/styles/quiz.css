@@ -1,0 +1,291 @@
+/* Questions in the text (`@localix-ai/flowdown/quiz`), drawn with the package's tokens, so they
+   follow a page's theme as the rest of a reply does. The elements are the extension's own
+   (`fd-quiz`, `fd-question`, …): a page without the React parts still gets readable blocks. */
+.flowdown fd-quiz,
+.flowdown fd-quiz-title,
+.flowdown fd-quiz-intro,
+.flowdown fd-question,
+.flowdown fd-question-text,
+.flowdown fd-prompt,
+.flowdown fd-options,
+.flowdown fd-option,
+.flowdown fd-field,
+.flowdown fd-card,
+.flowdown fd-card-front,
+.flowdown fd-card-back {
+  display: block;
+}
+
+/* A page without the React parts: nothing to answer with, and an explanation would only say
+   which choice is right. The parts draw `div`s, so these name only the extension's elements. */
+.flowdown fd-explain.fd-explain,
+.flowdown fd-field.fd-field {
+  display: none;
+}
+
+.flowdown .fd-quiz {
+  margin: 0.8rem 0;
+  border: 1px solid var(--fd-border);
+  border-radius: var(--fd-radius);
+  padding: 0.75rem 0.9rem 0.85rem;
+}
+.flowdown .fd-quiz > :first-child,
+.flowdown .fd-question > :first-child,
+.flowdown .fd-explain > :first-child,
+.flowdown .fd-card-back > :first-child,
+.flowdown .fd-prompt > :first-child {
+  margin-top: 0;
+}
+.flowdown .fd-quiz > :last-child,
+.flowdown .fd-question > :last-child,
+.flowdown .fd-explain > :last-child,
+.flowdown .fd-card-back > :last-child,
+.flowdown .fd-prompt > :last-child {
+  margin-bottom: 0;
+}
+.flowdown .fd-quiz-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.flowdown .fd-quiz[aria-busy='true'] {
+  opacity: 0.7;
+}
+
+/* Progress: a dot a question, the current one wide; then `2 / 5`. */
+.flowdown .fd-quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+.flowdown .fd-quiz-dot {
+  width: 0.5rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: var(--fd-border);
+  transition: width var(--fd-duration) var(--fd-ease);
+}
+.flowdown .fd-quiz-dot[data-state='current'] {
+  width: 1.1rem;
+  background: var(--fd-fg-soft);
+}
+.flowdown .fd-quiz-dot[data-state='done'] {
+  background: var(--fd-fg-faint);
+}
+.flowdown .fd-quiz-dot[data-state='right'] {
+  background: var(--fd-success);
+}
+.flowdown .fd-quiz-dot[data-state='wrong'] {
+  background: var(--fd-danger);
+}
+.flowdown .fd-quiz-step {
+  margin-left: auto;
+  font-size: 0.85em;
+  color: var(--fd-fg-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.flowdown .fd-question[hidden],
+.flowdown .fd-card[hidden] {
+  display: none;
+}
+.flowdown .fd-question-text {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.flowdown .fd-quiz[data-layout='list'] .fd-question + .fd-question {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--fd-border-subtle);
+}
+
+/* Choices: one under another, each a row with its mark; `order` puts a shuffled one in place. */
+.flowdown .fd-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+}
+.flowdown .fd-option-button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--fd-border);
+  border-radius: var(--fd-radius-small);
+  background: none;
+  padding: 0.5rem 0.7rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--fd-duration) ease,
+    background var(--fd-duration) ease;
+}
+.flowdown .fd-option-button:hover:not(:disabled) {
+  border-color: var(--fd-border-strong);
+}
+.flowdown .fd-option-button:disabled {
+  cursor: default;
+}
+.flowdown .fd-option-button:focus-visible {
+  outline: 2px solid var(--fd-focus);
+  outline-offset: 1px;
+}
+.flowdown .fd-option-mark {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid var(--fd-border-strong);
+  border-radius: 50%;
+}
+.flowdown .fd-option-button[role='checkbox'] .fd-option-mark {
+  border-radius: 0.25rem;
+}
+.flowdown .fd-option[data-state] .fd-option-mark {
+  border-width: 0.3rem;
+}
+.flowdown .fd-option[data-state='picked'] .fd-option-button {
+  border-color: var(--fd-fg-soft);
+}
+.flowdown .fd-option[data-state='picked'] .fd-option-mark {
+  border-color: var(--fd-fg);
+}
+.flowdown .fd-option[data-state='right'] .fd-option-button,
+.flowdown .fd-option[data-state='missed'] .fd-option-button {
+  border-color: var(--fd-success);
+}
+.flowdown .fd-option[data-state='right'] .fd-option-mark {
+  border-color: var(--fd-success);
+}
+.flowdown .fd-option[data-state='missed'] .fd-option-mark {
+  border-width: 1.5px;
+  border-color: var(--fd-success);
+  border-style: dashed;
+}
+.flowdown .fd-option[data-state='wrong'] .fd-option-button {
+  border-color: var(--fd-danger);
+}
+.flowdown .fd-option[data-state='wrong'] .fd-option-mark {
+  border-color: var(--fd-danger);
+}
+
+/* A typed answer, and a choice's own field. */
+.flowdown .fd-field {
+  display: block;
+  margin-top: 0.6rem;
+}
+.flowdown .fd-field-input {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 0.4rem;
+  border: 1px solid var(--fd-border);
+  border-radius: var(--fd-radius-small);
+  background: none;
+  padding: 0.5rem 0.7rem;
+  font: inherit;
+  color: inherit;
+}
+.flowdown .fd-field-input:focus-visible {
+  outline: 2px solid var(--fd-focus);
+  outline-offset: 1px;
+}
+.flowdown .fd-field[data-state='right'] .fd-field-input {
+  border-color: var(--fd-success);
+}
+.flowdown .fd-field[data-state='wrong'] .fd-field-input {
+  border-color: var(--fd-danger);
+}
+.flowdown .fd-field-accepted {
+  margin: 0.35rem 0 0;
+  color: var(--fd-success);
+}
+
+.flowdown .fd-quiz-hint,
+.flowdown .fd-quiz-verdict {
+  margin: 0.45rem 0 0;
+  font-size: 0.9em;
+  color: var(--fd-fg-faint);
+}
+.flowdown .fd-quiz-verdict:empty {
+  display: none;
+}
+.flowdown .fd-question[data-verdict='right'] .fd-quiz-verdict {
+  color: var(--fd-success);
+}
+.flowdown .fd-question[data-verdict='wrong'] .fd-quiz-verdict {
+  color: var(--fd-danger);
+}
+.flowdown .fd-explain {
+  display: block;
+  margin-top: 0.6rem;
+  border-left: 2px solid var(--fd-border);
+  padding-left: 0.7rem;
+  color: var(--fd-fg-soft);
+}
+
+.flowdown .fd-quiz-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.flowdown .fd-quiz-controls:empty {
+  display: none;
+}
+.flowdown .fd-quiz-button {
+  margin: 0;
+  border: 1px solid var(--fd-fg);
+  border-radius: var(--fd-radius-small);
+  background: var(--fd-fg);
+  padding: 0.4rem 0.9rem;
+  font: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--fd-bg);
+  cursor: pointer;
+}
+.flowdown .fd-quiz-button[data-quiet] {
+  border-color: var(--fd-border);
+  background: none;
+  color: inherit;
+}
+.flowdown .fd-quiz-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.flowdown .fd-quiz-button:focus-visible {
+  outline: 2px solid var(--fd-focus);
+  outline-offset: 2px;
+}
+
+/* A card: its front large; its back under a rule once turned. */
+.flowdown .fd-card-front {
+  font-size: 1.25em;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.8rem 0 0.4rem;
+}
+.flowdown .fd-card-back {
+  display: none;
+}
+.flowdown .fd-card[data-turned] .fd-card-back {
+  display: block;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--fd-border-subtle);
+  padding-top: 0.6rem;
+  text-align: center;
+  color: var(--fd-fg-soft);
+}
+.flowdown .fd-card .fd-quiz-controls {
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowdown .fd-quiz-dot,
+  .flowdown .fd-option-button {
+    transition: none;
+  }
+}

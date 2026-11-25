@@ -22,6 +22,8 @@ export default defineConfig({
     'math/index': 'src/math/index.ts',
     'highlight/index': 'src/highlight/index.ts',
     'mermaid/index': 'src/mermaid/index.ts',
+    'quiz/index': 'src/quiz/index.ts',
+    'quiz-react/index': 'src/quiz-react/index.ts',
   },
   format: 'esm',
   platform: 'neutral',

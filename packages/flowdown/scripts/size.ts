@@ -133,6 +133,12 @@ const BUDGET: Record<string, number> = {
   './highlight': 12.3,
   // Past 5 KB since a drawn diagram has a toolbar and an enlarged viewer (`diagram.css`).
   './styles.css': 5.5,
+  // Questions in the text: the forms read from a fence, checked, said for a model. It holds the
+  // parser to read a fence's body, as `./engine` (its own 13 KB) does.
+  './quiz': 14,
+  // Drawing them in React: a form's state and steps, its choices, fields and cards.
+  './quiz/react': 3.5,
+  './quiz.css': 1.5,
 }
 
 /** The entry's bundle, and the chunks it imports on demand (split out, as a page's bundler does). */

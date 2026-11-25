@@ -125,6 +125,10 @@ interface BlockProps {
 
 export { draw, type BlockOptions } from './draw'
 
+/** Whether one of the page's extensions draws fences of this language its own way. */
+const claimed = (extensions: readonly Extension[] | undefined, language: string): boolean =>
+  extensions?.some((extension) => extension.fences?.[language] !== undefined) ?? false
+
 /** The package's own HTML stage, fetched as a chunk of its own the first time it is needed. */
 const loadHtml = () => import('../html/index')
 
@@ -215,7 +219,10 @@ const Block = memo(
       fence.language !== DIAGRAM_FENCE_LANGUAGE &&
       fence.language !== 'tree' &&
       // A `math` fence is a formula where the page typesets math, and code where it does not.
-      !(fence.language === 'math' && options.extensions?.some((stage) => stage.name === 'math'))
+      !(fence.language === 'math' && options.extensions?.some((stage) => stage.name === 'math')) &&
+      // A fence an extension draws its own way is drawn so while it is written, told by
+      // `GrowingFence` that it is not finished: a quiz shows its questions, inert, not its source.
+      !(fence.language !== undefined && claimed(options.extensions, fence.language))
     )
       return <GrowingCode {...fence} grown={memory.checked ?? null} />
     const source = closer ? open + closer : open

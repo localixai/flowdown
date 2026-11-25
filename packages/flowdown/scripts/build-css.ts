@@ -15,6 +15,13 @@ const css = parts
 writeFileSync(join(root, 'dist', 'styles.css'), header + css)
 console.log(`dist/styles.css: ${(css.length / 1024).toFixed(1)} KB`)
 
+// `dist/quiz.css`: the questions of `@localix-ai/flowdown/quiz`, for a page that draws them.
+writeFileSync(
+  join(root, 'dist', 'quiz.css'),
+  '/* flowdown quiz: questions, choices and cards. Import once: `import "@localix-ai/flowdown/quiz.css"`. */\n' +
+    readFileSync(join(root, 'styles', 'quiz.css'), 'utf8'),
+)
+
 // `dist/math.css`: the math font and its rules, from `@localix-ai/math`, with the font files beside
 // it (the stylesheet names them relative to itself) and their license.
 const math = join(root, '..', 'math')

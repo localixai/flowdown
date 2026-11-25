@@ -30,6 +30,9 @@ const MAY_IMPORT: Record<string, string[]> = {
   html: ['engine'],
   math: ['engine', 'core'],
   highlight: [],
+  // Questions in the text: the forms and their answers, then their drawing in React.
+  quiz: ['engine'],
+  'quiz-react': ['engine', 'react', 'quiz'],
   // Targets and bindings.
   static: ['engine', 'render'],
   tui: ['engine', 'core', 'document', 'dialect.ts'],
@@ -50,6 +53,7 @@ const MAY_NAME: Record<string, string[]> = {
   mermaid: ['react', 'mermaid', '@localix-ai/diagram'],
   math: ['@localix-ai/math'],
   highlight: ['@localix-ai/highlight'],
+  'quiz-react': ['react'],
   // A terminal draws diagrams with the package that draws them for pages too.
   tui: ['@localix-ai/diagram', '@localix-ai/math'],
 }
@@ -65,6 +69,7 @@ const NO_PAGE = [
   'html',
   'math',
   'highlight',
+  'quiz',
   'static',
   'tui',
   'remark.ts',
