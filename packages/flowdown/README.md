@@ -106,8 +106,9 @@ React.
 
 Each target's options are in [other targets](https://flowdown.localix.ai/docs/targets). Further entries
 give you the pieces for a renderer of your own: the parser (`/engine`), a growing reply as blocks
-(`/document`), a remark plugin (`/remark`), the prompt (`/prompt`), and code, math and diagrams
-(`/highlight`, `/math`, `/mermaid`). [The API](https://flowdown.localix.ai/docs/api) lists them all.
+(`/document`), a remark plugin (`/remark`), the prompt (`/prompt`), code, math and diagrams
+(`/highlight`, `/math`, `/mermaid`), and questions and flash cards a reader answers (`/quiz`,
+`/quiz/react`). [The API](https://flowdown.localix.ai/docs/api) lists them all.
 
 ## In Rust
 
@@ -143,6 +144,7 @@ Everything is at **[flowdown.localix.ai](https://flowdown.localix.ai/docs)**:
   [styling](https://flowdown.localix.ai/docs/styling) ·
   [components](https://flowdown.localix.ai/docs/components) ·
   [math](https://flowdown.localix.ai/docs/math) · [diagrams](https://flowdown.localix.ai/docs/diagrams) ·
+  [questions and cards](https://flowdown.localix.ai/docs/quiz) ·
   [highlighting](https://flowdown.localix.ai/docs/highlighting) ·
   [security](https://flowdown.localix.ai/docs/security)
 - **Beyond React:** [other targets](https://flowdown.localix.ai/docs/targets) ·

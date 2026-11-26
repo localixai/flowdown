@@ -28,10 +28,13 @@ Every entry point and export of flowdown, and every prop of `<Markdown>`.
 | `@localix-ai/flowdown/math`        | The math stage.                                                           | none                     |
 | `@localix-ai/flowdown/highlight`   | A highlighter for fenced code, built in.                                  |                          |
 | `@localix-ai/flowdown/mermaid`     | The diagram renderer, for a page that draws ` ```mermaid ` fences itself. | `mermaid`, loaded by you |
+| `@localix-ai/flowdown/quiz`        | The questions and cards stage, and reading and scoring forms. No React.   |                          |
+| `@localix-ai/flowdown/quiz/react`  | `QuizProvider` and `quizComponents`: the forms drawn, answers to the page. | `react` 18.2 or 19       |
+| `@localix-ai/flowdown/quiz.css`    | The forms' stylesheet.                                                    |                          |
 
 The package is ESM only. Every module that uses React hooks starts with `'use client'`.
-Only `@localix-ai/flowdown` itself imports React. `/static`, `/tui`, `/document`, `/engine`, `/remark`,
-`/stream` and `/prompt` touch no page either and run anywhere; `/dom` and `/element` need a browser.
+Only `@localix-ai/flowdown` and `/quiz/react` import React. `/static`, `/tui`, `/document`, `/engine`,
+`/remark`, `/stream`, `/prompt` and `/quiz` touch no page either and run anywhere; `/dom` and `/element` need a browser.
 `@localix-ai/flowdown/react` is the same entry as `@localix-ai/flowdown`.
 
 ## `<Markdown>`
@@ -234,6 +237,32 @@ Import `@localix-ai/flowdown/math.css` on the page: the math font.
 
 Languages: 26, from shell sessions and diffs to Rust and SQL; see
 [Highlighting](highlighting.md#languages).
+
+## `@localix-ai/flowdown/quiz`
+
+Questions and flash cards written in the text. See [Questions and cards](quiz.md).
+
+| Export                                   | What it is                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------------------- |
+| `quiz(options?)`                         | The stage, an `Extension`: ` ```quiz `, ` ```ask ` and ` ```cards ` fences as forms. `languages` renames the fences. |
+| `readForms(markdown, options?)`          | Every form in a text with its questions and key, without drawing it.       |
+| `readForm`, `readCards`                  | One fence's body as a form, for a reader of your own.                      |
+| `grade(question, answer, normalize?)`    | Whether one answer is right; `null` for a question that checks nothing.    |
+| `resultOf(form, answers)`                | A form's answers counted: `right` and `total`.                             |
+| `answerText(form, answers)`              | A form's answers as a short Markdown list, for a model.                    |
+| `normalizeAnswer(text)`                  | Typed words as they are compared by default.                               |
+| `QuizForm`, `QuizQuestion`, `QuizOption`, `QuizKind`, `QuizAnswerMode`, `QuizAnswer`, `QuizResult`, `QuizOptions` | Their types. |
+
+## `@localix-ai/flowdown/quiz/react`
+
+| Export                                   | What it is                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------------------- |
+| `quizComponents`                         | The forms' parts, for `<Markdown components>`; spread with a page's own.   |
+| `QuizProvider`                           | Where the answers go (`onAnswer`, `onComplete`, `answers`) and how forms behave. Its props are in [Questions and cards](quiz.md#what-the-page-gets). |
+| `useFormState()`                         | The form a part is drawn in, with its answers, for a part of your own.     |
+| `DEFAULT_QUIZ_LABELS`, `QuizLabels`, `QuizHostProps`, `FormState` | The buttons' words in English, and the types. |
+
+Import `@localix-ai/flowdown/quiz.css` on the page: the forms' styles.
 
 ## `@localix-ai/flowdown/mermaid`
 
